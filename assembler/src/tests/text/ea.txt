@@ -1,0 +1,113 @@
+// Tests of some effective addressing mode matches (not exhaustive)
+
+// Integer literals
+    #0
+    #12
+    #-34
+    #5678
+    #-9101
+    #0x0
+    #0x12
+    #0xABADCAFE
+
+// Illegal literals
+    #01ABC
+    #-0x1234
+    #$10
+
+// Register direct
+    a2
+    d3
+    r5
+    fp7
+
+// Register indirect
+    (a2)
+    (r3)
+
+// Illegal Register indirect syntax
+    (d0)
+    (10)
+    (#5)
+    (a3.l)
+
+// Register indirect post increment/decrement
+    (a5)+
+    (r7)+
+    (a0)-
+    (r1)-
+
+// Illegal register post increment/decrement
+    (d0)+
+    2(a0)-
+    (3, a0)+
+    (a1)+2
+
+// Register indirect pre increment/decrement
+    +(a5)
+    +(r7)
+    -(a0)
+    -(r1)
+
+// Illegal Register indirect pre increment/decrement
+    +(5, a5)
+    +(r7.w)
+    -(a0, 2)
+    -(r1.w)
+
+// Register indirect with offset
+    2(a0)
+    -3(a0)
+    5(r1)
+    (7, a2)
+    (-3, r7)
+    0x10(r8)
+    4(pc)
+    -20(pc)
+    (32, pc)
+    (-64, pc)
+    0x100(pc)
+    (0xFFE, pc)
+
+
+// Register indirect with index
+    (r3, r0.b)
+    (a3, d1.w)
+    (r7, a0.l)
+    (a0, d7.q)
+    (pc, r1.b)
+    (pc, a0.w)
+    (pc, d1.l)
+    (pc, r7.q)
+
+// Illegal indirect with index
+    (a0, d1)
+    (d0, d1.w)
+    (a1.w, d2)
+    (r3, pc)
+
+// Register indirect with index and displacement
+    10(a0, r2.b)
+    -10(r1, d0.w)
+    (10, a0, d4.l)
+    (-16, r7, d5.q)
+    0x10(a0, r2.b)
+    0xFF(r1, d0.w)
+    (0x10, a0, d4.l)
+    (0xFFFFFF00, r7, d5.q)
+    4(pc, d0.b)
+    -20(pc, a1.w)
+    (32, pc, r2.l)
+    (-64, pc, a0.q)
+    0x100(pc, a1.l)
+    (0xFFE, pc, d7.q)
+
+// Register indirect with index and displacement and scale
+    10(a0, r2.b * 2)
+    -10(r1, d0.w * 4)
+    (10, a0, d4.l * 8)
+    (-16, r7, d5.q * 2)
+    0x1234(a0, r2.b * 4)
+    0x1234(r1, d0.w * 8)
+    (0x10, a0, d4.l * 2)
+    (0xFFFFFF00, r7, d5.q * 4)

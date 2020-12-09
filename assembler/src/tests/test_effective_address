@@ -1,0 +1,62 @@
+#!/usr/bin/php
+<?php
+
+/**
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+use ABadCafe\MC64K\Defs\EffectiveAddress;
+
+class TestParser {
+
+    private array $aRegex;
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        $aRegex = EffectiveAddress\IMatches::MATCHES;
+//        uksort(
+//            $aRegex,
+//            function ($a, $b) {
+//                return strlen($b) - strlen($a);
+//            }
+//        );
+        $this->aRegex = $aRegex;
+    }
+
+    public function match(string $sText) {
+        foreach ($this->aRegex as $sMatch => $iMode) {
+            if (false === preg_match($sMatch, $sText, $aMatches)) {
+                throw new \Exception( $sMatch );
+            }
+            if (!empty($aMatches)) {
+                echo "Matched '", $sText, "' against '", EffectiveAddress\IModes::NAMES[$iMode], "' (Bytecode #", $iMode, ") => ", json_encode($aMatches), "\n";
+
+                return;
+            }
+        }
+        echo "No match for '", $sText, "', presumed to be illegal effective address syntax\n";
+    }
+
+}
+
+$oTestParser = new TestParser;
+
+$aExamples = explode("\n", file_get_contents('text/ea.txt'));
+
+foreach ($aExamples as $sExample) {
+    $sExample = trim($sExample);
+    if (empty($sExample) || '/' === $sExample[0]) {
+        continue;
+    }
+    $oTestParser->match($sExample);
+}

@@ -1,0 +1,83 @@
+Matched '#0' against 'Integer Literal' (Bytecode #0) => ["#0","0"]
+Matched '#12' against 'Integer Literal' (Bytecode #0) => ["#12","12"]
+Matched '#-34' against 'Integer Literal' (Bytecode #0) => ["#-34","-34"]
+Matched '#5678' against 'Integer Literal' (Bytecode #0) => ["#5678","5678"]
+Matched '#-9101' against 'Integer Literal' (Bytecode #0) => ["#-9101","-9101"]
+Matched '#0x0' against 'Integer Literal' (Bytecode #0) => ["#0x0","0x0"]
+Matched '#0x12' against 'Integer Literal' (Bytecode #0) => ["#0x12","0x12"]
+Matched '#0xABADCAFE' against 'Integer Literal' (Bytecode #0) => ["#0xABADCAFE","0xABADCAFE"]
+No match for '#01ABC', presumed to be illegal effective address syntax
+No match for '#-0x1234', presumed to be illegal effective address syntax
+No match for '#$10', presumed to be illegal effective address syntax
+Matched 'a2' against 'GPR Direct' (Bytecode #1) => ["a2"]
+Matched 'd3' against 'GPR Direct' (Bytecode #1) => ["d3"]
+Matched 'r5' against 'GPR Direct' (Bytecode #1) => ["r5"]
+Matched 'fp7' against 'FPU Direct' (Bytecode #2) => ["fp7"]
+Matched '(a2)' against 'GPR Indirect' (Bytecode #3) => ["(a2)","a2"]
+Matched '(r3)' against 'GPR Indirect' (Bytecode #3) => ["(r3)","r3"]
+No match for '(d0)', presumed to be illegal effective address syntax
+No match for '(10)', presumed to be illegal effective address syntax
+No match for '(#5)', presumed to be illegal effective address syntax
+No match for '(a3.l)', presumed to be illegal effective address syntax
+Matched '(a5)+' against 'GPR Indirect, Post Increment' (Bytecode #4) => ["(a5)+","a5"]
+Matched '(r7)+' against 'GPR Indirect, Post Increment' (Bytecode #4) => ["(r7)+","r7"]
+Matched '(a0)-' against 'GPR Indirect, Post Decrement' (Bytecode #5) => ["(a0)-","a0"]
+Matched '(r1)-' against 'GPR Indirect, Post Decrement' (Bytecode #5) => ["(r1)-","r1"]
+No match for '(d0)+', presumed to be illegal effective address syntax
+No match for '2(a0)-', presumed to be illegal effective address syntax
+No match for '(3, a0)+', presumed to be illegal effective address syntax
+No match for '(a1)+2', presumed to be illegal effective address syntax
+Matched '+(a5)' against 'GPR Indirect, Pre Increment' (Bytecode #6) => ["+(a5)","a5"]
+Matched '+(r7)' against 'GPR Indirect, Pre Increment' (Bytecode #6) => ["+(r7)","r7"]
+Matched '-(a0)' against 'GPR Indirect, Pre Decrement' (Bytecode #7) => ["-(a0)","a0"]
+Matched '-(r1)' against 'GPR Indirect, Pre Decrement' (Bytecode #7) => ["-(r1)","r1"]
+No match for '+(5, a5)', presumed to be illegal effective address syntax
+No match for '+(r7.w)', presumed to be illegal effective address syntax
+No match for '-(a0, 2)', presumed to be illegal effective address syntax
+No match for '-(r1.w)', presumed to be illegal effective address syntax
+Matched '2(a0)' against 'GPR Indirect with Signed Displacement' (Bytecode #8) => ["2(a0)","2","a0"]
+Matched '-3(a0)' against 'GPR Indirect with Signed Displacement' (Bytecode #8) => ["-3(a0)","-3","a0"]
+Matched '5(r1)' against 'GPR Indirect with Signed Displacement' (Bytecode #8) => ["5(r1)","5","r1"]
+Matched '(7, a2)' against 'GPR Indirect with Signed Displacement' (Bytecode #8) => ["(7, a2)","7","a2"]
+Matched '(-3, r7)' against 'GPR Indirect with Signed Displacement' (Bytecode #8) => ["(-3, r7)","-3","r7"]
+Matched '0x10(r8)' against 'GPR Indirect with Signed Displacement' (Bytecode #8) => ["0x10(r8)","0x10","r8"]
+Matched '4(pc)' against 'PC with Signed Displacement' (Bytecode #41) => ["4(pc)","4"]
+Matched '-20(pc)' against 'PC with Signed Displacement' (Bytecode #41) => ["-20(pc)","-20"]
+Matched '(32, pc)' against 'PC with Signed Displacement' (Bytecode #41) => ["(32, pc)","32"]
+Matched '(-64, pc)' against 'PC with Signed Displacement' (Bytecode #41) => ["(-64, pc)","-64"]
+Matched '0x100(pc)' against 'PC with Signed Displacement' (Bytecode #41) => ["0x100(pc)","0x100"]
+Matched '(0xFFE, pc)' against 'PC with Signed Displacement' (Bytecode #41) => ["(0xFFE, pc)","0xFFE"]
+Matched '(r3, r0.b)' against 'GPR Indirect with Signed 8-bit Index' (Bytecode #9) => ["(r3, r0.b)","r3","r0"]
+Matched '(a3, d1.w)' against 'GPR Indirect with Signed 16-bit Index' (Bytecode #10) => ["(a3, d1.w)","a3","d1"]
+Matched '(r7, a0.l)' against 'GPR Indirect with Signed 32-bit Index' (Bytecode #11) => ["(r7, a0.l)","r7","a0"]
+Matched '(a0, d7.q)' against 'GPR Indirect with Signed 64-bit Index' (Bytecode #12) => ["(a0, d7.q)","a0","d7"]
+Matched '(pc, r1.b)' against 'PC with Signed 8-bit Index' (Bytecode #42) => ["(pc, r1.b)","r1"]
+Matched '(pc, a0.w)' against 'PC with Signed 16-bit Index' (Bytecode #43) => ["(pc, a0.w)","a0"]
+Matched '(pc, d1.l)' against 'PC with Signed 32-bit Index' (Bytecode #44) => ["(pc, d1.l)","d1"]
+Matched '(pc, r7.q)' against 'PC with Signed 64-bit Index' (Bytecode #45) => ["(pc, r7.q)","r7"]
+No match for '(a0, d1)', presumed to be illegal effective address syntax
+No match for '(d0, d1.w)', presumed to be illegal effective address syntax
+No match for '(a1.w, d2)', presumed to be illegal effective address syntax
+No match for '(r3, pc)', presumed to be illegal effective address syntax
+Matched '10(a0, r2.b)' against 'GPR Indirect with Signed 8-bit Index and Signed Displacement' (Bytecode #13) => ["10(a0, r2.b)","10","a0","r2"]
+Matched '-10(r1, d0.w)' against 'GPR Indirect with Signed 16-bit Index and Signed Displacement' (Bytecode #14) => ["-10(r1, d0.w)","-10","r1","d0"]
+Matched '(10, a0, d4.l)' against 'GPR Indirect with Signed 32-bit Index and Signed Displacement' (Bytecode #15) => ["(10, a0, d4.l)","10","a0","d4"]
+Matched '(-16, r7, d5.q)' against 'GPR Indirect with Signed 64-bit Index and Signed Displacement' (Bytecode #16) => ["(-16, r7, d5.q)","-16","r7","d5"]
+Matched '0x10(a0, r2.b)' against 'GPR Indirect with Signed 8-bit Index and Signed Displacement' (Bytecode #13) => ["0x10(a0, r2.b)","0x10","a0","r2"]
+Matched '0xFF(r1, d0.w)' against 'GPR Indirect with Signed 16-bit Index and Signed Displacement' (Bytecode #14) => ["0xFF(r1, d0.w)","0xFF","r1","d0"]
+Matched '(0x10, a0, d4.l)' against 'GPR Indirect with Signed 32-bit Index and Signed Displacement' (Bytecode #15) => ["(0x10, a0, d4.l)","0x10","a0","d4"]
+Matched '(0xFFFFFF00, r7, d5.q)' against 'GPR Indirect with Signed 64-bit Index and Signed Displacement' (Bytecode #16) => ["(0xFFFFFF00, r7, d5.q)","0xFFFFFF00","r7","d5"]
+Matched '4(pc, d0.b)' against 'PC with Signed 8-bit Index and Signed Displacement' (Bytecode #46) => ["4(pc, d0.b)","4","d0"]
+Matched '-20(pc, a1.w)' against 'PC with Signed 16-bit Index and Signed Displacement' (Bytecode #47) => ["-20(pc, a1.w)","-20","a1"]
+Matched '(32, pc, r2.l)' against 'PC with Signed 32-bit Index and Signed Displacement' (Bytecode #48) => ["(32, pc, r2.l)","32","r2"]
+Matched '(-64, pc, a0.q)' against 'PC with Signed 16-bit Index and Signed Displacement' (Bytecode #49) => ["(-64, pc, a0.q)","-64","a0"]
+Matched '0x100(pc, a1.l)' against 'PC with Signed 32-bit Index and Signed Displacement' (Bytecode #48) => ["0x100(pc, a1.l)","0x100","a1"]
+Matched '(0xFFE, pc, d7.q)' against 'PC with Signed 16-bit Index and Signed Displacement' (Bytecode #49) => ["(0xFFE, pc, d7.q)","0xFFE","d7"]
+Matched '10(a0, r2.b * 2)' against 'GPR Indirect with 16-bit Scaled Signed 8-bit Index and Signed Displacement' (Bytecode #21) => ["10(a0, r2.b * 2)","10","a0","r2"]
+Matched '-10(r1, d0.w * 4)' against 'GPR Indirect with 32-bit Scaled Signed 16-bit Index and Signed Displacement' (Bytecode #30) => ["-10(r1, d0.w * 4)","-10","r1","d0"]
+Matched '(10, a0, d4.l * 8)' against 'GPR Indirect with 64-bit Scaled Signed 32-bit Index and Signed Displacement' (Bytecode #39) => ["(10, a0, d4.l * 8)","10","a0","d4"]
+Matched '(-16, r7, d5.q * 2)' against 'GPR Indirect with 16-bit Scaled Signed 64-bit Index and Signed Displacement' (Bytecode #24) => ["(-16, r7, d5.q * 2)","-16","r7","d5"]
+Matched '0x1234(a0, r2.b * 4)' against 'GPR Indirect with 32-bit Scaled Signed 8-bit Index and Signed Displacement' (Bytecode #29) => ["0x1234(a0, r2.b * 4)","0x1234","a0","r2"]
+Matched '0x1234(r1, d0.w * 8)' against 'GPR Indirect with 64-bit Scaled Signed 16-bit Index and Signed Displacement' (Bytecode #38) => ["0x1234(r1, d0.w * 8)","0x1234","r1","d0"]
+Matched '(0x10, a0, d4.l * 2)' against 'GPR Indirect with 16-bit Scaled Signed 32-bit Index and Signed Displacement' (Bytecode #23) => ["(0x10, a0, d4.l * 2)","0x10","a0","d4"]
+Matched '(0xFFFFFF00, r7, d5.q * 4)' against 'GPR Indirect with 32-bit Scaled Signed 64-bit Index and Signed Displacement' (Bytecode #32) => ["(0xFFFFFF00, r7, d5.q * 4)","0xFFFFFF00","r7","d5"]
