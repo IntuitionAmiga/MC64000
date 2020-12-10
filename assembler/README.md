@@ -24,6 +24,16 @@ To assist migration of assembly sources from existing 680x0 projects, the follow
     - These names are permitted as register indirect operands.
     - The convention ensures that a7 is regarded as the stack pointer.
 
+|     | .q (quadword) | .l (longword) | .w (word) | .b (byte) |
+| --- | ------------- | --------------| --------- | --------- |  
+| MSB | 63            | 31            | 15        | 7         | 
+| r15 / a7 / sp | | | | |
+| ... |               |               |           |           |
+| r8 / a0 |               |               |           |           |
+| r7 / d7 |               |               |           |           |
+| ... |               |               |           |           |
+| r0 / d0 |               |               |           |           |
+
 The specification further proposes 16 floating point registers (TBC). These registers are only available to floating point operations:
 
 * fp0, fp1, fp2 ... fp15
