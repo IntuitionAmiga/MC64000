@@ -114,6 +114,15 @@ interface IModes {
     ;
 
     /**
+     * Bytecode limits
+     */
+    const
+        MIN_BYTE = self::INT_LIT,
+        MAX_BYTE = self::ABS_Q
+    ;
+
+
+    /**
      * Mode names. The effective address mode byte mapped to a human readable description.
      */
     const NAMES = [
@@ -193,6 +202,6 @@ interface IModes {
         self::PC_IND_IDXQ_8_DSP  => "PC with 64-bit Scaled Signed 64-bit Index and Signed Displacement", // -2(pc, r0.q*8)  OR (-2, pc, r0.q*8)
         self::ABS_W              => "Absolute 16-bit Location", // 1234.w
         self::ABS_L              => "Absolute 32-bit Location", // 1234.l
-        self::ABS_Q              => "Absolure 64-bit Location"  // 1234.q
+        self::ABS_Q              => "Absolute 64-bit Location"  // 1234.q
     ];
 }

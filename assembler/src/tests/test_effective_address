@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/php -n
 <?php
 
 /**
@@ -7,7 +7,6 @@
  */
 
 declare(strict_types = 1);
-
 
 namespace ABadCafe\MC64K;
 
@@ -23,14 +22,11 @@ class TestParser {
      * Constructor
      */
     public function __construct() {
-        $aRegex = EffectiveAddress\IMatches::MATCHES;
-//        uksort(
-//            $aRegex,
-//            function ($a, $b) {
-//                return strlen($b) - strlen($a);
-//            }
-//        );
-        $this->aRegex = $aRegex;
+        $this->aRegex      = EffectiveAddress\IMatches::MATCHES;
+        $this->aMatchCount = array_fill_keys(
+            range(EffectiveAddress\IModes::MIN_BYTE, EffectiveAddress\IModes::MAX_BYTE),
+            0
+        );
     }
 
     public function match(string $sText) {
@@ -39,14 +35,24 @@ class TestParser {
                 throw new \Exception( $sMatch );
             }
             if (!empty($aMatches)) {
-                echo "Matched '", $sText, "' against '", EffectiveAddress\IModes::NAMES[$iMode], "' (Bytecode #", $iMode, ") => ", json_encode($aMatches), "\n";
-
+                ++$this->aMatchCount[$iMode];
                 return;
             }
         }
-        echo "No match for '", $sText, "', presumed to be illegal effective address syntax\n";
+        echo "No EA match for '", $sText, "'\n";
     }
 
+    public function report() {
+        echo "Match counts\n";
+        foreach ($this->aMatchCount as $iMode => $iCount) {
+            printf(
+                "\t%d [%s] %d\n",
+                $iMode,
+                EffectiveAddress\IModes::NAMES[$iMode],
+                $iCount
+            );
+        }
+    }
 }
 
 $oTestParser = new TestParser;
@@ -60,3 +66,4 @@ foreach ($aExamples as $sExample) {
     }
     $oTestParser->match($sExample);
 }
+$oTestParser->report();
