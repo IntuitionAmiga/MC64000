@@ -1,5 +1,18 @@
 <?php
 
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *    - 64-bit 680x0-inspired Virtual Machine and assembler -
+ */
+
 namespace ABadCafe\MC64K\Defs\EffectiveAddress;
 
 /**
@@ -7,7 +20,17 @@ namespace ABadCafe\MC64K\Defs\EffectiveAddress;
  *
  * Enumerates the expected bytecode for an effective address format.
  */
-interface IModes {
+interface IOther {
+
+    const
+        OFS_GPR_DIR          = 0,
+        OFS_GPR_IND          = 16,
+        OFS_GPR_IND_POST_INC = 32,
+        OFS_GPR_IND_PRE_DEC  = 48,
+        OFS_GPR_IND_DSP      = 64,
+        OFS_FPU_DIR          = 80,
+        OFS_OTHER            = 96
+    ;
 
     /**
      * Bytecode definitions
@@ -16,16 +39,14 @@ interface IModes {
      * byte values.
      */
     const
-        INT_LIT            =  0, // #1234           OR #-1234
-        REG                =  1, // r0
-        REG_FLT            =  2, // fp1
-        REG_IND            =  3, // (r1)
-        REG_IND_POST_INC   =  4, // (r2)+
-        REG_IND_POST_DEC   =  5, // (r3)-
-        REG_IND_PRE_INC    =  6, // +(r4)
-        REG_IND_PRE_DEC    =  7, // -(r5)
-        REG_IND_DSP        =  8, // 2(r6)           OR (2, r6)
+        INT_LIT            = self::OFS_OTHER + 0, // #1234           OR #-1234
+        ABS_W              = self::OFS_OTHER + 1, // 1234.w
+        ABS_L              = self::OFS_OTHER + 2, // 1234.l
+        ABS_Q              = self::OFS_OTHER + 3, // 1234.q
 
+
+        END = 255
+/*
         REG_IND_IDXB       =  9, // (r7, r0.b)
         REG_IND_IDXW       = 10, // (r7, r0.w)
         REG_IND_IDXL       = 11, // (r7, r0.l)
@@ -106,11 +127,9 @@ interface IModes {
         PC_IND_IDXB_8_DSP  = 70, // -2(pc, r0.b*8)  OR (-2, pc, r0.b*8)
         PC_IND_IDXW_8_DSP  = 71, // -2(pc, r0.w*8)  OR (-2, pc, r0.w*8)
         PC_IND_IDXL_8_DSP  = 72, // -2(pc, r0.l*8)  OR (-2, pc, r0.l*8)
-        PC_IND_IDXQ_8_DSP  = 73, // -2(pc, r0.q*8)  OR (-2, pc, r0.q*8)
+        PC_IND_IDXQ_8_DSP  = 73 // -2(pc, r0.q*8)  OR (-2, pc, r0.q*8)
+*/
 
-        ABS_W              = 74, // 1234.w
-        ABS_L              = 75, // 1234.l
-        ABS_Q              = 76  // 1234.q
     ;
 
     /**

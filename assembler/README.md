@@ -2,6 +2,8 @@
 
 This subdirectory contains PHP7.4 sources for the MC64000 bytecode assembler (WIP)
 
+## Programming Model
+
 ## Syntax Overview
 
 ### Register Names
@@ -44,13 +46,14 @@ The following operand size identifiers are used as prefixes for mnemonics and ef
 
 ### Addressing Modes
 
-The following subset of 68020 style addressing modes are available for most instruction operands (examples of each are non-exhaustive):
+The following subset of 68020 inspired addressing modes are supported for MC64000.
 
-#### Integer Literal
+#### Integer Immediate
 
 An integer value is embedded in the bytecode stream.
 
 * _Valid for source operands only._
+* _Signed decimal and unsigned hexadecimal representations supported_.
 * _Operation size determines valid range for integer and number of bytes embedded._
  
 Examples:
@@ -118,7 +121,7 @@ Examples:
 * (a2)-
 
 
-#### Register Indirect Pre  Increment
+#### Register Indirect Pre Increment
 
 The contents of an integer register are used as the address of an operand. The address is incremented by the operation size before dereferencing.
 
@@ -130,7 +133,7 @@ Examples:
 * +(r4)
 * +(a3)
 
-#### Register Indirect Pre  Decrement
+#### Register Indirect Pre Decrement
 
 The contents of an integer register are used as the address of an operand. The address is decremented by the operation size before dereferencing.
 
@@ -223,7 +226,7 @@ Examples:
 * (pc, r1.q * 8)
 
 
-#### Register Indirect with 16/32/64-bit Scaled Index and Signed Displacement
+#### Register Indirect with 16/32/64-bit Scaled Index and Signed 32-bit Displacement
 
 The contents of an integer register are used as the address of an operand. The address is first offset by the displacement then further offset by an index stored in another register before dereferencing. The index value is premultiplied by the scale factor.
 
@@ -243,3 +246,17 @@ Examples:
     - (-128, pc, r0.q * 2)
     - (-32, r7, r0.w * 4)
     - (0xfc, r0, r1.l * 8)
+
+#### Absolute Address
+
+An unsigned integer value is embedded in the bytecode stream. This is interpreted as an absolute memory location.
+
+* _Included for completeness._
+* _Size defines the number of bytes used to encode the address._
+* _Address is expanded to 64-bits_
+
+Examples:
+
+* (4096).w
+* (0x0001beef).l
+* (8589934592).q
