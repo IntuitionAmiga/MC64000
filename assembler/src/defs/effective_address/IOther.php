@@ -26,12 +26,12 @@ interface IOther extends IByteCodeGroups {
         PC_IND_DSP         = self::OFS_OTHER + 0,
 
         // Integer Immediate
-        INT_LIT            = self::OFS_OTHER + 1,
+        INT_IMMEDIATE      = self::OFS_OTHER + 1,
 
         // Absolute Address Immediate (for completeness sake)
-        ABS_W              = self::OFS_OTHER + 2, // 1234.w
-        ABS_L              = self::OFS_OTHER + 3, // 1234.l
-        ABS_Q              = self::OFS_OTHER + 4  // 1234.q
+        ADDR_ABS_W         = self::OFS_OTHER + 2, // 1234.w
+        ADDR_ABS_L         = self::OFS_OTHER + 3, // 1234.l
+        ADDR_ABS_Q         = self::OFS_OTHER + 4  // 1234.q
 
     ;
 }
