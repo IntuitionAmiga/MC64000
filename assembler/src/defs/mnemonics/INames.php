@@ -20,19 +20,140 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
  */
 interface INames {
     const MATCHES = [
+
+// Flow control group
         'bkpt',
 
-        // Branch
         'bra.b',
         'bra',
         'bsr.b',
         'bsr',
+        'jmp',
+        'jsr',
+        'rts',
+
+        // Single operand conditional branches
+
+        // Branch if <ea> == 0
+        'biz.b',
+        'biz.w',
+        'biz.l',
+        'biz.q',
+        'fbiz.s',
+        'fbiz.d',
+
+        // Branch if <ea> != 0
+        'bnz.b',
+        'bnz.w',
+        'bnz.l',
+        'bnz.q',
+        'fbnz.s',
+        'fbnz.d',
+
+        // Branch if <ea> < 0
+        'bmi.b',
+        'bmi.w',
+        'bmi.l',
+        'bmi.q',
+        'fbmi.s',
+        'fbmi.d',
+
+        // Branch if <ea> > 0
+        'bpl.b',
+        'bpl.w',
+        'bpl.l',
+        'bpl.q',
+        'fbpl.s',
+        'fbpl.d',
+
+        // Branch if <ea(s)> < <ea(d)>
+        'blt.b',
+        'blt.w',
+        'blt.l',
+        'blt.q',
+        'fblt.s',
+        'fblt.d',
+
+        // Branch if <ea(s)> <= <ea(d)>
+        'ble.b',
+        'ble.w',
+        'ble.l',
+        'ble.q',
+        'fble.s',
+        'fble.d',
+
+        // Branch if <ea(s)> == <ea(d)>
+        'beq.b',
+        'beq.w',
+        'beq.l',
+        'beq.q',
+        'fbeq.s',
+        'fbeq.d',
+
+        // Branch if <ea(s)> >= <ea(d)>
+        'bge.b',
+        'bge.w',
+        'bge.l',
+        'bge.q',
+        'fbge.s',
+        'fbge.d',
+
+        // Branch if <ea(s)> > <ea(d)>
+        'bgt.b',
+        'bgt.w',
+        'bgt.l',
+        'bgt.q',
+        'fbgt.s',
+        'fbgt.d',
+
+        // Branch if <ea(s)> != <ea(d)>
+        'bne.b',
+        'bne.w',
+        'bne.l',
+        'bne.q',
+        'fbne.s',
+        'fbne.d',
+
+        // Branch if bit set
+        'bbs.b',
+        'bbs.w',
+        'bbs.l',
+        'bbs.q',
+
+        // Branch if bit clear
+        'bbc.b',
+        'bbc.w',
+        'bbc.l',
+        'bbc.q',
+
+// Data Movement
+        'move.b',
+        'move.w',
+        'move.l',
+        'move.q',
+        'movem',
+        'fmoveb.s',
+        'fmovew.s',
+        'fmovel.s',
+        'fmoveq.s',
+        'fmoved.s',
+        'fmoveb.d',
+        'fmovew.d',
+        'fmovel.d',
+        'fmoveq.d',
+        'fmoves.d',
+        'fmoves.l',
+        'fmoves.q',
+        'fmoved.l',
+        'fmoved.q',
+        'fmovem',
+
+
 
         'add.b',
         'add.w',
         'add.l',
         'add.q',
-
         'fadd.s',
         'fadd.d',
 
@@ -50,99 +171,6 @@ interface INames {
         'asr.w',
         'asr.l',
         'asr.q',
-
-        'beq.b',
-        'beq.w',
-        'beq.l',
-        'beq.q',
-
-        'fbeq.s',
-        'fbeq.d',
-
-        'bne.b',
-        'bne.w',
-        'bne.l',
-        'bne.q',
-
-        'fbne.s',
-        'fbne.d',
-
-        'blt.b',
-        'blt.w',
-        'blt.l',
-        'blt.q',
-
-        'fblt.s',
-        'fblt.d',
-
-        'ble.b',
-        'ble.w',
-        'ble.l',
-        'ble.q',
-
-        'fble.s',
-        'fble.d',
-
-        'bge.b',
-        'bge.w',
-        'bge.l',
-        'bge.q',
-
-        'fbge.s',
-        'fbge.d',
-
-        'bgt.b',
-        'bgt.w',
-        'bgt.l',
-        'bgt.q',
-
-        'fbgt.s',
-        'fbgt.d',
-
-        'biz.b',
-        'biz.w',
-        'biz.l',
-        'biz.q',
-
-        'fbiz.s',
-        'fbiz.d',
-
-        'bnz.b',
-        'bnz.w',
-        'bnz.l',
-        'bnz.q',
-
-        'fbnz.s',
-        'fbnz.d',
-
-        'bmi.b',
-        'bmi.w',
-        'bmi.l',
-        'bmi.q',
-
-        'fbmi.s',
-        'fbmi.d',
-
-        'bpl.b',
-        'bpl.w',
-        'bpl.l',
-        'bpl.q',
-
-        'fbpl.s',
-        'fbpl.d',
-
-        'bbs.b',
-        'bbs.w',
-        'bbs.l',
-        'bbs.q',
-
-        'bbc.b',
-        'bbc.w',
-        'bbc.l',
-        'bbc.q',
-
-
-
 
         'bclr.b',
         'bclr.w',
@@ -172,15 +200,12 @@ interface INames {
         'divs.w',
         'divs.l',
         'divs.q',
-
         'divu.b',
         'divu.w',
         'divu.l',
         'divu.q',
-
         'fdiv.s',
         'fdiv.d',
-
         'fmod.s',
         'fmod.d',
 
@@ -201,8 +226,7 @@ interface INames {
         'fabs.s',
         'fabs.d',
 
-        'jmp',
-        'jsr',
+
         'lea',
         'link',
 
@@ -210,45 +234,21 @@ interface INames {
         'lsl.w',
         'lsl.l',
         'lsl.q',
-
         'lsr.b',
         'lsr.w',
         'lsr.l',
         'lsr.q',
 
-        'move.b',
-        'move.w',
-        'move.l',
-        'move.q',
-        'movem',
 
-        'fmoveb.s',
-        'fmovew.s',
-        'fmovel.s',
-        'fmoveq.s',
-        'fmoved.s',
-        'fmoveb.d',
-        'fmovew.d',
-        'fmovel.d',
-        'fmoveq.d',
-        'fmoves.d',
-        'fmoves.l',
-        'fmoves.q',
-        'fmoved.l',
-        'fmoved.q',
-
-        'fmovem',
 
         'muls.b',
         'muls.w',
         'muls.l',
         'muls.q',
-
         'mulu.b',
         'mulu.w',
         'mulu.l',
         'mulu.q',
-
         'fmul.s',
         'fmul.d',
 
@@ -256,7 +256,6 @@ interface INames {
         'neg.w',
         'neg.l',
         'neg.q',
-
         'fneg.s',
         'fneg.d',
 
@@ -285,13 +284,12 @@ interface INames {
         'ror.l',
         'ror.q',
 
-        'rts',
+
 
         'sub.b',
         'sub.w',
         'sub.l',
         'sub.q',
-
         'fsub.s',
         'fsub.d',
 
