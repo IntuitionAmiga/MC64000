@@ -7,7 +7,7 @@ One byte is used for the Instruction Opcode:
 * Opcodes without any operands are 1 byte.
 * Opcodes that have operands place them in the following order:
     - Destination [Effective Address](EffectiveAddress.md).
-    - Source [Effective Address](EffectiveAddress.md)].
+    - Source [Effective Address](EffectiveAddress.md).
     - Branch displacements.
     - Other data.
 
@@ -27,11 +27,13 @@ Breakpoint
 
 #### BRA
 
-Unconditional Branch
+Branch
+
+        pc + d -> pc
 
 `bra[.b] <#<D>|label>`
 
-* Branch distance is measured from the end of the instructions.
+* Branch distance is measured from the end of the instruction.
     - e.g. `bra. #1` branches to the next instruction.
 * Short .b form requires the label to resolve to a displacement within -128 ... 127 bytes of the current Program Counter.
 * Standard form requires the label to resolve to a displacement within -2147483648 ... 2147483647 bytes of the current Program Counter.
@@ -45,16 +47,45 @@ Unconditional Branch
 
 Branch to Subroutine
 
+        sp - 8 -> sp; pc -> (sp); pc + d -> pc
+
 `bra[.b] <#<D>|label>`
 
-* Branch distance is measured from the end of the instructions.
+* Branch distance is measured from the end of the instruction.
     - e.g. `bsr. #1` branches to the next instruction.
 * Short .b form requires the label to resolve to a displacement within -128 ... 127 bytes of the current Program Counter.
 * Standard form requires the label to resolve to a displacement within -2147483648 ... 2147483647 bytes of the current Program Counter.
-
 
 | Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 |
 | - | - | - | - | - | - |
 | `bsr.b #<D>`| 0x03 | 0xDD |
 | `bsr #<D>` | 0x04 | 0xDD | 0xDD | 0xDD | 0xDD |
+
+#### JMP
+
+Jump
+
+        <ea> -> pc
+
+`jmp <ea>`
+
+* Effective Address cannot be register direct or integer immediate.
+
+| Mnemonic | Bytecode | Ext 0 | ... |
+| - | - | - | - |
+| `jmp <ea>`| 0x05 | 0xEA | ... |
+
+#### JSR
+
+Jump to Subroutine
+
+        sp - 8 -> sp; pc -> (sp); <ea> -> sp
+
+`jsr <ea>`
+
+* Effective Address cannot be register direct or integer immediate.
+
+| Mnemonic | Bytecode | Ext 0 | ... |
+| - | - | - | - |
+| `jsr <ea>`| 0x06 | 0xEA | ... |
 
