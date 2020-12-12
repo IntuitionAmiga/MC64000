@@ -363,11 +363,11 @@ Save multiple registers
 
         register list -> <ea>
 
-* Register list is 16-bit mask of saved registers
-* Only register indirect pre/post inc/decrement Effective Address modes allowed
+* Register list is 16-bit mask of saved registers.
+* Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
-| - | - | - | - | - | - | - | - |
+| - | - | - | - | - | - |
 | `savem #<R>, <ea>` | 0x51 | 0xEA | ... | 0xRR | 0xRR |
 
 #### LOADM
@@ -380,7 +380,7 @@ Load multiple registers
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
-| - | - | - | - | - | - | - | - |
+| - | - | - | - | - | - |
 | `loadm <ea>, #<R>` | 0x52 | 0xEA | ... | 0xRR | 0xRR |
 
 #### FMOVEB
@@ -493,11 +493,11 @@ Save multiple floating point registers
 
         register list -> <ea>
 
-* Register list is 16-bit mask of saved registers
-* Only register indirect pre/post inc/decrement Effective Address modes allowed'
+* Register list is 16-bit mask of saved registers.
+* Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
-| - | - | - | - | - | - | - | - |
+| - | - | - | - | - | - |
 | `fsavem #<R>, <ea>` | 0x61 | 0xEA | ... | 0xRR | 0xRR |
 
 #### FLOADM
@@ -506,9 +506,10 @@ Load multiple floating point registers
 
         <ea> -> register list
 
-* Register list is 16-bit mask of saved registers
-* Only register indirect pre/post inc/decrement Effective Address modes allowed'
+* Register list is 16-bit mask of saved registers.
+* Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
-| - | - | - | - | - | - | - | - |
+| - | - | - | - | - | - |
 | `floadm <ea>, #<R>` | 0x62 | 0xEA | ... | 0xRR | 0xRR |
+
