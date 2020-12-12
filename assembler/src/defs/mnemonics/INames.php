@@ -126,29 +126,41 @@ interface INames {
         'bbc.l',
         'bbc.q',
 
+        // Go on, why not?
+        'dbnz',
+
 // Data Movement
         'move.b',
         'move.w',
         'move.l',
         'move.q',
-        'movem',
+        'savem',
+        'loadm',
         'fmoveb.s',
-        'fmovew.s',
-        'fmovel.s',
-        'fmoveq.s',
-        'fmoved.s',
         'fmoveb.d',
+        'fmovew.s',
         'fmovew.d',
+        'fmovel.s',
         'fmovel.d',
+        'fmoveq.s',
         'fmoveq.d',
-        'fmoves.d',
         'fmoves.l',
         'fmoves.q',
+        'fmoves.d',
         'fmoved.l',
         'fmoved.q',
-        'fmovem',
-
-
+        'fmoved.s',
+        'fsavem',
+        'floadm',
+        'clr.b',
+        'clr.w',
+        'clr.l',
+        'clr.q',
+        'exg',
+        'fexg',
+        'swap',
+        'link',
+        'unlk',
 
         'add.b',
         'add.w',
@@ -189,13 +201,6 @@ interface INames {
         'bfins',
         'bfset',
 
-        'clr.b',
-        'clr.w',
-        'clr.l',
-        'clr.q',
-
-        'dbnz',
-
         'divs.b',
         'divs.w',
         'divs.l',
@@ -214,21 +219,16 @@ interface INames {
         'eor.l',
         'eor.q',
 
-        'exg',
-
         'extb.w',
         'extb.l',
         'extb.q',
         'extw.l',
         'extw.q',
         'extl.q',
-
         'fabs.s',
         'fabs.d',
 
-
         'lea',
-        'link',
 
         'lsl.b',
         'lsl.w',
@@ -293,8 +293,8 @@ interface INames {
         'fsub.s',
         'fsub.d',
 
-        'swap',
-        'unlk',
+
+
 
         'facos.s',
         'facos.d',
