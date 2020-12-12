@@ -22,6 +22,12 @@ interface INames {
     const MATCHES = [
         'bkpt',
 
+        // Branch
+        'bra.b',
+        'bra',
+        'bsr.b',
+        'bsr',
+
         'add.b',
         'add.w',
         'add.l',
@@ -135,8 +141,8 @@ interface INames {
         'bbc.l',
         'bbc.q',
 
-        'bra',
-        'bsr',
+
+
 
         'bclr.b',
         'bclr.w',
