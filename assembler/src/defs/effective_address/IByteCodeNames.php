@@ -20,7 +20,7 @@ namespace ABadCafe\MC64K\Defs\EffectiveAddress;
  *
  * Enumerates the expected bytecode for an effective address format.
  */
-interface INames extends IRegisterDirect, IRegisterIndirect, IRegisterIndirectIndexed, IOther {
+interface IByteCodeNames extends IRegisterDirect, IRegisterIndirect, IRegisterIndirectIndexed, IOther {
 
     /**
      * Mode names. The effective address mode byte mapped to a human readable description.

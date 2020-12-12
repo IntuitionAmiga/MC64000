@@ -32,7 +32,7 @@ class TestParser {
     public function __construct() {
         $this->aRegex      = EffectiveAddress\IMatches::MATCHES;
         $this->aMatchCount = array_fill_keys(
-            range(EffectiveAddress\IModes::MIN_BYTE, EffectiveAddress\IModes::MAX_BYTE),
+            array_keys(EffectiveAddress\IByteCodeNames::MAP),
             0
         );
     }
@@ -56,7 +56,7 @@ class TestParser {
             printf(
                 "\t%d [%s] %d\n",
                 $iMode,
-                EffectiveAddress\IModes::NAMES[$iMode],
+                EffectiveAddress\IByteCodeNames::MAP[$iMode],
                 $iCount
             );
         }

@@ -20,7 +20,7 @@ namespace ABadCafe\MC64K\Defs\EffectiveAddress;
  *
  * Defines a set of regular expression rules for matching trimmed Effective Address strings
  */
-interface IMatches extends IModes {
+interface IMatches extends IRegisterDirect, IRegisterIndirect, IRegisterIndirectIndexed, IOther {
 
     const
         // Matches a displacement value, either a signed decimal or 0x prefixed hexadecimal literal
@@ -39,39 +39,39 @@ interface IMatches extends IModes {
     const MATCHES = [
 
         // Signed integer literal #d8 / #d16 / #d32 / #d64
-        '/^#' . self::D32 . '$/' => self::INT_LIT,
+        '/^#' . self::D32 . '$/' => self::INT_IMMEDIATE,
 
         // Integer literal, hex representation #0x...
         //'/^#(0x[0-9A-F]+)$/' => self::INT_LIT,
 
         // Register direct rN
-        '/^[rda]\d+$/' => self::REG,
+        '/^[rda]\d+$/' => self::OFS_GPR_DIR,
 
         // Floating point direct fpN
-        '/^fp\d+$/' => self::REG_FLT,
+        '/^fp\d+$/' => self::OFS_FPR_DIR,
 
         //////////////////////////////////////////////////////////////////
 
         // Register indirect (rN)
-        '/^\(\s*' . self::RA . '\s*\)$/' => self::REG_IND,
+        '/^\(\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND,
 
         // Register indirect, post increment (rN)+
-        '/^\(\s*' . self::RA . '\s*\)\+$/' => self::REG_IND_POST_INC,
+        '/^\(\s*' . self::RA . '\s*\)\+$/' => self::OFS_GPR_IND_POST_INC,
 
         // Register indirect, post decrement (rN)-
-        '/^\(\s*' . self::RA . '\s*\)\-$/' => self::REG_IND_POST_DEC,
+        '/^\(\s*' . self::RA . '\s*\)\-$/' => self::OFS_GPR_IND_POST_DEC,
 
         // Register indirect, pre increment +(rN)
-        '/^\+\(\s*' . self::RDA . '\s*\)$/' => self::REG_IND_PRE_INC,
+        '/^\+\(\s*' . self::RDA . '\s*\)$/' => self::OFS_GPR_IND_PRE_INC,
 
         // Register indirect, pre decrement -(rN)
-        '/^\-\(\s*' . self::RDA . '\s*\)$/' => self::REG_IND_PRE_DEC,
+        '/^\-\(\s*' . self::RDA . '\s*\)$/' => self::OFS_GPR_IND_PRE_DEC,
 
         // Register indirect with signed displacement d32(rN)
-        '/^' . self::D32 . '\(\s*' . self::RA . '\s*\)$/' => self::REG_IND_DSP,
+        '/^' . self::D32 . '\(\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND_DSP,
 
         // Register indirect with signed displacement (d32, rN)
-        '/^\(\s*' . self::D32 . '\s*,\s*' . self::RA . '\s*\)$/' => self::REG_IND_DSP,
+        '/^\(\s*' . self::D32 . '\s*,\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND_DSP,
 
         //////////////////////////////////////////////////////////////////
 
@@ -446,15 +446,15 @@ interface IMatches extends IModes {
         '/^\(\s*' . self::D32 . '\s*,\s*pc\s*,\s*' . self::RDA . '\.q\s*\*\s*8\s*\)$/' => self::PC_IND_IDXQ_8_DSP,
 
         // Absolute address, 16-bit
-        '/^\d+\.w$/'                  => self::ABS_W,
-        '/^0x[0-9A-Fa-f]{1, 4}\.w$/'  => self::ABS_W,
+        '/^\d+\.w$/'                  => self::ADDR_ABS_W,
+        '/^0x[0-9A-Fa-f]{1, 4}\.w$/'  => self::ADDR_ABS_W,
 
         // Absolute address, 32-bit
-        '/^\d+\.l$/'                  => self::ABS_L,
-        '/^0x[0-9A-Fa-f]{1, 8}\.l$/'  => self::ABS_L,
+        '/^\d+\.l$/'                  => self::ADDR_ABS_L,
+        '/^0x[0-9A-Fa-f]{1, 8}\.l$/'  => self::ADDR_ABS_L,
 
         // Absolute address 64-bit
-        '/^\d+\.q$/'                  => self::ABS_Q,
-        '/^0x[0-9A-Fa-f]{1, 16}\.q$/' => self::ABS_L,
+        '/^\d+\.q$/'                  => self::ADDR_ABS_Q,
+        '/^0x[0-9A-Fa-f]{1, 16}\.q$/' => self::ADDR_ABS_L,
     ];
 }
