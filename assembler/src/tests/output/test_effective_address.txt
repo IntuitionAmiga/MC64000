@@ -1,0 +1,83 @@
+No EA match for '(pc)'
+No EA match for '(pc)+'
+No EA match for '(pc)-'
+No EA match for '+(pc)'
+No EA match for '-(pc)'
+Match counts
+	0 [Integer Literal] 10
+	1 [GPR Direct] 32
+	2 [FPU Direct] 16
+	3 [GPR Indirect] 24
+	4 [GPR Indirect, Post Increment] 24
+	5 [GPR Indirect, Post Decrement] 24
+	6 [GPR Indirect, Pre Increment] 24
+	7 [GPR Indirect, Pre Decrement] 24
+	8 [GPR Indirect with Signed Displacement] 480
+	9 [GPR Indirect with Signed 8-bit Index] 768
+	10 [GPR Indirect with Signed 16-bit Index] 768
+	11 [GPR Indirect with Signed 32-bit Index] 768
+	12 [GPR Indirect with Signed 64-bit Index] 768
+	13 [GPR Indirect with Signed 8-bit Index and Signed Displacement] 15360
+	14 [GPR Indirect with Signed 16-bit Index and Signed Displacement] 15360
+	15 [GPR Indirect with Signed 32-bit Index and Signed Displacement] 15360
+	16 [GPR Indirect with Signed 64-bit Index and Signed Displacement] 15360
+	17 [GPR Indirect with 16-bit Scaled Signed 8-bit Index] 768
+	18 [GPR Indirect with 16-bit Scaled Signed 16-bit Index] 768
+	19 [GPR Indirect with 16-bit Scaled Signed 32-bit Index] 768
+	20 [GPR Indirect with 16-bit Scaled Signed 64-bit Index] 768
+	21 [GPR Indirect with 16-bit Scaled Signed 8-bit Index and Signed Displacement] 15360
+	22 [GPR Indirect with 16-bit Scaled Signed 16-bit Index and Signed Displacement] 15360
+	23 [GPR Indirect with 16-bit Scaled Signed 32-bit Index and Signed Displacement] 15360
+	24 [GPR Indirect with 16-bit Scaled Signed 64-bit Index and Signed Displacement] 15360
+	25 [GPR Indirect with 32-bit Scaled Signed 8-bit Index] 768
+	26 [GPR Indirect with 32-bit Scaled Signed 16-bit Index] 768
+	27 [GPR Indirect with 32-bit Scaled Signed 32-bit Index] 768
+	28 [GPR Indirect with 32-bit Scaled Signed 64-bit Index] 768
+	29 [GPR Indirect with 32-bit Scaled Signed 8-bit Index and Signed Displacement] 15360
+	30 [GPR Indirect with 32-bit Scaled Signed 16-bit Index and Signed Displacement] 15360
+	31 [GPR Indirect with 32-bit Scaled Signed 32-bit Index and Signed Displacement] 15360
+	32 [GPR Indirect with 32-bit Scaled Signed 64-bit Index and Signed Displacement] 15360
+	33 [GPR Indirect with 64-bit Scaled Signed 8-bit Index] 768
+	34 [GPR Indirect with 64-bit Scaled Signed 16-bit Index] 768
+	35 [GPR Indirect with 64-bit Scaled Signed 32-bit Index] 768
+	36 [GPR Indirect with 64-bit Scaled Signed 64-bit Index] 768
+	37 [GPR Indirect with 64-bit Scaled Signed 8-bit Index and Signed Displacement] 15360
+	38 [GPR Indirect with 64-bit Scaled Signed 16-bit Index and Signed Displacement] 15360
+	39 [GPR Indirect with 64-bit Scaled Signed 32-bit Index and Signed Displacement] 15360
+	40 [GPR Indirect with 64-bit Scaled Signed 64-bit Index and Signed Displacement] 15360
+	41 [PC with Signed Displacement] 20
+	42 [PC with Signed 8-bit Index] 32
+	43 [PC with Signed 16-bit Index] 32
+	44 [PC with Signed 32-bit Index] 32
+	45 [PC with Signed 64-bit Index] 32
+	46 [PC with Signed 8-bit Index and Signed Displacement] 640
+	47 [PC with Signed 16-bit Index and Signed Displacement] 640
+	48 [PC with Signed 32-bit Index and Signed Displacement] 640
+	49 [PC with Signed 16-bit Index and Signed Displacement] 640
+	50 [PC with 16-bit Scaled Signed 8-bit Index] 32
+	51 [PC with 16-bit Scaled Signed 16-bit Index] 32
+	52 [PC with 16-bit Scaled Signed 32-bit Index] 32
+	53 [PC with 16-bit Scaled Signed 64-bit Index] 32
+	54 [PC with 16-bit Scaled Signed 8-bit Index and Signed Displacement] 640
+	55 [PC with 16-bit Scaled Signed 16-bit Index and Signed Displacement] 640
+	56 [PC with 16-bit Scaled Signed 32-bit Index and Signed Displacement] 640
+	57 [PC with 16-bit Scaled Signed 64-bit Index and Signed Displacement] 640
+	58 [PC with 32-bit Scaled Signed 8-bit Index] 32
+	59 [PC with 32-bit Scaled Signed 16-bit Index] 32
+	60 [PC with 32-bit Scaled Signed 32-bit Index] 32
+	61 [PC with 32-bit Scaled Signed 64-bit Index] 32
+	62 [PC with 32-bit Scaled Signed 8-bit Index and Signed Displacement] 640
+	63 [PC with 32-bit Scaled Signed 16-bit Index and Signed Displacement] 640
+	64 [PC with 32-bit Scaled Signed 32-bit Index and Signed Displacement] 640
+	65 [PC with 32-bit Scaled Signed 64-bit Index and Signed Displacement] 640
+	66 [PC with 64-bit Scaled Signed 8-bit Index] 32
+	67 [PC with 64-bit Scaled Signed 16-bit Index] 32
+	68 [PC with 64-bit Scaled Signed 32-bit Index] 32
+	69 [PC with 64-bit Scaled Signed 64-bit Index] 32
+	70 [PC with 64-bit Scaled Signed 8-bit Index and Signed Displacement] 640
+	71 [PC with 64-bit Scaled Signed 16-bit Index and Signed Displacement] 640
+	72 [PC with 64-bit Scaled Signed 32-bit Index and Signed Displacement] 640
+	73 [PC with 64-bit Scaled Signed 64-bit Index and Signed Displacement] 640
+	74 [Absolute 16-bit Location] 0
+	75 [Absolute 32-bit Location] 0
+	76 [Absolute 64-bit Location] 0

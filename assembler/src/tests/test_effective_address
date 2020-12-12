@@ -1,0 +1,77 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+use ABadCafe\MC64K\Defs\EffectiveAddress;
+
+class TestParser {
+
+    private array $aRegex;
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        $this->aRegex      = EffectiveAddress\IMatches::MATCHES;
+        $this->aMatchCount = array_fill_keys(
+            array_keys(EffectiveAddress\IByteCodeNames::MAP),
+            0
+        );
+    }
+
+    public function match(string $sText) {
+        foreach ($this->aRegex as $sMatch => $iMode) {
+            if (false === preg_match($sMatch, $sText, $aMatches)) {
+                throw new \Exception( $sMatch );
+            }
+            if (!empty($aMatches)) {
+                ++$this->aMatchCount[$iMode];
+                return;
+            }
+        }
+        echo "No EA match for '", $sText, "'\n";
+    }
+
+    public function report() {
+        echo "Match counts\n";
+        foreach ($this->aMatchCount as $iMode => $iCount) {
+            printf(
+                "\t%d [%s] %d\n",
+                $iMode,
+                EffectiveAddress\IByteCodeNames::MAP[$iMode],
+                $iCount
+            );
+        }
+    }
+}
+
+$oTestParser = new TestParser;
+
+$aExamples = explode("\n", file_get_contents('text/ea.txt'));
+
+foreach ($aExamples as $sExample) {
+    $sExample = trim($sExample);
+    if (empty($sExample) || '/' === $sExample[0]) {
+        continue;
+    }
+    $oTestParser->match($sExample);
+}
+$oTestParser->report();

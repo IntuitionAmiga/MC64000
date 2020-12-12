@@ -1,0 +1,118 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+/**
+ * create_ea_test_data
+ *
+ * This utility script generates a set effective addresses t
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+// General purpose register names
+const GPR_NAMES = [
+//    'd0', 'd1',  'd2',  'd3',  'd4',  'd5',  'd6',  'd7', // Name aliases of r0-r7
+//    'a0', 'a1',  'a2',  'a3',  'a4',  'a5',  'a6',  'a7', // Name aliases of r8-r15
+//    'r0', 'r1',  'r2',  'r3',  'r4',  'r5',  'r6',  'r7',
+//    'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15',
+    'd0', 'a1', 'r2'
+];
+
+// FPU registers
+const FPU_NAMES = [
+//    'fp0', 'fp1',  'fp2',  'fp3',  'fp4',  'fp5',  'fp6',  'fp7',
+//    'fp8', 'fp9', 'fp10', 'fp11', 'fp12', 'fp13', 'fp14', 'fp15',
+    'fp0', 'fp15'
+];
+
+// Valid names for use as a pointer
+const RA_NAMES = [
+//    'a0', 'a1',  'a2',  'a3',  'a4',  'a5',  'a6',  'a7',
+//    'r0', 'r1',  'r2',  'r3',  'r4',  'r5',  'r6',  'r7',
+//    'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15',
+//    'pc'
+    'a0', 'a7', 'r0', 'pc'
+];
+
+// Allowed index sizes
+const INDEX_SIZES = [
+    'b', 'w', 'l', 'q'
+];
+
+// Allowed index scales
+const INDEX_SCALES = [
+    '2', '4', '8'
+];
+
+// Example integer offsets
+const TEST_INTEGERS = [
+//    '0', '1', '10', '1000', '-1', '-100',
+//    '0x0', '0x1234', '0xABadCafe', '0x1234abcd'
+    '0', '-2', '2', '0x1234abcd'
+];
+
+echo "// Integer Literal\n";
+foreach (TEST_INTEGERS as $sOperand) {
+    printf("\t#%s\n", $sOperand);
+}
+
+echo "// GPR Register Direct\n";
+foreach (GPR_NAMES as $sOperand) {
+    printf("\t%s\n", $sOperand);
+}
+
+echo "// FPU Register Direct Literal\n";
+foreach (FPU_NAMES as $sOperand) {
+    printf("\t%s\n", $sOperand);
+}
+
+/**
+ * This is where the test case count gets big...
+ */
+foreach (RA_NAMES as $sAddressName) {
+    echo "// Register ", $sAddressName ," Indirect, pre/post increment/decrement with/without displacement\n";
+    printf("\t(%s)\n", $sAddressName);
+
+    if ('pc' !== $sAddressName) {
+        printf("\t(%s)+\n", $sAddressName);
+        printf("\t(%s)-\n", $sAddressName);
+        printf("\t+(%s)\n", $sAddressName);
+        printf("\t-(%s)\n", $sAddressName);
+    }
+    foreach (TEST_INTEGERS as $sDisplacement) {
+        printf("\t%s(%s)\n", $sDisplacement, $sAddressName);
+        printf("\t(%s, %s)\n", $sDisplacement, $sAddressName);
+    }
+    echo "// Register ", $sAddressName, " Indirect with Index, with/without scaling, with/without displacement\n";
+    foreach (GPR_NAMES as $sIndexName) {
+        foreach (INDEX_SIZES as $sIndexSize) {
+            printf("\t(%s, %s.%s)\n", $sAddressName, $sIndexName, $sIndexSize);
+            foreach (TEST_INTEGERS as $sDisplacement) {
+                printf("\t%s(%s, %s.%s)\n", $sDisplacement, $sAddressName, $sIndexName, $sIndexSize);
+                printf("\t(%s, %s, %s.%s)\n", $sDisplacement, $sAddressName, $sIndexName, $sIndexSize);
+            }
+            foreach (INDEX_SCALES as $sScale) {
+                printf("\t(%s, %s.%s * %s)\n", $sAddressName, $sIndexName, $sIndexSize, $sScale);
+                foreach (TEST_INTEGERS as $sDisplacement) {
+                    printf("\t%s(%s, %s.%s * %s)\n", $sDisplacement, $sAddressName, $sIndexName, $sIndexSize, $sScale);
+                    printf("\t(%s, %s, %s.%s * %s)\n", $sDisplacement, $sAddressName, $sIndexName, $sIndexSize, $sScale);
+                }
+            }
+        }
+    }
+}
