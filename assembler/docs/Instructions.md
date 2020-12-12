@@ -32,14 +32,14 @@ Unconditional Branch
 `bra[.b] <#<D>|label>`
 
 * Branch distance is measured from the end of the instructions.
-    - e.g. `bra. #1` executes the next instruction.
-* Short .b form requires the label to be within -128 ... 127 bytes of the current Program Counter.
-* Standard form requires the lable to be within -2147483648 ... 2147483647 bytes of the current Program Counter.
+    - e.g. `bra. #1` branches to the next instruction.
+* Short .b form requires the label to resolve to a displacement within -128 ... 127 bytes of the current Program Counter.
+* Standard form requires the label to resolve to a displacement within -2147483648 ... 2147483647 bytes of the current Program Counter.
 
 | Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 |
 | - | - | - | - | - | - |
-| `bra.b <#<D>|label>`| 0x01 | 0xDD |
-| `bra <#<D>|label>` | 0x02 | 0xDD | 0xDD | 0xDD | 0xDD |
+| `bra.b #<D>`| 0x01 | 0xDD |
+| `bra #<D>` | 0x02 | 0xDD | 0xDD | 0xDD | 0xDD |
 
 #### BSR
 
@@ -48,12 +48,13 @@ Branch to Subroutine
 `bra[.b] <#<D>|label>`
 
 * Branch distance is measured from the end of the instructions.
-    - e.g. `bra. #1` executes the next instruction.
-* Short .b form requires the label to be within -128 ... 127 bytes of the current Program Counter.
-* Standard form requires the lable to be within -2147483648 ... 2147483647 bytes of the current Program Counter.
+    - e.g. `bsr. #1` branches to the next instruction.
+* Short .b form requires the label to resolve to a displacement within -128 ... 127 bytes of the current Program Counter.
+* Standard form requires the label to resolve to a displacement within -2147483648 ... 2147483647 bytes of the current Program Counter.
+
 
 | Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 |
 | - | - | - | - | - | - |
-| `bsr.b <label>`| 0x03 | 0xDD |
-| `bsr <label>` | 0x04 | 0xDD | 0xDD | 0xDD | 0xDD |
+| `bsr.b #<D>`| 0x03 | 0xDD |
+| `bsr #<D>` | 0x04 | 0xDD | 0xDD | 0xDD | 0xDD |
 
