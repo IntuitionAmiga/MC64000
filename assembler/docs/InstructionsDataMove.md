@@ -34,7 +34,9 @@ Save multiple registers
 
         register list -> <ea>
 
-* Register list is 16-bit mask of saved registers.
+`savem <#<R>|register list>, <ea>`
+
+* Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding GPR is saved.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
@@ -47,7 +49,9 @@ Load multiple registers
 
         <ea> -> register list
 
-* Register list is 16-bit mask of saved registers.
+`loadm <ea>, <#<R>|register list>`
+
+* Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding GPR is loaded.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
@@ -164,7 +168,9 @@ Save multiple floating point registers
 
         register list -> <ea>
 
-* Register list is 16-bit mask of saved registers.
+`fsavem <#<R>|register list>, <ea>,`
+
+* Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding FPR is saved.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
@@ -177,10 +183,103 @@ Load multiple floating point registers
 
         <ea> -> register list
 
-* Register list is 16-bit mask of saved registers.
+`floadm <ea>, <#<R>|register list>`
+
+* Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding FPR is loaded.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
 | - | - | - | - | - | - |
 | `floadm <ea>, #<R>` | 0x62 | 0xEA | ... | 0xRR | 0xRR |
 
+
+#### CLR
+
+Clear a location
+
+        0 -> <ea>
+
+`clr.<b|w|l|q> <ea>`
+
+* All bits are set to zero.
+
+| Mnemonic | Bytecode | Ext 0 | ... |
+| - | - | - | - |
+| `clr.b <ea>`| 0x63 | 0xEA | ... |
+| `clr.w <ea>`| 0x64 | 0xEA | ... |
+| `clr.l <ea>`| 0x65 | 0xEA | ... |
+| `clr.q <ea>`| 0x66 | 0xEA | ... |
+
+#### EXG
+
+Exchange GPR
+
+        r<D> <-> r<S>
+
+`exg r<S>, r<D>`
+
+* General Purpose Register contents are exchanged.
+
+| Mnemonic | Bytecode | Ext 0 |
+| - | - | - |
+| `exg <S>, r<D>`| 0x67 | 0x(S)(D) |
+
+#### FEXG
+
+Exchange FPR
+
+        fp<D> <-> fp<S>
+
+`fexg fp<S>, fp<D>`
+
+* Floating Point Register contents are exchanged.
+
+| Mnemonic | Bytecode | Ext 0 |
+| - | - | - |
+| `fexg fp<S>, fp<D>`| 0x68 | 0x(S)(D) |
+
+
+#### SWAP
+
+Swap register fragments
+
+        r<N>[31:16] <-> r<N>[15:0]
+        r<N>[63:32] <-> r<N>[31:0]
+
+`swap[.l] r<N>`
+
+* By default, only the lower 32-bits of the register are affected swapping bits 31:16 are with bits 15:0
+* The .l variant affects the full register, swapping bits 63:32 with bits 31:0
+
+| Mnemonic | Bytecode | Ext 0 |
+| - | - | - |
+| `swap r<N>`| 0x69 | 0x0(N) |
+| `swap.l r<N>` | 0x6A | 0x0(N) |
+
+#### LINK
+
+Link and Allocate
+
+        sp - 8 -> sp; r<N> -> (sp)
+        sp -> r<N>; sp + d -> sp
+
+`link r<N>, #<D>`
+
+* Displacement should be negative to allocate stack space.
+
+| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 |
+| - | - | - | - | - | - | - |
+| `link r<N>, #<D>`| 0x6B | 0x0(N) | 0xDD | 0xDD | 0xDD | 0xDD |
+
+
+#### UNLK
+
+Unlink
+
+        r<N> -> sp; (sp) -> r<N>; sp + 8 -> sp
+
+`unlk rN>`
+
+| Mnemonic | Bytecode | Ext 0 |
+| - | - | - |
+| `unlk r<N>`| 0x6C | 0x0(N) |

@@ -159,6 +159,7 @@ interface INames {
         'exg',
         'fexg',
         'swap',
+        'swap.l',
         'link',
         'unlk',
 
