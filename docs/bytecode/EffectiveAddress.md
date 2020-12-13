@@ -246,13 +246,12 @@ One byte is used for the Effective Address Mode of an operand:
 | - | - | - | - | - |
 | `#<D>` | 0xC1 | 0xDD | ... | 0xDD |
 
-### Absolute Address Immediate
+### Same As Destination
 
-`<N>.<w|l|q>`
+* Source Operand Only.
+* Used where the Source Effective Address mode is the same as the Destination Effective Address mode and that mode does not have any increment/decrement behaviour.
+* Bytecode / decode logic optimisation.
 
-| Mode | Bytecode | Ext 0 | ...  | Ext (_Word Size - 1_) |
-| - | - | - | - | - |
-| `<N>.w` | 0xC2 | 0xDD | ... | 0xDD |
-| `<N>.l` | 0xC3 | 0xDD | ... | 0xDD |
-| `<N>.q` | 0xC4 | 0xDD | ... | 0xDD |
-
+| Mode | Bytecode |
+| - | - |
+|   | 0xC2 |

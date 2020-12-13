@@ -22,6 +22,7 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
 interface IByteCodeGroups {
     const
         OFS_CONTROL   = 0,
-        OFS_DATA_MOVE = 77
+        OFS_DATA_MOVE = 77,
+        OFS_LOGICAL   = 112
     ;
 }
