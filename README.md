@@ -25,7 +25,7 @@ MC64K aims to implement a Virtual Machine and assembler syntax insired by the le
     - Rapid execution.
     - Should also be JITable.
 * We want to execute that binary in a host application that provides basic IO, graphics and sound services:
-    - To amuse ourselves with tunnels, vectors and chiptunes. 
+    - To amuse ourselves with tunnels, vectors and chiptunes.
     - Any resemblance to genuine usefulness is purely coincidental and unintended.
 
 ### Features
@@ -36,20 +36,8 @@ MC64K aims to implement a Virtual Machine and assembler syntax insired by the le
     - Byte, Word, Long and Quad operation sizes.
 * 16 64-bit IEEE-754 registers for floating point operations.
     - fp0 - fp15
-* Set of 680x0 inspired addressing modes:
-    - Register Direct.
-    - Register Indirect.
-    - Register Indirect, Post Increment.
-    - Register Indirect, Post Decrement (new).
-    - Register Indirect, Pre Increment (new).
-    - Register Indirect, Pre Decrement.
-    - Register Indirect with Displacement.
-    - Register Indirect, Indexed.
-    - Register Indirect, Indexed with Displacement.
-    - Program Counter Indirect with Displacement.
-    - Program Counter Indirect, Indexed, with Displacement.
-    - Integer Immediate.
-    - Absolute Address Immediate.
+* Rich Set of 680x0 inspired addressing modes.
+    - Register Direct, Indirect, Post/Pre Increment/Decrement, Offset, Indexed, etc.
 * Large Code / Memory Model:
     - 64-bit addresses
     - All displacement and branch offsets are 32-bit signed values.

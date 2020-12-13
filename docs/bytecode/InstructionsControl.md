@@ -11,9 +11,7 @@ One byte is used for the Instruction Opcode:
     - Branch displacements.
     - Other data.
 
-### Control Group
-
-#### BKPT
+### BKPT
 
 Breakpoint
 
@@ -24,7 +22,7 @@ Breakpoint
 | `bkpt #<N>`| 0x00 | 0xNN |
 
 
-#### BRA
+### BRA
 
 Branch
 
@@ -42,7 +40,7 @@ Branch
 | `bra.b #<D>`| 0x01 | 0xDD |
 | `bra #<D>` | 0x02 | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### BSR
+### BSR
 
 Branch to Subroutine
 
@@ -60,7 +58,7 @@ Branch to Subroutine
 | `bsr.b #<D>`| 0x03 | 0xDD |
 | `bsr #<D>` | 0x04 | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### JMP
+### JMP
 
 Jump
 
@@ -74,7 +72,7 @@ Jump
 | - | - | - | - |
 | `jmp <ea>`| 0x05 | 0xEA | ... |
 
-#### JSR
+### JSR
 
 Jump to Subroutine
 
@@ -88,7 +86,7 @@ Jump to Subroutine
 | - | - | - | - |
 | `jsr <ea>`| 0x06 | 0xEA | ... |
 
-#### RTS
+### RTS
 
 Return from Subroutine
 
@@ -98,7 +96,7 @@ Return from Subroutine
 | - | - |
 | `rts`| 0x07 |
 
-#### BIZ
+### BIZ
 
 Branch if operand is zero
 
@@ -117,7 +115,7 @@ Branch if operand is zero
 | `fbiz.s <ea>, #<D>` | 0x0C | 0xEA | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 | `fbiz.d <ea>, #<D>` | 0x0D | 0xEA | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### BNZ
+### BNZ
 
 Branch if operand is not zero
 
@@ -136,7 +134,7 @@ Branch if operand is not zero
 | `fbnz.s <ea>, #<D>` | 0x12 | 0xEA | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 | `fbnz.d <ea>, #<D>` | 0x13 | 0xEA | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### BMI
+### BMI
 
 Branch if operand is minus
 
@@ -155,7 +153,7 @@ Branch if operand is minus
 | `fbmi.s <ea>, #<D>` | 0x18 | 0xEA | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 | `fbmi.d <ea>, #<D>` | 0x19 | 0xEA | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### BPL
+### BPL
 
 Branch if operand is plus
 
@@ -174,7 +172,7 @@ Branch if operand is plus
 | `fbpl.s <ea>, #<D>` | 0x1E | 0xEA | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 | `fbpl.d <ea>, #<D>` | 0x1F | 0xEA | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### BLT
+### BLT
 
 Branch if source operand is less than destination operand
 
@@ -193,7 +191,7 @@ Branch if source operand is less than destination operand
 | `fblt.s <ea(s)>, <ea(d)>, #<D>` | 0x24 | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 | `fblt.d <ea(s)>, <ea(d)>, #<D>` | 0x25 | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### BLE
+### BLE
 
 Branch if source operand is less than or equal to destination operand
 
@@ -212,7 +210,7 @@ Branch if source operand is less than or equal to destination operand
 | `fble.s <ea(s)>, <ea(d)>, #<D>` | 0x2A | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 | `fble.d <ea(s)>, <ea(d)>, #<D>` | 0x2B | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### BEQ
+### BEQ
 
 Branch if source operand is equal to destination operand
 
@@ -231,7 +229,7 @@ Branch if source operand is equal to destination operand
 | `fbeq.s <ea(s)>, <ea(d)>, #<D>` | 0x30 | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 | `fbeq.d <ea(s)>, <ea(d)>, #<D>` | 0x31 | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### BGE
+### BGE
 
 Branch if source operand is equal to or greater than destination operand
 
@@ -250,7 +248,7 @@ Branch if source operand is equal to or greater than destination operand
 | `fbge.s <ea(s)>, <ea(d)>, #<D>` | 0x36 | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 | `fbge.d <ea(s)>, <ea(d)>, #<D>` | 0x37 | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### BGT
+### BGT
 
 Branch if source operand is greater than destination operand
 
@@ -269,7 +267,7 @@ Branch if source operand is greater than destination operand
 | `fbgt.s <ea(s)>, <ea(d)>, #<D>` | 0x3C | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 | `fbgt.d <ea(s)>, <ea(d)>, #<D>` | 0x3D | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### BNE
+### BNE
 
 Branch if source operand is not equal to destination operand
 
@@ -289,7 +287,7 @@ Branch if source operand is not equal to destination operand
 | `fbne.d <ea(s)>, <ea(d)>, #<D>` | 0x43 | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
 
-#### BBS
+### BBS
 
 Branch if bit is set
 
@@ -307,7 +305,7 @@ Branch if bit is set
 | `bbs.l <ea(s)>, <ea(d)>, #<D>` | 0x46 | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 | `bbs.q <ea(s)>, <ea(d)>, #<D>` | 0x47 | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### BBC
+### BBC
 
 Branch if bit is clear
 
@@ -325,7 +323,7 @@ Branch if bit is clear
 | `bbc.l <ea(s)>, <ea(d)>, #<D>` | 0x4A | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 | `bbc.q <ea(s)>, <ea(d)>, #<D>` | 0x4B | 0xEA(d) | ... | 0xEA(s) | ... | 0xDD | 0xDD | 0xDD | 0xDD |
 
-#### DBNZ
+### DBNZ
 
 Decrement counter and branch if not zero
 

@@ -160,30 +160,17 @@ interface INames {
         'fexg',
         'swap',
         'swap.l',
+        'swap.q',
         'link',
         'unlk',
+        'lea',
+        'pea',
 
-        'add.b',
-        'add.w',
-        'add.l',
-        'add.q',
-        'fadd.s',
-        'fadd.d',
-
+// Logical
         'and.b',
         'and.w',
         'and.l',
         'and.q',
-
-        'asl.b',
-        'asl.w',
-        'asl.l',
-        'asl.q',
-
-        'asr.b',
-        'asr.w',
-        'asr.l',
-        'asr.q',
 
         'bclr.b',
         'bclr.w',
@@ -202,6 +189,57 @@ interface INames {
         'bfins',
         'bfset',
 
+        'eor.b',
+        'eor.w',
+        'eor.l',
+        'eor.q',
+
+        'lsl.b',
+        'lsl.w',
+        'lsl.l',
+        'lsl.q',
+        'lsr.b',
+        'lsr.w',
+        'lsr.l',
+        'lsr.q',
+
+        'not.b',
+        'not.w',
+        'not.l',
+        'not.q',
+
+        'or.b',
+        'or.w',
+        'or.l',
+        'or.q',
+
+        'rol.b',
+        'rol.w',
+        'rol.l',
+        'rol.q',
+
+        'ror.b',
+        'ror.w',
+        'ror.l',
+        'ror.q',
+
+// Arithmetic
+        'add.b',
+        'add.w',
+        'add.l',
+        'add.q',
+        'fadd.s',
+        'fadd.d',
+
+        'asl.b',
+        'asl.w',
+        'asl.l',
+        'asl.q',
+        'asr.b',
+        'asr.w',
+        'asr.l',
+        'asr.q',
+
         'divs.b',
         'divs.w',
         'divs.l',
@@ -215,11 +253,6 @@ interface INames {
         'fmod.s',
         'fmod.d',
 
-        'eor.b',
-        'eor.w',
-        'eor.l',
-        'eor.q',
-
         'extb.w',
         'extb.l',
         'extb.q',
@@ -228,19 +261,6 @@ interface INames {
         'extl.q',
         'fabs.s',
         'fabs.d',
-
-        'lea',
-
-        'lsl.b',
-        'lsl.w',
-        'lsl.l',
-        'lsl.q',
-        'lsr.b',
-        'lsr.w',
-        'lsr.l',
-        'lsr.q',
-
-
 
         'muls.b',
         'muls.w',
@@ -263,39 +283,12 @@ interface INames {
         'fsqrt.s',
         'frqrt.d',
 
-        'not.b',
-        'not.w',
-        'not.l',
-        'not.q',
-
-        'or.b',
-        'or.w',
-        'or.l',
-        'or.q',
-
-        'pea',
-
-        'rol.b',
-        'rol.w',
-        'rol.l',
-        'rol.q',
-
-        'ror.b',
-        'ror.w',
-        'ror.l',
-        'ror.q',
-
-
-
         'sub.b',
         'sub.w',
         'sub.l',
         'sub.q',
         'fsub.s',
         'fsub.d',
-
-
-
 
         'facos.s',
         'facos.d',
