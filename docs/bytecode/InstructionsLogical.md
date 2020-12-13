@@ -176,6 +176,8 @@ Set a bit in the destination
 
 ### BFCLR
 
+Reserved
+
 Clear Bitfield
 
         0 -> r<D>[ Bitfield ]
@@ -185,6 +187,8 @@ Clear Bitfield
 | `` | 0x98 | 0xEA(d) | ... | 0xEA(s) | ... |
 
 ### BFSET
+
+Reserved
 
 Set Bitfield
 
@@ -196,25 +200,51 @@ Set Bitfield
 
 ### BFEXTS
 
+Reserved
+
 Extract Bitfield as Signed
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `<reserved>` | 0x9A | 0xEA(d) | ... | 0xEA(s) | ... |
+
+Reserved
 
 ### BFEXTU
 
 Extract Bitfield as Unsigned
 
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `<reserved>` | 0x9B | 0xEA(d) | ... | 0xEA(s) | ... |
+
 ### BFINS
+
+Reserved
 
 Insert Bitfield
 
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `<reserved>` | 0x9C | 0xEA(d) | ... | 0xEA(s) | ... |
+
 ### BFFFO
+
+Reserved
 
 Find First One in Bitfield
 
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `<reserved>` | 0x9D | 0xEA(d) | ... | 0xEA(s) | ... |
+
 ### BFCNT
+
+Reserved
 
 Count number of set bits
 
-        POPCOUNT(<ea(s)> -> <ea(d)>
+        pop_count(<ea(s)>) -> <ea(d)>
 
 `bfcnt <ea(s)>, <ea(d)>`
 
@@ -222,4 +252,10 @@ Count number of set bits
 | - | - | - | - | - | - |
 | `bcnt.b <ea(s)>, <ea(d)>` | 0x9E | 0xEA(d) | ... | 0xEA(s) | ... |
 
+### BFXXX
 
+Reserved
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `<reserved>` | 0x9F | 0xEA(d) | ... | 0xEA(s) | ... |
