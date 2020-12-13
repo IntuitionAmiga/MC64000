@@ -145,7 +145,7 @@ Clear a bit in the destination
 
         0 -> <ea(d)>[ Bit:<ea(s)> ]
 
-`ror.<b|w|l|q> <ea(s)>, <ea(d)>`
+`bclr.<b|w|l|q> <ea(s)>, <ea(d)>`
 
 * The source operand is accessed as a byte, modulo by the operation size and interpreted as a bit position.
 
@@ -162,16 +162,16 @@ Set a bit in the destination
 
         1 -> <ea(d)>[ Bit:<ea(s)> ]
 
-`ror.<b|w|l|q> <ea(s)>, <ea(d)>`
+`bset.<b|w|l|q> <ea(s)>, <ea(d)>`
 
 * The source operand is accessed as a byte, modulo by the operation size and interpreted as a bit position.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `bclr.b <ea(s)>, <ea(d)>` | 0x94 | 0xEA(d) | ... | 0xEA(s) | ... |
-| `bclr.w <ea(s)>, <ea(d)>` | 0x95 | 0xEA(d) | ... | 0xEA(s) | ... |
-| `bclr.l <ea(s)>, <ea(d)>` | 0x96 | 0xEA(d) | ... | 0xEA(s) | ... |
-| `bclr.q <ea(s)>, <ea(d)>` | 0x97 | 0xEA(d) | ... | 0xEA(s) | ... |
+| `bset.b <ea(s)>, <ea(d)>` | 0x94 | 0xEA(d) | ... | 0xEA(s) | ... |
+| `bset.w <ea(s)>, <ea(d)>` | 0x95 | 0xEA(d) | ... | 0xEA(s) | ... |
+| `bset.l <ea(s)>, <ea(d)>` | 0x96 | 0xEA(d) | ... | 0xEA(s) | ... |
+| `bset.q <ea(s)>, <ea(d)>` | 0x97 | 0xEA(d) | ... | 0xEA(s) | ... |
 
 
 ### BFCLR
@@ -184,7 +184,7 @@ Clear Bitfield
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `` | 0x98 | 0xEA(d) | ... | 0xEA(s) | ... |
+| `<bfclr>` | 0x98 | 0xEA(d) | ... | 0xEA(s) | ... |
 
 ### BFSET
 
@@ -196,7 +196,7 @@ Set Bitfield
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `` | 0x99 | 0xEA(d) | ... | 0xEA(s) | ... |
+| `<bfset>` | 0x99 | 0xEA(d) | ... | 0xEA(s) | ... |
 
 ### BFEXTS
 
@@ -206,7 +206,7 @@ Extract Bitfield as Signed
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `<reserved>` | 0x9A | 0xEA(d) | ... | 0xEA(s) | ... |
+| `<bfexts>` | 0x9A | 0xEA(d) | ... | 0xEA(s) | ... |
 
 Reserved
 
@@ -216,7 +216,7 @@ Extract Bitfield as Unsigned
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `<reserved>` | 0x9B | 0xEA(d) | ... | 0xEA(s) | ... |
+| `<bfextu>` | 0x9B | 0xEA(d) | ... | 0xEA(s) | ... |
 
 ### BFINS
 
@@ -226,7 +226,7 @@ Insert Bitfield
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `<reserved>` | 0x9C | 0xEA(d) | ... | 0xEA(s) | ... |
+| `<bfins>` | 0x9C | 0xEA(d) | ... | 0xEA(s) | ... |
 
 ### BFFFO
 
@@ -236,7 +236,7 @@ Find First One in Bitfield
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `<reserved>` | 0x9D | 0xEA(d) | ... | 0xEA(s) | ... |
+| `<bfffo>` | 0x9D | 0xEA(d) | ... | 0xEA(s) | ... |
 
 ### BFCNT
 
@@ -250,7 +250,7 @@ Count number of set bits
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `bcnt.b <ea(s)>, <ea(d)>` | 0x9E | 0xEA(d) | ... | 0xEA(s) | ... |
+| `bfcnt.b <ea(s)>, <ea(d)>` | 0x9E | 0xEA(d) | ... | 0xEA(s) | ... |
 
 ### BFXXX
 
@@ -258,4 +258,4 @@ Reserved
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `<reserved>` | 0x9F | 0xEA(d) | ... | 0xEA(s) | ... |
+| `<bfxxx>` | 0x9F | 0xEA(d) | ... | 0xEA(s) | ... |
