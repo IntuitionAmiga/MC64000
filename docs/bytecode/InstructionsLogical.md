@@ -1,4 +1,4 @@
-## Bytecode Format > [Instruction Layout](Instructions.md) > Logical Group
+## [Documentation](../README.md) > [Bytecode Format](./README.md) > [Instruction Layout](./Instructions.md) > Logical Group
 
 The bytecode formats for the suppored bitwise logical instructions are documented here.
 
@@ -10,6 +10,7 @@ One byte is used for the Instruction Opcode:
     - Source [Effective Address](EffectiveAddress.md).
     - Branch displacements.
     - Other data.
+___
 
 ### AND
 
@@ -26,6 +27,8 @@ Bitwise AND
 | `and.l <ea(s)>, <ea(d)>` | 0x71 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `and.q <ea(s)>, <ea(d)>` | 0x73 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### OR
 
 Bitwise OR
@@ -40,6 +43,8 @@ Bitwise OR
 | `or.w <ea(s)>, <ea(d)>` | 0x75 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `or.l <ea(s)>, <ea(d)>` | 0x76 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `or.q <ea(s)>, <ea(d)>` | 0x77 | 0xEA(d) | ... | 0xEA(s) | ... |
+
+___
 
 ### EOR
 
@@ -56,6 +61,8 @@ Bitwise Exclusive OR
 | `eor.l <ea(s)>, <ea(d)>` | 0x7A | 0xEA(d) | ... | 0xEA(s) | ... |
 | `eor.q <ea(s)>, <ea(d)>` | 0x7B | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### NOT
 
 Bitwise Complement
@@ -70,6 +77,8 @@ Bitwise Complement
 | `not.w <ea(s)>, <ea(d)>` | 0x7D | 0xEA(d) | ... | 0xEA(s) | ... |
 | `not.l <ea(s)>, <ea(d)>` | 0x7E | 0xEA(d) | ... | 0xEA(s) | ... |
 | `not.q <ea(s)>, <ea(d)>` | 0x7F | 0xEA(d) | ... | 0xEA(s) | ... |
+
+___
 
 ### LSL
 
@@ -88,6 +97,8 @@ Logical Shift Left
 | `lsl.l <ea(s)>, <ea(d)>` | 0x82 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `lsl.q <ea(s)>, <ea(d)>` | 0x83 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### LSR
 
 Logical Shift Right
@@ -104,6 +115,8 @@ Logical Shift Right
 | `lsr.w <ea(s)>, <ea(d)>` | 0x85 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `lsr.l <ea(s)>, <ea(d)>` | 0x86 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `lsr.q <ea(s)>, <ea(d)>` | 0x87 | 0xEA(d) | ... | 0xEA(s) | ... |
+
+___
 
 ### ROL
 
@@ -122,6 +135,8 @@ Rotate Left
 | `rol.l <ea(s)>, <ea(d)>` | 0x8A | 0xEA(d) | ... | 0xEA(s) | ... |
 | `rol.q <ea(s)>, <ea(d)>` | 0x8B | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### ROR
 
 Rotate Right
@@ -138,6 +153,8 @@ Rotate Right
 | `ror.w <ea(s)>, <ea(d)>` | 0x8D | 0xEA(d) | ... | 0xEA(s) | ... |
 | `ror.l <ea(s)>, <ea(d)>` | 0x8E | 0xEA(d) | ... | 0xEA(s) | ... |
 | `ror.q <ea(s)>, <ea(d)>` | 0x8F | 0xEA(d) | ... | 0xEA(s) | ... |
+
+___
 
 ### BCLR
 
@@ -156,6 +173,8 @@ Clear a bit in the destination
 | `bclr.l <ea(s)>, <ea(d)>` | 0x92 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `bclr.q <ea(s)>, <ea(d)>` | 0x93 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### BSET
 
 Set a bit in the destination
@@ -173,6 +192,7 @@ Set a bit in the destination
 | `bset.l <ea(s)>, <ea(d)>` | 0x96 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `bset.q <ea(s)>, <ea(d)>` | 0x97 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
 
 ### BFCLR
 
@@ -186,6 +206,8 @@ Clear Bitfield
 | - | - | - | - | - | - |
 | `<bfclr>` | 0x98 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### BFSET
 
 Reserved
@@ -197,6 +219,8 @@ Set Bitfield
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
 | `<bfset>` | 0x99 | 0xEA(d) | ... | 0xEA(s) | ... |
+
+___
 
 ### BFEXTS
 
@@ -210,6 +234,8 @@ Extract Bitfield as Signed
 
 Reserved
 
+___
+
 ### BFEXTU
 
 Extract Bitfield as Unsigned
@@ -217,6 +243,8 @@ Extract Bitfield as Unsigned
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
 | `<bfextu>` | 0x9B | 0xEA(d) | ... | 0xEA(s) | ... |
+
+___
 
 ### BFINS
 
@@ -228,6 +256,8 @@ Insert Bitfield
 | - | - | - | - | - | - |
 | `<bfins>` | 0x9C | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### BFFFO
 
 Reserved
@@ -237,6 +267,8 @@ Find First One in Bitfield
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
 | `<bfffo>` | 0x9D | 0xEA(d) | ... | 0xEA(s) | ... |
+
+___
 
 ### BFCNT
 
@@ -251,6 +283,8 @@ Count number of set bits
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
 | `bfcnt.b <ea(s)>, <ea(d)>` | 0x9E | 0xEA(d) | ... | 0xEA(s) | ... |
+
+___
 
 ### BFXXX
 

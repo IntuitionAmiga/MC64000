@@ -1,4 +1,4 @@
-## Bytecode Format > [Instruction Layout](Instructions.md) > Arithmetic Group
+## [Documentation](../README.md) > [Bytecode Format](./README.md) > [Instruction Layout](./Instructions.md) > Arithmetic Group
 
 The bytecode formats for the suppored arithmetic instructions are documented here.
 
@@ -10,6 +10,8 @@ One byte is used for the Instruction Opcode:
     - Source [Effective Address](EffectiveAddress.md).
     - Branch displacements.
     - Other data.
+
+___
 
 ### EXTB
 
@@ -25,6 +27,8 @@ Sign Extend Byte
 | `extb.l <ea(s)>, <ea(d)>` | 0xA1 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `extb.q <ea(s)>, <ea(d)>` | 0xA2 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### EXTW
 
 Sign Extend Word
@@ -38,6 +42,8 @@ Sign Extend Word
 | `extw.l <ea(s)>, <ea(d)>` | 0xA3 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `extw.q <ea(s)>, <ea(d)>` | 0xA4 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### EXTL
 
 Sign Extend Long
@@ -49,6 +55,8 @@ Sign Extend Long
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
 | `extl.q <ea(s)>, <ea(d)>` | 0xA5 | 0xEA(d) | ... | 0xEA(s) | ... |
+
+___
 
 ### ASL
 
@@ -67,6 +75,8 @@ Arithmetic Shift Left
 | `asl.l <ea(s)>, <ea(d)>` | 0xA8 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `asl.q <ea(s)>, <ea(d)>` | 0xA9 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### ASR
 
 Arithmetic Shift Right
@@ -83,6 +93,8 @@ Arithmetic Shift Right
 | `asr.w <ea(s)>, <ea(d)>` | 0xAB | 0xEA(d) | ... | 0xEA(s) | ... |
 | `asr.l <ea(s)>, <ea(d)>` | 0xAC | 0xEA(d) | ... | 0xEA(s) | ... |
 | `asr.q <ea(s)>, <ea(d)>` | 0xAD | 0xEA(d) | ... | 0xEA(s) | ... |
+
+___
 
 ### ADD
 
@@ -103,6 +115,8 @@ Add source to destination
 | `fadd.s <ea(s)>, <ea(d)>` | 0xB2 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `fadd.d <ea(s)>, <ea(d)>` | 0xB3 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### SUB
 
 Subtract source from destination
@@ -121,6 +135,8 @@ Subtract source from destination
 | `sub.q <ea(s)>, <ea(d)>` | 0xB7 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `fsub.s <ea(s)>, <ea(d)>` | 0xB8 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `fsub.d <ea(s)>, <ea(d)>` | 0xB9 | 0xEA(d) | ... | 0xEA(s) | ... |
+
+___
 
 ### NEG
 
@@ -141,89 +157,133 @@ Negate Source to Destination
 | `fneg.s <ea(s)>, <ea(d)>` | 0xBE | 0xEA(d) | ... | 0xEA(s) | ... |
 | `fneg.d <ea(s)>, <ea(d)>` | 0xBF | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### MULS
 
 Integer Signed Multiply
+
+___
 
 ### MULU
 
 Integer Unsigned Multiply
 
+___
+
 ### FMUL
 
 Floating Point Multiply
+
+___
 
 ### DIVS
 
 Integer Signed Divide
 
+___
+
 ### DIVU
 
 Integer Unsigned Divide
+
+___
 
 ### FDIV
 
 Floating Point Divide
 
+___
+
 ### FMOD
 
 Floating Point Modulus
+
+___
 
 ### FABS
 
 Floating Point Absolute
 
+___
+
 ### FSQRT
 
 Floating Point Square Root
+
+___
 
 ### FACOS
 
 Floating Point Arccosine
 
+___
+
 ### FASIN
 
 Floating Point Arcsine
+
+___
 
 ### FATAN
 
 Floating Point Arctangent
 
+___
+
 ### FCOS
 
 Floating Point Cosine
+
+___
 
 ### FSIN
 
 Floating Point Sine
 
+___
+
 ### FSINCOS
 
 Floating Point Sine and Cosine
+
+___
 
 ### FTAN
 
 Floating Point Tangent
 
+___
+
 ### FETOX
 
 Floating Point e to x
+
+___
 
 ### FLOGN
 
 Floating Point Natural Logarithm
 
+___
+
 ### FLOG2
 
 Floating Point Base-2 Logarithm
+
+___
 
 ### FTWOTOX
 
 Floating Point 2 to x
 
+___
+
 ### FGETEXP
 
 Get Floating Point Exponent
+
+___
 
 ### FGETMAN
 

@@ -1,4 +1,4 @@
-## Bytecode Format > [Instruction Layout](Instructions.md) > Data Movement Group
+## [Documentation](../README.md) > [Bytecode Format](./README.md) > [Instruction Layout](./Instructions.md) > Data Movement Group
 
 The bytecode formats for the suppored data movement and conversion instructions are documented here.
 
@@ -10,6 +10,8 @@ One byte is used for the Instruction Opcode:
     - Source [Effective Address](EffectiveAddress.md).
     - Branch displacements.
     - Other data.
+
+___
 
 ### MOVE
 
@@ -26,6 +28,8 @@ Move data from source to destination
 | `move.l <ea(s)>, <ea(d)>` | 0x4F | 0xEA(d) | ... | 0xEA(s) | ... |
 | `move.q <ea(s)>, <ea(d)>` | 0x50 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### SAVEM
 
 Save multiple registers
@@ -41,6 +45,8 @@ Save multiple registers
 | - | - | - | - | - | - |
 | `savem #<R>, <ea>` | 0x51 | 0xEA | ... | 0xRR | 0xRR |
 
+___
+
 ### LOADM
 
 Load multiple registers
@@ -55,6 +61,8 @@ Load multiple registers
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
 | - | - | - | - | - | - |
 | `loadm <ea>, #<R>` | 0x52 | 0xEA | ... | 0xRR | 0xRR |
+
+___
 
 ### FMOVEB
 
@@ -72,6 +80,8 @@ Convert signed byte to floating point
 | `fmoveb.s <ea(s)>, <ea(d)>` | 0x53 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `fmoveb.d <ea(s)>, <ea(d)>` | 0x54 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### FMOVEW
 
 Convert signed word to floating point
@@ -88,6 +98,7 @@ Convert signed word to floating point
 | `fmovew.s <ea(s)>, <ea(d)>` | 0x55 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `fmovew.d <ea(s)>, <ea(d)>` | 0x56 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
 
 ### FMOVEL
 
@@ -106,6 +117,8 @@ Convert signed long to floating point
 | `fmovel.s <ea(s)>, <ea(d)>` | 0x57 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `fmovel.d <ea(s)>, <ea(d)>` | 0x58 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### FMOVEQ
 
 Convert signed quad to floating point
@@ -123,6 +136,7 @@ Convert signed quad to floating point
 | `fmoveq.s <ea(s)>, <ea(d)>` | 0x59 | 0xEA(d) | ... | 0xEA(s) | ... |
 | `fmoveq.d <ea(s)>, <ea(d)>` | 0x5A | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
 
 ### FMOVES
 
@@ -142,6 +156,8 @@ Convert a single precision to other format
 | `fmoves.q <ea(s)>, <ea(d)>` | 0x5C | 0xEA(d) | ... | 0xEA(s) | ... |
 | `fmoves.d <ea(s)>, <ea(d)>` | 0x5D | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### FMOVED
 
 Convert a double precision to other format
@@ -160,6 +176,8 @@ Convert a double precision to other format
 | `fmoved.q <ea(s)>, <ea(d)>` | 0x5F | 0xEA(d) | ... | 0xEA(s) | ... |
 | `fmoved.s <ea(s)>, <ea(d)>` | 0x60 | 0xEA(d) | ... | 0xEA(s) | ... |
 
+___
+
 ### FSAVEM
 
 Save multiple floating point registers
@@ -174,6 +192,8 @@ Save multiple floating point registers
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
 | - | - | - | - | - | - |
 | `fsavem #<R>, <ea>` | 0x61 | 0xEA | ... | 0xRR | 0xRR |
+
+___
 
 ### FLOADM
 
@@ -190,6 +210,7 @@ Load multiple floating point registers
 | - | - | - | - | - | - |
 | `floadm <ea>, #<R>` | 0x62 | 0xEA | ... | 0xRR | 0xRR |
 
+___
 
 ### CLR
 
@@ -208,6 +229,8 @@ Clear a location
 | `clr.l <ea>`| 0x65 | 0xEA | ... |
 | `clr.q <ea>`| 0x66 | 0xEA | ... |
 
+___
+
 ### EXG
 
 Exchange GPR
@@ -221,6 +244,8 @@ Exchange GPR
 | Mnemonic | Bytecode | Ext 0 |
 | - | - | - |
 | `exg <S>, r<D>`| 0x67 | 0x(S)(D) |
+
+___
 
 ### FEXG
 
@@ -236,6 +261,7 @@ Exchange FPR
 | - | - | - |
 | `fexg fp<S>, fp<D>`| 0x68 | 0x(S)(D) |
 
+___
 
 ### SWAP
 
@@ -257,6 +283,8 @@ Swap register fragments
 | `swap.l r<N>` | 0x6A | 0x0(N) |
 | `swap.q r<N>` | 0x6B | 0x0(N) |
 
+___
+
 ### LINK
 
 Link and Allocate
@@ -272,6 +300,7 @@ Link and Allocate
 | - | - | - | - | - | - | - |
 | `link r<N>, #<D>`| 0x6C | 0x0(N) | 0xDD | 0xDD | 0xDD | 0xDD |
 
+___
 
 ### UNLK
 
@@ -285,6 +314,8 @@ Unlink
 | - | - | - |
 | `unlk r<N>`| 0x6D | 0x0(N) |
 
+___
+
 ### LEA
 
 Load Effective Address
@@ -296,6 +327,8 @@ Load Effective Address
 | Mnemonic | Bytecode | Ext 0 | Ext 1 | ... |
 | - | - | - | - | - |
 | `lea <ea>, r<N>`| 0x6E | 0x0(N) | 0xEA | ...|
+
+___
 
 ### PEA
 

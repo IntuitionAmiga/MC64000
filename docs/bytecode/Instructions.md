@@ -1,4 +1,4 @@
-## Bytecode Format > Instruction Layout
+## [Documentation](../README.md) > [Bytecode Format](./README.md) > Instruction Layout
 
 The bytecode formats for the suppored instructions are documented here.
 

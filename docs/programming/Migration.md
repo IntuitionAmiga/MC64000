@@ -1,4 +1,4 @@
-## [Programming](./README.md) > Migration
+## [Documentation](../README.md) > [Programming](./README.md) > Migration
 
 The following page gives information on how to migrate User Model code from 680x0 to MC64K.
 
@@ -9,10 +9,42 @@ The following page gives information on how to migrate User Model code from 680x
     - Consider changing to the universal r0 ... r15 names.
 * Replace extended arithmetic:
     - If possible, use _.q_ operands.
-* Rework conditional code:
-    - Most 680x0 operations directly set the Condition Code Register
-    - Make note of the destination of the last operation before any conditional branch as the CCR will be set based on that value.
-    - MC64K only supports branching based on direct comparisons of operands or an operand against zero.
+
+
+### Branching
+
+The branching model in MC64K is significantly different than in 680x0. The primary motivation was to provide a simpler branching model and improve performance by not having to maintain a set of condition codes for the vitual machine. Consequently, except in some highly coincidental cases, any conditional branches will have to be reworked.
+
+* Make note of the destination of the last operation before any conditional branch as the CCR will be set based on that value.
+* Determine what needs to be compared:
+   - MC64K compares a pair of operands directly or a single operand against zero.
+   - Most 680x0 CCR tests are equivalent to a comparison against zero.
+
+### Floating Point
+
+The FPU in MC64K is somewhat simplified. In particular, integer operands are not supported for any operations.
+
+The following class of operations are not possible:
+
+```asm
+    fadd.b d0, fp0
+    fadd.w (a0), fp0
+    fsub.l #1, fp0
+```
+
+MC64K provides casting operations in conjunction with a greater number of available registers to perform the above, albeit in more steps:
+
+```asm
+    fmoveb.d d0, fp8    ; register signed byte to double
+    fadd.d   fp8, fp0
+    fmove.w  (a0), fp8  ; indirect signed word to double
+    fadd.d   fp8, fp0
+    fmove.l  #1, fp8    ; signed immediate integer to double
+    fsub.l   fp8, fp0
+```
+
+There is no support for extended precision or packed decimal data formats.
+
 
 ### Optimising
 

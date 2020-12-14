@@ -1,4 +1,4 @@
-## [Programming](./README.md) > Model
+## [Documentation](../README.md) > [Programming](./README.md) > Model
 
 The following page describes the programming model of the MC64K.
 
@@ -95,3 +95,8 @@ The following differences from the 680x0 assembler programming model are of note
     - Reduced subset of 6888x instructions:
         - Arithmetic, square root,
         - Basic trigonometry, logarithm and exponent.
+
+### Instruction Set
+
+* The supported MC64K instruction set is documented [here](../bytecode/Instructions.md).
+* The supported addressing modes are documented [here](../bytecode/EffectiveAddress.md).
