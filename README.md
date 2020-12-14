@@ -30,26 +30,14 @@ MC64K aims to implement a Virtual Machine and assembler syntax insired by the le
 
 ### Features
 
-* 16 64-bit general purpose registers for integer / address operations:
-    - r0 - r15
-    - r15 is used as the stack pointer.
-    - Byte, Word, Long and Quad operation sizes.
+* 16 64-bit general purpose registers for integer / address operations.
+* Byte, Word, Long and Quad operation sizes.
 * 16 64-bit IEEE-754 registers for floating point operations.
-    - fp0 - fp15
-* Rich Set of 680x0 inspired addressing modes.
-    - Register Direct, Indirect, Post/Pre Increment/Decrement, Offset, Indexed, etc.
-* Large Code / Memory Model:
-    - 64-bit addresses
-    - All displacement and branch offsets are 32-bit signed values.
-* Simplified compare and branch programming model:
-    - e.g. `beq.l r0, (r1), label`
-* 680x0 inspired instruction set and syntax:
-    - Same mnenomics used for equivalent operations.
-    - Same effective address syntax for equivalent modes:
-    - 680x0 register names d0 - d7 recognised as aliases for r0 - r7.
-    - 680x0 register names a0 - a7 recognised as aliases for r8 - r15.
-* All supported effective addressing modes can be used for each operand in an instruction:
-    - Destination operand cannot use Program Counter Indirect or Integer Immediate modes.
+* Rich set of 680x0 inspired addressing modes.
+* Large Code / Memory Model.
+* Simplified branch programming model.
+* 680x0 inspired instruction set and syntax.
+* Effective Addresses for both source and destination operands.
 * Simple set of host provided read-only registers for configuration:
     - RAM base address, size.
     - Framebuffer address, format, meta.
@@ -87,6 +75,10 @@ The 64-bit consumer device space is dominated by x64 and ARM. Both of these arch
 
 * Reduces complexity and improves performance on target hardware by eliminating unnecessary byte swapping.
 * Improved consistency. 680x0 processors treat registers as if they are little endian when dealing with operand sizes less than the full register, but has the opposite behaviour on memory.
+
+### Documentation
+
+It's all [here](./docs/README.md).
 
 ### Wishlist
 
