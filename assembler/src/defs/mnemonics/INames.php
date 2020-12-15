@@ -22,7 +22,7 @@ interface INames {
     const MATCHES = [
 
 // Flow control group
-        'bkpt',
+        'hcf',
 
         'bra.b',
         'bra',
@@ -303,5 +303,18 @@ interface INames {
         'fgetexp.d',
         'fgetman.s',
         'fgetman.d',
+
+        'reserved0',
+        'reserved1',
+        'reserved2',
+        'reserved3',
+        'reserved4',
+        'reserved5',
+        'reserved6',
+        'reserved7',
+        'reserved8',
+        'reserved9',
+        'reserved10',
+        'reserved11',
     ];
 }

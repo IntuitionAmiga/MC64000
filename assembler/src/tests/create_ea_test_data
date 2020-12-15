@@ -30,7 +30,7 @@ const GPR_NAMES = [
 //    'a0', 'a1',  'a2',  'a3',  'a4',  'a5',  'a6',  'a7', // Name aliases of r8-r15
 //    'r0', 'r1',  'r2',  'r3',  'r4',  'r5',  'r6',  'r7',
 //    'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15',
-    'd0', 'a1', 'r2'
+    'd0', 'a1', 'r2', 'sp'
 ];
 
 // FPU registers
@@ -46,7 +46,7 @@ const RA_NAMES = [
 //    'r0', 'r1',  'r2',  'r3',  'r4',  'r5',  'r6',  'r7',
 //    'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15',
 //    'pc'
-    'a0', 'a7', 'r0', 'pc'
+    'a0', 'a7', 'r0', 'pc', 'sp'
 ];
 
 // Allowed index sizes
@@ -66,8 +66,17 @@ const TEST_INTEGERS = [
     '0', '-2', '2', '0x1234abcd'
 ];
 
+const TEST_FLOATS = [
+    '0.', '-1.5', '1.e10', '-1.01e-10',
+];
+
 echo "// Integer Literal\n";
 foreach (TEST_INTEGERS as $sOperand) {
+    printf("\t#%s\n", $sOperand);
+}
+
+echo "// Float Literal\n";
+foreach (TEST_FLOATS as $sOperand) {
     printf("\t#%s\n", $sOperand);
 }
 

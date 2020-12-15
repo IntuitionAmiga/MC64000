@@ -224,11 +224,30 @@ interface IByteCodeNames extends IRegisterDirect, IRegisterIndirect, IRegisterIn
         self::PC_IND_IDXL_8_DSP  => "PC with 64-bit Scaled 32-bit Index and Displacement",
         self::PC_IND_IDXQ_8_DSP  => "PC with 64-bit Scaled 64-bit Index and Displacement",
 
+        // Immediate small integer encoded directly, no extension byte.
+        self::INT_SMALL_0        => "Small Immediate 0",
+        self::INT_SMALL_1        => "Small Immediate 1",
+        self::INT_SMALL_2        => "Small Immediate 2",
+        self::INT_SMALL_3        => "Small Immediate 3",
+        self::INT_SMALL_4        => "Small Immediate 4",
+        self::INT_SMALL_5        => "Small Immediate 5",
+        self::INT_SMALL_6        => "Small Immediate 6",
+        self::INT_SMALL_7        => "Small Immediate 7",
+        self::INT_SMALL_8        => "Small Immediate 8",
+
+        // Immediate integer value encoded into extension bytes.
+        self::INT_IMM_BYTE       => "Integer Immediate Byte",
+        self::INT_IMM_WORD       => "Integer Immediate Word",
+        self::INT_IMM_LONG       => "Integer Immediate Long",
+        self::INT_IMM_QUAD       => "Integer Immediate Quad",
+
+        // Immediate floating point value encoded into extension bytes.
+        self::FLT_IMM_SINGLE     => "Float Immediate Single",
+        self::FLT_IMM_DOUBLE     => "Float Immediate Double",
+
         // @see IOther
         self::PC_IND_DSP         => "PC with Displacement",
-        self::INT_IMMEDIATE      => "Integer Immediate",
-        self::ADDR_ABS_W         => "Absolute 16-bit Location",
-        self::ADDR_ABS_L         => "Absolute 32-bit Location",
-        self::ADDR_ABS_Q         => "Absolute 64-bit Location",
+
+        self::SAME_AS_DEST       => "[Source Same As Destination]"
     ];
 }

@@ -19,14 +19,16 @@ Move data from source to destination
 
         <ea(s)> -> <ea(d)>
 
-`move.<b|w|l|q> <ea(s)>, <ea(d)>`
+General syntax:
+
+        move.<b|w|l|q> <ea(s)>, <ea(d)>
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `move.b <ea(s)>, <ea(d)>` | 0x4D | 0xEA(d) | ... | 0xEA(s) | ... |
-| `move.w <ea(s)>, <ea(d)>` | 0x4E | 0xEA(d) | ... | 0xEA(s) | ... |
-| `move.l <ea(s)>, <ea(d)>` | 0x4F | 0xEA(d) | ... | 0xEA(s) | ... |
-| `move.q <ea(s)>, <ea(d)>` | 0x50 | 0xEA(d) | ... | 0xEA(s) | ... |
+| `move.b <ea(s)>, <ea(d)>` | 0x4D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `move.w <ea(s)>, <ea(d)>` | 0x4E | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `move.l <ea(s)>, <ea(d)>` | 0x4F | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `move.q <ea(s)>, <ea(d)>` | 0x50 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -36,14 +38,17 @@ Save multiple registers
 
         register list -> <ea>
 
-`savem <#<R>|register list>, <ea>`
+
+General syntax:
+
+        savem <#<R>|register list>, <ea>
 
 * Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding GPR is saved.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
 | - | - | - | - | - | - |
-| `savem #<R>, <ea>` | 0x51 | 0xEA | ... | 0xRR | 0xRR |
+| `savem #<R>, <ea>` | 0x51 | 0x*EA* | ... | 0x*RR* | 0x*RR* |
 
 ___
 
@@ -53,14 +58,16 @@ Load multiple registers
 
         <ea> -> register list
 
-`loadm <ea>, <#<R>|register list>`
+General syntax:
+
+        loadm <ea>, <#<R>|register list>
 
 * Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding GPR is loaded.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
 | - | - | - | - | - | - |
-| `loadm <ea>, #<R>` | 0x52 | 0xEA | ... | 0xRR | 0xRR |
+| `loadm <ea>, #<R>` | 0x52 | 0x*EA* | ... | 0x*RR* | 0x*RR* |
 
 ___
 
@@ -70,15 +77,17 @@ Convert signed byte to floating point
 
         <ea(s)> -> <ea(d)>
 
-`fmoveb.<s|d> <ea(s)>, <ea(d)>`
+General syntax:
+
+        fmoveb.<s|d> <ea(s)>, <ea(d)>
 
 * Operand size refers to destination.
 * Source operand is interpreted as a signed 8-bit value and converted to floating point.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fmoveb.s <ea(s)>, <ea(d)>` | 0x53 | 0xEA(d) | ... | 0xEA(s) | ... |
-| `fmoveb.d <ea(s)>, <ea(d)>` | 0x54 | 0xEA(d) | ... | 0xEA(s) | ... |
+| `fmoveb.s <ea(s)>, <ea(d)>` | 0x53 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmoveb.d <ea(s)>, <ea(d)>` | 0x54 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -88,15 +97,17 @@ Convert signed word to floating point
 
         <ea(s)> -> <ea(d)>
 
-`fmovew.<s|d> <ea(s)>, <ea(d)>`
+General syntax:
+
+        fmovew.<s|d> <ea(s)>, <ea(d)>
 
 * Operand size refers to destination.
 * Source operand is interpreted as a signed 16-bit value and converted to floating point.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fmovew.s <ea(s)>, <ea(d)>` | 0x55 | 0xEA(d) | ... | 0xEA(s) | ... |
-| `fmovew.d <ea(s)>, <ea(d)>` | 0x56 | 0xEA(d) | ... | 0xEA(s) | ... |
+| `fmovew.s <ea(s)>, <ea(d)>` | 0x55 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmovew.d <ea(s)>, <ea(d)>` | 0x56 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -106,7 +117,9 @@ Convert signed long to floating point
 
         <ea(s)> -> <ea(d)>
 
-`fmovel.<s|d> <ea(s)>, <ea(d)>`
+General syntax:
+
+        fmovel.<s|d> <ea(s)>, <ea(d)>
 
 * Operand size refers to destination.
 * Source operand is interpreted as a signed 32-bit value and converted to floating point.
@@ -114,8 +127,8 @@ Convert signed long to floating point
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fmovel.s <ea(s)>, <ea(d)>` | 0x57 | 0xEA(d) | ... | 0xEA(s) | ... |
-| `fmovel.d <ea(s)>, <ea(d)>` | 0x58 | 0xEA(d) | ... | 0xEA(s) | ... |
+| `fmovel.s <ea(s)>, <ea(d)>` | 0x57 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmovel.d <ea(s)>, <ea(d)>` | 0x58 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -125,7 +138,9 @@ Convert signed quad to floating point
 
         <ea(s)> -> <ea(d)>
 
-`fmoveq.<s|d> <ea(s)>, <ea(d)>`
+General syntax:
+
+        fmoveq.<s|d> <ea(s)>, <ea(d)>
 
 * Operand size refers to destination.
 * Source operand is interpreted as a signed 64-bit value and converted to floating point.
@@ -133,8 +148,8 @@ Convert signed quad to floating point
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fmoveq.s <ea(s)>, <ea(d)>` | 0x59 | 0xEA(d) | ... | 0xEA(s) | ... |
-| `fmoveq.d <ea(s)>, <ea(d)>` | 0x5A | 0xEA(d) | ... | 0xEA(s) | ... |
+| `fmoveq.s <ea(s)>, <ea(d)>` | 0x59 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmoveq.d <ea(s)>, <ea(d)>` | 0x5A | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -144,7 +159,9 @@ Convert a single precision to other format
 
         <ea(s)> -> <ea(d)>
 
-`fmoves.<l|q|d> <ea(s)>, <ea(d)>`
+General syntax:
+
+        fmoves.<l|q|d> <ea(s)>, <ea(d)>
 
 * Operand size refers to destination.
 * Source operand is interpreted as a 32-bit floating point value and converted to target format.
@@ -152,9 +169,9 @@ Convert a single precision to other format
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fmoves.l <ea(s)>, <ea(d)>` | 0x5B | 0xEA(d) | ... | 0xEA(s) | ... |
-| `fmoves.q <ea(s)>, <ea(d)>` | 0x5C | 0xEA(d) | ... | 0xEA(s) | ... |
-| `fmoves.d <ea(s)>, <ea(d)>` | 0x5D | 0xEA(d) | ... | 0xEA(s) | ... |
+| `fmoves.l <ea(s)>, <ea(d)>` | 0x5B | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmoves.q <ea(s)>, <ea(d)>` | 0x5C | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmoves.d <ea(s)>, <ea(d)>` | 0x5D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -164,7 +181,9 @@ Convert a double precision to other format
 
         <ea(s)> -> <ea(d)>
 
-`fmoved.<l|q|s> <ea(s)>, <ea(d)>`
+General syntax:
+
+        fmoved.<l|q|s> <ea(s)>, <ea(d)>
 
 * Operand size refers to destination.
 * Source operand is interpreted as a 64-bit floating point value and converted to target format.
@@ -172,9 +191,9 @@ Convert a double precision to other format
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fmoved.l <ea(s)>, <ea(d)>` | 0x5E | 0xEA(d) | ... | 0xEA(s) | ... |
-| `fmoved.q <ea(s)>, <ea(d)>` | 0x5F | 0xEA(d) | ... | 0xEA(s) | ... |
-| `fmoved.s <ea(s)>, <ea(d)>` | 0x60 | 0xEA(d) | ... | 0xEA(s) | ... |
+| `fmoved.l <ea(s)>, <ea(d)>` | 0x5E | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmoved.q <ea(s)>, <ea(d)>` | 0x5F | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmoved.s <ea(s)>, <ea(d)>` | 0x60 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -184,14 +203,16 @@ Save multiple floating point registers
 
         register list -> <ea>
 
-`fsavem <#<R>|register list>, <ea>,`
+General syntax:
+
+        fsavem <#<R>|register list>, <ea>
 
 * Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding FPR is saved.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
 | - | - | - | - | - | - |
-| `fsavem #<R>, <ea>` | 0x61 | 0xEA | ... | 0xRR | 0xRR |
+| `fsavem #<R>, <ea>` | 0x61 | 0x*EA* | ... | 0x*RR* | 0x*RR* |
 
 ___
 
@@ -201,14 +222,16 @@ Load multiple floating point registers
 
         <ea> -> register list
 
-`floadm <ea>, <#<R>|register list>`
+General syntax:
+
+        floadm <ea>, <#<R>|register list>
 
 * Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding FPR is loaded.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
 | - | - | - | - | - | - |
-| `floadm <ea>, #<R>` | 0x62 | 0xEA | ... | 0xRR | 0xRR |
+| `floadm <ea>, #<R>` | 0x62 | 0x*EA* | ... | 0x*RR* | 0x*RR* |
 
 ___
 
@@ -218,16 +241,17 @@ Clear a location
 
         0 -> <ea>
 
-`clr.<b|w|l|q> <ea>`
+General syntax:
+        clr.<b|w|l|q> <ea>
 
 * All bits are set to zero.
 
 | Mnemonic | Bytecode | Ext 0 | ... |
 | - | - | - | - |
-| `clr.b <ea>`| 0x63 | 0xEA | ... |
-| `clr.w <ea>`| 0x64 | 0xEA | ... |
-| `clr.l <ea>`| 0x65 | 0xEA | ... |
-| `clr.q <ea>`| 0x66 | 0xEA | ... |
+| `clr.b <ea>`| 0x63 | 0x*EA* | ... |
+| `clr.w <ea>`| 0x64 | 0x*EA* | ... |
+| `clr.l <ea>`| 0x65 | 0x*EA* | ... |
+| `clr.q <ea>`| 0x66 | 0x*EA* | ... |
 
 ___
 
@@ -237,13 +261,15 @@ Exchange GPR
 
         r<S> <-> r<D>
 
-`exg r<S>, r<D>`
+General syntax:
+
+        exg r<S>, r<D>
 
 * General Purpose Register contents are exchanged.
 
 | Mnemonic | Bytecode | Ext 0 |
 | - | - | - |
-| `exg <S>, r<D>`| 0x67 | 0x(S)(D) |
+| `exg <S>, r<D>`| 0x67 | 0x*SD* |
 
 ___
 
@@ -259,7 +285,7 @@ Exchange FPR
 
 | Mnemonic | Bytecode | Ext 0 |
 | - | - | - |
-| `fexg fp<S>, fp<D>`| 0x68 | 0x(S)(D) |
+| `fexg fp<S>, fp<D>`| 0x68 | 0x*SD* |
 
 ___
 
@@ -271,7 +297,9 @@ Swap register fragments
         r<N>[31:24, 23:16, 15:8, 7:0] <-> r<N>[7:0, 15:8, 23:16, 31:24]
         r<N>[63:56, 55:48, ... 15:8, 7:0] <-> r<N>[7:0, 15:8, ... 55:48, 63:46]
 
-`swap[.<l|q>] r<N>`
+General syntax:
+
+        swap[.<l|q>] r<N>
 
 * The unsized variant replicates the original 16-bit word swap of the 6800x0.
 * The .l variant performs a 32-bit byteswap of the lower half of the register.
@@ -279,9 +307,9 @@ Swap register fragments
 
 | Mnemonic | Bytecode | Ext 0 |
 | - | - | - |
-| `swap r<N>`| 0x69 | 0x0(N) |
-| `swap.l r<N>` | 0x6A | 0x0(N) |
-| `swap.q r<N>` | 0x6B | 0x0(N) |
+| `swap r<N>`| 0x69 | 0x0*N* |
+| `swap.l r<N>` | 0x6A | 0x0*N* |
+| `swap.q r<N>` | 0x6B | 0x0*N* |
 
 ___
 
@@ -292,13 +320,15 @@ Link and Allocate
         sp - 8 -> sp; r<N> -> (sp)
         sp -> r<N>; sp + d -> sp
 
-`link r<N>, #<D>`
+General syntax:
+
+        link r<N>, #<D>
 
 * Displacement should be negative to allocate stack space.
 
 | Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 |
 | - | - | - | - | - | - | - |
-| `link r<N>, #<D>`| 0x6C | 0x0(N) | 0xDD | 0xDD | 0xDD | 0xDD |
+| `link r<N>, #<D>`| 0x6C | 0x0*N* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
 
 ___
 
@@ -308,11 +338,13 @@ Unlink
 
         r<N> -> sp; (sp) -> r<N>; sp + 8 -> sp
 
-`unlk rN>`
+General syntax:
+
+        unlk rN>
 
 | Mnemonic | Bytecode | Ext 0 |
 | - | - | - |
-| `unlk r<N>`| 0x6D | 0x0(N) |
+| `unlk r<N>`| 0x6D | 0x0*N* |
 
 ___
 
@@ -322,11 +354,13 @@ Load Effective Address
 
         '<ea> -> r<N>'
 
-`lea <ea>, r<N>`
+General syntax:
+
+        lea <ea>, r<N>
 
 | Mnemonic | Bytecode | Ext 0 | Ext 1 | ... |
 | - | - | - | - | - |
-| `lea <ea>, r<N>`| 0x6E | 0x0(N) | 0xEA | ...|
+| `lea <ea>, r<N>`| 0x6E | 0x0*N* | 0x*EA* | ...|
 
 ___
 
@@ -336,8 +370,10 @@ Push Effective Address
 
         sp - 8 -> sp; <ea> -> (sp)
 
-`pea <ea>`
+General syntax:
+
+        pea <ea>
 
 | Mnemonic | Bytecode | Ext 0 | ... |
 | - | - | - | - |
-| `pea <ea>`| 0x6F | 0xEA | ...|
+| `pea <ea>`| 0x6F | 0x*EA* | ...|
