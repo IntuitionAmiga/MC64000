@@ -27,10 +27,10 @@ interface IMatches extends IRegisterDirect, IRegisterIndirect, IRegisterIndirect
         D32 = '([\+\-]{0,1}\d+|0x[0-9A-Fa-f]+)',
 
         // Matches an address register qualification (rN or aN)
-        RA  = '([ra]\d+)',
+        RA  = '([ra]\d+|sp)',
 
-        // Matches any integer register qualification (rN, aN or dN)
-        RDA = '([rda]\d+)'
+        // Matches any integer register qualification (rN, aN or dN | sp)
+        RDA = '([rda]\d+|sp)'
     ;
 
     /**

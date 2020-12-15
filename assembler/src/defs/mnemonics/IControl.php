@@ -22,7 +22,7 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
  */
 interface IControl extends IByteCodeGroups {
     const
-        BKPT   = self::OFS_CONTROL +  0, // 0x00
+        HCF    = self::OFS_CONTROL +  0, // 0x00
         BRA_B  = self::OFS_CONTROL +  1,
         BRA    = self::OFS_CONTROL +  2,
         BSR_B  = self::OFS_CONTROL +  3,
