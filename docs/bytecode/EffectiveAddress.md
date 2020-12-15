@@ -19,7 +19,7 @@ The contents of the register are used as the operand data.
 
 General syntax: `r<N>`
 
-* N = 0 ... 15
+* Allowed register names: r0 ... r15, d0 ... d7, a0 ... a7, sp
 * Operation size determines which bits of the register are used.
 
 | Mode | Bytecode |
@@ -37,7 +37,7 @@ The contents of the register are used as the address of the operand data in memo
 
 General syntax: `(r<N>)`
 
-* N = 0 ... 15
+* Allowed register names: r0 ... r15, a0 ... a7, sp
 * All bits of the register are used.
 
 | Mode | Bytecode |
@@ -55,7 +55,7 @@ The contents of the register are used as the address of the operand data in memo
 
 General syntax: `(r<N>)+`
 
-* N = 0 ... 15
+* Allowed register names: r0 ... r15, a0 ... a7, sp
 * All bits of the register are used.
 
 | Mode | Bytecode |
@@ -73,7 +73,7 @@ The contents of the register are used as the address of the operand data in memo
 
 General syntax: `(r<N>)-`
 
-* N = 0 ... 15
+* Allowed register names: r0 ... r15, a0 ... a7, sp
 * All bits of the register are used.
 
 | Mode | Bytecode |
@@ -91,7 +91,8 @@ The contents of the register are incremented by the operation size. The contents
 
 General syntax: `+(r<N>)`
 
-* N = 0 ... 15
+* Allowed register names: r0 ... r15, a0 ... a7, sp
+* All bits of the register are used.
 
 | Mode | Bytecode |
 | - | - |
@@ -108,7 +109,8 @@ The contents of the register are decremented by the operation size. The contents
 
 General syntax: `-(r<N>)`
 
-* N = 0 ... 15
+* Allowed register names: r0 ... r15, a0 ... a7, sp
+* All bits of the register are used.
 
 | Mode | Bytecode |
 | - | - |
@@ -123,9 +125,19 @@ ___
 
 The contents of the register, plus the signed 32-bit displacement are used as the address of the operand data in memory.
 
-General syntax: `<D>(r<N>)`
+General syntax: `<D>(r<N>)` or `(<D>, r<N>)`
 
-* N = 0 ... 15
+Examples:
+
+        16(r0)
+        (16, a0)
+        -10(sp)
+        (-10, a1)
+        0xFF00(r2)
+        (0xFC00, a2)
+
+* Allowed register names: r0 ... r15, a0 ... a7, sp
+* All bits of the register are used.
 * D = -2147483648 ... 2147483647
 
 | Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 |
@@ -141,9 +153,9 @@ ___
 
 The contents of the register are used as the operand data. This mode is only available for floating point operations.
 
-`fp<N>`
+General syntax: `fp<N>`
 
-* N = 0 ... 15
+* Allowed register names: fp0 ... fp15
 
 | Mode | Bytecode |
 | - | - |
@@ -158,10 +170,20 @@ ___
 
 The contents of the register, plus an optionally scaled index value taken from a second register are used as the address of the operand in memory. The index size and scale factor are selectable.
 
-`(r<A>, r<I>.<b|w|l|q> [* <2|4|8>])`
+General syntax: `(r<A>, r<I>.<b|w|l|q> [* <2|4|8>])`
 
-* A = 0 ... 15
-* I = 0 ... 15
+Examples:
+
+        (r0, r1.b)
+        (a0, d1.q * 2)
+        (sp, d5.l* 8)
+        (r0, a0.q * 4)
+
+* Allowed base register names: r0 ... r15, a0 ... a7, sp
+* Allowed index register names: r0 ... r15, d0 ... d7, a0 ... a7, sp
+* All bits of the base register are used.
+* For .b, .w and .l sized indexes, the register fragment is treated as a signed value:
+    - For a .b index, a register value of 0x00000000000000FF is interpreted as -1, not 255.
 
 | Mode | Bytecode | Ext 0 |
 | - | - | - |
@@ -188,10 +210,20 @@ ___
 
 The contents of the register, plus an optionally scaled index value taken from a second register, plus the signed 32-bit displacement are used as the address of the operand in memory. The index size and scale factor are selectable.
 
-`<D>(r<A>, r<I>.<b|w|l|q> [ * <2|4|8>])`
+General syntax: `<D>(r<A>, r<I>.<b|w|l|q> [ * <2|4|8>])` or `(<D>, r<A>, r<I>.<b|w|l|q> [ * <2|4|8>])`
 
-* A = 0 ... 15
-* I = 0 ... 15
+Examples:
+
+        10(r0, r1.w)
+        -5(a0, d1.l * 2)
+        0xFFFE(sp, r5.b * 8)
+        (-20, r0, a0.l * 4)
+
+* Allowed base register names: r0 ... r15, a0 ... a7, sp
+* Allowed index register names: r0 ... r15, d0 ... d7, a0 ... a7, sp
+* All bits of the base register are used.
+* For .b, .w and .l sized indexes, the register fragment is treated as a signed value:
+    - For a .b index, a register value of 0x00000000000000FF is interpreted as -1, not 255.
 * D = -2147483648 ... 2147483647
 
 | Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 | Ext 4 |
@@ -212,16 +244,25 @@ The contents of the register, plus an optionally scaled index value taken from a
 | `<D>(r<A>, r<I>.w * 8)` | 0x9D | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
 | `<D>(r<A>, r<I>.l * 8)` | 0x9E | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
 | `<D>(r<A>, r<I>.q * 8)` | 0x9F | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
-
 ___
 
 ### Program Counter Indirect with (Scaled) Index
 
 The contents of the program counter, plus an optionally scaled index value taken from a second register are used as the address of the operand in memory. The index size and scale factor are selectable.
 
-`(pc, r<I>.<b|w|l|q> [* <2|4|8>])`
+General syntax: `(pc, r<I>.<b|w|l|q> [* <2|4|8>])`
 
-* I = 0 ... 15
+Examples:
+
+        (pc, r1.w)
+        (pc, d1.l * 2)
+        (pc, r5.b * 8)
+        (pc, a0.l * 4)
+
+* Allowed index register names: r0 ... r15, d0 ... d7, a0 ... a7, sp
+* All bits of the base register are used.
+* For .b, .w and .l sized indexes, the register fragment is treated as a signed value:
+    - For a .b index, a register value of 0x00000000000000FF is interpreted as -1, not 255.
 * Cannot be used for destination operands.
 
 | Mode | Bytecode | Ext 0 |
@@ -249,9 +290,19 @@ ___
 
 The contents of the program counter, plus an optionally scaled index value taken from a second register, plus the signed 32-bit displacement are used as the address of the operand in memory. The index size and scale factor are selectable.
 
-`<D>(pc, r<I>.<b|w|l|q> [* <2|4|8>])`
+General syntax: `<D>(pc, r<I>.<b|w|l|q> [* <2|4|8>])` or `(<D>, pc, r<I>.<b|w|l|q> [* <2|4|8>])`
 
-* I = 0 ... 15
+Examples:
+
+        8(pc, r1.w)
+        -4(pc, d1.l * 2)
+        (32, pc, r5.b * 8)
+        (-10, pc, a0.l * 4)
+
+* Allowed index register names: r0 ... r15, d0 ... d7, a0 ... a7, sp
+* All bits of the base register are used.
+* For .b, .w and .l sized indexes, the register fragment is treated as a signed value:
+    - For a .b index, a register value of 0x00000000000000FF is interpreted as -1, not 255.
 * D = -2147483648 ... 2147483647
 * Cannot be used for destination operands.
 
@@ -280,7 +331,13 @@ ___
 
 The contents of the program counter, plus the signed 32-bit displacement are used as the address of the operand data in memory.
 
-`<D>(pc)`
+General syntax: `<D>(pc)` or `(<D>, pc)`
+
+Examples:
+
+        8(pc)
+        0xA(pc)
+        (10, pc)
 
 * D = -2147483648 ... 2147483647
 * Cannot be used for destination operands.
@@ -295,7 +352,7 @@ ___
 
 An signed immediate integer value is encoded into the instruction stream.
 
-`#<D>`
+General syntax: `#<D>`
 
 * The number of bytes for the immediate varies depending on the magnitude of D:
     - D = 0 ... 8: value is encoded directly in the EA byte.
@@ -329,8 +386,19 @@ ___
 
 A floating point value is encoded into the instruction stream.
 
-`#<F>`
+General syntax: `#<F.>`
 
+Examples:
+
+        #0.
+        #-1.
+        #0.5
+        #1.e10
+        #1.25e-10
+        #0.005
+
+* Floating point immediates are differentiated from integer immediates by the presence of the decimal separator.
+* Instruction size determines actual datatype used.
 * Only available for floating point operations.
 
 | Mode | Bytecode | Ext 0 | ... | Ext (size-1) |
