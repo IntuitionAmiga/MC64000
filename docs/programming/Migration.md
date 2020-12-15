@@ -10,7 +10,6 @@ The following page gives information on how to migrate User Model code from 680x
 * Replace extended arithmetic:
     - If possible, use _.q_ operands.
 
-
 ### Branching
 
 The branching model in MC64K is significantly different than in 680x0. The primary motivation was to provide a simpler branching model and improve performance by not having to maintain a set of condition codes for the vitual machine. Consequently, except in some highly coincidental cases, any conditional branches will have to be reworked.
@@ -45,6 +44,19 @@ MC64K provides casting operations in conjunction with a greater number of availa
 
 There is no support for extended precision or packed decimal data formats.
 
+### Endianness
+
+The 680x0 is a Big Endian processor series. The intended targets of MC64K are generally little endian. As MC64K is not an emulator and is aimed at x64/ARM it adopts a Little Endian memory model by default.
+
+* Generally, code should not be accessing different sized elements at the same address, but beware of the following patterns of access:
+    - move.l (a0), ...
+    - move.w 2(a0), ...
+    - move.b 3(a0), ...
+* On the 680x0, these access a full 32-bit word, the 16-bit lower half and the least significant byte respectively.
+* On a Little Endian MC64K machine, these share the same address:
+    - move.l (a0), ...
+    - move.w (a0), ...
+    - move.b (a0), ...
 
 ### Optimising
 
