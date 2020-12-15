@@ -41,8 +41,8 @@ interface IMatches extends IRegisterDirect, IRegisterIndirect, IRegisterIndirect
         // Signed integer literal #d8 / #d16 / #d32 / #d64
         '/^#' . self::D32 . '$/' => self::INT_IMMEDIATE,
 
-        // Integer literal, hex representation #0x...
-        //'/^#(0x[0-9A-F]+)$/' => self::INT_LIT,
+        // Floating point immediate, minimum requiremnt is 1 leading digit and a decimal point, e.g. #1.
+        '/^#(([-+]{0,1}\d+)\.\d*([eE][-+]{0,1}\d+){0,1})$/' => self::FLT_IMMEDIATE,
 
         // Register direct rN
         '/^[rda]\d+$/' => self::OFS_GPR_DIR,

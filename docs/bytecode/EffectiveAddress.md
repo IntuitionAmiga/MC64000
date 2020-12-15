@@ -9,14 +9,15 @@ One byte is used for the Effective Address Mode of an operand:
 * Indexed addressing modes encode the index size and scale in the EA byte and the register pair in one additional byte.
 * Integer Immediates require as many additional bytes as are required by the operation size.
 * Absolute Address Immediates require an additional 2, 4 or 8 bytes, depending on the word size.
-
+* In the following examples, extension byte values in italics refer to elements of the Effective address, e.g:
+    - 0x _DD_ refers to a byte that forms part of a displacement value.
 ___
 
 ### General Purpose Register Direct
 
 The contents of the register are used as the operand data.
 
-`r<N>`
+General syntax: `r<N>`
 
 * N = 0 ... 15
 * Operation size determines which bits of the register are used.
@@ -34,7 +35,7 @@ ___
 
 The contents of the register are used as the address of the operand data in memory.
 
-`(r<N>)`
+General syntax: `(r<N>)`
 
 * N = 0 ... 15
 * All bits of the register are used.
@@ -52,7 +53,7 @@ ___
 
 The contents of the register are used as the address of the operand data in memory. The contents of the register are then incremented by the operation size.
 
-`(r<N>)+`
+General syntax: `(r<N>)+`
 
 * N = 0 ... 15
 * All bits of the register are used.
@@ -70,7 +71,7 @@ ___
 
 The contents of the register are used as the address of the operand data in memory. The contents of the register are then decremented by the operation size.
 
-`(r<N>)-`
+General syntax: `(r<N>)-`
 
 * N = 0 ... 15
 * All bits of the register are used.
@@ -88,7 +89,7 @@ ___
 
 The contents of the register are incremented by the operation size. The contents of the register are then used as the address of the operand data in memory.
 
-`+(r<N>)`
+General syntax: `+(r<N>)`
 
 * N = 0 ... 15
 
@@ -105,7 +106,7 @@ ___
 
 The contents of the register are decremented by the operation size. The contents of the register are then used as the address of the operand data in memory.
 
-`-(r<N>)`
+General syntax: `-(r<N>)`
 
 * N = 0 ... 15
 
@@ -122,17 +123,17 @@ ___
 
 The contents of the register, plus the signed 32-bit displacement are used as the address of the operand data in memory.
 
-`<D>(r<N>)`
+General syntax: `<D>(r<N>)`
 
 * N = 0 ... 15
 * D = -2147483648 ... 2147483647
 
 | Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 |
 | - | - | - | - | - | - |
-| `(r0)` | 0x60 | 0xDD | 0xDD | 0xDD | 0xDD |
-| `(r1)` | 0x61 | 0xDD | 0xDD | 0xDD | 0xDD |
+| `(r0)` | 0x60 | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `(r1)` | 0x61 | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
 | ... | ... | ... | ... | ... | ... |
-| `(r15)` | 0x6F | 0xDD | 0xDD | 0xDD | 0xDD |
+| `(r15)` | 0x6F | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
 
 ___
 
@@ -164,22 +165,22 @@ The contents of the register, plus an optionally scaled index value taken from a
 
 | Mode | Bytecode | Ext 0 |
 | - | - | - |
-| `(r<A>, r<I>.b)` | 0x80 | 0x(A)(I) |
-| `(r<A>, r<I>.w)` | 0x81 | 0x(A)(I) |
-| `(r<A>, r<I>.l)` | 0x82 | 0x(A)(I) |
-| `(r<A>, r<I>.q)` | 0x83 | 0x(A)(I) |
-| `(r<A>, r<I>.b * 2)` | 0x84 | 0x(A)(I) |
-| `(r<A>, r<I>.w * 2)` | 0x85 | 0x(A)(I) |
-| `(r<A>, r<I>.l * 2)` | 0x86 | 0x(A)(I) |
-| `(r<A>, r<I>.q * 2)` | 0x87 | 0x(A)(I) |
-| `(r<A>, r<I>.b * 4)` | 0x88 | 0x(A)(I) |
-| `(r<A>, r<I>.w * 4)` | 0x89 | 0x(A)(I) |
-| `(r<A>, r<I>.l * 4)` | 0x8A | 0x(A)(I) |
-| `(r<A>, r<I>.q * 4)` | 0x8B | 0x(A)(I) |
-| `(r<A>, r<I>.b * 8)` | 0x8C | 0x(A)(I) |
-| `(r<A>, r<I>.w * 8)` | 0x8D | 0x(A)(I) |
-| `(r<A>, r<I>.l * 8)` | 0x8E | 0x(A)(I) |
-| `(r<A>, r<I>.q * 8)` | 0x8F | 0x(A)(I) |
+| `(r<A>, r<I>.b)` | 0x80 | 0x _AI_ |
+| `(r<A>, r<I>.w)` | 0x81 | 0x _AI_ |
+| `(r<A>, r<I>.l)` | 0x82 | 0x _AI_ |
+| `(r<A>, r<I>.q)` | 0x83 | 0x _AI_ |
+| `(r<A>, r<I>.b * 2)` | 0x84 | 0x _AI_ |
+| `(r<A>, r<I>.w * 2)` | 0x85 | 0x _AI_ |
+| `(r<A>, r<I>.l * 2)` | 0x86 | 0x _AI_ |
+| `(r<A>, r<I>.q * 2)` | 0x87 | 0x _AI_ |
+| `(r<A>, r<I>.b * 4)` | 0x88 | 0x _AI_ |
+| `(r<A>, r<I>.w * 4)` | 0x89 | 0x _AI_ |
+| `(r<A>, r<I>.l * 4)` | 0x8A | 0x _AI_ |
+| `(r<A>, r<I>.q * 4)` | 0x8B | 0x _AI_ |
+| `(r<A>, r<I>.b * 8)` | 0x8C | 0x _AI_ |
+| `(r<A>, r<I>.w * 8)` | 0x8D | 0x _AI_ |
+| `(r<A>, r<I>.l * 8)` | 0x8E | 0x _AI_ |
+| `(r<A>, r<I>.q * 8)` | 0x8F | 0x _AI_ |
 
 ___
 
@@ -195,22 +196,22 @@ The contents of the register, plus an optionally scaled index value taken from a
 
 | Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 | Ext 4 |
 | - | - | - | - | - | - | - |
-| `<D>(r<A>, r<I>.b)` | 0x90 | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.w)` | 0x91 | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.l)` | 0x92 | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.q)` | 0x93 | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.b * 2)` | 0x94 | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.w * 2)` | 0x95 | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.l * 2)` | 0x96 | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.q * 2)` | 0x97 | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.b * 4)` | 0x98 | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.w * 4)` | 0x99 | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.l * 4)` | 0x9A | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.q * 4)` | 0x9B | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.b * 8)` | 0x9C | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.w * 8)` | 0x9D | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.l * 8)` | 0x9E | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(r<A>, r<I>.q * 8)` | 0x9F | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
+| `<D>(r<A>, r<I>.b)` | 0x90 | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.w)` | 0x91 | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.l)` | 0x92 | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.q)` | 0x93 | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.b * 2)` | 0x94 | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.w * 2)` | 0x95 | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.l * 2)` | 0x96 | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.q * 2)` | 0x97 | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.b * 4)` | 0x98 | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.w * 4)` | 0x99 | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.l * 4)` | 0x9A | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.q * 4)` | 0x9B | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.b * 8)` | 0x9C | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.w * 8)` | 0x9D | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.l * 8)` | 0x9E | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(r<A>, r<I>.q * 8)` | 0x9F | 0x _AI_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
 
 ___
 
@@ -225,22 +226,22 @@ The contents of the program counter, plus an optionally scaled index value taken
 
 | Mode | Bytecode | Ext 0 |
 | - | - | - |
-| `(pc, r<I>.b)` | 0xA0 | 0x0(I) |
-| `(pc, r<I>.w)` | 0xA1 | 0x0(I) |
-| `(pc, r<I>.l)` | 0xA2 | 0x0(I) |
-| `(pc, r<I>.q)` | 0xA3 | 0x0(I) |
-| `(pc, r<I>.b * 2)` | 0xA4 | 0x0(I) |
-| `(pc, r<I>.w * 2)` | 0xA5 | 0x0(I) |
-| `(pc, r<I>.l * 2)` | 0xA6 | 0x0(I) |
-| `(pc, r<I>.q * 2)` | 0xA7 | 0x0(I) |
-| `(pc, r<I>.b * 4)` | 0xA8 | 0x0(I) |
-| `(pc, r<I>.w * 4)` | 0xA9 | 0x0(I) |
-| `(pc, r<I>.l * 4)` | 0xAA | 0x0(I) |
-| `(pc, r<I>.q * 4)` | 0xAB | 0x0(I) |
-| `(pc, r<I>.b * 8)` | 0xAC | 0x0(I) |
-| `(pc, r<I>.w * 8)` | 0xAD | 0x0(I) |
-| `(pc, r<I>.l * 8)` | 0xAE | 0x0(I) |
-| `(pc, r<I>.q * 8)` | 0xAF | 0x0(I) |
+| `(pc, r<I>.b)` | 0xA0 | 0x0 _I_ |
+| `(pc, r<I>.w)` | 0xA1 | 0x0 _I_ |
+| `(pc, r<I>.l)` | 0xA2 | 0x0 _I_ |
+| `(pc, r<I>.q)` | 0xA3 | 0x0 _I_ |
+| `(pc, r<I>.b * 2)` | 0xA4 | 0x0 _I_ |
+| `(pc, r<I>.w * 2)` | 0xA5 | 0x0 _I_ |
+| `(pc, r<I>.l * 2)` | 0xA6 | 0x0 _I_ |
+| `(pc, r<I>.q * 2)` | 0xA7 | 0x0 _I_ |
+| `(pc, r<I>.b * 4)` | 0xA8 | 0x0 _I_ |
+| `(pc, r<I>.w * 4)` | 0xA9 | 0x0 _I_ |
+| `(pc, r<I>.l * 4)` | 0xAA | 0x0 _I_ |
+| `(pc, r<I>.q * 4)` | 0xAB | 0x0 _I_ |
+| `(pc, r<I>.b * 8)` | 0xAC | 0x0 _I_ |
+| `(pc, r<I>.w * 8)` | 0xAD | 0x0 _I_ |
+| `(pc, r<I>.l * 8)` | 0xAE | 0x0 _I_ |
+| `(pc, r<I>.q * 8)` | 0xAF | 0x0 _I_ |
 
 ___
 
@@ -256,22 +257,22 @@ The contents of the program counter, plus an optionally scaled index value taken
 
 | Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 | Ext 4 |
 | - | - | - | - | - | - | - |
-| `<D>(pc, r<I>.b)` | 0xB0 | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.w)` | 0xB1 | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.l)` | 0xB2 | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.q)` | 0xB3 | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.b * 2)` | 0xB4 | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.w * 2)` | 0xB5 | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.l * 2)` | 0xB6 | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.q * 2)` | 0xB7 | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.b * 4)` | 0xB8 | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.w * 4)` | 0xB9 | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.l * 4)` | 0xBA | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.q * 4)` | 0xBB | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.b * 8)` | 0xBC | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.w * 8)` | 0xBD | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.l * 8)` | 0xBE | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
-| `<D>(pc, r<I>.q * 8)` | 0xBF | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
+| `<D>(pc, r<I>.b)` | 0xB0 | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.w)` | 0xB1 | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.l)` | 0xB2 | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.q)` | 0xB3 | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.b * 2)` | 0xB4 | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.w * 2)` | 0xB5 | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.l * 2)` | 0xB6 | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.q * 2)` | 0xB7 | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.b * 4)` | 0xB8 | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.w * 4)` | 0xB9 | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.l * 4)` | 0xBA | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.q * 4)` | 0xBB | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.b * 8)` | 0xBC | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.w * 8)` | 0xBD | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.l * 8)` | 0xBE | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
+| `<D>(pc, r<I>.q * 8)` | 0xBF | 0x0 _I_ | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
 
 ___
 
@@ -286,26 +287,56 @@ The contents of the program counter, plus the signed 32-bit displacement are use
 
 | Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 |
 | - | - | - | - | - | - |
-| `<D>(pc)` | 0xC0 | 0xDD | 0xDD | 0xDD | 0xDD |
+| `<D>(pc)` | 0xC0 | 0x _DD_ | 0x _DD_ | 0x _DD_ | 0x _DD_ |
 
 ___
 
 ### Integer Immediate
 
-The bytes following the effective address are used as an immediate integer value.
+An signed immediate integer value is encoded into the instruction stream.
 
 `#<D>`
 
-* Instruction determines immediate size.
-* D(b) = -128 ... 127
-* D(w) = -32768 ... 32767
-* D(l) = -2147483648 ... 2147483647
-* D(q) = -9223372036854775808 ... 9223372036854775807
+* The number of bytes for the immediate varies depending on the magnitude of D:
+    - D = 0 ... 8: value is encoded directly in the EA byte.
+    - D = -128 ... 127: value is encoded in 1 extension byte.
+    - D = -32768 ... 32767: value is encoded in 2 extension bytes.
+    - D = -2147483648 ... 2147483647: value is encoded in 4 extension bytes.
+    - D = -9223372036854775808 ... 9223372036854775807: value is encoded in 8 extension bytes.
+* For operations involving word sizes larger than the encoded size of D, D is sign extended.
 * Cannot be used for destination operands.
+* Cannot use values of D that are larger than the corresponding operation size.
 
-| Mode | Bytecode | Ext 0 | ...  | Ext (_Operation Size - 1_) |
+| Mode | Bytecode | Ext 0 | Ext 1 | ... | Ext (size-1) |
+| - | - | - | - | - | - |
+| `#0` | 0xC1 | N/A | ... | ... | ... |
+| `#1` | 0xC2 | N/A | ... | ... | ... |
+| `#2` | 0xC3 | N/A | ... | ... | ... |
+| `#3` | 0xC4 | N/A | ... | ... | ... |
+| `#4` | 0xC5 | N/A | ... | ... | ... |
+| `#5` | 0xC6 | N/A | ... | ... | ... |
+| `#6` | 0xC7 | N/A | ... | ... | ... |
+| `#7` | 0xC8 | N/A | ... | ... | ... |
+| `#8` | 0xC9 | N/A | ... | ... | ... |
+| `#<D.b>` | 0xCA | 0x _DD_ | N/A | ... | ... |
+| `#<D.w>` | 0xCB | 0x _DD_ | 0x _DD_ | N/A | ... |
+| `#<D.l>` | 0xCC | 0x _DD_ | 0x _DD_ | ... | 0x _DD_ |
+| `#<D.q>` | 0xCD | 0x _DD_ | 0x _DD_ | ... | 0x _DD_ |
+
+___
+
+### Float Immediate
+
+A floating point value is encoded into the instruction stream.
+
+`#<F>`
+
+* Only available for floating point operations.
+
+| Mode | Bytecode | Ext 0 | ... | Ext (size-1) |
 | - | - | - | - | - |
-| `#<D>` | 0xC1 | 0xDD | ... | 0xDD |
+| `#<F.s>` | 0xCE | 0x _FF_ | ... | 0x _FF_ |
+| `#<F.d>` | 0xCF | 0x _FF_ | ... | 0x _FF_ |
 
 ___
 
@@ -319,4 +350,4 @@ The fully evaluated destination operand address is used for the source operand i
 
 | Mode | Bytecode |
 | - | - |
-|   | 0xC2 |
+|   | 0xD0 |
