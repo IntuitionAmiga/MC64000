@@ -443,18 +443,6 @@ interface IMatches extends IRegisterDirect, IRegisterIndirect, IRegisterIndirect
         '/^' . self::D32 . '\s*\(\s*pc\s*,\s*' . self::RDA . '\.q\s*\*\s*8\s*\)$/' => self::PC_IND_IDXQ_8_DSP,
 
         // Program counter with 64-bit scaled signed 64-bit index and signed displacement d32(pc, rN.q*8)
-        '/^\(\s*' . self::D32 . '\s*,\s*pc\s*,\s*' . self::RDA . '\.q\s*\*\s*8\s*\)$/' => self::PC_IND_IDXQ_8_DSP,
-
-        // Absolute address, 16-bit
-        '/^\d+\.w$/'                  => self::ADDR_ABS_W,
-        '/^0x[0-9A-Fa-f]{1, 4}\.w$/'  => self::ADDR_ABS_W,
-
-        // Absolute address, 32-bit
-        '/^\d+\.l$/'                  => self::ADDR_ABS_L,
-        '/^0x[0-9A-Fa-f]{1, 8}\.l$/'  => self::ADDR_ABS_L,
-
-        // Absolute address 64-bit
-        '/^\d+\.q$/'                  => self::ADDR_ABS_Q,
-        '/^0x[0-9A-Fa-f]{1, 16}\.q$/' => self::ADDR_ABS_L,
+        '/^\(\s*' . self::D32 . '\s*,\s*pc\s*,\s*' . self::RDA . '\.q\s*\*\s*8\s*\)$/' => self::PC_IND_IDXQ_8_DSP
     ];
 }

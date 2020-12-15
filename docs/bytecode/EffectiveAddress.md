@@ -1,4 +1,4 @@
-## Bytecode Format > Effective Address
+## [Documentation](../README.md) > [Bytecode Format](./README.md) > Effective Address
 
 The bytecode formats for the suppored addressing modes are documented here.
 
@@ -10,11 +10,16 @@ One byte is used for the Effective Address Mode of an operand:
 * Integer Immediates require as many additional bytes as are required by the operation size.
 * Absolute Address Immediates require an additional 2, 4 or 8 bytes, depending on the word size.
 
+___
+
 ### General Purpose Register Direct
+
+The contents of the register are used as the operand data.
 
 `r<N>`
 
 * N = 0 ... 15
+* Operation size determines which bits of the register are used.
 
 | Mode | Bytecode |
 | - | - |
@@ -23,11 +28,16 @@ One byte is used for the Effective Address Mode of an operand:
 | ... | ... |
 | `r15` | 0x0F |
 
+___
+
 ### General Purpose Register Indirect
+
+The contents of the register are used as the address of the operand data in memory.
 
 `(r<N>)`
 
 * N = 0 ... 15
+* All bits of the register are used.
 
 | Mode | Bytecode |
 | - | - |
@@ -36,11 +46,16 @@ One byte is used for the Effective Address Mode of an operand:
 | ... | ... |
 | `(r15)` | 0x1F |
 
+___
+
 ### General Purpose Register Indirect, Post Increment
+
+The contents of the register are used as the address of the operand data in memory. The contents of the register are then incremented by the operation size.
 
 `(r<N>)+`
 
 * N = 0 ... 15
+* All bits of the register are used.
 
 | Mode | Bytecode |
 | - | - |
@@ -49,11 +64,16 @@ One byte is used for the Effective Address Mode of an operand:
 | ... | ... |
 | `(r15)+` | 0x2F |
 
+___
+
 ### General Purpose Register Indirect, Post Decrement
+
+The contents of the register are used as the address of the operand data in memory. The contents of the register are then decremented by the operation size.
 
 `(r<N>)-`
 
 * N = 0 ... 15
+* All bits of the register are used.
 
 | Mode | Bytecode |
 | - | - |
@@ -62,7 +82,11 @@ One byte is used for the Effective Address Mode of an operand:
 | ... | ... |
 | `(r15)-` | 0x3F |
 
+___
+
 ### General Purpose Register Indirect, Pre Increment
+
+The contents of the register are incremented by the operation size. The contents of the register are then used as the address of the operand data in memory.
 
 `+(r<N>)`
 
@@ -75,7 +99,11 @@ One byte is used for the Effective Address Mode of an operand:
 | ... | ... |
 | `+(r15)` | 0x4F |
 
+___
+
 ### General Purpose Register Indirect, Pre Decrement
+
+The contents of the register are decremented by the operation size. The contents of the register are then used as the address of the operand data in memory.
 
 `-(r<N>)`
 
@@ -88,8 +116,11 @@ One byte is used for the Effective Address Mode of an operand:
 | ... | ... |
 | `-(r15)` | 0x5F |
 
+___
 
 ### General Purpose Register Indirect with Displacement
+
+The contents of the register, plus the signed 32-bit displacement are used as the address of the operand data in memory.
 
 `<D>(r<N>)`
 
@@ -103,8 +134,11 @@ One byte is used for the Effective Address Mode of an operand:
 | ... | ... | ... | ... | ... | ... |
 | `(r15)` | 0x6F | 0xDD | 0xDD | 0xDD | 0xDD |
 
+___
 
 ### Floating Point Register Direct
+
+The contents of the register are used as the operand data. This mode is only available for floating point operations.
 
 `fp<N>`
 
@@ -117,7 +151,11 @@ One byte is used for the Effective Address Mode of an operand:
 | ... | ... |
 | `fp15` | 0x7F |
 
+___
+
 ### General Purpose Register Indirect with (Scaled) Index
+
+The contents of the register, plus an optionally scaled index value taken from a second register are used as the address of the operand in memory. The index size and scale factor are selectable.
 
 `(r<A>, r<I>.<b|w|l|q> [* <2|4|8>])`
 
@@ -143,7 +181,11 @@ One byte is used for the Effective Address Mode of an operand:
 | `(r<A>, r<I>.l * 8)` | 0x8E | 0x(A)(I) |
 | `(r<A>, r<I>.q * 8)` | 0x8F | 0x(A)(I) |
 
+___
+
 ### General Purpose Register Indirect with (Scaled) Index and Displacement
+
+The contents of the register, plus an optionally scaled index value taken from a second register, plus the signed 32-bit displacement are used as the address of the operand in memory. The index size and scale factor are selectable.
 
 `<D>(r<A>, r<I>.<b|w|l|q> [ * <2|4|8>])`
 
@@ -170,12 +212,16 @@ One byte is used for the Effective Address Mode of an operand:
 | `<D>(r<A>, r<I>.l * 8)` | 0x9E | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
 | `<D>(r<A>, r<I>.q * 8)` | 0x9F | 0x(A)(I) | 0xDD | 0xDD | 0xDD | 0xDD |
 
+___
+
 ### Program Counter Indirect with (Scaled) Index
+
+The contents of the program counter, plus an optionally scaled index value taken from a second register are used as the address of the operand in memory. The index size and scale factor are selectable.
 
 `(pc, r<I>.<b|w|l|q> [* <2|4|8>])`
 
 * I = 0 ... 15
-
+* Cannot be used for destination operands.
 
 | Mode | Bytecode | Ext 0 |
 | - | - | - |
@@ -196,12 +242,17 @@ One byte is used for the Effective Address Mode of an operand:
 | `(pc, r<I>.l * 8)` | 0xAE | 0x0(I) |
 | `(pc, r<I>.q * 8)` | 0xAF | 0x0(I) |
 
+___
+
 ### Program Counter Indirect with (Scaled) Index and Displacement
+
+The contents of the program counter, plus an optionally scaled index value taken from a second register, plus the signed 32-bit displacement are used as the address of the operand in memory. The index size and scale factor are selectable.
 
 `<D>(pc, r<I>.<b|w|l|q> [* <2|4|8>])`
 
 * I = 0 ... 15
 * D = -2147483648 ... 2147483647
+* Cannot be used for destination operands.
 
 | Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 | Ext 4 |
 | - | - | - | - | - | - | - |
@@ -222,37 +273,50 @@ One byte is used for the Effective Address Mode of an operand:
 | `<D>(pc, r<I>.l * 8)` | 0xBE | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
 | `<D>(pc, r<I>.q * 8)` | 0xBF | 0x0(I) | 0xDD | 0xDD | 0xDD | 0xDD |
 
+___
+
 ### Program Indirect Counter with Displacement
+
+The contents of the program counter, plus the signed 32-bit displacement are used as the address of the operand data in memory.
 
 `<D>(pc)`
 
 * D = -2147483648 ... 2147483647
+* Cannot be used for destination operands.
 
 | Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 |
 | - | - | - | - | - | - |
 | `<D>(pc)` | 0xC0 | 0xDD | 0xDD | 0xDD | 0xDD |
 
+___
+
 ### Integer Immediate
+
+The bytes following the effective address are used as an immediate integer value.
 
 `#<D>`
 
-* Instruction determines size.
+* Instruction determines immediate size.
 * D(b) = -128 ... 127
 * D(w) = -32768 ... 32767
 * D(l) = -2147483648 ... 2147483647
 * D(q) = -9223372036854775808 ... 9223372036854775807
+* Cannot be used for destination operands.
 
 | Mode | Bytecode | Ext 0 | ...  | Ext (_Operation Size - 1_) |
 | - | - | - | - | - |
 | `#<D>` | 0xC1 | 0xDD | ... | 0xDD |
 
-### Absolute Address Immediate
+___
 
-`<N>.<w|l|q>`
+### Same As Destination
 
-| Mode | Bytecode | Ext 0 | ...  | Ext (_Word Size - 1_) |
-| - | - | - | - | - |
-| `<N>.w` | 0xC2 | 0xDD | ... | 0xDD |
-| `<N>.l` | 0xC3 | 0xDD | ... | 0xDD |
-| `<N>.q` | 0xC4 | 0xDD | ... | 0xDD |
+The fully evaluated destination operand address is used for the source operand in memory.
 
+* Cannot be used for destination operands.
+* Used where the Source Effective Address mode is the same as the Destination Effective Address mode and that mode does not have any increment/decrement behaviour.
+* Bytecode / decode logic optimisation.
+
+| Mode | Bytecode |
+| - | - |
+|   | 0xC2 |

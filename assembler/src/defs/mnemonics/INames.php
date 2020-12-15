@@ -20,278 +20,263 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
  */
 interface INames {
     const MATCHES = [
+
+// Flow control group
         'bkpt',
 
-        'add.b',
-        'add.w',
-        'add.l',
-        'add.q',
+        'bra.b',
+        'bra',
+        'bsr.b',
+        'bsr',
+        'jmp',
+        'jsr',
+        'rts',
 
-        'fadd.s',
-        'fadd.d',
+        // Single operand conditional branches
 
-        'and.b',
-        'and.w',
-        'and.l',
-        'and.q',
-
-        'asl.b',
-        'asl.w',
-        'asl.l',
-        'asl.q',
-
-        'asr.b',
-        'asr.w',
-        'asr.l',
-        'asr.q',
-
-        'beq.b',
-        'beq.w',
-        'beq.l',
-        'beq.q',
-
-        'fbeq.s',
-        'fbeq.d',
-
-        'bne.b',
-        'bne.w',
-        'bne.l',
-        'bne.q',
-
-        'fbne.s',
-        'fbne.d',
-
-        'blt.b',
-        'blt.w',
-        'blt.l',
-        'blt.q',
-
-        'fblt.s',
-        'fblt.d',
-
-        'ble.b',
-        'ble.w',
-        'ble.l',
-        'ble.q',
-
-        'fble.s',
-        'fble.d',
-
-        'bge.b',
-        'bge.w',
-        'bge.l',
-        'bge.q',
-
-        'fbge.s',
-        'fbge.d',
-
-        'bgt.b',
-        'bgt.w',
-        'bgt.l',
-        'bgt.q',
-
-        'fbgt.s',
-        'fbgt.d',
-
+        // Branch if <ea> == 0
         'biz.b',
         'biz.w',
         'biz.l',
         'biz.q',
-
         'fbiz.s',
         'fbiz.d',
 
+        // Branch if <ea> != 0
         'bnz.b',
         'bnz.w',
         'bnz.l',
         'bnz.q',
-
         'fbnz.s',
         'fbnz.d',
 
+        // Branch if <ea> < 0
         'bmi.b',
         'bmi.w',
         'bmi.l',
         'bmi.q',
-
         'fbmi.s',
         'fbmi.d',
 
+        // Branch if <ea> > 0
         'bpl.b',
         'bpl.w',
         'bpl.l',
         'bpl.q',
-
         'fbpl.s',
         'fbpl.d',
 
+        // Branch if <ea(s)> < <ea(d)>
+        'blt.b',
+        'blt.w',
+        'blt.l',
+        'blt.q',
+        'fblt.s',
+        'fblt.d',
+
+        // Branch if <ea(s)> <= <ea(d)>
+        'ble.b',
+        'ble.w',
+        'ble.l',
+        'ble.q',
+        'fble.s',
+        'fble.d',
+
+        // Branch if <ea(s)> == <ea(d)>
+        'beq.b',
+        'beq.w',
+        'beq.l',
+        'beq.q',
+        'fbeq.s',
+        'fbeq.d',
+
+        // Branch if <ea(s)> >= <ea(d)>
+        'bge.b',
+        'bge.w',
+        'bge.l',
+        'bge.q',
+        'fbge.s',
+        'fbge.d',
+
+        // Branch if <ea(s)> > <ea(d)>
+        'bgt.b',
+        'bgt.w',
+        'bgt.l',
+        'bgt.q',
+        'fbgt.s',
+        'fbgt.d',
+
+        // Branch if <ea(s)> != <ea(d)>
+        'bne.b',
+        'bne.w',
+        'bne.l',
+        'bne.q',
+        'fbne.s',
+        'fbne.d',
+
+        // Branch if bit set
         'bbs.b',
         'bbs.w',
         'bbs.l',
         'bbs.q',
 
+        // Branch if bit clear
         'bbc.b',
         'bbc.w',
         'bbc.l',
         'bbc.q',
 
-        'bra',
-        'bsr',
+        // Go on, why not?
+        'dbnz',
+
+// Data Movement
+        'move.b',
+        'move.w',
+        'move.l',
+        'move.q',
+        'savem',
+        'loadm',
+        'fmoveb.s',
+        'fmoveb.d',
+        'fmovew.s',
+        'fmovew.d',
+        'fmovel.s',
+        'fmovel.d',
+        'fmoveq.s',
+        'fmoveq.d',
+        'fmoves.l',
+        'fmoves.q',
+        'fmoves.d',
+        'fmoved.l',
+        'fmoved.q',
+        'fmoved.s',
+        'fsavem',
+        'floadm',
+        'clr.b',
+        'clr.w',
+        'clr.l',
+        'clr.q',
+        'exg',
+        'fexg',
+        'swap',
+        'swap.l',
+        'swap.q',
+        'link',
+        'unlk',
+        'lea',
+        'pea',
+
+// Logical
+        'and.b',
+        'and.w',
+        'and.l',
+        'and.q',
+        'or.b',
+        'or.w',
+        'or.l',
+        'or.q',
+        'eor.b',
+        'eor.w',
+        'eor.l',
+        'eor.q',
+        'not.b',
+        'not.w',
+        'not.l',
+        'not.q',
+
+        'lsl.b',
+        'lsl.w',
+        'lsl.l',
+        'lsl.q',
+        'lsr.b',
+        'lsr.w',
+        'lsr.l',
+        'lsr.q',
+        'rol.b',
+        'rol.w',
+        'rol.l',
+        'rol.q',
+        'ror.b',
+        'ror.w',
+        'ror.l',
+        'ror.q',
 
         'bclr.b',
         'bclr.w',
         'bclr.l',
         'bclr.q',
-
         'bset.b',
         'bset.w',
         'bset.l',
         'bset.q',
-
         'bfclr',
+        'bfset',
+        'bfins',
         'bfexts',
         'bfextu',
         'bfffo',
-        'bfins',
-        'bfset',
+        'bfcnt',
+        'bfxxx',
 
-        'clr.b',
-        'clr.w',
-        'clr.l',
-        'clr.q',
-
-        'dbnz',
-
-        'divs.b',
-        'divs.w',
-        'divs.l',
-        'divs.q',
-
-        'divu.b',
-        'divu.w',
-        'divu.l',
-        'divu.q',
-
-        'fdiv.s',
-        'fdiv.d',
-
-        'fmod.s',
-        'fmod.d',
-
-        'eor.b',
-        'eor.w',
-        'eor.l',
-        'eor.q',
-
-        'exg',
-
+// Arithmetic
         'extb.w',
         'extb.l',
         'extb.q',
         'extw.l',
         'extw.q',
         'extl.q',
-
-        'fabs.s',
-        'fabs.d',
-
-        'jmp',
-        'jsr',
-        'lea',
-        'link',
-
-        'lsl.b',
-        'lsl.w',
-        'lsl.l',
-        'lsl.q',
-
-        'lsr.b',
-        'lsr.w',
-        'lsr.l',
-        'lsr.q',
-
-        'move.b',
-        'move.w',
-        'move.l',
-        'move.q',
-        'movem',
-
-        'fmoveb.s',
-        'fmovew.s',
-        'fmovel.s',
-        'fmoveq.s',
-        'fmoved.s',
-        'fmoveb.d',
-        'fmovew.d',
-        'fmovel.d',
-        'fmoveq.d',
-        'fmoves.d',
-        'fmoves.l',
-        'fmoves.q',
-        'fmoved.l',
-        'fmoved.q',
-
-        'fmovem',
-
-        'muls.b',
-        'muls.w',
-        'muls.l',
-        'muls.q',
-
-        'mulu.b',
-        'mulu.w',
-        'mulu.l',
-        'mulu.q',
-
-        'fmul.s',
-        'fmul.d',
-
-        'neg.b',
-        'neg.w',
-        'neg.l',
-        'neg.q',
-
-        'fneg.s',
-        'fneg.d',
-
-        'fsqrt.s',
-        'frqrt.d',
-
-        'not.b',
-        'not.w',
-        'not.l',
-        'not.q',
-
-        'or.b',
-        'or.w',
-        'or.l',
-        'or.q',
-
-        'pea',
-
-        'rol.b',
-        'rol.w',
-        'rol.l',
-        'rol.q',
-
-        'ror.b',
-        'ror.w',
-        'ror.l',
-        'ror.q',
-
-        'rts',
-
+        'asl.b',
+        'asl.w',
+        'asl.l',
+        'asl.q',
+        'asr.b',
+        'asr.w',
+        'asr.l',
+        'asr.q',
+        'add.b',
+        'add.w',
+        'add.l',
+        'add.q',
+        'fadd.s',
+        'fadd.d',
         'sub.b',
         'sub.w',
         'sub.l',
         'sub.q',
-
         'fsub.s',
         'fsub.d',
-
-        'swap',
-        'unlk',
-
+        'neg.b',
+        'neg.w',
+        'neg.l',
+        'neg.q',
+        'fneg.s',
+        'fneg.d',
+        'muls.b',
+        'muls.w',
+        'muls.l',
+        'muls.q',
+        'mulu.b',
+        'mulu.w',
+        'mulu.l',
+        'mulu.q',
+        'fmul.s',
+        'fmul.d',
+        'divs.b',
+        'divs.w',
+        'divs.l',
+        'divs.q',
+        'divu.b',
+        'divu.w',
+        'divu.l',
+        'divu.q',
+        'fdiv.s',
+        'fdiv.d',
+        'fmod.s',
+        'fmod.d',
+        'fabs.s',
+        'fabs.d',
+        'fsqrt.s',
+        'frqrt.d',
         'facos.s',
         'facos.d',
         'fasin.s',

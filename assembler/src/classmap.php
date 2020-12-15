@@ -5,6 +5,11 @@ namespace ABadCafe\MC64K;
 const CLASS_MAP = [
   'ABadCafe\\MC64K\\Defs\\Registers\\INames' => '/defs/registers/INames.php',
   'ABadCafe\\MC64K\\Defs\\Mnemonic\\INames' => '/defs/mnemonics/INames.php',
+  'ABadCafe\\MC64K\\Defs\\Mnemonic\\IDataMove' => '/defs/mnemonics/IDataMove.php',
+  'ABadCafe\\MC64K\\Defs\\Mnemonic\\IControl' => '/defs/mnemonics/IControl.php',
+  'ABadCafe\\MC64K\\Defs\\Mnemonic\\IByteCodeGroups' => '/defs/mnemonics/IByteCodeGroups.php',
+  'ABadCafe\\MC64K\\Defs\\Mnemonic\\IArithmetic' => '/defs/mnemonics/IArithmetic.php',
+  'ABadCafe\\MC64K\\Defs\\Mnemonic\\ILogical' => '/defs/mnemonics/ILogical.php',
   'ABadCafe\\MC64K\\Defs\\EffectiveAddress\\IRegisterDirect' => '/defs/effective_address/IRegisterDirect.php',
   'ABadCafe\\MC64K\\Defs\\EffectiveAddress\\IByteCodeGroups' => '/defs/effective_address/IByteCodeGroups.php',
   'ABadCafe\\MC64K\\Defs\\EffectiveAddress\\IByteCodeNames' => '/defs/effective_address/IByteCodeNames.php',

@@ -1,3 +1,4 @@
+#!/usr/bin/php -n
 <?php
 
 /**
@@ -10,23 +11,17 @@
  *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
  *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
  *
- *    - 64-bit 680x0-inspired Virtual Machine and assembler -
- */
-
-namespace ABadCafe\MC64K\Defs\EffectiveAddress;
-
-/**
- * IOther
  *
- * Enumerates the bytecodes for the remaining sundry addressing modes
  */
-interface IOther extends IByteCodeGroups {
-    const
-        // Program counter indirect with displacement
-        PC_IND_DSP         = self::OFS_OTHER + 0,
 
-        // Integer Immediate
-        INT_IMMEDIATE      = self::OFS_OTHER + 1
+declare(strict_types = 1);
 
-    ;
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+use ABadCafe\MC64K\Defs\Mnemonic;
+
+foreach (Mnemonic\INames::MATCHES as $iByteCode => $sDescription) {
+    printf("\t0x%02X : %s\n", $iByteCode, $sDescription);
 }

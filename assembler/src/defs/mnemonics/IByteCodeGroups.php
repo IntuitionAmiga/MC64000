@@ -13,20 +13,17 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-namespace ABadCafe\MC64K\Defs\EffectiveAddress;
+namespace ABadCafe\MC64K\Defs\Mnemonic;
 
 /**
- * IOther
+ * IByteCodeGroups
  *
- * Enumerates the bytecodes for the remaining sundry addressing modes
  */
-interface IOther extends IByteCodeGroups {
+interface IByteCodeGroups {
     const
-        // Program counter indirect with displacement
-        PC_IND_DSP         = self::OFS_OTHER + 0,
-
-        // Integer Immediate
-        INT_IMMEDIATE      = self::OFS_OTHER + 1
-
+        OFS_CONTROL    = 0,
+        OFS_DATA_MOVE  = 77,
+        OFS_LOGICAL    = 112,
+        OFS_ARITHMETIC = 160
     ;
 }
