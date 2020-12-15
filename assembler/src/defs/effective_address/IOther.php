@@ -22,11 +22,35 @@ namespace ABadCafe\MC64K\Defs\EffectiveAddress;
  */
 interface IOther extends IByteCodeGroups {
     const
-        // Program counter indirect with displacement
-        PC_IND_DSP         = self::OFS_OTHER + 0,
+        INT_IMMEDIATE      = self::OFS_OTHER + 0,
 
-        // Integer Immediate
-        INT_IMMEDIATE      = self::OFS_OTHER + 1
+        // Immediate small integer encoded directly, no extension byte.
+        INT_SMALL_0        = self::OFS_OTHER + 0,
+        INT_SMALL_1        = self::OFS_OTHER + 1,
+        INT_SMALL_2        = self::OFS_OTHER + 2,
+        INT_SMALL_3        = self::OFS_OTHER + 3,
+        INT_SMALL_4        = self::OFS_OTHER + 4,
+        INT_SMALL_5        = self::OFS_OTHER + 5,
+        INT_SMALL_6        = self::OFS_OTHER + 6,
+        INT_SMALL_7        = self::OFS_OTHER + 7,
+        INT_SMALL_8        = self::OFS_OTHER + 8,
+
+        // Immediate integer value encoded into extension bytes.
+        INT_IMM_BYTE       = self::OFS_OTHER +  9,
+        INT_IMM_WORD       = self::OFS_OTHER + 10,
+        INT_IMM_LONG       = self::OFS_OTHER + 11,
+        INT_IMM_QUAD       = self::OFS_OTHER + 12,
+
+        // Immediate floating point value encoded into extension bytes.
+        FLT_IMMEDIATE      = self::OFS_OTHER + 13,
+
+        FLT_IMM_SINGLE     = self::OFS_OTHER + 13,
+        FLT_IMM_DOUBLE     = self::OFS_OTHER + 14,
+
+        // Program counter indirect with displacement
+        PC_IND_DSP         = self::OFS_OTHER + 15,
+
+        SAME_AS_DEST       = self::OFS_OTHER + 16
 
     ;
 }
