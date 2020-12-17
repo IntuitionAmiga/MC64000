@@ -3,6 +3,9 @@
 namespace ABadCafe\MC64K;
 
 const CLASS_MAP = [
+  'ABadCafe\\MC64K\\IParser' => '/IParser.php',
+  'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\IMatch' => '/parser/effective_address/IMatch.php',
+  'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\Immediate' => '/parser/effective_address/Immediate.php',
   'ABadCafe\\MC64K\\Defs\\Registers\\INames' => '/defs/registers/INames.php',
   'ABadCafe\\MC64K\\Defs\\Mnemonic\\INames' => '/defs/mnemonics/INames.php',
   'ABadCafe\\MC64K\\Defs\\Mnemonic\\IDataMove' => '/defs/mnemonics/IDataMove.php',

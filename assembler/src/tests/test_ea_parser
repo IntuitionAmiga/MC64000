@@ -1,0 +1,41 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+const IMMEDIATE_EXAMPLES = [
+    '#0', '#1', '#2', '#3', '#4', '#5', '#6', '#7', '#8',                // Should all be small integer immediates
+    '#0x0', '#0x1', '#0x02', '#0x0003', '#0x00000008',
+    '#9', '#-1', '#9', '#-128', '#127',                                  // Should all be byte integer immediates
+    '#0x09', '#0x1A', '#0x7F', '#0xFF', '#0xFFFF', '#0xFFFFFFFF',
+    '#128', '#-129', '#16384', '#-32768', '#32767',                      // Should all be word integer immediates
+    '#0x00FF', '#0x7FFF',
+    '#32768', '#-32769', '#65536', '#2147483647', '#-2147483648',        // Should all be long integer immediates
+    '#0x00FFFF', '#0x0000FFFF', '#0xFFFF0000',
+    '#2147483648', '#-2147483649', '#' . PHP_INT_MAX, '#' . PHP_INT_MIN, // Should all be quad integer immediates
+    //'#0x8000000000000000'
+];
+
+$oParser = new Parser\EffectiveAddress\Immediate;
+
+foreach (IMMEDIATE_EXAMPLES as $sExample) {
+    $sResult = $oParser->parse($sExample);
+    echo $sExample, " => ", $sResult ? bin2hex($sResult) : 'null', "\n";
+}

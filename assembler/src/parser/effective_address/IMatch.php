@@ -13,19 +13,23 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
+namespace ABadCafe\MC64K\Parser\EffectiveAddress;
+
 /**
- * In the absence of an autoloader, we use a simple C-like header. Each top level include pulls in whatever is defined
- * within it's corresponding subdirectory.
+ * IMatch
+ *
+ * Common regex motifs
  */
-namespace ABadCafe\MC64K;
+interface IMatch {
 
-if (PHP_VERSION_ID < 70400) {
-    throw new \RuntimeException("Requires at least PHP 7.4");
+    const
+        // Matches a displacement value, either a signed decimal or 0x prefixed hexadecimal literal
+        D32 = '([\+\-]{0,1}\d+|(0x)[0-9A-Fa-f]+)',
+
+        // Matches an address register qualification (rN or aN)
+        RA  = '([ra]\d+|sp)',
+
+        // Matches any integer register qualification (rN, aN or dN | sp)
+        RDA = '([rda]\d+|sp)'
+    ;
 }
-
-require_once 'classmap.php';
-spl_autoload_register(function(string $str_class) {
-    if (isset(CLASS_MAP[$str_class])) {
-        require_once __DIR__ . CLASS_MAP[$str_class];
-    }
-});
