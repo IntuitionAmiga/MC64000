@@ -15,11 +15,20 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Defs\Registers;
+namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 
 /**
- * Registers
+ * TOperationSizeAware
  */
-interface INames {
+trait TOperationSizeAware {
 
+    private int $iOperationSize = 0;
+
+    /**
+     * @inheritDoc
+     */
+    public function setOperationSize(int $iSize) : self {
+        $this->iOperationSize = $iSize;
+        return $this;
+    }
 }

@@ -26,6 +26,8 @@ use ABadCafe\MC64K\Parser;
  */
 class Immediate implements IParser, EffectiveAddress\IOther {
 
+    use TOperationSizeAware;
+
     const MATCHES = [
         'parseInteger' => '/^#' . self::D32 . '$/',
         'parseFloat'   => '/^#((?:[-+]{0,1}\d+)\.\d*(?:[eE][-+]{0,1}\d+){0,1})([sSdD]{0,1})$/'
@@ -47,16 +49,6 @@ class Immediate implements IParser, EffectiveAddress\IOther {
         self::INT_IMM_LONG => [-2147483648, 2147483647, 'V'],
         self::INT_IMM_QUAD => [PHP_INT_MIN, PHP_INT_MAX, 'P']
     ];
-
-    private int $iOperationSize = 0;
-
-    /**
-     * @inheritDoc
-     */
-    public function setOperationSize(int $iSize) : self {
-        $this->iOperationSize = $iSize;
-        return $this;
-    }
 
     /**
      * @inheritDoc
