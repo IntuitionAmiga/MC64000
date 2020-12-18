@@ -13,8 +13,9 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-namespace ABadCafe\MC64K\Parser\EffectiveAddress;
+declare(strict_types = 1);
 
+namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K;
 
 /**
