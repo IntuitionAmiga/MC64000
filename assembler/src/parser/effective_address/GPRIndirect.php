@@ -23,16 +23,31 @@ use ABadCafe\MC64K\Parser;
 /**
  * GPRIndirect
  *
- * Basic parser for GPR indirect modes
+ * Basic parser for GPR indirect modes, including pre/post increment/decrement
  */
-class GPRIndirect implements IParser, EffectiveAddress\IRegisterDirect {
+class GPRIndirect implements IParser, EffectiveAddress\IRegisterIndirect {
 
     use TOperationSizeAware;
 
     /**
      * Required match
      */
-    const MATCH = '/^\(\s*' . self::RA . '\s*\)$/';
+    const MATCHES = [
+        // Register indirect (rN)
+        '/^\(\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND,
+
+        // Register indirect, post increment (rN)+
+        '/^\(\s*' . self::RA . '\s*\)\+$/' => self::OFS_GPR_IND_POST_INC,
+
+        // Register indirect, post decrement (rN)-
+        '/^\(\s*' . self::RA . '\s*\)\-$/' => self::OFS_GPR_IND_POST_DEC,
+
+        // Register indirect, pre increment +(rN)
+        '/^\+\(\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND_PRE_INC,
+
+        // Register indirect, pre decrement -(rN)
+        '/^\-\(\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND_PRE_DEC,
+    ];
 
     const MATCHED_NAME = 1;
 
@@ -40,12 +55,14 @@ class GPRIndirect implements IParser, EffectiveAddress\IRegisterDirect {
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
-        if (preg_match(self::MATCH, $sSource, $aMatches)) {
-            $sRegister = $aMatches[self::MATCHED_NAME];
-            if (!isset(Register\INames::GPR_MAP[$sRegister])) {
-                throw new \OutOfBoundsException($sRegister . ' is not a recognised GPR name');
+        foreach (self::MATCHES as $sMatch => $iOffset) {
+            if (preg_match($sMatch, $sSource, $aMatches)) {
+                $sRegister = $aMatches[self::MATCHED_NAME];
+                if (!isset(Register\INames::GPR_MAP[$sRegister])) {
+                    throw new \OutOfBoundsException($sRegister . ' is not a recognised GPR name');
+                }
+                return chr($iOffset + Register\INames::GPR_MAP[$sRegister]);
             }
-            return chr(self::OFS_GPR_IND + Register\INames::GPR_MAP[$sRegister]);
         }
         return null;
     }
