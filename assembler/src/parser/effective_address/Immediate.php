@@ -15,21 +15,29 @@
 
 namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 
-use ABadCafe\MC64K;
 use ABadCafe\MC64K\Defs\EffectiveAddress;
+use ABadCafe\MC64K\Parser;
 
-class Immediate implements MC64K\IParser, IMatch, EffectiveAddress\IOther {
+/**
+ * Immediate
+ *
+ * Effective address parser for immediate values, integer and floating point.
+ */
+class Immediate implements IParser, EffectiveAddress\IOther {
 
     const MATCHES = [
         'parseInteger' => '/^#' . self::D32 . '$/',
-        'parseFloat' => '/^#(([-+]{0,1}\d+)\.\d*([eE][-+]{0,1}\d+){0,1})$/'
+        'parseFloat'   => '/^#((?:[-+]{0,1}\d+)\.\d*(?:[eE][-+]{0,1}\d+){0,1})([sSdD]{0,1})$/'
     ];
 
     const
         MIN_INT_SMALL = 0,
         MAX_INT_SMALL = 8,
         MATCHED_VALUE = 1,
-        MATCHED_HEX   = 2
+        MATCHED_HEX   = 2,
+        MATCHED_FSIZE = 2,
+        MAX_SINGLE    = 3.4e38,
+        MIN_SINGLE    = 1.18e-38
     ;
 
     const INT_RANGES = [
@@ -39,6 +47,19 @@ class Immediate implements MC64K\IParser, IMatch, EffectiveAddress\IOther {
         self::INT_IMM_QUAD => [PHP_INT_MIN, PHP_INT_MAX, 'P']
     ];
 
+    private int $iOperationSize = 0;
+
+    /**
+     * @inheritDoc
+     */
+    public function setOperationSize(int $iSize) : self {
+        $this->iOperationSize = $iSize;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function parse(string $sSource) : ?string {
         foreach (self::MATCHES as $sCallback => $sRegex) {
             if (preg_match($sRegex, $sSource, $aMatches)) {
@@ -64,7 +85,42 @@ class Immediate implements MC64K\IParser, IMatch, EffectiveAddress\IOther {
     }
 
     /**
-     * Parses a signed decimal value
+     * Extract the floating point match and determine the densest immediate mode it can fit into.
+     *
+     * @param  string[] $aMatches - regex output
+     * @return string - bytecode for complete EA / immediate
+     */
+    private function parseFloat(array $aMatches) : string {
+        $fValue = doubleval($aMatches[self::MATCHED_VALUE]);
+        if (is_nan($fValue)) {
+            throw new \RangeException('Could not encode ' . $aMatches[self::MATCHED_VALUE]);
+        }
+
+        // If the operation size or immidate requests a single, we need to validate it's in range.
+        if (
+            $this->iOperationSize == 4             ||
+            's' === $aMatches[self::MATCHED_FSIZE] ||
+            'S' === $aMatches[self::MATCHED_FSIZE]
+        ) {
+            $fAbs = abs($fValue);
+            if (
+                $fAbs > self::MAX_SINGLE ||
+                $fAbs < self::MIN_SINGLE
+            ) {
+                throw new \RangeException('Cannot encode single precision ' . $aMatches[self::MATCHED_VALUE]);
+            }
+            return chr(self::FLT_IMM_SINGLE) . pack('g', $fValue);
+        } else {
+            return chr(self::FLT_IMM_DOUBLE) . pack('e', $fValue);
+        }
+    }
+
+    /**
+     * Encodes a signed integer using the smallest possible output effective address mode.
+     *
+     * @param  int    $iImmediate
+     * @return string bytecode
+     * @throws \RangeException
      */
     private function encodeDecimalIntegerImmediate(int $iImmediate) : string {
         if ($iImmediate >= self::MIN_INT_SMALL && $iImmediate <= self::MAX_INT_SMALL) {
@@ -79,50 +135,47 @@ class Immediate implements MC64K\IParser, IMatch, EffectiveAddress\IOther {
         throw new \RangeException('Could not encode ' . (string)$iImmediate);
     }
 
+    /**
+     * Hex immediates are parsed a bit specially:
+     *
+     * 0xFF will be encoded as -1, as a byte
+     * 0x0FF will be encoded as 255, as a word
+     * 0xFFFF will be encoded as -1, as a byte
+     */
     private function encodeHexadecimalIntegerImmediate(string $sImmediate) : string {
+        $iLength = strlen($sImmediate);
 
-        switch (strlen($sImmediate)) {
-            case 1:
-            case 2:
-                $iValue = (int)base_convert($sImmediate, 16, 10);
-                if ($iValue & 0x80) {
-                    $iValue -= 1<<8;
-                }
-                return $this->encodeDecimalIntegerImmediate($iValue);
-            case 3:
-            case 4:
-                $iValue = (int)base_convert($sImmediate, 16, 10);
-                if ($iValue & 0x8000) {
-                    $iValue -= 1<<16;
-                }
-                return $this->encodeDecimalIntegerImmediate($iValue);
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-                $iValue = (int)base_convert($sImmediate, 16, 10);
-                if ($iValue & 0x8000000) {
-                    $iValue -= 1<<32;
-                }
-                return $this->encodeDecimalIntegerImmediate($iValue);
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-                // TODO - See if the value is something in the range of a 32-bit first.
-                // Otherwise do our own direct conversion as there are issues dealing with
-                // the interpretation of sign.
-            default:
-                throw new \RangeException('Could not encode ' . $sImmediate);
-
+        if ($iLength < 1 || $iLength > 16) {
+            throw new \RangeException('Could not encode ' . $sImmediate);
         }
-    }
+        if ($iLength <= 2) {
+            return $this->encodeDecimalIntegerImmediate(Parser\Utils\Hex::stringToInt8($sImmediate));
+        }
+        if ($iLength <= 4) {
+            return $this->encodeDecimalIntegerImmediate(Parser\Utils\Hex::stringToInt16($sImmediate));
+        }
+        if ($iLength <= 8) {
+            return $this->encodeDecimalIntegerImmediate(Parser\Utils\Hex::stringToInt32($sImmediate));
+        }
+        if ($iLength <= 15) {
+            $sImmediate = str_pad($sImmediate, 16, '0', STR_PAD_LEFT);
+        }
 
-    private function parseFloat(array $aMatches) : string {
+        $iLower = Parser\Utils\Hex::stringToInt32(substr($sImmediate, 8, 8));
+        $iUpper = Parser\Utils\Hex::stringToInt32(substr($sImmediate, 0, 8));
 
+        // The upper half may not be significant, depending on what the lower half is
+        if ($iLower < 0) {
+            if ($iUpper === -1) {
+                // Upper is just sign extension of the lower half
+                return $this->encodeDecimalIntegerImmediate($iLower);
+            }
+        } else {
+            if ($iUpper === 0) {
+                // Upper is just zero pad of the lower half
+                return $this->encodeDecimalIntegerImmediate($iLower);
+            }
+        }
+        return chr(self::INT_IMM_QUAD) . pack('V2', $iLower, $iUpper);
     }
 }

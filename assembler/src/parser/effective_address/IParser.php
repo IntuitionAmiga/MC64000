@@ -15,12 +15,14 @@
 
 namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 
+use ABadCafe\MC64K;
+
 /**
- * IMatch
+ * IParser
  *
- * Common regex motifs
+ * Extension if of the vanilla Parser, specifically for EffectiveAddress processing.
  */
-interface IMatch {
+interface IParser extends MC64K\IParser {
 
     const
         // Matches a displacement value, either a signed decimal or 0x prefixed hexadecimal literal
@@ -32,4 +34,12 @@ interface IMatch {
         // Matches any integer register qualification (rN, aN or dN | sp)
         RDA = '([rda]\d+|sp)'
     ;
+
+    /**
+     * Some EA modes may need awareness of the operation size being performed (in bytes).
+     *
+     * @param  int $iSize
+     * @return self
+     */
+    public function setOperationSize(int $iSize) : self;
 }

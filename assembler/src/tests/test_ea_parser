@@ -21,16 +21,34 @@ namespace ABadCafe\MC64K;
 require_once '../MC64K.php';
 
 const IMMEDIATE_EXAMPLES = [
-    '#0', '#1', '#2', '#3', '#4', '#5', '#6', '#7', '#8',                // Should all be small integer immediates
+    // Small integer immediate
+    '#0', '#1', '#2', '#3', '#4', '#5', '#6', '#7', '#8',
     '#0x0', '#0x1', '#0x02', '#0x0003', '#0x00000008',
-    '#9', '#-1', '#9', '#-128', '#127',                                  // Should all be byte integer immediates
+    '#0x0000000000000007',
+
+    // Byte immediate
+    '#9', '#-1', '#9', '#-128', '#127',
     '#0x09', '#0x1A', '#0x7F', '#0xFF', '#0xFFFF', '#0xFFFFFFFF',
-    '#128', '#-129', '#16384', '#-32768', '#32767',                      // Should all be word integer immediates
-    '#0x00FF', '#0x7FFF',
-    '#32768', '#-32769', '#65536', '#2147483647', '#-2147483648',        // Should all be long integer immediates
+    '#0xFFFFFFFFFFFFFFFF',
+
+    // Word immediates
+    '#128', '#-129', '#16384', '#-32768', '#32767',
+    '#0x00FF', '#0x7FFF', '#0x00007FFF',
+
+    // Long immediates
+    '#32768', '#-32769', '#65536', '#2147483647', '#-2147483648',
     '#0x00FFFF', '#0x0000FFFF', '#0xFFFF0000',
-    '#2147483648', '#-2147483649', '#' . PHP_INT_MAX, '#' . PHP_INT_MIN, // Should all be quad integer immediates
-    //'#0x8000000000000000'
+    '#0xFFFFFFFFFFFF0000',
+
+    // Quad immediates
+    '#2147483648', '#-2147483649', '#' . PHP_INT_MAX, '#' . PHP_INT_MIN,
+    '#0x8000000000000000', '#0x0123456789ABCDEF',
+
+    // Float immediates
+    '#0.', '#-1.', '#1.', '#+1.',
+    '#1.0123456789e-10',
+    '#1.s', '#1.25s', '#1.e30s',
+    '#4.e38d',
 ];
 
 $oParser = new Parser\EffectiveAddress\Immediate;
