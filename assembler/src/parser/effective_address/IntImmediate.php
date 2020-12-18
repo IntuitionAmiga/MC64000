@@ -20,27 +20,20 @@ use ABadCafe\MC64K\Defs\EffectiveAddress;
 use ABadCafe\MC64K\Parser;
 
 /**
- * Immediate
+ * IntImmediate
  *
- * Effective address parser for immediate values, integer and floating point.
+ * Effective address parser for integer immediates
  */
-class Immediate implements IParser, EffectiveAddress\IOther {
+class IntImmediate implements IParser, EffectiveAddress\IOther {
 
     use TOperationSizeAware;
 
-    const MATCHES = [
-        'parseInteger' => '/^#' . self::D32 . '$/',
-        'parseFloat'   => '/^#((?:[-+]{0,1}\d+)\.\d*(?:[eE][-+]{0,1}\d+){0,1})([sSdD]{0,1})$/'
-    ];
-
     const
+        MATCH         = '/^#' . self::D32 . '$/',
         MIN_INT_SMALL = 0,
         MAX_INT_SMALL = 8,
         MATCHED_VALUE = 1,
-        MATCHED_HEX   = 2,
-        MATCHED_FSIZE = 2,
-        MAX_SINGLE    = 3.4e38,
-        MIN_SINGLE    = 1.18e-38
+        MATCHED_HEX   = 2
     ;
 
     const INT_RANGES = [
@@ -54,58 +47,15 @@ class Immediate implements IParser, EffectiveAddress\IOther {
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
-        foreach (self::MATCHES as $sCallback => $sRegex) {
-            if (preg_match($sRegex, $sSource, $aMatches)) {
-                return $this->{$sCallback}($aMatches);
+        if (preg_match(self::MATCH, $sSource, $aMatches)) {
+            $sImmediate = $aMatches[self::MATCHED_VALUE];
+            if (isset($aMatches[self::MATCHED_HEX])) {
+                return $this->encodeHexadecimalIntegerImmediate(substr($sImmediate, 2));
+            } else {
+                return $this->encodeDecimalIntegerImmediate((int)$sImmediate);
             }
         }
         return null;
-    }
-
-    /**
-     * Extract the integer match and determine the densest immediate mode it can fit into.
-     *
-     * @param string[] $aMatches - regex output
-     * @return string - bytecode for complete EA / immediate
-     */
-    private function parseInteger(array $aMatches) : string {
-        $sImmediate = $aMatches[self::MATCHED_VALUE];
-        if (isset($aMatches[self::MATCHED_HEX])) {
-            return $this->encodeHexadecimalIntegerImmediate(substr($sImmediate, 2));
-        } else {
-            return $this->encodeDecimalIntegerImmediate((int)$sImmediate);
-        }
-    }
-
-    /**
-     * Extract the floating point match and determine the densest immediate mode it can fit into.
-     *
-     * @param  string[] $aMatches - regex output
-     * @return string - bytecode for complete EA / immediate
-     */
-    private function parseFloat(array $aMatches) : string {
-        $fValue = doubleval($aMatches[self::MATCHED_VALUE]);
-        if (is_nan($fValue)) {
-            throw new \RangeException('Could not encode ' . $aMatches[self::MATCHED_VALUE]);
-        }
-
-        // If the operation size or immidate requests a single, we need to validate it's in range.
-        if (
-            $this->iOperationSize == 4             ||
-            's' === $aMatches[self::MATCHED_FSIZE] ||
-            'S' === $aMatches[self::MATCHED_FSIZE]
-        ) {
-            $fAbs = abs($fValue);
-            if (
-                $fAbs > self::MAX_SINGLE ||
-                $fAbs < self::MIN_SINGLE
-            ) {
-                throw new \RangeException('Cannot encode single precision ' . $aMatches[self::MATCHED_VALUE]);
-            }
-            return chr(self::FLT_IMM_SINGLE) . pack('g', $fValue);
-        } else {
-            return chr(self::FLT_IMM_DOUBLE) . pack('e', $fValue);
-        }
     }
 
     /**

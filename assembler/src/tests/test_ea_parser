@@ -20,7 +20,7 @@ namespace ABadCafe\MC64K;
 
 require_once '../MC64K.php';
 
-const IMMEDIATE_EXAMPLES = [
+const INT_IMMEDIATES = [
     // Small integer immediate
     '#0', '#1', '#2', '#3', '#4', '#5', '#6', '#7', '#8',
     '#0x0', '#0x1', '#0x02', '#0x0003', '#0x00000008',
@@ -43,7 +43,9 @@ const IMMEDIATE_EXAMPLES = [
     // Quad immediates
     '#2147483648', '#-2147483649', '#' . PHP_INT_MAX, '#' . PHP_INT_MIN,
     '#0x8000000000000000', '#0x0123456789ABCDEF',
+];
 
+const FLOAT_IMMEDIATES = [
     // Float immediates
     '#0.', '#-1.', '#1.', '#+1.',
     '#1.0123456789e-10',
@@ -60,10 +62,12 @@ function test(IParser $oParser, array $aExamples) {
     }
 }
 
-test(new Parser\EffectiveAddress\Immediate, IMMEDIATE_EXAMPLES);
+test(new Parser\EffectiveAddress\IntImmediate, INT_IMMEDIATES);
+test(new Parser\EffectiveAddress\FloatImmediate, FLOAT_IMMEDIATES);
 test(new Parser\EffectiveAddress\GPRDirect, array_keys(Defs\Register\INames::GPR_MAP));
 test(new Parser\EffectiveAddress\FPRDirect, array_keys(Defs\Register\INames::FPR_MAP));
-
 test(new Parser\EffectiveAddress\GPRIndirect, [
-    '(a0)', '(r8)', '(a7)', '(r15)', '(sp)'
+    '(r0)', '(a0)', '(r8)', '(a7)', '(r15)', '(sp)'
 ]);
+
+
