@@ -55,10 +55,17 @@ const FLOAT_IMMEDIATES = [
 
 const SIMPLE_INDIRECT = [
     '(r0)', '(a0)', '(r8)', '(a7)', '(r15)', '(sp)',
-    '-(r0)', '+(a0)', '(r8)-',
-    '-(sp)', '+(sp)',
+    '-(r0)', '+(r0)', '(r0)-', '(r0)+',
+    '-(a0)', '+(a0)', '(a0)-', '(a0)+',
+    '-(sp)', '+(sp)', '(sp)-', '(sp)+',
 ];
 
+const DISPLACED_INDIRECT = [
+    '0(r0)', '15(r0)', '-1(r0)',
+    '(0, r1)', '(15, r1)', '(-1, r1)',
+    '0x00(r2)', '0x0F(r2)', '0xFFFFFFFF(r2)',
+    '(0x00, r3)', '(0x0F, r3)', '(0xFFFFFFFF, r3)',
+];
 
 function test(IParser $oParser, array $aExamples) {
     echo "Testing ", get_class($oParser), "...\n";
@@ -73,5 +80,6 @@ test(new Parser\EffectiveAddress\FloatImmediate, FLOAT_IMMEDIATES);
 test(new Parser\EffectiveAddress\GPRDirect, array_keys(Defs\Register\INames::GPR_MAP));
 test(new Parser\EffectiveAddress\FPRDirect, array_keys(Defs\Register\INames::FPR_MAP));
 test(new Parser\EffectiveAddress\GPRIndirect, SIMPLE_INDIRECT);
+test(new Parser\EffectiveAddress\GPRIndirectDisplacement, DISPLACED_INDIRECT);
 
 
