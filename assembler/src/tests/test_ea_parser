@@ -67,6 +67,11 @@ const DISPLACED_INDIRECT = [
     '(0x00, r3)', '(0x0F, r3)', '(0xFFFFFFFF, r3)',
 ];
 
+const INDEXED_INDIRECT = [
+    '(r0, r1.b)', '(r2, r3.w)', '(r4, r5.l)', '(r5, r6.q)',
+    '(a0, d0.b)', '(a1, d1.w)', '(a2, d2.l)', '(a3, d3.q)',
+];
+
 function test(IParser $oParser, array $aExamples) {
     echo "Testing ", get_class($oParser), "...\n";
     foreach ($aExamples as $sExample) {
@@ -81,5 +86,5 @@ test(new Parser\EffectiveAddress\GPRDirect, array_keys(Defs\Register\INames::GPR
 test(new Parser\EffectiveAddress\FPRDirect, array_keys(Defs\Register\INames::FPR_MAP));
 test(new Parser\EffectiveAddress\GPRIndirect, SIMPLE_INDIRECT);
 test(new Parser\EffectiveAddress\GPRIndirectDisplacement, DISPLACED_INDIRECT);
-
+test(new Parser\EffectiveAddress\GPRIndirectIndexed, INDEXED_INDIRECT);
 

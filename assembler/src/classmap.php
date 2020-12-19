@@ -8,6 +8,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\GPRIndirectDisplacement' => '/parser/effective_address/GPRIndirectDisplacement.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\GPRDirect' => '/parser/effective_address/GPRDirect.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\TSignedDisplacementAware' => '/parser/effective_address/TSignedDisplacementAware.php',
+  'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\GPRIndirectIndexed' => '/parser/effective_address/GPRIndirectIndexed.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\FPRDirect' => '/parser/effective_address/FPRDirect.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\IParser' => '/parser/effective_address/IParser.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\TOperationSizeAware' => '/parser/effective_address/TOperationSizeAware.php',
