@@ -103,6 +103,48 @@ const DISPLACED_INDEXED_INDIRECT = [
     '(0x8, a0, d0.b * 8)', '(0x12, a1, d1.w * 8)', '(0x16, a2, d2.l * 8)', '(0x20, a3, d3.q * 8)',
 ];
 
+const DISPLACED_PC_INDIRECT = [
+    '0(pc)', '15(pc)', '-1(pc)',
+    '(0, pc)', '(15, pc)', '(-1, pc)',
+    '0x00(pc)', '0x0F(pc)', '0xFFFFFFFF(pc)',
+    '(0x00, pc)', '(0x0F, pc)', '(0xFFFFFFFF, pc)',
+];
+
+const INDEXED_PC_INDIRECT = [
+    '(pc, r1.b)', '(pc, r3.w)', '(pc, r5.l)', '(pc, r6.q)',
+    '(pc, d0.b)', '(pc, d1.w)', '(pc, d2.l)', '(pc, d3.q)',
+
+    '(pc, r1.b * 2)', '(pc, r3.w * 2)', '(pc, r5.l * 2)', '(pc, r6.q * 2)',
+    '(pc, d0.b * 2)', '(pc, d1.w * 2)', '(pc, d2.l * 2)', '(pc, d3.q * 2)',
+
+    '(pc, r1.b * 4)', '(pc, r3.w * 4)', '(pc, r5.l * 4)', '(pc, r6.q * 4)',
+    '(pc, d0.b * 4)', '(pc, d1.w * 4)', '(pc, d2.l * 4)', '(pc, d3.q * 4)',
+
+    '(pc, r1.b * 8)', '(pc, r3.w * 8)', '(pc, r5.l * 8)', '(pc, r6.q * 8)',
+    '(pc, d0.b * 8)', '(pc, d1.w * 8)', '(pc, d2.l * 8)', '(pc, d3.q * 8)',
+];
+
+const DISPLACED_INDEXED_PC_INDIRECT = [
+    '2(pc, r1.b)', '4(pc, r3.w)', '6(pc, r5.l)', '8(pc, r6.q)',
+    '(8, pc, d0.b)', '(12, pc, d1.w)', '(16, pc, d2.l)', '(20, pc, d3.q)',
+    '0x2(pc, r1.b)', '0x4(pc, r3.w)', '0x6(pc, r5.l)', '0x8(pc, r6.q)',
+    '(0x8, pc, d0.b)', '(0x12, pc, d1.w)', '(0x16, pc, d2.l)', '(0x20, pc, d3.q)',
+
+    '2(pc, r1.b * 2)', '4(pc, r3.w * 2)', '6(pc, r5.l * 2)', '8(pc, r6.q * 2)',
+    '(8, pc, d0.b * 2)', '(12, pc, d1.w * 2)', '(16, pc, d2.l * 2)', '(20, pc, d3.q * 2)',
+    '0x2(pc, r1.b * 2)', '0x4(pc, r3.w * 2)', '0x6(pc, r5.l * 2)', '0x8(pc, r6.q * 2)',
+    '(0x8, pc, d0.b * 2)', '(0x12, pc, d1.w * 2)', '(0x16, pc, d2.l * 2)', '(0x20, pc, d3.q * 2)',
+
+    '2(pc, r1.b * 4)', '4(pc, r3.w * 4)', '6(pc, r5.l * 4)', '8(pc, r6.q * 4)',
+    '(8, pc, d0.b * 4)', '(12, pc, d1.w * 4)', '(16, pc, d2.l * 4)', '(20, pc, d3.q * 4)',
+    '0x2(pc, r1.b * 4)', '0x4(pc, r3.w * 4)', '0x6(pc, r5.l * 4)', '0x8(pc, r6.q * 4)',
+    '(0x8, pc, d0.b * 4)', '(0x12, pc, d1.w * 4)', '(0x16, pc, d2.l * 4)', '(0x20, pc, d3.q * 4)',
+
+    '2(pc, r1.b * 8)', '4(pc, r3.w * 8)', '6(pc, r5.l * 8)', '8(pc, r6.q * 8)',
+    '(8, pc, d0.b * 8)', '(12, pc, d1.w * 8)', '(16, pc, d2.l * 8)', '(20, pc, d3.q * 8)',
+    '0x2(pc, r1.b * 8)', '0x4(pc, r3.w * 8)', '0x6(pc, r5.l * 8)', '0x8(pc, r6.q * 8)',
+    '(0x8, pc, d0.b * 8)', '(0x12, pc, d1.w * 8)', '(0x16, pc, d2.l * 8)', '(0x20, pc, d3.q * 8)',
+];
 
 function test(IParser $oParser, array $aExamples) {
     echo "Testing ", get_class($oParser), "...\n";
@@ -120,4 +162,7 @@ test(new Parser\EffectiveAddress\GPRIndirect, SIMPLE_INDIRECT);
 test(new Parser\EffectiveAddress\GPRIndirectDisplacement, DISPLACED_INDIRECT);
 test(new Parser\EffectiveAddress\GPRIndirectIndexed, INDEXED_INDIRECT);
 test(new Parser\EffectiveAddress\GPRIndirectIndexedDisplacement, DISPLACED_INDEXED_INDIRECT);
+test(new Parser\EffectiveAddress\PCIndirectDisplacement, DISPLACED_PC_INDIRECT);
+test(new Parser\EffectiveAddress\PCIndirectIndexed, INDEXED_PC_INDIRECT);
+test(new Parser\EffectiveAddress\PCIndirectIndexedDisplacement, DISPLACED_INDEXED_PC_INDIRECT);
 
