@@ -344,7 +344,7 @@ Examples:
 
 | Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 |
 | - | - | - | - | - | - |
-| `<D>(pc)` | 0xC0 | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc)` | 0xCF | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
 
 ___
 
@@ -366,19 +366,19 @@ General syntax: `#<D>`
 
 | Mode | Bytecode | Ext 0 | Ext 1 | ... | Ext (size-1) |
 | - | - | - | - | - | - |
-| `#0` | 0xC1 | N/A | ... | ... | ... |
-| `#1` | 0xC2 | N/A | ... | ... | ... |
-| `#2` | 0xC3 | N/A | ... | ... | ... |
-| `#3` | 0xC4 | N/A | ... | ... | ... |
-| `#4` | 0xC5 | N/A | ... | ... | ... |
-| `#5` | 0xC6 | N/A | ... | ... | ... |
-| `#6` | 0xC7 | N/A | ... | ... | ... |
-| `#7` | 0xC8 | N/A | ... | ... | ... |
-| `#8` | 0xC9 | N/A | ... | ... | ... |
-| `#<D.b>` | 0xCA | 0x*DD* | N/A | ... | ... |
-| `#<D.w>` | 0xCB | 0x*DD* | 0x*DD* | N/A | ... |
-| `#<D.l>` | 0xCC | 0x*DD* | 0x*DD* | ... | 0x*DD* |
-| `#<D.q>` | 0xCD | 0x*DD* | 0x*DD* | ... | 0x*DD* |
+| `#0` | 0xC0 | N/A | ... | ... | ... |
+| `#1` | 0xC1 | N/A | ... | ... | ... |
+| `#2` | 0xC2 | N/A | ... | ... | ... |
+| `#3` | 0xC3 | N/A | ... | ... | ... |
+| `#4` | 0xC4 | N/A | ... | ... | ... |
+| `#5` | 0xC5 | N/A | ... | ... | ... |
+| `#6` | 0xC6 | N/A | ... | ... | ... |
+| `#7` | 0xC7 | N/A | ... | ... | ... |
+| `#8` | 0xC8 | N/A | ... | ... | ... |
+| `#<D.b>` | 0xC9 | 0x*DD* | N/A | ... | ... |
+| `#<D.w>` | 0xCA | 0x*DD* | 0x*DD* | N/A | ... |
+| `#<D.l>` | 0xCB | 0x*DD* | 0x*DD* | ... | 0x*DD* |
+| `#<D.q>` | 0xCC | 0x*DD* | 0x*DD* | ... | 0x*DD* |
 
 ___
 
@@ -386,7 +386,7 @@ ___
 
 A floating point value is encoded into the instruction stream.
 
-General syntax: `#<F.>`
+General syntax: `#<F.[s|d]>`
 
 Examples:
 
@@ -396,15 +396,18 @@ Examples:
         #1.e10
         #1.25e-10
         #0.005
+        #1.5s
+        #0.1d
 
 * Floating point immediates are differentiated from integer immediates by the presence of the decimal separator.
 * Instruction size determines actual datatype used.
+* For clarity, the intended precision of the immediate can be specified with a 's' or 'd' suffix.
 * Only available for floating point operations.
 
 | Mode | Bytecode | Ext 0 | ... | Ext (size-1) |
 | - | - | - | - | - |
-| `#<F.s>` | 0xCE | 0x*FF* | ... | 0x*FF* |
-| `#<F.d>` | 0xCF | 0x*FF* | ... | 0x*FF* |
+| `#<F.s>` | 0xCD | 0x*FF* | ... | 0x*FF* |
+| `#<F.d>` | 0xCE | 0x*FF* | ... | 0x*FF* |
 
 ___
 

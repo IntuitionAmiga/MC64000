@@ -13,17 +13,24 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-namespace ABadCafe\MC64K\Defs\Mnemonic;
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 
 /**
- * IByteCodeGroups
+ * TOperationSizeAware
  *
+ * Minmimal guts for Parsers that need to know an operation size, primarily immediate modes.
  */
-interface IByteCodeGroups {
-    const
-        OFS_CONTROL    = 0,
-        OFS_DATA_MOVE  = 77,
-        OFS_LOGICAL    = 112,
-        OFS_ARITHMETIC = 160
-    ;
+trait TOperationSizeAware {
+
+    private int $iOperationSize = 0;
+
+    /**
+     * @inheritDoc
+     */
+    public function setOperationSize(int $iSize) : self {
+        $this->iOperationSize = $iSize;
+        return $this;
+    }
 }

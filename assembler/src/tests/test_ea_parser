@@ -1,0 +1,168 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+const INT_IMMEDIATES = [
+    // Small integer immediate
+    '#0', '#1', '#2', '#3', '#4', '#5', '#6', '#7', '#8',
+    '#0x0', '#0x1', '#0x02', '#0x0003', '#0x00000008',
+    '#0x0000000000000007',
+
+    // Byte immediate
+    '#9', '#-1', '#9', '#-128', '#127',
+    '#0x09', '#0x1A', '#0x7F', '#0xFF', '#0xFFFF', '#0xFFFFFFFF',
+    '#0xFFFFFFFFFFFFFFFF',
+
+    // Word immediates
+    '#128', '#-129', '#16384', '#-32768', '#32767',
+    '#0x00FF', '#0x7FFF', '#0x00007FFF',
+
+    // Long immediates
+    '#32768', '#-32769', '#65536', '#2147483647', '#-2147483648',
+    '#0x00FFFF', '#0x0000FFFF', '#0xFFFF0000',
+    '#0xFFFFFFFFFFFF0000',
+
+    // Quad immediates
+    '#2147483648', '#-2147483649', '#' . PHP_INT_MAX, '#' . PHP_INT_MIN,
+    '#0x8000000000000000', '#0x0123456789ABCDEF',
+];
+
+const FLOAT_IMMEDIATES = [
+    // Float immediates
+    '#0.', '#-1.', '#1.', '#+1.',
+    '#1.0123456789e-10',
+    '#1.s', '#1.25s', '#1.e30s',
+    '#4.e38d',
+];
+
+const SIMPLE_INDIRECT = [
+    '(r0)', '(a0)', '(r8)', '(a7)', '(r15)', '(sp)',
+    '-(r0)', '+(r0)', '(r0)-', '(r0)+',
+    '-(a0)', '+(a0)', '(a0)-', '(a0)+',
+    '-(sp)', '+(sp)', '(sp)-', '(sp)+',
+];
+
+const DISPLACED_INDIRECT = [
+    '0(r0)', '15(r0)', '-1(r0)',
+    '(0, r1)', '(15, r1)', '(-1, r1)',
+    '0x00(r2)', '0x0F(r2)', '0xFFFFFFFF(r2)',
+    '(0x00, r3)', '(0x0F, r3)', '(0xFFFFFFFF, r3)',
+];
+
+const INDEXED_INDIRECT = [
+    '(r0, r1.b)', '(r2, r3.w)', '(r4, r5.l)', '(r5, r6.q)',
+    '(a0, d0.b)', '(a1, d1.w)', '(a2, d2.l)', '(a3, d3.q)',
+
+    '(r0, r1.b * 2)', '(r2, r3.w * 2)', '(r4, r5.l * 2)', '(r5, r6.q * 2)',
+    '(a0, d0.b * 2)', '(a1, d1.w * 2)', '(a2, d2.l * 2)', '(a3, d3.q * 2)',
+
+    '(r0, r1.b * 4)', '(r2, r3.w * 4)', '(r4, r5.l * 4)', '(r5, r6.q * 4)',
+    '(a0, d0.b * 4)', '(a1, d1.w * 4)', '(a2, d2.l * 4)', '(a3, d3.q * 4)',
+
+    '(r0, r1.b * 8)', '(r2, r3.w * 8)', '(r4, r5.l * 8)', '(r5, r6.q * 8)',
+    '(a0, d0.b * 8)', '(a1, d1.w * 8)', '(a2, d2.l * 8)', '(a3, d3.q * 8)',
+];
+
+const DISPLACED_INDEXED_INDIRECT = [
+    '2(r0, r1.b)', '4(r2, r3.w)', '6(r4, r5.l)', '8(r5, r6.q)',
+    '(8, a0, d0.b)', '(12, a1, d1.w)', '(16, a2, d2.l)', '(20, a3, d3.q)',
+    '0x2(r0, r1.b)', '0x4(r2, r3.w)', '0x6(r4, r5.l)', '0x8(r5, r6.q)',
+    '(0x8, a0, d0.b)', '(0x12, a1, d1.w)', '(0x16, a2, d2.l)', '(0x20, a3, d3.q)',
+
+    '2(r0, r1.b * 2)', '4(r2, r3.w * 2)', '6(r4, r5.l * 2)', '8(r5, r6.q * 2)',
+    '(8, a0, d0.b * 2)', '(12, a1, d1.w * 2)', '(16, a2, d2.l * 2)', '(20, a3, d3.q * 2)',
+    '0x2(r0, r1.b * 2)', '0x4(r2, r3.w * 2)', '0x6(r4, r5.l * 2)', '0x8(r5, r6.q * 2)',
+    '(0x8, a0, d0.b * 2)', '(0x12, a1, d1.w * 2)', '(0x16, a2, d2.l * 2)', '(0x20, a3, d3.q * 2)',
+
+    '2(r0, r1.b * 4)', '4(r2, r3.w * 4)', '6(r4, r5.l * 4)', '8(r5, r6.q * 4)',
+    '(8, a0, d0.b * 4)', '(12, a1, d1.w * 4)', '(16, a2, d2.l * 4)', '(20, a3, d3.q * 4)',
+    '0x2(r0, r1.b * 4)', '0x4(r2, r3.w * 4)', '0x6(r4, r5.l * 4)', '0x8(r5, r6.q * 4)',
+    '(0x8, a0, d0.b * 4)', '(0x12, a1, d1.w * 4)', '(0x16, a2, d2.l * 4)', '(0x20, a3, d3.q * 4)',
+
+    '2(r0, r1.b * 8)', '4(r2, r3.w * 8)', '6(r4, r5.l * 8)', '8(r5, r6.q * 8)',
+    '(8, a0, d0.b * 8)', '(12, a1, d1.w * 8)', '(16, a2, d2.l * 8)', '(20, a3, d3.q * 8)',
+    '0x2(r0, r1.b * 8)', '0x4(r2, r3.w * 8)', '0x6(r4, r5.l * 8)', '0x8(r5, r6.q * 8)',
+    '(0x8, a0, d0.b * 8)', '(0x12, a1, d1.w * 8)', '(0x16, a2, d2.l * 8)', '(0x20, a3, d3.q * 8)',
+];
+
+const DISPLACED_PC_INDIRECT = [
+    '0(pc)', '15(pc)', '-1(pc)',
+    '(0, pc)', '(15, pc)', '(-1, pc)',
+    '0x00(pc)', '0x0F(pc)', '0xFFFFFFFF(pc)',
+    '(0x00, pc)', '(0x0F, pc)', '(0xFFFFFFFF, pc)',
+];
+
+const INDEXED_PC_INDIRECT = [
+    '(pc, r1.b)', '(pc, r3.w)', '(pc, r5.l)', '(pc, r6.q)',
+    '(pc, d0.b)', '(pc, d1.w)', '(pc, d2.l)', '(pc, d3.q)',
+
+    '(pc, r1.b * 2)', '(pc, r3.w * 2)', '(pc, r5.l * 2)', '(pc, r6.q * 2)',
+    '(pc, d0.b * 2)', '(pc, d1.w * 2)', '(pc, d2.l * 2)', '(pc, d3.q * 2)',
+
+    '(pc, r1.b * 4)', '(pc, r3.w * 4)', '(pc, r5.l * 4)', '(pc, r6.q * 4)',
+    '(pc, d0.b * 4)', '(pc, d1.w * 4)', '(pc, d2.l * 4)', '(pc, d3.q * 4)',
+
+    '(pc, r1.b * 8)', '(pc, r3.w * 8)', '(pc, r5.l * 8)', '(pc, r6.q * 8)',
+    '(pc, d0.b * 8)', '(pc, d1.w * 8)', '(pc, d2.l * 8)', '(pc, d3.q * 8)',
+];
+
+const DISPLACED_INDEXED_PC_INDIRECT = [
+    '2(pc, r1.b)', '4(pc, r3.w)', '6(pc, r5.l)', '8(pc, r6.q)',
+    '(8, pc, d0.b)', '(12, pc, d1.w)', '(16, pc, d2.l)', '(20, pc, d3.q)',
+    '0x2(pc, r1.b)', '0x4(pc, r3.w)', '0x6(pc, r5.l)', '0x8(pc, r6.q)',
+    '(0x8, pc, d0.b)', '(0x12, pc, d1.w)', '(0x16, pc, d2.l)', '(0x20, pc, d3.q)',
+
+    '2(pc, r1.b * 2)', '4(pc, r3.w * 2)', '6(pc, r5.l * 2)', '8(pc, r6.q * 2)',
+    '(8, pc, d0.b * 2)', '(12, pc, d1.w * 2)', '(16, pc, d2.l * 2)', '(20, pc, d3.q * 2)',
+    '0x2(pc, r1.b * 2)', '0x4(pc, r3.w * 2)', '0x6(pc, r5.l * 2)', '0x8(pc, r6.q * 2)',
+    '(0x8, pc, d0.b * 2)', '(0x12, pc, d1.w * 2)', '(0x16, pc, d2.l * 2)', '(0x20, pc, d3.q * 2)',
+
+    '2(pc, r1.b * 4)', '4(pc, r3.w * 4)', '6(pc, r5.l * 4)', '8(pc, r6.q * 4)',
+    '(8, pc, d0.b * 4)', '(12, pc, d1.w * 4)', '(16, pc, d2.l * 4)', '(20, pc, d3.q * 4)',
+    '0x2(pc, r1.b * 4)', '0x4(pc, r3.w * 4)', '0x6(pc, r5.l * 4)', '0x8(pc, r6.q * 4)',
+    '(0x8, pc, d0.b * 4)', '(0x12, pc, d1.w * 4)', '(0x16, pc, d2.l * 4)', '(0x20, pc, d3.q * 4)',
+
+    '2(pc, r1.b * 8)', '4(pc, r3.w * 8)', '6(pc, r5.l * 8)', '8(pc, r6.q * 8)',
+    '(8, pc, d0.b * 8)', '(12, pc, d1.w * 8)', '(16, pc, d2.l * 8)', '(20, pc, d3.q * 8)',
+    '0x2(pc, r1.b * 8)', '0x4(pc, r3.w * 8)', '0x6(pc, r5.l * 8)', '0x8(pc, r6.q * 8)',
+    '(0x8, pc, d0.b * 8)', '(0x12, pc, d1.w * 8)', '(0x16, pc, d2.l * 8)', '(0x20, pc, d3.q * 8)',
+];
+
+function test(IParser $oParser, array $aExamples) {
+    echo "Testing ", get_class($oParser), "...\n";
+    foreach ($aExamples as $sExample) {
+        $sResult = $oParser->parse($sExample);
+        echo "\t", $sExample, " => ", $sResult ? bin2hex($sResult) : 'null', "\n";
+    }
+}
+
+test(new Parser\EffectiveAddress\IntImmediate, INT_IMMEDIATES);
+test(new Parser\EffectiveAddress\FloatImmediate, FLOAT_IMMEDIATES);
+test(new Parser\EffectiveAddress\GPRDirect, array_keys(Defs\Register\INames::GPR_MAP));
+test(new Parser\EffectiveAddress\FPRDirect, array_keys(Defs\Register\INames::FPR_MAP));
+test(new Parser\EffectiveAddress\GPRIndirect, SIMPLE_INDIRECT);
+test(new Parser\EffectiveAddress\GPRIndirectDisplacement, DISPLACED_INDIRECT);
+test(new Parser\EffectiveAddress\GPRIndirectIndexed, INDEXED_INDIRECT);
+test(new Parser\EffectiveAddress\GPRIndirectIndexedDisplacement, DISPLACED_INDEXED_INDIRECT);
+test(new Parser\EffectiveAddress\PCIndirectDisplacement, DISPLACED_PC_INDIRECT);
+test(new Parser\EffectiveAddress\PCIndirectIndexed, INDEXED_PC_INDIRECT);
+test(new Parser\EffectiveAddress\PCIndirectIndexedDisplacement, DISPLACED_INDEXED_PC_INDIRECT);
+

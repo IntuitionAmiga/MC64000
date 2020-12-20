@@ -13,11 +13,19 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-namespace ABadCafe\MC64K\Defs\Registers;
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K\Defs\Mnemonic;
 
 /**
- * Registers
+ * IByteCodeGroups
+ *
  */
-interface INames {
-
+interface IByteCodeGroups {
+    const
+        OFS_CONTROL    = 0,
+        OFS_DATA_MOVE  = 77,
+        OFS_LOGICAL    = 112,
+        OFS_ARITHMETIC = 160
+    ;
 }
