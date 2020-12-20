@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * PCIndirectDisplacement
  *
- * Basic parser for PC indirect mode
+ * Basic parser for PC indirect mode with signed displacement.
  */
 class PCIndirectDisplacement implements IParser, EffectiveAddress\IOther {
 

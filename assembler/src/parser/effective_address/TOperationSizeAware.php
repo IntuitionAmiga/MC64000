@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 
 /**
  * TOperationSizeAware
+ *
+ * Minmimal guts for Parsers that need to know an operation size, primarily immediate modes.
  */
 trait TOperationSizeAware {
 

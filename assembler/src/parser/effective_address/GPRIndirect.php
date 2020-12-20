@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * GPRIndirect
  *
- * Basic parser for GPR indirect modes, including pre/post increment/decrement
+ * Basic parser for GPR indirect modes, including pre/post increment/decrement.
  */
 class GPRIndirect implements IParser, EffectiveAddress\IRegisterIndirect {
 

@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * GPRDirect
  *
- * Basic parser for GPR direct modes
+ * Basic parser for GPR direct modes.
  */
 class GPRDirect implements IParser, EffectiveAddress\IRegisterDirect {
 

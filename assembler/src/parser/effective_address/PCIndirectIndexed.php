@@ -22,6 +22,8 @@ use ABadCafe\MC64K\Parser;
 
 /**
  * PCIndirectIndexed
+ *
+ * PC Relative modes with index register.
  */
 class PCIndirectIndexed implements IParser, EffectiveAddress\IRegisterIndirectIndexed {
 

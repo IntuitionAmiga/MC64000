@@ -22,7 +22,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * IntImmediate
  *
- * Effective address parser for integer immediates
+ * Effective address parser for integer immediates.
  */
 class IntImmediate implements IParser, EffectiveAddress\IOther {
 

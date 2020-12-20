@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * PCIndirectIndexedDisplacement
  *
- * Basic parser for GPR indirect modes, including pre/post increment/decrement
+ * PC Relative mode with index register and displacement.
  */
 class PCIndirectIndexedDisplacement implements IParser, EffectiveAddress\IRegisterIndirectIndexed {
 

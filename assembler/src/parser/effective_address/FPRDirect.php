@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * FPRDirect
  *
- * Basic parser for FPR direct modes
+ * Basic parser for FPR direct modes.
  */
 class FPRDirect implements IParser, EffectiveAddress\IRegisterDirect {
 

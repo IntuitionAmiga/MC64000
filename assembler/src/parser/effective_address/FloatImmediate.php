@@ -22,7 +22,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * FloatImmediate
  *
- * Effective address parser for floating point immediates
+ * Effective address parser for floating point immediates.
  */
 class FloatImmediate implements IParser, EffectiveAddress\IOther {
 

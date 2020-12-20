@@ -21,9 +21,9 @@ use ABadCafe\MC64K\Defs\Register;
 use ABadCafe\MC64K\Parser;
 
 /**
- * GPRIndirect
+ * GPRIndirectDisplacement
  *
- * Basic parser for GPR indirect modes, including pre/post increment/decrement
+ * Basic parser for GPR indirect with signed displacement.
  */
 class GPRIndirectDisplacement implements IParser, EffectiveAddress\IRegisterIndirect {
 
