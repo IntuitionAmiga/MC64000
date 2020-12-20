@@ -386,7 +386,7 @@ ___
 
 A floating point value is encoded into the instruction stream.
 
-General syntax: `#<F.>`
+General syntax: `#<F.[s|d]>`
 
 Examples:
 
@@ -396,9 +396,12 @@ Examples:
         #1.e10
         #1.25e-10
         #0.005
+        #1.5s
+        #0.1d
 
 * Floating point immediates are differentiated from integer immediates by the presence of the decimal separator.
 * Instruction size determines actual datatype used.
+* For clarity, the intended precision of the immediate can be specified with a 's' or 'd' suffix.
 * Only available for floating point operations.
 
 | Mode | Bytecode | Ext 0 | ... | Ext (size-1) |
