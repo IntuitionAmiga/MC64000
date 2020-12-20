@@ -70,7 +70,39 @@ const DISPLACED_INDIRECT = [
 const INDEXED_INDIRECT = [
     '(r0, r1.b)', '(r2, r3.w)', '(r4, r5.l)', '(r5, r6.q)',
     '(a0, d0.b)', '(a1, d1.w)', '(a2, d2.l)', '(a3, d3.q)',
+
+    '(r0, r1.b * 2)', '(r2, r3.w * 2)', '(r4, r5.l * 2)', '(r5, r6.q * 2)',
+    '(a0, d0.b * 2)', '(a1, d1.w * 2)', '(a2, d2.l * 2)', '(a3, d3.q * 2)',
+
+    '(r0, r1.b * 4)', '(r2, r3.w * 4)', '(r4, r5.l * 4)', '(r5, r6.q * 4)',
+    '(a0, d0.b * 4)', '(a1, d1.w * 4)', '(a2, d2.l * 4)', '(a3, d3.q * 4)',
+
+    '(r0, r1.b * 8)', '(r2, r3.w * 8)', '(r4, r5.l * 8)', '(r5, r6.q * 8)',
+    '(a0, d0.b * 8)', '(a1, d1.w * 8)', '(a2, d2.l * 8)', '(a3, d3.q * 8)',
 ];
+
+const DISPLACED_INDEXED_INDIRECT = [
+    '2(r0, r1.b)', '4(r2, r3.w)', '6(r4, r5.l)', '8(r5, r6.q)',
+    '(8, a0, d0.b)', '(12, a1, d1.w)', '(16, a2, d2.l)', '(20, a3, d3.q)',
+    '0x2(r0, r1.b)', '0x4(r2, r3.w)', '0x6(r4, r5.l)', '0x8(r5, r6.q)',
+    '(0x8, a0, d0.b)', '(0x12, a1, d1.w)', '(0x16, a2, d2.l)', '(0x20, a3, d3.q)',
+
+    '2(r0, r1.b * 2)', '4(r2, r3.w * 2)', '6(r4, r5.l * 2)', '8(r5, r6.q * 2)',
+    '(8, a0, d0.b * 2)', '(12, a1, d1.w * 2)', '(16, a2, d2.l * 2)', '(20, a3, d3.q * 2)',
+    '0x2(r0, r1.b * 2)', '0x4(r2, r3.w * 2)', '0x6(r4, r5.l * 2)', '0x8(r5, r6.q * 2)',
+    '(0x8, a0, d0.b * 2)', '(0x12, a1, d1.w * 2)', '(0x16, a2, d2.l * 2)', '(0x20, a3, d3.q * 2)',
+
+    '2(r0, r1.b * 4)', '4(r2, r3.w * 4)', '6(r4, r5.l * 4)', '8(r5, r6.q * 4)',
+    '(8, a0, d0.b * 4)', '(12, a1, d1.w * 4)', '(16, a2, d2.l * 4)', '(20, a3, d3.q * 4)',
+    '0x2(r0, r1.b * 4)', '0x4(r2, r3.w * 4)', '0x6(r4, r5.l * 4)', '0x8(r5, r6.q * 4)',
+    '(0x8, a0, d0.b * 4)', '(0x12, a1, d1.w * 4)', '(0x16, a2, d2.l * 4)', '(0x20, a3, d3.q * 4)',
+
+    '2(r0, r1.b * 8)', '4(r2, r3.w * 8)', '6(r4, r5.l * 8)', '8(r5, r6.q * 8)',
+    '(8, a0, d0.b * 8)', '(12, a1, d1.w * 8)', '(16, a2, d2.l * 8)', '(20, a3, d3.q * 8)',
+    '0x2(r0, r1.b * 8)', '0x4(r2, r3.w * 8)', '0x6(r4, r5.l * 8)', '0x8(r5, r6.q * 8)',
+    '(0x8, a0, d0.b * 8)', '(0x12, a1, d1.w * 8)', '(0x16, a2, d2.l * 8)', '(0x20, a3, d3.q * 8)',
+];
+
 
 function test(IParser $oParser, array $aExamples) {
     echo "Testing ", get_class($oParser), "...\n";
@@ -87,4 +119,5 @@ test(new Parser\EffectiveAddress\FPRDirect, array_keys(Defs\Register\INames::FPR
 test(new Parser\EffectiveAddress\GPRIndirect, SIMPLE_INDIRECT);
 test(new Parser\EffectiveAddress\GPRIndirectDisplacement, DISPLACED_INDIRECT);
 test(new Parser\EffectiveAddress\GPRIndirectIndexed, INDEXED_INDIRECT);
+test(new Parser\EffectiveAddress\GPRIndirectIndexedDisplacement, DISPLACED_INDEXED_INDIRECT);
 

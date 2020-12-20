@@ -31,16 +31,14 @@ class FPRDirect implements IParser, EffectiveAddress\IRegisterDirect {
 
     const MATCH = '/^fp\d+$/';
 
+    const MATCHED_NAME = 0;
+
     /**
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
         if (preg_match(self::MATCH, $sSource, $aMatches)) {
-            $sRegister = $aMatches[0];
-            if (!isset(Register\INames::FPR_MAP[$sRegister])) {
-                throw new \OutOfBoundsException($sRegister . ' is not a recognised FPR name');
-            }
-            return chr(self::OFS_FPR_DIR + Register\INames::FPR_MAP[$sRegister]);
+            return chr(self::OFS_FPR_DIR + Register\Enumerator::getFPRNumber($aMatches[self::MATCHED_NAME]));
         }
         return null;
     }

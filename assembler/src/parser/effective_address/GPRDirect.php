@@ -34,16 +34,14 @@ class GPRDirect implements IParser, EffectiveAddress\IRegisterDirect {
      */
     const MATCH = '/^' . self::RDA . '$/';
 
+    const MATCHED_NAME = 0;
+
     /**
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
         if (preg_match(self::MATCH, $sSource, $aMatches)) {
-            $sRegister = $aMatches[0];
-            if (!isset(Register\INames::GPR_MAP[$sRegister])) {
-                throw new \OutOfBoundsException($sRegister . ' is not a recognised GPR name');
-            }
-            return chr(self::OFS_GPR_DIR + Register\INames::GPR_MAP[$sRegister]);
+            return chr(self::OFS_GPR_DIR + Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_NAME]));
         }
         return null;
     }

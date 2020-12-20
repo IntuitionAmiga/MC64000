@@ -53,35 +53,14 @@ class GPRIndirectDisplacement implements IParser, EffectiveAddress\IRegisterIndi
     public function parse(string $sSource) : ?string {
         foreach (self::MATCHES as $sMatch => $iOffset) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
-                $sRegister = $aMatches[self::MATCHED_NAME];
-                if (!isset(Register\INames::GPR_MAP[$sRegister])) {
-                    throw new \OutOfBoundsException($sRegister . ' is not a recognised GPR name');
-                }
-
+                $iRegister = Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_NAME]);
                 $iDisplacement = $this->parseDisplacement(
                     $aMatches[self::MATCHED_DISP],
                     !empty($aMatches[self::MATCHED_HEX])
                 );
-
-                return chr($iOffset + Register\INames::GPR_MAP[$sRegister]) . pack('V', $iDisplacement);
+                return chr($iOffset + $iRegister) . pack('V', $iDisplacement);
             }
         }
         return null;
-    }
-
-    private function parseHexDisplacement(string $sDisplacement) : int {
-        $sDisplacement = substr($sDisplacement, 2);
-        if (strlen($sDisplacement) <= 8) {
-            return Parser\Utils\Hex::stringToInt32($sDisplacement);
-        }
-        throw new \RangeError('Displacement ' . $sDisplacement . ' is too large');
-    }
-
-    private function parseDecimalDisplacement(string $sDisplacement) : int {
-        $iDisplacement = (int)$sDisplacement;
-        if ($iDisplacement >= -2147483648 && $iDisplacement <= 2147483647) {
-            return $iDisplacement;
-        }
-        throw new \RangeError('Displacement ' . $sDisplacement . ' is too large');
     }
 }

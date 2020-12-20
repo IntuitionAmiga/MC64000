@@ -45,6 +45,41 @@ class GPRIndirectIndexed implements IParser, EffectiveAddress\IRegisterIndirectI
         // Register indirect with signed 64-bit index (rN, rN.q)
         '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.q\s*\)$/' => self::REG_IND_IDXQ,
 
+        // Register indirect with 16-bit scaled signed 8-bit index (rN, rN.b*2)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.b\s*\*\s*2\s*\)$/' => self::REG_IND_IDXB_2,
+
+        // Register indirect with 16-bit scaled signed 16-bit index (rN, rN.w*2)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.w\s*\*\s*2\s*\)$/' => self::REG_IND_IDXW_2,
+
+        // Register indirect with 16-bit scaled signed 32-bit index (rN, rN.l*2)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.l\s*\*\s*2\s*\)$/' => self::REG_IND_IDXL_2,
+
+        // Register indirect with 16-bit scaled signed 64-bit index (rN, rN.q*2)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.q\s*\*\s*2\s*\)$/' => self::REG_IND_IDXQ_2,
+
+        // Register indirect with 32-bit scaled signed 8-bit index and signed displacement d32(rN, rN.b*4)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.b\s*\*\s*4\s*\)$/' => self::REG_IND_IDXB_4,
+
+        // Register indirect with 32-bit scaled signed 16-bit index and signed displacement d32(rN, rN.w*4)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.w\s*\*\s*4\s*\)$/' => self::REG_IND_IDXW_4,
+
+        // Register indirect with 32-bit scaled signed 32-bit index and signed displacement d32(rN, rN.l*4)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.l\s*\*\s*4\s*\)$/' => self::REG_IND_IDXL_4,
+
+        // Register indirect with 32-bit scaled signed 64-bit index and signed displacement d32(rN, rN.q*4)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.q\s*\*\s*4\s*\)$/' => self::REG_IND_IDXQ_4,
+
+        // Register indirect with 64-bit scaled signed 8-bit index (rN, rN.b*8)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.b\s*\*\s*8\s*\)$/' => self::REG_IND_IDXB_8,
+
+        // Register indirect with 64-bit scaled signed 16-bit index (rN, rN.w*8)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.w\s*\*\s*8\s*\)$/' => self::REG_IND_IDXW_8,
+
+        // Register indirect with 64-bit scaled signed 32-bit index (rN, rN.l*8)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.l\s*\*\s*8\s*\)$/' => self::REG_IND_IDXL_8,
+
+        // Register indirect with 64-bit scaled signed 64-bit index (rN, rN.q*8)
+        '/^\(\s*' . self::RA . '\s*,\s*' . self::RDA . '\.q\s*\*\s*8\s*\)$/' => self::REG_IND_IDXQ_8,
     ];
 
     const
