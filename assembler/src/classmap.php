@@ -19,6 +19,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\IntImmediate' => '/parser/effective_address/IntImmediate.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\GPRIndirect' => '/parser/effective_address/GPRIndirect.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\PCIndirectIndexed' => '/parser/effective_address/PCIndirectIndexed.php',
+  'ABadCafe\\MC64K\\Tokeniser\\Instruction' => '/tokeniser/Instruction.php',
   'ABadCafe\\MC64K\\Defs\\Register\\INames' => '/defs/register/INames.php',
   'ABadCafe\\MC64K\\Defs\\Register\\Enumerator' => '/defs/register/Enumerator.php',
   'ABadCafe\\MC64K\\Defs\\Mnemonic\\INames' => '/defs/mnemonic/INames.php',
