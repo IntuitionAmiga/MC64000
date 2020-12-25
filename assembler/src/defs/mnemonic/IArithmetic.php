@@ -92,7 +92,7 @@ interface IArithmetic extends IByteCodeGroups {
         FATAN_S   = self::OFS_ARITHMETIC + 62,
         FATAN_D   = self::OFS_ARITHMETIC + 63,
 
-        FCOS_S    = self::OFS_ARITHMETIC + 64, 0xE0
+        FCOS_S    = self::OFS_ARITHMETIC + 64, // 0xE0
         FCOS_D    = self::OFS_ARITHMETIC + 65,
         FSIN_S    = self::OFS_ARITHMETIC + 66,
         FSIN_D    = self::OFS_ARITHMETIC + 67,
@@ -109,7 +109,7 @@ interface IArithmetic extends IByteCodeGroups {
         FTWOTOX_S = self::OFS_ARITHMETIC + 78,
         FTWOTOX_D = self::OFS_ARITHMETIC + 79,
 
-        FGETEXP_S = self::OFS_ARITHMETIC + 80, 0xF0
+        FGETEXP_S = self::OFS_ARITHMETIC + 80, // 0xF0
         FGETEXP_D = self::OFS_ARITHMETIC + 81,
         FGETMAN_S = self::OFS_ARITHMETIC + 82,
         FGETMAN_D = self::OFS_ARITHMETIC + 83
