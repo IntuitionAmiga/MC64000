@@ -18,7 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\Instruction\Operand;
 
 use ABadCafe\MC64K\Parser\Instruction;
-use ABadCafe\MC64K\Defs\Mnemonic;
+use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 
 /**
  * None
@@ -32,7 +32,7 @@ class None implements Instruction\IOperandParser {
      */
     public function getOpcodes() : array {
         return [
-            Mnemonic\IControl::RTS, // so far, this is it
+            IControl::RTS, // so far, this is it
         ];
     }
 
@@ -40,6 +40,7 @@ class None implements Instruction\IOperandParser {
      * @inheritDoc
      */
     public function parse(array $aOperands, array $aSizes = []) : string {
+        $aOperands = array_filter($aOperands);
         if (!empty($aOperands)) {
             throw new \LengthException(__CLASS__ . ' expects no operands, got ' . count($aOperands));
         }

@@ -21,12 +21,16 @@ namespace ABadCafe\MC64K;
 require_once '../MC64K.php';
 
 const EXAMPLES = [
+    'rts',
     'add.b #1, r0',
     'add.w r0, r1',
     'add.l r1, (r0)',
-    'add.l #200, 30(pc)',
-    'add.q 8(r0, r1.w * 2), 8(r0, r1.w * 4)',
-    'add.q 8(r0, r1.w * 2), 8(r0, r1.w * 2)'
+    'add.l #200, 30(pc)',                        // Should fail
+    'add.q 8(r7, r15.w * 2), 8(r7, r15.w * 4)',
+    'add.q 8(r7, r15.w * 2), 8(r7, r15.w * 2)',    // Should optimise source operand
+    'bclr.w #0x3F, d0',
+    'bset.q #0, 0xabadcafe(a0, d0.l * 8)',
+    'move.q #1, #2',                             // Should fail
 ];
 
 $oParser = new Parser\Instruction\Line;

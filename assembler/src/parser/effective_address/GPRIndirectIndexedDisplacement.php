@@ -144,8 +144,8 @@ class GPRIndirectIndexedDisplacement implements IParser, EffectiveAddress\IRegis
     public function parse(string $sSource) : ?string {
         foreach (self::MATCHES as $sMatch => $iOffset) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
-                $iRegisterPair = Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_BASE_NAME]) << 4;
-                                 Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_INDEX_NAME]);
+                $iRegisterPair = Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_BASE_NAME]) << 4
+                               | Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_INDEX_NAME]);
                 $iDisplacement = $this->parseDisplacement(
                     $aMatches[self::MATCHED_DISP],
                     !empty($aMatches[self::MATCHED_HEX])
