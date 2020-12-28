@@ -24,20 +24,21 @@ namespace ABadCafe\MC64K\Parser\Instruction;
  */
 interface IOperandParser {
 
+    const DEFAULT_SIZE = 8;
+
     /**
-     * Returns the set of opcodes that this parser processes the expexted operands for
-     ^
+     * Returns the set of Opcodes this particular OperandParser is applicable to.
+     *
      * @return int[]
      */
     public function getOpcodes() : array;
 
     /**
-     * Parses the provided set of operamd strings into bytecode.
-     * Throws if any of the operands fail to match the expectation.
+     * Parses the
      *
      * @param  string[] $aOperands
-     * @param  int      $iOperationSize
-     * @return string bytecode
+     * @param  int[]    $aSizes
+     * @return string   bytecode
      */
-    public function parse(array $aOperands, int $iOperationSize) : string;
+    public function parse(array $aOperands, array $aSizes = []) : string;
 }

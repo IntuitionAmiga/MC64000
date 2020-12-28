@@ -24,11 +24,19 @@ const EXAMPLES = [
     'add.b #1, r0',
     'add.w r0, r1',
     'add.l r1, (r0)',
-    'add.l #200, 30(pc)'
+    'add.l #200, 30(pc)',
+    'add.q 8(r0, r1.w * 2), 8(r0, r1.w * 4)',
+    'add.q 8(r0, r1.w * 2), 8(r0, r1.w * 2)'
 ];
 
 $oParser = new Parser\Instruction\Line;
 
 foreach (EXAMPLES as $sInput) {
-    echo $sInput, " => ", bin2hex($oParser->parse($sInput)), "\n";
+    echo $sInput, " => ";
+    try {
+        echo "Bytecode: ", bin2hex($oParser->parse($sInput));
+    } catch (\Throwable $oError) {
+        echo get_class($oError), " - ", $oError->getMessage();
+    }
+    echo "\n";
 }

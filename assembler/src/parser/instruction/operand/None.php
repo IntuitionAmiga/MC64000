@@ -39,7 +39,7 @@ class None implements Instruction\IOperandParser {
     /**
      * @inheritDoc
      */
-    public function parse(array $aOperands, int $iOperationSize) : string {
+    public function parse(array $aOperands, array $aSizes = []) : string {
         if (!empty($aOperands)) {
             throw new \LengthException(__CLASS__ . ' expects no operands, got ' . count($aOperands));
         }
