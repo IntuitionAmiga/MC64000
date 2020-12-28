@@ -1,3 +1,4 @@
+#!/usr/bin/php -n
 <?php
 
 /**
@@ -10,23 +11,24 @@
  *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
  *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
  *
- *    - 64-bit 680x0-inspired Virtual Machine and assembler -
+ *
  */
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Defs\Mnemonic;
+namespace ABadCafe\MC64K;
 
-/**
- * IByteCodeGroups
- *
- */
-interface IByteCodeGroups {
-    const
-        OFS_CONTROL    = 0,
-        OFS_DATA_MOVE  = 77,
-        OFS_LOGICAL    = 112,
-        OFS_ARITHMETIC = 160,
-        OFS_MAX        = 255
-    ;
+require_once '../MC64K.php';
+
+const EXAMPLES = [
+    'add.b #1, r0',
+    'add.w r0, r1',
+    'add.l r1, (r0)',
+    'add.l #200, 30(pc)'
+];
+
+$oParser = new Parser\Instruction\Line;
+
+foreach (EXAMPLES as $sInput) {
+    echo $sInput, " => ", bin2hex($oParser->parse($sInput)), "\n";
 }

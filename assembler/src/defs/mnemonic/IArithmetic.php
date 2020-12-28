@@ -24,7 +24,7 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
  */
 interface IArithmetic extends IByteCodeGroups {
     const
-        EXTB_B    = self::OFS_ARITHMETIC +  0, // 0xA0
+        EXTB_W    = self::OFS_ARITHMETIC +  0, // 0xA0
         EXTB_L    = self::OFS_ARITHMETIC +  1,
         EXTB_Q    = self::OFS_ARITHMETIC +  2,
         EXTW_L    = self::OFS_ARITHMETIC +  3,
@@ -84,7 +84,7 @@ interface IArithmetic extends IByteCodeGroups {
         FABS_S    = self::OFS_ARITHMETIC + 54,
         FABS_D    = self::OFS_ARITHMETIC + 55,
         FSQRT_S   = self::OFS_ARITHMETIC + 56,
-        FRQRT_D   = self::OFS_ARITHMETIC + 57,
+        FSQRT_D   = self::OFS_ARITHMETIC + 57,
         FACOS_S   = self::OFS_ARITHMETIC + 58,
         FACOS_D   = self::OFS_ARITHMETIC + 59,
         FASIN_S   = self::OFS_ARITHMETIC + 60,

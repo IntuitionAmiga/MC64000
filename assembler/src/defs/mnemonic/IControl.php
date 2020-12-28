@@ -55,7 +55,7 @@ interface IControl extends IByteCodeGroups {
         BPL_W  = self::OFS_CONTROL + 27,
         BPL_L  = self::OFS_CONTROL + 28,
         BPL_Q  = self::OFS_CONTROL + 29,
-        FPBL_S = self::OFS_CONTROL + 30,
+        FBPL_S = self::OFS_CONTROL + 30,
         FBPL_D = self::OFS_CONTROL + 31,
 
         BLT_B  = self::OFS_CONTROL + 32, // 0x20
