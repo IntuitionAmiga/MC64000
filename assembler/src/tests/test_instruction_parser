@@ -31,6 +31,9 @@ const EXAMPLES = [
     'bclr.w #0x3F, d0',
     'bset.q #0, 0xabadcafe(a0, d0.l * 8)',
     'move.q #1, #2',                             // Should fail
+    'fmoveb.d #1, fp1',
+    'fmul.s   #-3.90625e-3, fp15',
+    'fdiv.d   #1.28e2, 32(a0, d2.l * 8)',
 ];
 
 $oParser = new Parser\Instruction\Line;

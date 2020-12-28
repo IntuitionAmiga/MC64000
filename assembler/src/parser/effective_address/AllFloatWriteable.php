@@ -36,7 +36,7 @@ class AllFloatWriteable implements IParser {
 
         // Initial best guess order of frequency.
         $this->aParsers = [
-            new GPRDirect,
+            new FPRDirect,
             new GPRIndirect,
             new GPRIndirectDisplacement,
             new GPRIndirectIndexed,
@@ -49,7 +49,7 @@ class AllFloatWriteable implements IParser {
      */
     public function setOperationSize(int $iSize) : self {
         foreach ($this->aParsers as $oParser) {
-            $this->oParser->setOperationSize($iSize);
+            $oParser->setOperationSize($iSize);
         }
         return $this;
     }

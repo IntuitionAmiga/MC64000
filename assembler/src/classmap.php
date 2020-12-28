@@ -7,6 +7,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\Utils\\Hex' => '/parser/utils/Hex.php',
   'ABadCafe\\MC64K\\Parser\\Instruction\\IOperandParser' => '/parser/instruction/IOperandParser.php',
   'ABadCafe\\MC64K\\Parser\\Instruction\\Line' => '/parser/instruction/Line.php',
+  'ABadCafe\\MC64K\\Parser\\Instruction\\Operand\\FloatDyadic' => '/parser/instruction/operand/FloatDyadic.php',
   'ABadCafe\\MC64K\\Parser\\Instruction\\Operand\\None' => '/parser/instruction/operand/None.php',
   'ABadCafe\\MC64K\\Parser\\Instruction\\Operand\\Dyadic' => '/parser/instruction/operand/Dyadic.php',
   'ABadCafe\\MC64K\\Parser\\Instruction\\Operand\\IntegerDyadic' => '/parser/instruction/operand/IntegerDyadic.php',

@@ -72,7 +72,7 @@ abstract class Dyadic implements Instruction\IOperandParser {
             ->setOperationSize($aSizes[$iSrcIndex] ?? self::DEFAULT_SIZE)
             ->parse($aOperands[$iSrcIndex]);
         if (null === $sSrcBytecode) {
-            throw new \UnexpededValueException(
+            throw new \UnexpectedValueException(
                 $aOperands[$iSrcIndex] . ' not a valid source operand');
         }
 

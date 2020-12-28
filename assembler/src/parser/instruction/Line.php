@@ -37,6 +37,8 @@ class Line implements MC64K\IParser, Defs\Mnemonic\IMatches {
         $this->oTokeniser = new Tokeniser\Instruction;
         $this->addOperandParser(new Operand\None());
         $this->addOperandParser(new Operand\IntegerDyadic());
+        $this->addOperandParser(new Operand\FloatDyadic());
+
     }
 
     /**

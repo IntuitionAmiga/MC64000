@@ -53,7 +53,7 @@ class AllFloatReadable implements IParser {
      */
     public function setOperationSize(int $iSize) : self {
         foreach ($this->aParsers as $oParser) {
-            $this->oParser->setOperationSize($iSize);
+            $oParser->setOperationSize($iSize);
         }
         return $this;
     }
