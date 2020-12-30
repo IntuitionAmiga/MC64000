@@ -38,6 +38,7 @@ class AllFloatReadable implements IParser {
         $this->aParsers = [
             new FPRDirect,
             new GPRIndirect,
+            new GPRIndirectUpdating,
             new GPRIndirectDisplacement,
             new FloatImmediate,
             new GPRIndirectIndexed,

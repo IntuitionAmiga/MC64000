@@ -21,8 +21,9 @@ use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Tokeniser;
 
 /**
- * Line
+ * Parser\Instruction\Line
  *
+ * Parses a complete assembler instruction statement into bytecode.
  */
 class Line implements MC64K\IParser, Defs\Mnemonic\IMatches {
 
@@ -33,13 +34,22 @@ class Line implements MC64K\IParser, Defs\Mnemonic\IMatches {
      */
     private array $aOperandParsers = [];
 
+    /**
+     * Constructor
+     */
     public function __construct() {
-        $this->oTokeniser = new Tokeniser\Instruction;
-        $this->addOperandParser(new OperandSet\None());
-        $this->addOperandParser(new OperandSet\IntegerDyadicBranch());
-        $this->addOperandParser(new OperandSet\IntegerDyadic());
-        $this->addOperandParser(new OperandSet\FloatDyadic());
+        $this->oTokeniser = new Tokeniser\Instruction();
+        $this->addOperandSetParser(new OperandSet\None());
+        $this->addOperandSetParser(new OperandSet\IntegerMonadic());
+        $this->addOperandSetParser(new OperandSet\IntegerMonadicBranch());
+        $this->addOperandSetParser(new OperandSet\IntegerDyadic());
+        $this->addOperandSetParser(new OperandSet\IntegerDyadicBranch());
+        $this->addOperandSetParser(new OperandSet\FloatDyadic());
+        $this->addOperandSetParser(new OperandSet\FloatDyadicBranch());
+        $this->addOperandSetParser(new OperandSet\FloatToIntegerDyadic());
+        $this->addOperandSetParser(new OperandSet\IntegerToFloatDyadic());
 
+        echo "Coverage: ", count($this->aOperandParsers), " opcodes.\n";
     }
 
     /**
@@ -67,7 +77,10 @@ class Line implements MC64K\IParser, Defs\Mnemonic\IMatches {
         return null;
     }
 
-    private function addOperandParser(IOperandSetParser $oOperandParser) : void {
+    /**
+     * Add an OperandSetParser
+     */
+    private function addOperandSetParser(IOperandSetParser $oOperandParser) : void {
         foreach ($oOperandParser->getOpcodes() as $iOpcode) {
             $this->aOperandParsers[(string)$iOpcode] = $oOperandParser;
         }

@@ -20,45 +20,37 @@ use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 
 /**
- * IntegerDyadicBranch
+ * IntegerMonadicBranch
  *
  * For all vanilla integer compare and branch
  */
-class IntegerDyadicBranch extends Dyadic {
+class IntegerMonadicBranch extends Monadic {
 
     const
-        OPERAND_TARGET    = 2,
-        MIN_OPERAND_COUNT = 3
+        OPERAND_TARGET    = 1,
+        MIN_OPERAND_COUNT = 2
     ;
 
     /**
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IControl::BLT_B,
-        IControl::BLT_W,
-        IControl::BLT_L,
-        IControl::BLT_Q,
-        IControl::BLE_B,
-        IControl::BLE_W,
-        IControl::BLE_L,
-        IControl::BLE_Q,
-        IControl::BEQ_B,
-        IControl::BEQ_W,
-        IControl::BEQ_L,
-        IControl::BEQ_Q,
-        IControl::BGE_B,
-        IControl::BGE_W,
-        IControl::BGE_L,
-        IControl::BGE_Q,
-        IControl::BGT_B,
-        IControl::BGT_W,
-        IControl::BGT_L,
-        IControl::BGT_Q,
-        IControl::BNE_B,
-        IControl::BNE_W,
-        IControl::BNE_L,
-        IControl::BNE_Q,
+        IControl::BIZ_B,
+        IControl::BIZ_W,
+        IControl::BIZ_L,
+        IControl::BIZ_Q,
+        IControl::BNZ_B,
+        IControl::BNZ_W,
+        IControl::BNZ_L, // 0x10
+        IControl::BNZ_Q,
+        IControl::BMI_B,
+        IControl::BMI_W,
+        IControl::BMI_L,
+        IControl::BMI_Q,
+        IControl::BPL_B,
+        IControl::BPL_W,
+        IControl::BPL_L,
+        IControl::BPL_Q,
     ];
 
     private Parser\Instruction\Operand\BranchDisplacement $oTgtParser;
@@ -68,9 +60,7 @@ class IntegerDyadicBranch extends Dyadic {
      */
     public function __construct() {
         $this->oSrcParser = new Parser\EffectiveAddress\AllIntegerReadable();
-        $this->oDstParser = new Parser\EffectiveAddress\AllIntegerReadable();
         $this->oTgtParser = new Parser\Instruction\Operand\BranchDisplacement();
-        parent::__construct();
     }
 
     /**
@@ -84,19 +74,7 @@ class IntegerDyadicBranch extends Dyadic {
      * @inheritDoc
      */
     public function parse(array $aOperands, array $aSizes = []) : string {
-
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
-
-        $iDstIndex    = $this->getDestinationOperandIndex();
-        $sDstBytecode = $this->oDstParser
-            ->setOperationSize($aSizes[$iDstIndex] ?? self::DEFAULT_SIZE)
-            ->parse($aOperands[$iDstIndex]);
-        if (null === $sDstBytecode) {
-            throw new \UnexpectedValueException(
-                $aOperands[$iDstIndex] . ' not a valid comparison operand'
-            );
-        }
-
         $iSrcIndex    = $this->getSourceOperandIndex();
         $sSrcBytecode = $this->oSrcParser
             ->setOperationSize($aSizes[$iSrcIndex] ?? self::DEFAULT_SIZE)
@@ -106,13 +84,8 @@ class IntegerDyadicBranch extends Dyadic {
                 $aOperands[$iSrcIndex] . ' not a valid comparison operand'
             );
         }
-
         $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
-
-        if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {
-            throw new \DomainException('This code is silly');
-        }
-        return $sDstBytecode . $sSrcBytecode . $sDisplacement;
+        return $sSrcBytecode . $sDisplacement;
     }
 
 

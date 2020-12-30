@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * GPRIndirect
  *
- * Basic parser for GPR indirect modes, including pre/post increment/decrement.
+ * Basic parser for GPR indirect modes
  */
 class GPRIndirect implements IParser, EffectiveAddress\IRegisterIndirect {
 
@@ -32,37 +32,19 @@ class GPRIndirect implements IParser, EffectiveAddress\IRegisterIndirect {
     /**
      * Required match
      */
-    const MATCHES = [
-        // Register indirect (rN)
-        '/^\(\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND,
-
-        // Register indirect, post increment (rN)+
-        '/^\(\s*' . self::RA . '\s*\)\+$/' => self::OFS_GPR_IND_POST_INC,
-
-        // Register indirect, post decrement (rN)-
-        '/^\(\s*' . self::RA . '\s*\)\-$/' => self::OFS_GPR_IND_POST_DEC,
-
-        // Register indirect, pre increment +(rN)
-        '/^\+\(\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND_PRE_INC,
-
-        // Register indirect, pre decrement -(rN)
-        '/^\-\(\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND_PRE_DEC,
-    ];
-
+    const MATCH        = '/^\(\s*' . self::RA . '\s*\)$/';
     const MATCHED_NAME = 1;
 
     /**
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
-        foreach (self::MATCHES as $sMatch => $iOffset) {
-            if (preg_match($sMatch, $sSource, $aMatches)) {
-                $sRegister = $aMatches[self::MATCHED_NAME];
-                if (!isset(Register\INames::GPR_MAP[$sRegister])) {
-                    throw new \OutOfBoundsException($sRegister . ' is not a recognised GPR name');
-                }
-                return chr($iOffset + Register\INames::GPR_MAP[$sRegister]);
+        if (preg_match(self::MATCH, $sSource, $aMatches)) {
+            $sRegister = $aMatches[self::MATCHED_NAME];
+            if (!isset(Register\INames::GPR_MAP[$sRegister])) {
+                throw new \OutOfBoundsException($sRegister . ' is not a recognised GPR name');
             }
+            return chr(self::OFS_GPR_IND + Register\INames::GPR_MAP[$sRegister]);
         }
         return null;
     }

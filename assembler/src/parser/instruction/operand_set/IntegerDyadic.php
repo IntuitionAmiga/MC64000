@@ -36,6 +36,7 @@ class IntegerDyadic extends Dyadic {
         IDataMove::MOVE_W,
         IDataMove::MOVE_L,
         IDataMove::MOVE_Q,
+        IDataMove::LEA,
         ILogical::AND_B,
         ILogical::AND_W,
         ILogical::AND_L,

@@ -24,15 +24,13 @@ use ABadCafe\MC64K\Defs;
  *
  * Base for all vanilla destination @ source -> destination operations
  */
-abstract class Dyadic implements Parser\Instruction\IOperandSetParser {
+abstract class Dyadic extends Monadic {
 
     const
-        DEF_OPERAND_SRC   = 0,
         DEF_OPERAND_DST   = 1,
         MIN_OPERAND_COUNT = 2
     ;
 
-    protected Parser\EffectiveAddress\IParser $oSrcParser;
     protected Parser\EffectiveAddress\IParser $oDstParser;
 
     /**
@@ -81,15 +79,6 @@ abstract class Dyadic implements Parser\Instruction\IOperandSetParser {
     }
 
     /**
-     * Returns the expected index in the operands array for the source operand
-     *
-     * @return int
-     */
-    protected function getSourceOperandIndex() : int {
-        return self::DEF_OPERAND_SRC;
-    }
-
-    /**
      * Returns the expected index in the operands array for the destination operand
      *
      * @return int
@@ -99,20 +88,16 @@ abstract class Dyadic implements Parser\Instruction\IOperandSetParser {
     }
 
     /**
-     * Sanity checks the input array length
+     * Checks to see if the source operand can be optimised to "same as destination"
      *
-     * @param  string[] $aOperands
-     * @param  int      $iMinimumCount
-     * @throws
+     * @param  string $sSrcBytecode
+     * @param  string $sDstBytecode
+     * @return bool
      */
-    protected function assertMinimumOperandCount(array $aOperands, int $iMinimumCount) : void {
-        $iCount = count($aOperands);
-        if ($iMinimumCount > $iCount) {
-            throw new \LengthException(
-                get_class($this) . ' expects at least ' .
-                $iMinimumCount . ' operands, got ' . $iCount
-            );
-        }
+    protected function canOptimiseSourceOperand(string $sSrcBytecode, string $sDstBytecode) : bool {
+        // If the source operand bytecode is the same as the destination and the destination mode
+        // is in the set defined by ISameAsDestination, we can use the special "same as destination" EA mode
+        return $sSrcBytecode === $sDstBytecode && isset(self::$aSameAsDestination[ord($sDstBytecode[0])]);
     }
 
     /**
@@ -127,18 +112,5 @@ abstract class Dyadic implements Parser\Instruction\IOperandSetParser {
             $sSrcBytecode = chr(Defs\EffectiveAddress\IOther::SAME_AS_DEST);
         }
         return $sSrcBytecode;
-    }
-
-    /**
-     * Checks to see if the source operand can be optimised to "same as destination"
-     *
-     * @param  string $sSrcBytecode
-     * @param  string $sDstBytecode
-     * @return bool
-     */
-    protected function canOptimiseSourceOperand(string $sSrcBytecode, string $sDstBytecode) : bool {
-        // If the source operand bytecode is the same as the destination and the destination mode
-        // is in the set defined by ISameAsDestination, we can use the special "same as destination" EA mode
-        return $sSrcBytecode === $sDstBytecode && isset(self::$aSameAsDestination[ord($sDstBytecode[0])]);
     }
 }

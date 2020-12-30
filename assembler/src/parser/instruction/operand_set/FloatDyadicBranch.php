@@ -20,11 +20,11 @@ use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 
 /**
- * IntegerDyadicBranch
+ * FloatDyadicBranch
  *
- * For all vanilla integer compare and branch
+ * For all vanilla float compare and branch
  */
-class IntegerDyadicBranch extends Dyadic {
+class FloatDyadicBranch extends Dyadic {
 
     const
         OPERAND_TARGET    = 2,
@@ -35,30 +35,18 @@ class IntegerDyadicBranch extends Dyadic {
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IControl::BLT_B,
-        IControl::BLT_W,
-        IControl::BLT_L,
-        IControl::BLT_Q,
-        IControl::BLE_B,
-        IControl::BLE_W,
-        IControl::BLE_L,
-        IControl::BLE_Q,
-        IControl::BEQ_B,
-        IControl::BEQ_W,
-        IControl::BEQ_L,
-        IControl::BEQ_Q,
-        IControl::BGE_B,
-        IControl::BGE_W,
-        IControl::BGE_L,
-        IControl::BGE_Q,
-        IControl::BGT_B,
-        IControl::BGT_W,
-        IControl::BGT_L,
-        IControl::BGT_Q,
-        IControl::BNE_B,
-        IControl::BNE_W,
-        IControl::BNE_L,
-        IControl::BNE_Q,
+        IControl::FBLT_S,
+        IControl::FBLT_D,
+        IControl::FBLE_S,
+        IControl::FBLE_D,
+        IControl::FBEQ_S,
+        IControl::FBEQ_D,
+        IControl::FBGE_S,
+        IControl::FBGE_D,
+        IControl::FBGT_S,
+        IControl::FBGT_D,
+        IControl::FBNE_S,
+        IControl::FBNE_D,
     ];
 
     private Parser\Instruction\Operand\BranchDisplacement $oTgtParser;
@@ -67,8 +55,8 @@ class IntegerDyadicBranch extends Dyadic {
      * Constructor
      */
     public function __construct() {
-        $this->oSrcParser = new Parser\EffectiveAddress\AllIntegerReadable();
-        $this->oDstParser = new Parser\EffectiveAddress\AllIntegerReadable();
+        $this->oSrcParser = new Parser\EffectiveAddress\AllFloatReadable();
+        $this->oDstParser = new Parser\EffectiveAddress\AllFloatReadable();
         $this->oTgtParser = new Parser\Instruction\Operand\BranchDisplacement();
         parent::__construct();
     }

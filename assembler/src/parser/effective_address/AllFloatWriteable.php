@@ -38,6 +38,7 @@ class AllFloatWriteable implements IParser {
         $this->aParsers = [
             new FPRDirect,
             new GPRIndirect,
+            new GPRIndirectUpdating,
             new GPRIndirectDisplacement,
             new GPRIndirectIndexed,
             new GPRIndirectIndexedDisplacement,

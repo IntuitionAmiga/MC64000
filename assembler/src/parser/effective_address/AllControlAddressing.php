@@ -18,11 +18,11 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 
 /**
- * AllIntegerReadable
+ * AllControlAddressing
  *
- * Meta Parser for integer EA modes that can be read (i.e. suitable for source or comparison).
+ * Meta Parser for all 680x0 Control Addressing effective address modes.
  */
-class AllIntegerReadable implements IParser {
+class AllControlAddressing implements IParser {
 
     /**
      * @var IParser[] $aParsers - set of integer readable parsers
@@ -36,11 +36,8 @@ class AllIntegerReadable implements IParser {
 
         // Initial best guess order of frequency.
         $this->aParsers = [
-            new GPRDirect,
             new GPRIndirect,
-            new GPRIndirectUpdating,
             new GPRIndirectDisplacement,
-            new IntegerImmediate,
             new GPRIndirectIndexed,
             new GPRIndirectIndexedDisplacement,
             new PCIndirectDisplacement,

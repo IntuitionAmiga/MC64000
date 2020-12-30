@@ -20,37 +20,61 @@ namespace ABadCafe\MC64K;
 
 require_once '../MC64K.php';
 
-const EXAMPLES = [
-    'rts',
-    'add.b    #1, r0',
-    'add.w    r0, r1',
-    'add.l    r1, (r0)',
-    'add.l    #200, 30(pc)',                        // Should fail
-    'add.q    8(r7, r15.w * 2), 8(r7, r15.w * 4)',
-    'add.q    8(r7, r15.w * 2), 8(r7, r15.w * 2)',    // Should optimise source operand
-    'bclr.w   #0x3F, d0',
-    'bset.q   #0, 0xabadcafe(a0, d0.l * 8)',
-    'move.q   #1, #2',                             // Should fail
-    'fmoveb.d #1, fp1',
-    'fmul.s   #-3.90625e-3, fp15',
-    'fdiv.d   #1.28e2, 32(a0, d2.l * 8)',
-    'blt.b    d0, d1, .unresolved_local',
-    'blt.b    d0, d1, unresolved_global',
-    'bgt.w    r0, (r15), -32',
-    'bgt.w    r0, (r15), 0x20',
-    'bne.q    (r0), (r1), 0xFFFFFFF0',
-    'bgt.l    r1, r1, .doesnt_matter'
+const PASS = 1;
+const FAIL = 0;
 
+const EXAMPLES = [
+    // Example Assembler Statement => Expected Outcome
+    'rts'                                          => PASS,
+    'jmp      r0'                                  => FAIL,
+    'jmp      (r0)'                                => PASS,
+    'jsr      (a0)+'                               => FAIL,
+    'pea      8(r7, r15.w * 2)'                    => PASS,
+    'lea      -2(r7, r15.w * 2), (a0)'             => PASS,
+    'bnz.b    r0, .target'                         => PASS,
+    'biz.w    (r0), .target'                       => PASS,
+    'bpl.l    r1, .target'                         => PASS,
+    'bmi.l    r7, .target'                         => PASS,
+    'add.b    #1, r0'                              => PASS,
+    'add.w    r0, r1'                              => PASS,
+    'add.l    r1, (r0)'                            => PASS,
+    'add.l    #200, 30(pc)'                        => FAIL,
+    'add.q    8(r7, r15.w * 2), 8(r7, r15.w * 4)'  => PASS,
+    'add.q    8(r7, r15.w * 2), 8(r7, r15.w * 2)'  => PASS,
+    'bclr.w   #0x3F, d0'                           => PASS,
+    'bset.q   #0, 0xabadcafe(a0, d0.l * 8)'        => PASS,
+    'move.q   #1, #2'                              => FAIL,
+    'fmoveb.d #1, fp1'                             => PASS,
+    'fmoves.d (a0), fp0'                           => PASS,
+    'fmul.s   #-3.90625e-3, fp15'                  => PASS,
+    'fdiv.d   #1.28e2, 32(a0, d2.l * 8)'           => PASS,
+    'blt.b    d0, d1, .unresolved_local'           => PASS,
+    'blt.b    d0, d1, unresolved_global'           => PASS,
+    'bgt.w    r0, (r15), -32'                      => PASS,
+    'bgt.w    r0, (r15), 0x20'                     => PASS,
+    'bne.q    (r0), (r1), 0xFFFFFFF0'              => PASS,
+    'bgt.l    r1, r1, .doesnt_matter'              => FAIL,
+    'fble.s   fp0, fp1, .fless_or_equal'           => PASS,
+    'fbeq.d   (r1), (r1)+, .not_totally_silly'     => PASS,
+    'fbeq.d   fp0, fp0, .totally_silly'            => FAIL,
 ];
 
-$oParser = new Parser\Instruction\Line;
+$oParser = new Parser\Instruction\Line();
 
-foreach (EXAMPLES as $sInput) {
-    echo $sInput, " => ";
+foreach (EXAMPLES as $sInput => $iExpect) {
+    printf("\t%-50s => ", $sInput);
     try {
-        echo "Bytecode: ", bin2hex($oParser->parse($sInput));
+        echo bin2hex($oParser->parse($sInput));
+        if ($iExpect === FAIL) {
+            echo " - UNEXPECTED OUTCOME";
+        }
     } catch (\Throwable $oError) {
-        echo get_class($oError), " - ", $oError->getMessage();
+        echo "Parse Error: ", get_class($oError), " - ", $oError->getMessage();
+        if ($iExpect === PASS) {
+            echo " - UNEXPECTED OUTCOME";
+        } else {
+            echo " (Expected outcome)";
+        }
     }
     echo "\n";
 }

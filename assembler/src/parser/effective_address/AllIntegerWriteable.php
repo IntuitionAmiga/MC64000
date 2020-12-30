@@ -38,6 +38,7 @@ class AllIntegerWriteable implements IParser {
         $this->aParsers = [
             new GPRDirect,
             new GPRIndirect,
+            new GPRIndirectUpdating,
             new GPRIndirectDisplacement,
             new GPRIndirectIndexed,
             new GPRIndirectIndexedDisplacement,
