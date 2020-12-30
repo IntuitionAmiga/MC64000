@@ -20,11 +20,11 @@ use ABadCafe\MC64K\Defs\EffectiveAddress;
 use ABadCafe\MC64K\Parser;
 
 /**
- * IntImmediate
+ * IntegerImmediate
  *
  * Effective address parser for integer immediates.
  */
-class IntImmediate implements IParser, EffectiveAddress\IOther {
+class IntegerImmediate implements IParser, EffectiveAddress\IOther {
 
     use TOperationSizeAware;
 

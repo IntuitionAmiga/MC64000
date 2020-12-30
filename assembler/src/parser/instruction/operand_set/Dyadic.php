@@ -15,9 +15,8 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\Operand;
-use ABadCafe\MC64K\Parser\EffectiveAddress;
-use ABadCafe\MC64K\Parser\Instruction;
+namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs;
 
 /**
@@ -25,14 +24,16 @@ use ABadCafe\MC64K\Defs;
  *
  * Base for all vanilla destination @ source -> destination operations
  */
-abstract class Dyadic implements Instruction\IOperandParser {
+abstract class Dyadic implements Parser\Instruction\IOperandSetParser {
 
     const
+        DEF_OPERAND_SRC   = 0,
+        DEF_OPERAND_DST   = 1,
         MIN_OPERAND_COUNT = 2
     ;
 
-    protected EffectiveAddress\IParser $oSrcParser;
-    protected EffectiveAddress\IParser $oDstParser;
+    protected Parser\EffectiveAddress\IParser $oSrcParser;
+    protected Parser\EffectiveAddress\IParser $oDstParser;
 
     /**
      * @var int[] $aSameAsDestination
@@ -84,14 +85,18 @@ abstract class Dyadic implements Instruction\IOperandParser {
      *
      * @return int
      */
-    protected abstract function getSourceOperandIndex() : int;
+    protected function getSourceOperandIndex() : int {
+        return self::DEF_OPERAND_SRC;
+    }
 
     /**
      * Returns the expected index in the operands array for the destination operand
      *
      * @return int
      */
-    protected abstract function getDestinationOperandIndex() : int;
+    protected function getDestinationOperandIndex() : int {
+        return self::DEF_OPERAND_DST;
+    }
 
     /**
      * Sanity checks the input array length

@@ -18,11 +18,11 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\Instruction;
 
 /**
- * IOperandParser
+ * IOperandSetParser
  *
  * Top level interface for instruction operand parsers.
  */
-interface IOperandParser {
+interface IOperandSetParser {
 
     const DEFAULT_SIZE = 8;
 

@@ -15,9 +15,8 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\Operand;
-use ABadCafe\MC64K\Parser\EffectiveAddress;
-use ABadCafe\MC64K\Parser\Instruction;
+namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
 
@@ -27,11 +26,6 @@ use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
  * For all vanilla float destination @ source -> destination operations
  */
 class FloatDyadic extends Dyadic {
-
-    const
-        OPERAND_SRC   = 0,
-        OPERAND_DST   = 1
-    ;
 
     /**
      * The set of specific opcodes that this Operand Parser applies to
@@ -87,8 +81,8 @@ class FloatDyadic extends Dyadic {
      * Constructor
      */
     public function __construct() {
-        $this->oSrcParser = new EffectiveAddress\AllFloatReadable();
-        $this->oDstParser = new EffectiveAddress\AllFloatWriteable();
+        $this->oSrcParser = new Parser\EffectiveAddress\AllFloatReadable();
+        $this->oDstParser = new Parser\EffectiveAddress\AllFloatWriteable();
         parent::__construct();
     }
 
@@ -97,19 +91,5 @@ class FloatDyadic extends Dyadic {
      */
     public function getOpcodes() : array {
         return self::OPCODES;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getSourceOperandIndex() : int {
-        return self::OPERAND_SRC;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getDestinationOperandIndex() : int {
-        return self::OPERAND_DST;
     }
 }

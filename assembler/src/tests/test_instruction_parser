@@ -22,18 +22,24 @@ require_once '../MC64K.php';
 
 const EXAMPLES = [
     'rts',
-    'add.b #1, r0',
-    'add.w r0, r1',
-    'add.l r1, (r0)',
-    'add.l #200, 30(pc)',                        // Should fail
-    'add.q 8(r7, r15.w * 2), 8(r7, r15.w * 4)',
-    'add.q 8(r7, r15.w * 2), 8(r7, r15.w * 2)',    // Should optimise source operand
+    'add.b  #1, r0',
+    'add.w  r0, r1',
+    'add.l  r1, (r0)',
+    'add.l  #200, 30(pc)',                        // Should fail
+    'add.q  8(r7, r15.w * 2), 8(r7, r15.w * 4)',
+    'add.q  8(r7, r15.w * 2), 8(r7, r15.w * 2)',    // Should optimise source operand
     'bclr.w #0x3F, d0',
     'bset.q #0, 0xabadcafe(a0, d0.l * 8)',
-    'move.q #1, #2',                             // Should fail
+    'move.q   #1, #2',                             // Should fail
     'fmoveb.d #1, fp1',
     'fmul.s   #-3.90625e-3, fp15',
     'fdiv.d   #1.28e2, 32(a0, d2.l * 8)',
+    'blt.b    d0, d1, .unresolved_local',
+    'blt.b    d0, d1, unresolved_global',
+    'bgt.w    r0, (r15), -32',
+    'bgt.w    r0, (r15), 0x20',
+    'bne.q    (r0), (r1), 0xFFFFFFF0'
+
 ];
 
 $oParser = new Parser\Instruction\Line;

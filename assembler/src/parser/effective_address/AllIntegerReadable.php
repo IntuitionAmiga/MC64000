@@ -39,7 +39,7 @@ class AllIntegerReadable implements IParser {
             new GPRDirect,
             new GPRIndirect,
             new GPRIndirectDisplacement,
-            new IntImmediate,
+            new IntegerImmediate,
             new GPRIndirectIndexed,
             new GPRIndirectIndexedDisplacement,
             new PCIndirectDisplacement,

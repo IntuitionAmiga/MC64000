@@ -15,7 +15,7 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\Operand;
+namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
 
 use ABadCafe\MC64K\Parser\Instruction;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
@@ -25,7 +25,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
  *
  * For those operations that have no operands to parse
  */
-class None implements Instruction\IOperandParser {
+class None implements Instruction\IOperandSetParser {
 
     /**
      * @inheritDoc

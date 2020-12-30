@@ -28,7 +28,7 @@ use ABadCafe\MC64K\Parser;
 class GPRIndirectDisplacement implements IParser, EffectiveAddress\IRegisterIndirect {
 
     use TOperationSizeAware;
-    use TSignedDisplacementAware;
+    use Parser\Utils\TSignedDisplacementAware;
 
     /**
      * Required match

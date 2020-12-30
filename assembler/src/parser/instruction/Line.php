@@ -29,15 +29,16 @@ class Line implements MC64K\IParser, Defs\Mnemonic\IMatches {
     private Tokeniser\Instruction $oTokeniser;
 
     /**
-     * @var IOperandParser[] $aOperandParsers
+     * @var IOperandSetParser[] $aOperandParsers
      */
     private array $aOperandParsers = [];
 
     public function __construct() {
         $this->oTokeniser = new Tokeniser\Instruction;
-        $this->addOperandParser(new Operand\None());
-        $this->addOperandParser(new Operand\IntegerDyadic());
-        $this->addOperandParser(new Operand\FloatDyadic());
+        $this->addOperandParser(new OperandSet\None());
+        $this->addOperandParser(new OperandSet\IntegerDyadicBranch());
+        $this->addOperandParser(new OperandSet\IntegerDyadic());
+        $this->addOperandParser(new OperandSet\FloatDyadic());
 
     }
 
@@ -66,7 +67,7 @@ class Line implements MC64K\IParser, Defs\Mnemonic\IMatches {
         return null;
     }
 
-    private function addOperandParser(IOperandParser $oOperandParser) : void {
+    private function addOperandParser(IOperandSetParser $oOperandParser) : void {
         foreach ($oOperandParser->getOpcodes() as $iOpcode) {
             $this->aOperandParsers[(string)$iOpcode] = $oOperandParser;
         }

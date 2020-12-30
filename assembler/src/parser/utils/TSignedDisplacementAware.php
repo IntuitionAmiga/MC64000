@@ -15,13 +15,13 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\EffectiveAddress;
+namespace ABadCafe\MC64K\Parser\Utils;
 use ABadCafe\MC64K\Parser;
 
 /**
  * TSignedDisplacementAware
  *
- * Utilities for parsing 32-bit signed displacement components of effective addresses.
+ * Utilities for parsing 32-bit signed displacement components of effective addresses and branches
  */
 trait TSignedDisplacementAware {
 
