@@ -123,15 +123,22 @@ abstract class Dyadic implements Parser\Instruction\IOperandSetParser {
      * @return string bytecode
      */
     protected function optimiseSourceOperandBytecode(string $sSrcBytecode, string $sDstBytecode) : string {
-        // If the source operand bytecode is the same as the destination and the destination mode
-        // is in the set defined by ISameAsDestination, we can use the special "same as destination" EA mode
-        if ($sSrcBytecode === $sDstBytecode) {
-            $iEAMode = ord($sSrcBytecode[0]);
-            if (isset(self::$aSameAsDestination[$iEAMode])) {
-                $sSrcBytecode = chr(Defs\EffectiveAddress\IOther::SAME_AS_DEST);
-            }
+        if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {
+            $sSrcBytecode = chr(Defs\EffectiveAddress\IOther::SAME_AS_DEST);
         }
         return $sSrcBytecode;
     }
 
+    /**
+     * Checks to see if the source operand can be optimised to "same as destination"
+     *
+     * @param  string $sSrcBytecode
+     * @param  string $sDstBytecode
+     * @return bool
+     */
+    protected function canOptimiseSourceOperand(string $sSrcBytecode, string $sDstBytecode) : bool {
+        // If the source operand bytecode is the same as the destination and the destination mode
+        // is in the set defined by ISameAsDestination, we can use the special "same as destination" EA mode
+        return $sSrcBytecode === $sDstBytecode && isset(self::$aSameAsDestination[ord($sDstBytecode[0])]);
+    }
 }

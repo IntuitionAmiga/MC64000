@@ -109,7 +109,10 @@ class IntegerDyadicBranch extends Dyadic {
 
         $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
 
-        return $sDstBytecode . $this->optimiseSourceOperandBytecode($sSrcBytecode, $sDstBytecode) . $sDisplacement;
+        if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {
+            throw new \DomainException('This code is silly');
+        }
+        return $sDstBytecode . $sSrcBytecode . $sDisplacement;
     }
 
 
