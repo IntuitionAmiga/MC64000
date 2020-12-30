@@ -42,4 +42,11 @@ class AllIntegerReadable extends Composite {
             new PCIndirectIndexedDisplacement()
         ];
     }
+
+    /**
+     * @return bool
+     */
+    public function wasImmediate() : bool {
+        return $this->oParsedBy instanceof IntegerImmediate;
+    }
 }

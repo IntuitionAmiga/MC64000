@@ -30,6 +30,11 @@ abstract class Composite implements IParser {
     protected array $aParsers = [];
 
     /**
+     * @var IParser|null $oParsedBy - the last IParser that succeeded in a call to parse()
+     */
+    protected ?IParser $oParsedBy = null;
+
+    /**
      * @inheritDoc
      */
     public function setOperationSize(int $iSize) : self {
@@ -43,9 +48,11 @@ abstract class Composite implements IParser {
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
+        $this->oParsedBy = null;
         foreach ($this->aParsers as $oParser) {
             $sParsed = $oParser->parse($sSource);
             if (null !== $sParsed) {
+                $this->oParsedBy = $oParser;
                 return $sParsed;
             }
         }

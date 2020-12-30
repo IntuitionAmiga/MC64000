@@ -35,8 +35,9 @@ const EXAMPLES = [
     'biz.w    (r0), .target'                       => PASS,
     'bpl.l    r1, .target'                         => PASS,
     'bmi.l    r7, .target'                         => PASS,
+    'biz.w    #1,  .target'                        => FAIL,
     'fbpl.s   fp1, .target'                        => PASS,
-    'fbpl.s   #0., .target'                        => PASS,
+    'fbpl.s   #0., .target'                        => FAIL,
     'add.b    #1, r0'                              => PASS,
     'add.w    r0, r1'                              => PASS,
     'add.l    r1, (r0)'                            => PASS,
@@ -56,9 +57,11 @@ const EXAMPLES = [
     'bgt.w    r0, (r15), 0x20'                     => PASS,
     'bne.q    (r0), (r1), 0xFFFFFFF0'              => PASS,
     'bgt.l    r1, r1, .doesnt_matter'              => FAIL,
+    'bne.l    #1, #2, .doesnt_matter'              => FAIL,
     'fble.s   fp0, fp1, .fless_or_equal'           => PASS,
     'fbeq.d   (r1), (r1)+, .not_totally_silly'     => PASS,
     'fbeq.d   fp0, fp0, .totally_silly'            => FAIL,
+    'fbne.s    #1., #2., .doesnt_matter'           => FAIL,
 ];
 
 $oParser = new Parser\Instruction\Line();

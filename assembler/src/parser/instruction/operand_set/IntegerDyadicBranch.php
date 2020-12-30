@@ -107,10 +107,14 @@ class IntegerDyadicBranch extends Dyadic {
             );
         }
 
+        if ($this->oDstParser->wasImmediate() && $this->oSrcParser->wasImmediate()) {
+            throw new \DomainException('This code is silly - compile time constant comparison - TODO fold out');
+        }
+
         $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
 
         if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {
-            throw new \DomainException('This code is silly');
+            throw new \DomainException('This code is silly - runtime invariant comparison - TODO fold out');
         }
         return $sDstBytecode . $sSrcBytecode . $sDisplacement;
     }

@@ -41,7 +41,7 @@ class IntegerMonadicBranch extends Monadic {
         IControl::BIZ_Q,
         IControl::BNZ_B,
         IControl::BNZ_W,
-        IControl::BNZ_L, // 0x10
+        IControl::BNZ_L,
         IControl::BNZ_Q,
         IControl::BMI_B,
         IControl::BMI_W,
@@ -84,6 +84,11 @@ class IntegerMonadicBranch extends Monadic {
                 $aOperands[$iSrcIndex] . ' not a valid comparison operand'
             );
         }
+
+        if ($this->oSrcParser->wasImmediate()) {
+            throw new \DomainException('This code is silly - compile time constant comparison : TODO - fold out');
+        }
+
         $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
         return $sSrcBytecode . $sDisplacement;
     }

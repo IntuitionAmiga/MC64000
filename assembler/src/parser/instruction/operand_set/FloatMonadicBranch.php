@@ -76,6 +76,11 @@ class FloatMonadicBranch extends Monadic {
                 $aOperands[$iSrcIndex] . ' not a valid comparison operand'
             );
         }
+
+        if ($this->oSrcParser->wasImmediate()) {
+            throw new \DomainException('This code is silly - compile time constant comparison : TODO - fold out');
+        }
+
         $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
         return $sSrcBytecode . $sDisplacement;
     }
