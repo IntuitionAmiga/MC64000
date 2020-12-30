@@ -42,6 +42,7 @@ class Line implements MC64K\IParser, Defs\Mnemonic\IMatches {
         $this->addOperandSetParser(new OperandSet\None());
         $this->addOperandSetParser(new OperandSet\IntegerMonadic());
         $this->addOperandSetParser(new OperandSet\IntegerMonadicBranch());
+        $this->addOperandSetParser(new OperandSet\FloatMonadicBranch());
         $this->addOperandSetParser(new OperandSet\IntegerDyadic());
         $this->addOperandSetParser(new OperandSet\IntegerDyadicBranch());
         $this->addOperandSetParser(new OperandSet\FloatDyadic());

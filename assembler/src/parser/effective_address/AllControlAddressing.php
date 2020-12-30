@@ -22,50 +22,21 @@ namespace ABadCafe\MC64K\Parser\EffectiveAddress;
  *
  * Meta Parser for all 680x0 Control Addressing effective address modes.
  */
-class AllControlAddressing implements IParser {
-
-    /**
-     * @var IParser[] $aParsers - set of integer readable parsers
-     */
-    private array $aParsers = [];
+class AllControlAddressing extends Composite {
 
     /**
      * Constructor
      */
     public function __construct() {
-
         // Initial best guess order of frequency.
         $this->aParsers = [
-            new GPRIndirect,
-            new GPRIndirectDisplacement,
-            new GPRIndirectIndexed,
-            new GPRIndirectIndexedDisplacement,
-            new PCIndirectDisplacement,
-            new PCIndirectIndexed,
-            new PCIndirectIndexedDisplacement
+            new GPRIndirect(),
+            new GPRIndirectDisplacement(),
+            new GPRIndirectIndexed(),
+            new GPRIndirectIndexedDisplacement(),
+            new PCIndirectDisplacement(),
+            new PCIndirectIndexed(),
+            new PCIndirectIndexedDisplacement()
         ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setOperationSize(int $iSize) : self {
-        foreach ($this->aParsers as $oParser) {
-            $oParser->setOperationSize($iSize);
-        }
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function parse(string $sSource) : ?string {
-        foreach ($this->aParsers as $oParser) {
-            $sParsed = $oParser->parse($sSource);
-            if (null !== $sParsed) {
-                return $sParsed;
-            }
-        }
-        return null;
     }
 }

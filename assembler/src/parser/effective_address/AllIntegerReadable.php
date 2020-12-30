@@ -22,53 +22,24 @@ namespace ABadCafe\MC64K\Parser\EffectiveAddress;
  *
  * Meta Parser for integer EA modes that can be read (i.e. suitable for source or comparison).
  */
-class AllIntegerReadable implements IParser {
-
-    /**
-     * @var IParser[] $aParsers - set of integer readable parsers
-     */
-    private array $aParsers = [];
+class AllIntegerReadable extends Composite {
 
     /**
      * Constructor
      */
     public function __construct() {
-
         // Initial best guess order of frequency.
         $this->aParsers = [
-            new GPRDirect,
-            new GPRIndirect,
-            new GPRIndirectUpdating,
-            new GPRIndirectDisplacement,
-            new IntegerImmediate,
-            new GPRIndirectIndexed,
-            new GPRIndirectIndexedDisplacement,
-            new PCIndirectDisplacement,
-            new PCIndirectIndexed,
-            new PCIndirectIndexedDisplacement
+            new GPRDirect(),
+            new GPRIndirect(),
+            new GPRIndirectUpdating(),
+            new GPRIndirectDisplacement(),
+            new IntegerImmediate(),
+            new GPRIndirectIndexed(),
+            new GPRIndirectIndexedDisplacement(),
+            new PCIndirectDisplacement(),
+            new PCIndirectIndexed(),
+            new PCIndirectIndexedDisplacement()
         ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setOperationSize(int $iSize) : self {
-        foreach ($this->aParsers as $oParser) {
-            $oParser->setOperationSize($iSize);
-        }
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function parse(string $sSource) : ?string {
-        foreach ($this->aParsers as $oParser) {
-            $sParsed = $oParser->parse($sSource);
-            if (null !== $sParsed) {
-                return $sParsed;
-            }
-        }
-        return null;
     }
 }

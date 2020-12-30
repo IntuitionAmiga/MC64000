@@ -22,49 +22,20 @@ namespace ABadCafe\MC64K\Parser\EffectiveAddress;
  *
  * Meta Parser for integer EA modes that can be written (i.e. suitable for destination).
  */
-class AllIntegerWriteable implements IParser {
-
-    /**
-     * @var IParser[] $aParsers - set of integer writeable parsers
-     */
-    private array $aParsers = [];
+class AllIntegerWriteable extends Composite {
 
     /**
      * Constructor
      */
     public function __construct() {
-
         // Initial best guess order of frequency.
         $this->aParsers = [
-            new GPRDirect,
-            new GPRIndirect,
-            new GPRIndirectUpdating,
-            new GPRIndirectDisplacement,
-            new GPRIndirectIndexed,
-            new GPRIndirectIndexedDisplacement,
+            new GPRDirect(),
+            new GPRIndirect(),
+            new GPRIndirectUpdating(),
+            new GPRIndirectDisplacement(),
+            new GPRIndirectIndexed(),
+            new GPRIndirectIndexedDisplacement(),
         ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setOperationSize(int $iSize) : self {
-        foreach ($this->aParsers as $oParser) {
-            $oParser->setOperationSize($iSize);
-        }
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function parse(string $sSource) : ?string {
-        foreach ($this->aParsers as $oParser) {
-            $sParsed = $oParser->parse($sSource);
-            if (null !== $sParsed) {
-                return $sParsed;
-            }
-        }
-        return null;
     }
 }

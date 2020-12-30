@@ -22,49 +22,20 @@ namespace ABadCafe\MC64K\Parser\EffectiveAddress;
  *
  * Meta Parser for float EA modes that can be written (i.e. suitable for destination).
  */
-class AllFloatWriteable implements IParser {
-
-    /**
-     * @var IParser[] $aParsers - set of float writeable parsers
-     */
-    private array $aParsers = [];
+class AllFloatWriteable extends Composite {
 
     /**
      * Constructor
      */
     public function __construct() {
-
         // Initial best guess order of frequency.
         $this->aParsers = [
-            new FPRDirect,
-            new GPRIndirect,
-            new GPRIndirectUpdating,
-            new GPRIndirectDisplacement,
-            new GPRIndirectIndexed,
-            new GPRIndirectIndexedDisplacement,
+            new FPRDirect(),
+            new GPRIndirect(),
+            new GPRIndirectUpdating(),
+            new GPRIndirectDisplacement(),
+            new GPRIndirectIndexed(),
+            new GPRIndirectIndexedDisplacement(),
         ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setOperationSize(int $iSize) : self {
-        foreach ($this->aParsers as $oParser) {
-            $oParser->setOperationSize($iSize);
-        }
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function parse(string $sSource) : ?string {
-        foreach ($this->aParsers as $oParser) {
-            $sParsed = $oParser->parse($sSource);
-            if (null !== $sParsed) {
-                return $sParsed;
-            }
-        }
-        return null;
     }
 }

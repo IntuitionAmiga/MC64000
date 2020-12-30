@@ -54,8 +54,10 @@ class FloatImmediate implements IParser, EffectiveAddress\IOther {
             ) {
                 $fAbs = abs($fValue);
                 if (
-                    $fAbs > self::MAX_SINGLE ||
-                    $fAbs < self::MIN_SINGLE
+                    $fAbs !== 0.0 && (
+                        $fAbs > self::MAX_SINGLE ||
+                        $fAbs < self::MIN_SINGLE
+                    )
                 ) {
                     throw new \RangeException('Cannot encode single precision ' . $aMatches[self::MATCHED_VALUE]);
                 }
