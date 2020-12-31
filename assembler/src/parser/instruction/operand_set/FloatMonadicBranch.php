@@ -18,6 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\Parser\Instruction\CodeFoldException;
 
 /**
  * FloatMonadicBranch
@@ -25,6 +26,8 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
  * For all vanilla float compare and branch
  */
 class FloatMonadicBranch extends Monadic {
+
+    use TBranching;
 
     const
         OPERAND_TARGET    = 1,
@@ -44,8 +47,6 @@ class FloatMonadicBranch extends Monadic {
         IControl::FBPL_S,
         IControl::FBPL_D,
     ];
-
-    private Parser\Instruction\Operand\BranchDisplacement $oTgtParser;
 
     /**
      * Constructor
@@ -67,8 +68,10 @@ class FloatMonadicBranch extends Monadic {
      */
     public function parse(array $aOperands, array $aSizes = []) : string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
-        $iSrcIndex    = $this->getSourceOperandIndex();
-        $sSrcBytecode = $this->oSrcParser
+
+        $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
+        $iSrcIndex     = $this->getSourceOperandIndex();
+        $sSrcBytecode  = $this->oSrcParser
             ->setOperationSize($aSizes[$iSrcIndex] ?? self::DEFAULT_SIZE)
             ->parse($aOperands[$iSrcIndex]);
         if (null === $sSrcBytecode) {
@@ -77,11 +80,12 @@ class FloatMonadicBranch extends Monadic {
             );
         }
 
-        if ($this->oSrcParser->wasImmediate()) {
-            throw new \DomainException('This code is silly - compile time constant comparison : TODO - fold out');
-        }
+        $sBytecode = $sSrcBytecode . $sDisplacement;
+        $this->checkBranchDisplacement($sBytecode);
 
-        $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
-        return $sSrcBytecode . $sDisplacement;
+        if ($this->oSrcParser->wasImmediate()) {
+            throw new CodeFoldException('Compile time constant comparison : TODO - fold out');
+        }
+        return $sBytecode;
     }
 }

@@ -18,13 +18,16 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\Instruction\Operand;
 use ABadCafe\MC64K;
 use ABadCafe\MC64K\Parser;
+use ABadCafe\MC64K\Parser\Instruction\CodeFoldException;
 
 /**
  * BranchDisplacement
  */
 class BranchDisplacement implements MC64K\IParser {
 
-    const UNRESOLVED = 0x7FFFFFFF;
+    use Parser\Utils\TSignedDisplacementAware;
+
+    const UNRESOLVED = 0;
 
     const
         MATCH_NUMERIC = '/^' . Parser\EffectiveAddress\IParser::D32 . '$/',
@@ -35,19 +38,44 @@ class BranchDisplacement implements MC64K\IParser {
         MATCHED_HEX   = 2
     ;
 
-    use Parser\Utils\TSignedDisplacementAware;
+    private int $iLastDisplacement = self::UNRESOLVED;
 
+    /**
+     * @inheritDoc
+     *
+     * If the resolved displacement value is zero (branch to next instruction)
+     * the code will be folded out.
+     *
+     * @throws CodeFoldException
+     */
     public function parse(string $sSource) : ?string {
+        $this->iLastDisplacement = self::UNRESOLVED;
         if (preg_match(self::MATCH_NUMERIC, $sSource, $aMatches)) {
-            $iDisplacement = $this->parseDisplacement(
+            $this->iLastDisplacement = $this->parseDisplacement(
                 $aMatches[self::MATCHED_DISP],
                 isset($aMatches[self::MATCHED_HEX])
             );
-            return pack('V', $iDisplacement);
+
+            if (0 === $this->iLastDisplacement) {
+                throw new CodeFoldException('Branch has no effect');
+            }
+
+            return pack('V', $this->iLastDisplacement);
         }
         // TODO - handle labels
         if (preg_match(self::MATCH_LABEL, $sSource, $aMatches)) {
             return pack('V', self::UNRESOLVED);
         }
+
+        throw new \UnexpectedValueException($sSource . ' could not be parsed');
+    }
+
+    /**
+     * Returns the integer value of the most recently processed branch displacement.
+     *
+     * @return int
+     */
+    public function getLastDisplacement() : int {
+        return $this->iLastDisplacement;
     }
 }

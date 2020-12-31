@@ -18,6 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\Parser\Instruction\CodeFoldException;
 
 /**
  * IntegerMonadicBranch
@@ -25,6 +26,8 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
  * For all vanilla integer compare and branch
  */
 class IntegerMonadicBranch extends Monadic {
+
+    use TBranching;
 
     const
         OPERAND_TARGET    = 1,
@@ -53,8 +56,6 @@ class IntegerMonadicBranch extends Monadic {
         IControl::BPL_Q,
     ];
 
-    private Parser\Instruction\Operand\BranchDisplacement $oTgtParser;
-
     /**
      * Constructor
      */
@@ -75,8 +76,10 @@ class IntegerMonadicBranch extends Monadic {
      */
     public function parse(array $aOperands, array $aSizes = []) : string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
-        $iSrcIndex    = $this->getSourceOperandIndex();
-        $sSrcBytecode = $this->oSrcParser
+
+        $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
+        $iSrcIndex     = $this->getSourceOperandIndex();
+        $sSrcBytecode  = $this->oSrcParser
             ->setOperationSize($aSizes[$iSrcIndex] ?? self::DEFAULT_SIZE)
             ->parse($aOperands[$iSrcIndex]);
         if (null === $sSrcBytecode) {
@@ -85,13 +88,13 @@ class IntegerMonadicBranch extends Monadic {
             );
         }
 
+        $sBytecode = $sSrcBytecode . $sDisplacement;
+        $this->checkBranchDisplacement($sBytecode);
+
         if ($this->oSrcParser->wasImmediate()) {
-            throw new \DomainException('This code is silly - compile time constant comparison : TODO - fold out');
+            throw new CodeFoldException('Compile time constant comparison : TODO - fold out');
         }
-
-        $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
-        return $sSrcBytecode . $sDisplacement;
+        return $sBytecode;
     }
-
 
 }

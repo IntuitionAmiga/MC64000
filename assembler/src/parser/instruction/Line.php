@@ -68,13 +68,11 @@ class Line implements MC64K\IParser, Defs\Mnemonic\IMatches {
             }
 
             $aSizes = Defs\Mnemonic\IOperandSizes::MAP[$iOpcode] ?? [];
-
             return chr($iOpcode) . $this->aOperandParsers[$iOpcode]->parse(
                 $oToken->aOperands,
                 $aSizes
             );
         }
-
         return null;
     }
 

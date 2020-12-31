@@ -26,11 +26,15 @@ const FAIL = 0;
 const EXAMPLES = [
     // Example Assembler Statement => Expected Outcome
     'rts'                                          => PASS,
+    'bra      #0'                                  => FAIL,
     'jmp      r0'                                  => FAIL,
     'jmp      (r0)'                                => PASS,
     'jsr      (a0)+'                               => FAIL,
     'pea      8(r7, r15.w * 2)'                    => PASS,
     'lea      -2(r7, r15.w * 2), (a0)'             => PASS,
+    'bnz.b    r0, 0'                               => FAIL,
+    'bnz.b    r0, -1'                              => FAIL,
+    'bnz.b    r0, 0x00'                            => FAIL,
     'bnz.b    r0, .target'                         => PASS,
     'biz.w    (r0), .target'                       => PASS,
     'bpl.l    r1, .target'                         => PASS,
@@ -62,6 +66,8 @@ const EXAMPLES = [
     'fbeq.d   (r1), (r1)+, .not_totally_silly'     => PASS,
     'fbeq.d   fp0, fp0, .totally_silly'            => FAIL,
     'fbne.s    #1., #2., .doesnt_matter'           => FAIL,
+
+    'bnz.l #1, -10' => FAIL
 ];
 
 $oParser = new Parser\Instruction\Line();

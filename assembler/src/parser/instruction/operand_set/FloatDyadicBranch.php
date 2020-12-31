@@ -18,6 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\Parser\Instruction\CodeFoldException;
 
 /**
  * FloatDyadicBranch
@@ -25,6 +26,8 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
  * For all vanilla float compare and branch
  */
 class FloatDyadicBranch extends Dyadic {
+
+    use TBranching;
 
     const
         OPERAND_TARGET    = 2,
@@ -48,8 +51,6 @@ class FloatDyadicBranch extends Dyadic {
         IControl::FBNE_S,
         IControl::FBNE_D,
     ];
-
-    private Parser\Instruction\Operand\BranchDisplacement $oTgtParser;
 
     /**
      * Constructor
@@ -75,8 +76,9 @@ class FloatDyadicBranch extends Dyadic {
 
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
 
-        $iDstIndex    = $this->getDestinationOperandIndex();
-        $sDstBytecode = $this->oDstParser
+        $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
+        $iDstIndex     = $this->getDestinationOperandIndex();
+        $sDstBytecode  = $this->oDstParser
             ->setOperationSize($aSizes[$iDstIndex] ?? self::DEFAULT_SIZE)
             ->parse($aOperands[$iDstIndex]);
         if (null === $sDstBytecode) {
@@ -95,17 +97,17 @@ class FloatDyadicBranch extends Dyadic {
             );
         }
 
+        $sBytecode = $sDstBytecode . $sSrcBytecode . $sDisplacement;
+        $this->checkBranchDisplacement($sBytecode);
+
         if ($this->oDstParser->wasImmediate() && $this->oSrcParser->wasImmediate()) {
-            throw new \DomainException('This code is silly - compile time constant comparison - TODO fold out');
+            throw new CodeFoldException('Compile time constant comparison - TODO fold out');
         }
-
-
-        $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
 
         if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {
-            throw new \DomainException('This code is silly - runtime invariant comparison - TODO - fold out');
+            throw new CodeFoldException('Runtime invariant comparison - TODO - fold out');
         }
-        return $sDstBytecode . $sSrcBytecode . $sDisplacement;
+        return $sBytecode;
     }
 
 
