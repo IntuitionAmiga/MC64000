@@ -30,7 +30,7 @@ class BranchDisplacement implements MC64K\IParser {
     const UNRESOLVED = 0;
 
     const
-        MATCH_NUMERIC = '/^' . Parser\EffectiveAddress\IParser::D32 . '$/',
+        MATCH_NUMERIC = '/^#' . Parser\EffectiveAddress\IParser::D32 . '$/',
         MATCH_LABEL   = '/^(\.){0,1}[a-zA-Z_]+$/',
         MATCHED_LABEL = 0,
         MATCHED_LOCAL = 1,

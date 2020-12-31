@@ -44,14 +44,16 @@ General syntax:
         bra[.b] <#<D>|label>
 
 * Branch distance is measured from the end of the instruction.
-    - e.g. `bra. #1` branches to the next instruction.
+    - e.g. `bra #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
 * Short .b form requires the label to resolve to a displacement within -128 ... 127 bytes of the current Program Counter.
 * Standard form requires the label to resolve to a displacement within -2147483648 ... 2147483647 bytes of the current Program Counter.
 
 | Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 |
 | - | - | - | - | - | - |
-| `bra.b #<D>`| 0x01 | 0x*DD* |
-| `bra #<D>` | 0x02 | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `bra.b <#D>`| 0x01 | 0x*DD* |
+| `bra <#D>` | 0x02 | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
 
 ___
 
@@ -63,10 +65,12 @@ Branch to Subroutine
 
 General syntax:
 
-        bra[.b] <#<D>|label>
+        bsr[.b] <#<D>|label>
 
 * Branch distance is measured from the end of the instruction.
-    - e.g. `bsr. #1` branches to the next instruction.
+    - e.g. `bsr #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
 * Short .b form requires the label to resolve to a displacement within -128 ... 127 bytes of the current Program Counter.
 * Standard form requires the label to resolve to a displacement within -2147483648 ... 2147483647 bytes of the current Program Counter.
 
@@ -140,6 +144,11 @@ General syntax:
         biz.<b|w|l|q> <ea>, <#<D>|label>
         fbiz.<s|d> <ea>, <#<D>|label>
 
+* Branch distance is measured from the end of the instruction.
+    - e.g. `biz.l r0, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
+
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 | Ext N+2 | Ext N+3 |
 | - | - | - | - | - | - | - | - |
 | `biz.b <ea>, #<D>` | 0x08 | 0x*EA* | ... | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
@@ -161,6 +170,11 @@ General syntax:
 
         bnz.<b|w|l|q> <ea>, <#<D>|label>
         fbnz.<s|d> <ea>, <#<D>|label>
+
+* Branch distance is measured from the end of the instruction.
+    - e.g. `bnz.l r0, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 | Ext N+2 | Ext N+3 |
 | - | - | - | - | - | - | - | - |
@@ -184,6 +198,11 @@ General syntax:
         bmi.<b|w|l|q> <ea>, <#<D>|label>
         fbmi.<s|d> <ea>, <#<D>|label>
 
+* Branch distance is measured from the end of the instruction.
+    - e.g. `bmi.l r0, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
+
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 | Ext N+2 | Ext N+3 |
 | - | - | - | - | - | - | - | - |
 | `bmi.b <ea>, #<D>` | 0x14 | 0x*EA* | ... | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
@@ -205,6 +224,11 @@ General syntax:
 
         bpl.<b|w|l|q> <ea>, <#<D>|label>
         fbpl.<s|d> <ea>, <#<D>|label>
+
+* Branch distance is measured from the end of the instruction.
+    - e.g. `bpl.l r0, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 | Ext N+2 | Ext N+3 |
 | - | - | - | - | - | - | - | - |
@@ -228,6 +252,11 @@ General syntax:
         blt.<b|w|l|q> <ea(s)>, <ea(d)> <#<D>|label>
         fblt.<s|d> <ea(s)>, <ea(d)>, <#<D>|label>
 
+* Branch distance is measured from the end of the instruction.
+    - e.g. `blt.l r0, r1, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
+
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... | Ext N | Ext N+1 | Ext N+2 | Ext N+3 |
 | - | - | - | - | - | - | - | - | - | - |
 | `blt.b <ea(s)>, <ea(d)>, #<D>` | 0x20 | 0x*EA*(d) | ... | 0x*EA*(s) | ... | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
@@ -249,6 +278,11 @@ General syntax:
 
         ble.<b|w|l|q> <ea(s)>, <ea(d)> <#<D>|label>
         fble.<s|d> <ea(s)>, <ea(d)>, <#<D>|label>
+
+* Branch distance is measured from the end of the instruction.
+    - e.g. `ble.l r0, r1, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... | Ext N | Ext N+1 | Ext N+2 | Ext N+3 |
 | - | - | - | - | - | - | - | - | - | - |
@@ -272,6 +306,11 @@ General syntax:
         beq.<b|w|l|q> <ea(s)>, <ea(d)> <#<D>|label>
         fbeq.<s|d> <ea(s)>, <ea(d)>, <#<D>|label>
 
+* Branch distance is measured from the end of the instruction.
+    - e.g. `beq.l r0, r1, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
+
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... | Ext N | Ext N+1 | Ext N+2 | Ext N+3 |
 | - | - | - | - | - | - | - | - | - | - |
 | `beq.b <ea(s)>, <ea(d)>, #<D>` | 0x2C | 0x*EA*(d) | ... | 0x*EA*(s) | ... | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
@@ -293,6 +332,11 @@ General syntax:
 
         bge.<b|w|l|q> <ea(s)>, <ea(d)> <#<D>|label>
         fbge.<s|d> <ea(s)>, <ea(d)>, <#<D>|label>
+
+* Branch distance is measured from the end of the instruction.
+    - e.g. `bge.l r0, r1, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... | Ext N | Ext N+1 | Ext N+2 | Ext N+3 |
 | - | - | - | - | - | - | - | - | - | - |
@@ -316,6 +360,11 @@ General syntax:
         bgt.<b|w|l|q> <ea(s)>, <ea(d)> <#<D>|label>
         fbgt.<s|d> <ea(s)>, <ea(d)>, <#<D>|label>
 
+* Branch distance is measured from the end of the instruction.
+    - e.g. `bgt.l r0, r1, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
+
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... | Ext N | Ext N+1 | Ext N+2 | Ext N+3 |
 | - | - | - | - | - | - | - | - | - | - |
 | `bgt.b <ea(s)>, <ea(d)>, #<D>` | 0x38 | 0x*EA*(d) | ... | 0x*EA*(s) | ... | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
@@ -338,6 +387,11 @@ General syntax:
         bne.<b|w|l|q> <ea(s)>, <ea(d)> <#<D>|label>
         fbne.<s|d> <ea(s)>, <ea(d)>, <#<D>|label>
 
+* Branch distance is measured from the end of the instruction.
+    - e.g. `bne.l r0, r1, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
+
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... | Ext N | Ext N+1 | Ext N+2 | Ext N+3 |
 | - | - | - | - | - | - | - | - | - | - |
 | `bne.b <ea(s)>, <ea(d)>, #<D>` | 0x3E | 0x*EA*(d) | ... | 0x*EA*(s) | ... | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
@@ -359,6 +413,10 @@ General syntax:
 
         bbs.<b|w|l|q> <ea(s)>, <ea(d)>
 
+* Branch distance is measured from the end of the instruction.
+    - e.g. `bbs.l r0, r1, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
 * All possible integer Effective Address modes are valid for source and destination.
 * Source value is accessed as a byte, modulo by the operation size.
 
@@ -381,6 +439,10 @@ General syntax:
 
         bbc.<b|w|l|q> <ea(s)>, <ea(d)>
 
+* Branch distance is measured from the end of the instruction.
+    - e.g. `bbc.l r0, r1, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
 * All possible integer Effective Address modes are valid for source and destination.
 * Source value is accessed as a byte, modulo by the operation size.
 
@@ -403,6 +465,10 @@ General syntax:
 
         dbnz <ea>, <#<D>|label>
 
+* Branch distance is measured from the end of the instruction.
+    - e.g. `dbnz r0, #0` would theoretically branch to the next instruction.
+    - Zero displacement is reserved for the unresolved forwards reference during assembly.
+    - Negative displacements must be larger than the complete branch instruction.
 * Effective address is accessed as 32-bit unsigned counter.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 | Ext N+2 | Ext N+3 |
