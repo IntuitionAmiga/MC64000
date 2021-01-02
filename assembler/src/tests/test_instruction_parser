@@ -30,13 +30,25 @@ const EXAMPLES = [
     'bnz.q #' . PHP_INT_MAX . ', #20'  => PASS,
     'biz.q #' . PHP_INT_MAX . ', .target' => PASS,
     'bnz.q #' . PHP_INT_MAX . ', .target' => PASS,
-
     'biz.q #0, #-20' => PASS,
     'bnz.q #0, #-20' => PASS,
     'biz.q #0, #20'  => PASS,
     'bnz.q #0, #20'  => PASS,
     'biz.q #0, .target' => PASS,
     'bnz.q #0, .target' => PASS,
+
+    'fbiz.d #6.5535e5, #-20' => PASS,
+    'fbnz.d #6.5535e5, #-20' => PASS,
+    'fbiz.d #6.5535e5, #20'  => PASS,
+    'fbnz.d #6.5535e5, #20'  => PASS,
+    'fbiz.d #6.5535e5, .target' => PASS,
+    'fbnz.d #6.5535e5, .target' => PASS,
+    'fbiz.d #0., #-20' => PASS,
+    'fbnz.d #0., #-20' => PASS,
+    'fbiz.d #0., #20'  => PASS,
+    'fbnz.d #0., #20'  => PASS,
+    'fbiz.d #0., .target' => PASS,
+    'fbnz.d #0., .target' => PASS,
 
 /*
     // Example Assembler Statement => Expected Outcome

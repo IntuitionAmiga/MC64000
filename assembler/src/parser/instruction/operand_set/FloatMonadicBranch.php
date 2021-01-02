@@ -31,21 +31,22 @@ class FloatMonadicBranch extends Monadic {
 
     const
         OPERAND_TARGET    = 1,
-        MIN_OPERAND_COUNT = 2
+        MIN_OPERAND_COUNT = 2,
+        FIXED_LENGTH      = 4
     ;
 
     /**
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IControl::FBIZ_S,
-        IControl::FBIZ_D,
-        IControl::FBNZ_S,
-        IControl::FBNZ_D,
-        IControl::FBMI_S,
-        IControl::FBMI_D,
-        IControl::FBPL_S,
-        IControl::FBPL_D,
+        IControl::FBIZ_S => 'isZero',
+        IControl::FBIZ_D => 'isZero',
+        IControl::FBNZ_S => 'isNotZero',
+        IControl::FBNZ_D => 'isNotZero',
+        IControl::FBMI_S => 'isMinus',
+        IControl::FBMI_D => 'isMinus',
+        IControl::FBPL_S => 'isPlus',
+        IControl::FBPL_D => 'isPlus',
     ];
 
     /**
@@ -60,7 +61,7 @@ class FloatMonadicBranch extends Monadic {
      * @inheritDoc
      */
     public function getOpcodes() : array {
-        return self::OPCODES;
+        return array_keys(self::OPCODES);
     }
 
     /**
@@ -84,8 +85,56 @@ class FloatMonadicBranch extends Monadic {
         $this->checkBranchDisplacement($sBytecode);
 
         if ($this->oSrcParser->wasImmediate()) {
-            throw new CodeFoldException('Compile time constant comparison : TODO - fold out');
+            $cCallback = [$this, self::OPCODES[$iOpcode]];
+            throw new CodeFoldException(
+                'Compile time constant comparison ',
+                $cCallback(
+                    $this->oSrcParser->getImmediate(),
+                    $this->oTgtParser->getLastDisplacement(),
+                    strlen($sBytecode)
+                )
+            );
         }
         return $sBytecode;
     }
+
+    private function isZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        if (0.0 !== $fImmediate) {
+            // Not zero? Do nothing.
+            return '';
+        }
+        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    }
+
+    private function isNotZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        if (0.0 === $fImmediate) {
+            // Is zero? Do nothing.
+            return '';
+        }
+        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    }
+
+    private function isMinus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        if ($fImmediate >= 0.0) {
+            // Not negative? Do nothing.
+            return '';
+        }
+        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    }
+
+    private function isPlus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        if ($fImmediate < 0.0) {
+            // Negative? Do nothing.
+            return '';
+        }
+        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    }
+
+    private function encodeFixedBranch(int $iDisplacement, int $iOriginalSize) : string {
+        if ($iDisplacement < 0) {
+            $iDisplacement = $iDisplacement + $iOriginalSize - self::FIXED_LENGTH;
+        }
+        return chr(IControl::BRA) . pack('V', $iDisplacement);
+    }
+
 }
