@@ -72,7 +72,7 @@ class FloatDyadicBranch extends Dyadic {
     /**
      * @inheritDoc
      */
-    public function parse(array $aOperands, array $aSizes = []) : string {
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
 
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
 
@@ -101,7 +101,10 @@ class FloatDyadicBranch extends Dyadic {
         $this->checkBranchDisplacement($sBytecode);
 
         if ($this->oDstParser->wasImmediate() && $this->oSrcParser->wasImmediate()) {
-            throw new CodeFoldException('Compile time constant comparison - TODO fold out');
+            throw new CodeFoldException(
+                'Compile time constant comparison - TODO fold out src:' . $this->oSrcParser->getImmediate() .
+                ' dst:' . $this->oDstParser->getImmediate()
+            );
         }
 
         if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {

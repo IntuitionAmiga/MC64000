@@ -34,11 +34,12 @@ interface IOperandSetParser {
     public function getOpcodes() : array;
 
     /**
-     * Parses the
+     * Parses the set of operands associated with some operation.
      *
+     * @param  int      $iOpcode
      * @param  string[] $aOperands
      * @param  int[]    $aSizes
      * @return string   bytecode
      */
-    public function parse(array $aOperands, array $aSizes = []) : string;
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string;
 }

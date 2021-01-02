@@ -68,10 +68,15 @@ class Line implements MC64K\IParser, Defs\Mnemonic\IMatches {
             }
 
             $aSizes = Defs\Mnemonic\IOperandSizes::MAP[$iOpcode] ?? [];
-            return chr($iOpcode) . $this->aOperandParsers[$iOpcode]->parse(
-                $oToken->aOperands,
-                $aSizes
-            );
+            try {
+                return chr($iOpcode) . $this->aOperandParsers[$iOpcode]->parse(
+                    $iOpcode,
+                    $oToken->aOperands,
+                    $aSizes
+                );
+            } catch (CodeFoldException $oFold) {
+                return $oFold->getAlternativeBytecode();
+            }
         }
         return null;
     }

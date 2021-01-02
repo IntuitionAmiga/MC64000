@@ -37,14 +37,29 @@ class FloatImmediate implements IParser, EffectiveAddress\IOther {
     ;
 
     /**
+     * @var float|null $iLastParsed
+     */
+    private ?float $fLastParsed = null;
+
+    /**
+     * @return float|null
+     */
+    public function getLastParsed() : ?float {
+        return $this->fLastParsed;
+    }
+
+    /**
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
+        $this->fLastParsed = null;
         if (preg_match(self::MATCH, $sSource, $aMatches)) {
             $fValue = doubleval($aMatches[self::MATCHED_VALUE]);
             if (is_nan($fValue)) {
                 throw new \RangeException('Could not encode ' . $aMatches[self::MATCHED_VALUE]);
             }
+
+            $this->fLastParsed = $fValue;
 
             // If the operation size or immidate requests a single, we need to validate it's in range.
             if (

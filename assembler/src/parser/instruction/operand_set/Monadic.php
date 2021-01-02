@@ -35,7 +35,7 @@ abstract class Monadic implements Parser\Instruction\IOperandSetParser {
     /**
      * @inheritDoc
      */
-    public function parse(array $aOperands, array $aSizes = []) : string {
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
 
         $iSrcIndex    = $this->getSourceOperandIndex();

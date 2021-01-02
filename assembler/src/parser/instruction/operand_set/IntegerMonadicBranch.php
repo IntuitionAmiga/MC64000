@@ -31,30 +31,33 @@ class IntegerMonadicBranch extends Monadic {
 
     const
         OPERAND_TARGET    = 1,
-        MIN_OPERAND_COUNT = 2
+        MIN_OPERAND_COUNT = 2,
+        FIXED_LENGTH      = 4
     ;
 
     /**
-     * The set of specific opcodes that this Operand Parser applies to
+     * Map of opcode keys to test functions for resolving immediate branches taken or not.
      */
     const OPCODES = [
-        IControl::BIZ_B,
-        IControl::BIZ_W,
-        IControl::BIZ_L,
-        IControl::BIZ_Q,
-        IControl::BNZ_B,
-        IControl::BNZ_W,
-        IControl::BNZ_L,
-        IControl::BNZ_Q,
-        IControl::BMI_B,
-        IControl::BMI_W,
-        IControl::BMI_L,
-        IControl::BMI_Q,
-        IControl::BPL_B,
-        IControl::BPL_W,
-        IControl::BPL_L,
-        IControl::BPL_Q,
+        IControl::BIZ_B => 'isZero',
+        IControl::BIZ_W => 'isZero',
+        IControl::BIZ_L => 'isZero',
+        IControl::BIZ_Q => 'isZero',
+        IControl::BNZ_B => 'isNotZero',
+        IControl::BNZ_W => 'isNotZero',
+        IControl::BNZ_L => 'isNotZero',
+        IControl::BNZ_Q => 'isNotZero',
+        IControl::BMI_B => 'isMinus',
+        IControl::BMI_W => 'isMinus',
+        IControl::BMI_L => 'isMinus',
+        IControl::BMI_Q => 'isMinus',
+        IControl::BPL_B => 'isPlus',
+        IControl::BPL_W => 'isPlus',
+        IControl::BPL_L => 'isPlus',
+        IControl::BPL_Q => 'isPlus',
     ];
+
+
 
     /**
      * Constructor
@@ -68,13 +71,13 @@ class IntegerMonadicBranch extends Monadic {
      * @inheritDoc
      */
     public function getOpcodes() : array {
-        return self::OPCODES;
+        return array_keys(self::OPCODES);
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(array $aOperands, array $aSizes = []) : string {
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
 
         $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
@@ -92,9 +95,56 @@ class IntegerMonadicBranch extends Monadic {
         $this->checkBranchDisplacement($sBytecode);
 
         if ($this->oSrcParser->wasImmediate()) {
-            throw new CodeFoldException('Compile time constant comparison : TODO - fold out');
+            $cCallback = [$this, self::OPCODES[$iOpcode]];
+            throw new CodeFoldException(
+                'Compile time constant comparison ',
+                $cCallback(
+                    $this->oSrcParser->getImmediate(),
+                    $this->oTgtParser->getLastDisplacement(),
+                    strlen($sBytecode)
+                )
+            );
         }
         return $sBytecode;
+    }
+
+    private function isZero(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        if (0 !== $iImmediate) {
+            // Not zero? Do nothing.
+            return '';
+        }
+        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    }
+
+    private function isNotZero(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        if (0 === $iImmediate) {
+            // Is zero? Do nothing.
+            return '';
+        }
+        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    }
+
+    private function isMinus(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        if ($iImmediate >= 0) {
+            // Not negative? Do nothing.
+            return '';
+        }
+        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    }
+
+    private function isPlus(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        if ($iImmediate < 0) {
+            // Negative? Do nothing.
+            return '';
+        }
+        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    }
+
+    private function encodeFixedBranch(int $iDisplacement, int $iOriginalSize) : string {
+        if ($iDisplacement < 0) {
+            $iDisplacement = $iDisplacement + $iOriginalSize - self::FIXED_LENGTH;
+        }
+        return chr(IControl::BRA) . pack('V', $iDisplacement);
     }
 
 }

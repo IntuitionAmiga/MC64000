@@ -49,4 +49,11 @@ class AllIntegerReadable extends Composite {
     public function wasImmediate() : bool {
         return $this->oParsedBy instanceof IntegerImmediate;
     }
+
+    /**
+     * return int|null
+     */
+    public function getImmediate() : ?int {
+        return $this->wasImmediate() ? $this->oParsedBy->getLastParsed() : null;
+    }
 }

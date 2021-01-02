@@ -24,6 +24,21 @@ const PASS = 1;
 const FAIL = 0;
 
 const EXAMPLES = [
+    'biz.q #' . PHP_INT_MAX . ', #-20' => PASS,
+    'bnz.q #' . PHP_INT_MAX . ', #-20' => PASS,
+    'biz.q #' . PHP_INT_MAX . ', #20'  => PASS,
+    'bnz.q #' . PHP_INT_MAX . ', #20'  => PASS,
+    'biz.q #' . PHP_INT_MAX . ', .target' => PASS,
+    'bnz.q #' . PHP_INT_MAX . ', .target' => PASS,
+
+    'biz.q #0, #-20' => PASS,
+    'bnz.q #0, #-20' => PASS,
+    'biz.q #0, #20'  => PASS,
+    'bnz.q #0, #20'  => PASS,
+    'biz.q #0, .target' => PASS,
+    'bnz.q #0, .target' => PASS,
+
+/*
     // Example Assembler Statement => Expected Outcome
     'rts'                                          => PASS,
     'bra      #0'                                  => FAIL,
@@ -66,8 +81,8 @@ const EXAMPLES = [
     'fbeq.d   (r1), (r1)+, .not_totally_silly'     => PASS,
     'fbeq.d   fp0, fp0, .totally_silly'            => FAIL,
     'fbne.s   #1., #2., .doesnt_matter'            => FAIL,
-
     'bnz.l    #1, #-10' => FAIL
+*/
 ];
 
 $oParser = new Parser\Instruction\Line();
