@@ -18,10 +18,25 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\Instruction;
 
 /**
- * UnhandledCodeFoldException
+ * CodeFoldException
  *
- * Exception raised where code can not yet be folded
+ * Exception raised where code can be folded
  */
-class UnhandledCodeFoldException extends \Exception {
+class CodeFoldException extends \Exception {
 
+    protected string $sAlternative;
+
+    public function __construct(string $sMessage, string $sAlternative = '') {
+        parent::__construct($sMessage);
+        $this->sAlternative = $sAlternative;
+    }
+
+    /**
+     * Get the alternative bytecode
+     *
+     * @return string
+     */
+    public final function getAlternativeBytecode() : string {
+        return $this->sAlternative;
+    }
 }

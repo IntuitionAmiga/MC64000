@@ -24,33 +24,6 @@ const PASS = 1;
 const FAIL = 0;
 
 const EXAMPLES = [
-    'biz.q #' . PHP_INT_MAX . ', #-20' => PASS,
-    'bnz.q #' . PHP_INT_MAX . ', #-20' => PASS,
-    'biz.q #' . PHP_INT_MAX . ', #20'  => PASS,
-    'bnz.q #' . PHP_INT_MAX . ', #20'  => PASS,
-    'biz.q #' . PHP_INT_MAX . ', .target' => PASS,
-    'bnz.q #' . PHP_INT_MAX . ', .target' => PASS,
-    'biz.q #0, #-20' => PASS,
-    'bnz.q #0, #-20' => PASS,
-    'biz.q #0, #20'  => PASS,
-    'bnz.q #0, #20'  => PASS,
-    'biz.q #0, .target' => PASS,
-    'bnz.q #0, .target' => PASS,
-
-    'fbiz.d #6.5535e5, #-20' => PASS,
-    'fbnz.d #6.5535e5, #-20' => PASS,
-    'fbiz.d #6.5535e5, #20'  => PASS,
-    'fbnz.d #6.5535e5, #20'  => PASS,
-    'fbiz.d #6.5535e5, .target' => PASS,
-    'fbnz.d #6.5535e5, .target' => PASS,
-    'fbiz.d #0., #-20' => PASS,
-    'fbnz.d #0., #-20' => PASS,
-    'fbiz.d #0., #20'  => PASS,
-    'fbnz.d #0., #20'  => PASS,
-    'fbiz.d #0., .target' => PASS,
-    'fbnz.d #0., .target' => PASS,
-
-/*
     // Example Assembler Statement => Expected Outcome
     'rts'                                          => PASS,
     'bra      #0'                                  => FAIL,
@@ -66,9 +39,9 @@ const EXAMPLES = [
     'biz.w    (r0), .target'                       => PASS,
     'bpl.l    r1, .target'                         => PASS,
     'bmi.l    r7, .target'                         => PASS,
-    'biz.w    #1, .target'                        => FAIL,
+    'biz.w    #1, .target'                         => PASS,
     'fbpl.s   fp1, .target'                        => PASS,
-    'fbpl.s   #0., .target'                        => FAIL,
+    'fbpl.s   #0., .target'                        => PASS,
     'add.b    #1, r0'                              => PASS,
     'add.w    r0, r1'                              => PASS,
     'add.l    r1, (r0)'                            => PASS,
@@ -87,14 +60,16 @@ const EXAMPLES = [
     'bgt.w    r0, (r15), #-32'                     => PASS,
     'bgt.w    r0, (r15), #0x20'                    => PASS,
     'bne.q    (r0), (r1), #0xFFFFFFF0'             => PASS,
-    'bgt.l    r1, r1, .doesnt_matter'              => FAIL,
-    'bne.l    #1, #2, .doesnt_matter'              => FAIL,
+    'bgt.l    r1, r1, .doesnt_matter'              => PASS,
+    'beq.l    r1, r1, .doesnt_matter'              => PASS,
+    'bne.l    #1, #2, .doesnt_matter'              => PASS,
+    'beq.l    #1, #2, .doesnt_matter'              => PASS,
     'fble.s   fp0, fp1, .fless_or_equal'           => PASS,
     'fbeq.d   (r1), (r1)+, .not_totally_silly'     => PASS,
-    'fbeq.d   fp0, fp0, .totally_silly'            => FAIL,
-    'fbne.s   #1., #2., .doesnt_matter'            => FAIL,
-    'bnz.l    #1, #-10' => FAIL
-*/
+    'fbeq.d   fp0, fp0, .totally_silly'            => PASS,
+    'fbne.s   #1., #2., .doesnt_matter'            => PASS,
+    'bnz.l    #1, #-10'                            => PASS
+
 ];
 
 $oParser = new Parser\Instruction\Line();

@@ -19,6 +19,7 @@ namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Parser\Instruction\CodeFoldException;
+use ABadCafe\MC64K\Parser\Instruction\UnhandledCodeFoldException;
 
 /**
  * FloatDyadicBranch
@@ -38,18 +39,18 @@ class FloatDyadicBranch extends Dyadic {
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IControl::FBLT_S,
-        IControl::FBLT_D,
-        IControl::FBLE_S,
-        IControl::FBLE_D,
-        IControl::FBEQ_S,
-        IControl::FBEQ_D,
-        IControl::FBGE_S,
-        IControl::FBGE_D,
-        IControl::FBGT_S,
-        IControl::FBGT_D,
-        IControl::FBNE_S,
-        IControl::FBNE_D,
+        IControl::FBLT_S => 'foldImmediateIsLessThan',
+        IControl::FBLT_D => 'foldImmediateIsLessThan',
+        IControl::FBLE_S => 'foldImmediateIsLessOrEqual',
+        IControl::FBLE_D => 'foldImmediateIsLessOrEqual',
+        IControl::FBEQ_S => 'foldImmediateIsEqual',
+        IControl::FBEQ_D => 'foldImmediateIsEqual',
+        IControl::FBGE_S => 'foldImmediateIsGreaterOrEqual',
+        IControl::FBGE_D => 'foldImmediateIsGreaterOrEqual',
+        IControl::FBGT_S => 'foldImmediateIsGreaterThan',
+        IControl::FBGT_D => 'foldImmediateIsGreaterThan',
+        IControl::FBNE_S => 'foldImmediateIsNotEqual',
+        IControl::FBNE_D => 'foldImmediateIsNotEqual',
     ];
 
     /**
@@ -66,7 +67,7 @@ class FloatDyadicBranch extends Dyadic {
      * @inheritDoc
      */
     public function getOpcodes() : array {
-        return self::OPCODES;
+        return array_keys(self::OPCODES);
     }
 
     /**
@@ -100,18 +101,34 @@ class FloatDyadicBranch extends Dyadic {
         $sBytecode = $sDstBytecode . $sSrcBytecode . $sDisplacement;
         $this->checkBranchDisplacement($sBytecode);
 
+        // Check for foldable immediates
         if ($this->oDstParser->wasImmediate() && $this->oSrcParser->wasImmediate()) {
+            $cCallback = [$this, self::OPCODES[$iOpcode]];
             throw new CodeFoldException(
-                'Compile time constant comparison - TODO fold out src:' . $this->oSrcParser->getImmediate() .
-                ' dst:' . $this->oDstParser->getImmediate()
+                'Compile time constant comparison',
+                $cCallback(
+                    $this->oSrcParser->getImmediate(),
+                    $this->oDstParser->getImmediate(),
+                    $this->oTgtParser->getLastDisplacement(),
+                    strlen($sBytecode)
+                )
             );
         }
 
+        // Check for foldable EA. These are where the source EA is exactly the same as the destination
         if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {
-            throw new CodeFoldException('Runtime invariant comparison - TODO - fold out');
+            $cCallback = [$this, self::OPCODES[$iOpcode]];
+            throw new CodeFoldException(
+                'Runtime invariant comparison',
+                $cCallback(
+                    1.0, // doesn't matter
+                    1.0, // doesn't matter
+                    $this->oTgtParser->getLastDisplacement(),
+                    strlen($sBytecode)
+                )
+            );
         }
+
         return $sBytecode;
     }
-
-
 }

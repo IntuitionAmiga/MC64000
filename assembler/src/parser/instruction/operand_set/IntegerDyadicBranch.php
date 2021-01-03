@@ -19,6 +19,7 @@ namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Parser\Instruction\CodeFoldException;
+use ABadCafe\MC64K\Parser\Instruction\UnhandledCodeFoldException;
 
 /**
  * IntegerDyadicBranch
@@ -38,30 +39,30 @@ class IntegerDyadicBranch extends Dyadic {
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IControl::BLT_B,
-        IControl::BLT_W,
-        IControl::BLT_L,
-        IControl::BLT_Q,
-        IControl::BLE_B,
-        IControl::BLE_W,
-        IControl::BLE_L,
-        IControl::BLE_Q,
-        IControl::BEQ_B,
-        IControl::BEQ_W,
-        IControl::BEQ_L,
-        IControl::BEQ_Q,
-        IControl::BGE_B,
-        IControl::BGE_W,
-        IControl::BGE_L,
-        IControl::BGE_Q,
-        IControl::BGT_B,
-        IControl::BGT_W,
-        IControl::BGT_L,
-        IControl::BGT_Q,
-        IControl::BNE_B,
-        IControl::BNE_W,
-        IControl::BNE_L,
-        IControl::BNE_Q,
+        IControl::BLT_B => 'foldImmediateIsLessThan',
+        IControl::BLT_W => 'foldImmediateIsLessThan',
+        IControl::BLT_L => 'foldImmediateIsLessThan',
+        IControl::BLT_Q => 'foldImmediateIsLessThan',
+        IControl::BLE_B => 'foldImmediateIsLessThanOrEqual',
+        IControl::BLE_W => 'foldImmediateIsLessThanOrEqual',
+        IControl::BLE_L => 'foldImmediateIsLessThanOrEqual',
+        IControl::BLE_Q => 'foldImmediateIsLessThanOrEqual',
+        IControl::BEQ_B => 'foldImmediateIsEqual',
+        IControl::BEQ_W => 'foldImmediateIsEqual',
+        IControl::BEQ_L => 'foldImmediateIsEqual',
+        IControl::BEQ_Q => 'foldImmediateIsEqual',
+        IControl::BGE_B => 'foldImmediateIsGreaterOrEqual',
+        IControl::BGE_W => 'foldImmediateIsGreaterOrEqual',
+        IControl::BGE_L => 'foldImmediateIsGreaterOrEqual',
+        IControl::BGE_Q => 'foldImmediateIsGreaterOrEqual',
+        IControl::BGT_B => 'foldImmediateIsGreaterThan',
+        IControl::BGT_W => 'foldImmediateIsGreaterThan',
+        IControl::BGT_L => 'foldImmediateIsGreaterThan',
+        IControl::BGT_Q => 'foldImmediateIsGreaterThan',
+        IControl::BNE_B => 'foldImmediateIsNotEqual',
+        IControl::BNE_W => 'foldImmediateIsNotEqual',
+        IControl::BNE_L => 'foldImmediateIsNotEqual',
+        IControl::BNE_Q => 'foldImmediateIsNotEqual',
     ];
 
     /**
@@ -78,7 +79,7 @@ class IntegerDyadicBranch extends Dyadic {
      * @inheritDoc
      */
     public function getOpcodes() : array {
-        return self::OPCODES;
+        return array_keys(self::OPCODES);
     }
 
     /**
@@ -112,19 +113,34 @@ class IntegerDyadicBranch extends Dyadic {
         $sBytecode = $sDstBytecode . $sSrcBytecode . $sDisplacement;
         $this->checkBranchDisplacement($sBytecode);
 
+        // Check for foldable immediates
         if ($this->oDstParser->wasImmediate() && $this->oSrcParser->wasImmediate()) {
+            $cCallback = [$this, self::OPCODES[$iOpcode]];
             throw new CodeFoldException(
-                'Compile time constant comparison - TODO fold out src:' . $this->oSrcParser->getImmediate() .
-                ' dst:' . $this->oDstParser->getImmediate()
+                'Compile time constant comparison',
+                $cCallback(
+                    $this->oSrcParser->getImmediate(),
+                    $this->oDstParser->getImmediate(),
+                    $this->oTgtParser->getLastDisplacement(),
+                    strlen($sBytecode)
+                )
             );
         }
 
+        // Check for foldable EA. These are where the source EA is exactly the same as the destination
         if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {
-            throw new CodeFoldException('Runtime invariant comparison - TODO fold out');
+            $cCallback = [$this, self::OPCODES[$iOpcode]];
+            throw new CodeFoldException(
+                'Runtime invariant comparison',
+                $cCallback(
+                    1, // doesn't matter
+                    1, // doesn't matter
+                    $this->oTgtParser->getLastDisplacement(),
+                    strlen($sBytecode)
+                )
+            );
         }
 
         return $sBytecode;
     }
-
-
 }
