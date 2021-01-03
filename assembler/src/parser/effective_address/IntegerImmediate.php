@@ -20,11 +20,11 @@ use ABadCafe\MC64K\Defs\EffectiveAddress;
 use ABadCafe\MC64K\Parser;
 
 /**
- * IntImmediate
+ * IntegerImmediate
  *
  * Effective address parser for integer immediates.
  */
-class IntImmediate implements IParser, EffectiveAddress\IOther {
+class IntegerImmediate implements IParser, EffectiveAddress\IOther {
 
     use TOperationSizeAware;
 
@@ -44,9 +44,22 @@ class IntImmediate implements IParser, EffectiveAddress\IOther {
     ];
 
     /**
+     * @var int|null $iLastParsed
+     */
+    private ?int $iLastParsed = null;
+
+    /**
+     * @return int|null
+     */
+    public function getLastParsed() : ?int {
+        return $this->iLastParsed;
+    }
+
+    /**
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
+        $this->iLastParsed = null;
         if (preg_match(self::MATCH, $sSource, $aMatches)) {
             $sImmediate = $aMatches[self::MATCHED_VALUE];
             if (isset($aMatches[self::MATCHED_HEX])) {
@@ -66,6 +79,7 @@ class IntImmediate implements IParser, EffectiveAddress\IOther {
      * @throws \RangeException
      */
     private function encodeDecimalIntegerImmediate(int $iImmediate) : string {
+        $this->iLastParsed = $iImmediate;
         if ($iImmediate >= self::MIN_INT_SMALL && $iImmediate <= self::MAX_INT_SMALL) {
             return chr(self::INT_SMALL_0 + $iImmediate);
         } else {
@@ -75,6 +89,7 @@ class IntImmediate implements IParser, EffectiveAddress\IOther {
                 }
             }
         }
+        $this->iLastParsed = null;
         throw new \RangeException('Could not encode ' . (string)$iImmediate);
     }
 
@@ -119,6 +134,12 @@ class IntImmediate implements IParser, EffectiveAddress\IOther {
                 return $this->encodeDecimalIntegerImmediate($iLower);
             }
         }
-        return chr(self::INT_IMM_QUAD) . pack('V2', $iLower, $iUpper);
+
+        // Gratuitous hack to extract the integer representation that was present because base_convert() returns
+        // a numeric string of the unsigned value.
+        $sEncoded =  pack('V2', $iLower, $iUpper);
+        $aData    = unpack('P', $sEncoded);
+        $this->iLastParsed = $aData[0];
+        return chr(self::INT_IMM_QUAD) . $sEncoded;
     }
 }

@@ -15,18 +15,28 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Defs\Mnemonic;
+namespace ABadCafe\MC64K\Parser\Instruction;
 
 /**
- * IByteCodeGroups
+ * CodeFoldException
  *
+ * Exception raised where code can be folded
  */
-interface IByteCodeGroups {
-    const
-        OFS_CONTROL    = 0,
-        OFS_DATA_MOVE  = 77,
-        OFS_LOGICAL    = 112,
-        OFS_ARITHMETIC = 160,
-        OFS_MAX        = 255
-    ;
+class CodeFoldException extends \Exception {
+
+    protected string $sAlternative;
+
+    public function __construct(string $sMessage, string $sAlternative = '') {
+        parent::__construct($sMessage);
+        $this->sAlternative = $sAlternative;
+    }
+
+    /**
+     * Get the alternative bytecode
+     *
+     * @return string
+     */
+    public final function getAlternativeBytecode() : string {
+        return $this->sAlternative;
+    }
 }

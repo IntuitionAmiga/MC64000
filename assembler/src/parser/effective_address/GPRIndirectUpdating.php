@@ -21,30 +21,28 @@ use ABadCafe\MC64K\Defs\Register;
 use ABadCafe\MC64K\Parser;
 
 /**
- * PCIndirectDisplacement
+ * GPRIndirectUpdating
  *
- * Basic parser for PC indirect mode with signed displacement.
+ * Basic parser for GPR indirect with pre/post increment / decrement
  */
-class PCIndirectDisplacement implements IParser, EffectiveAddress\IOther {
-
-    use TOperationSizeAware;
-    use Parser\Utils\TSignedDisplacementAware;
+class GPRIndirectUpdating extends GPRIndirect {
 
     /**
      * Required match
      */
     const MATCHES = [
-        // Program counter with signed displacement d32(pc)
-        '/^' . self::D32 . '\(\s*pc\s*\)$/' => self::PC_IND_DSP,
+        // Register indirect, post increment (rN)+
+        '/^\(\s*' . self::RA . '\s*\)\+$/' => self::OFS_GPR_IND_POST_INC,
 
-        // Program counter with signed displacement (d32, pc)
-        '/^\(\s*' . self::D32 . '\s*,\s*pc\s*\)$/' => self::PC_IND_DSP,
+        // Register indirect, post decrement (rN)-
+        '/^\(\s*' . self::RA . '\s*\)\-$/' => self::OFS_GPR_IND_POST_DEC,
+
+        // Register indirect, pre increment +(rN)
+        '/^\+\(\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND_PRE_INC,
+
+        // Register indirect, pre decrement -(rN)
+        '/^\-\(\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND_PRE_DEC,
     ];
-
-    const
-        MATCHED_DISP = 1,
-        MATCHED_HEX  = 2
-    ;
 
     /**
      * @inheritDoc
@@ -52,11 +50,11 @@ class PCIndirectDisplacement implements IParser, EffectiveAddress\IOther {
     public function parse(string $sSource) : ?string {
         foreach (self::MATCHES as $sMatch => $iOffset) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
-                $iDisplacement = $this->parseDisplacement(
-                    $aMatches[self::MATCHED_DISP],
-                    !empty($aMatches[self::MATCHED_HEX])
-                );
-                return chr($iOffset) . pack('V', $iDisplacement);
+                $sRegister = $aMatches[self::MATCHED_NAME];
+                if (!isset(Register\INames::GPR_MAP[$sRegister])) {
+                    throw new \OutOfBoundsException($sRegister . ' is not a recognised GPR name');
+                }
+                return chr($iOffset + Register\INames::GPR_MAP[$sRegister]);
             }
         }
         return null;

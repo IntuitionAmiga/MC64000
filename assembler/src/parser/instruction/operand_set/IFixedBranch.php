@@ -15,18 +15,22 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Defs\Mnemonic;
+namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
+use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 
 /**
- * IByteCodeGroups
- *
+ * IFixedBranch
  */
-interface IByteCodeGroups {
+interface IFixedBranch {
     const
-        OFS_CONTROL    = 0,
-        OFS_DATA_MOVE  = 77,
-        OFS_LOGICAL    = 112,
-        OFS_ARITHMETIC = 160,
-        OFS_MAX        = 255
+        MAX_REVERSE = 0,
+        MAX_FORWARD = 1,
+        ENCODE_SIZE = 2,
+        DATA_FORMAT = 3
     ;
+
+    const RANGES = [
+        IControl::BRA_B => [-128, 127, 1, 'c'],
+        IControl::BRA   => [-2147483648, 2147483647, 4, 'V']
+    ];
 }

@@ -16,35 +16,45 @@
 declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\EffectiveAddress;
-use ABadCafe\MC64K\Defs\EffectiveAddress;
-use ABadCafe\MC64K\Defs\Register;
-use ABadCafe\MC64K\Parser;
 
 /**
- * GPRIndirect
+ * Composite
  *
- * Basic parser for GPR indirect modes
+ * Meta Parser
  */
-class GPRIndirect implements IParser, EffectiveAddress\IRegisterIndirect {
-
-    use TOperationSizeAware;
+abstract class Composite implements IParser {
 
     /**
-     * Required match
+     * @var IParser[] $aParsers - set of integer readable parsers
      */
-    const MATCH        = '/^\(\s*' . self::RA . '\s*\)$/';
-    const MATCHED_NAME = 1;
+    protected array $aParsers = [];
+
+    /**
+     * @var IParser|null $oParsedBy - the last IParser that succeeded in a call to parse()
+     */
+    protected ?IParser $oParsedBy = null;
+
+    /**
+     * @inheritDoc
+     */
+    public function setOperationSize(int $iSize) : self {
+        foreach ($this->aParsers as $oParser) {
+            $oParser->setOperationSize($iSize);
+        }
+        return $this;
+    }
 
     /**
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
-        if (preg_match(self::MATCH, $sSource, $aMatches)) {
-            $sRegister = $aMatches[self::MATCHED_NAME];
-            if (!isset(Register\INames::GPR_MAP[$sRegister])) {
-                throw new \OutOfBoundsException($sRegister . ' is not a recognised GPR name');
+        $this->oParsedBy = null;
+        foreach ($this->aParsers as $oParser) {
+            $sParsed = $oParser->parse($sSource);
+            if (null !== $sParsed) {
+                $this->oParsedBy = $oParser;
+                return $sParsed;
             }
-            return chr(self::OFS_GPR_IND + Register\INames::GPR_MAP[$sRegister]);
         }
         return null;
     }

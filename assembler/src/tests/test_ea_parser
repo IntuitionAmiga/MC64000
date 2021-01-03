@@ -154,7 +154,7 @@ function test(IParser $oParser, array $aExamples) {
     }
 }
 
-test(new Parser\EffectiveAddress\IntImmediate, INT_IMMEDIATES);
+test(new Parser\EffectiveAddress\IntegerImmediate, INT_IMMEDIATES);
 test(new Parser\EffectiveAddress\FloatImmediate, FLOAT_IMMEDIATES);
 test(new Parser\EffectiveAddress\GPRDirect, array_keys(Defs\Register\INames::GPR_MAP));
 test(new Parser\EffectiveAddress\FPRDirect, array_keys(Defs\Register\INames::FPR_MAP));

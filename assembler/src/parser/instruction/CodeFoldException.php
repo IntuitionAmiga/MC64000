@@ -15,18 +15,13 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Defs\Mnemonic;
+namespace ABadCafe\MC64K\Parser\Instruction;
 
 /**
- * IByteCodeGroups
+ * UnhandledCodeFoldException
  *
+ * Exception raised where code can not yet be folded
  */
-interface IByteCodeGroups {
-    const
-        OFS_CONTROL    = 0,
-        OFS_DATA_MOVE  = 77,
-        OFS_LOGICAL    = 112,
-        OFS_ARITHMETIC = 160,
-        OFS_MAX        = 255
-    ;
+class UnhandledCodeFoldException extends \Exception {
+
 }

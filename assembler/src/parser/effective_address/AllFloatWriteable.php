@@ -15,18 +15,27 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Defs\Mnemonic;
+namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 
 /**
- * IByteCodeGroups
+ * AllFloatWriteable
  *
+ * Meta Parser for float EA modes that can be written (i.e. suitable for destination).
  */
-interface IByteCodeGroups {
-    const
-        OFS_CONTROL    = 0,
-        OFS_DATA_MOVE  = 77,
-        OFS_LOGICAL    = 112,
-        OFS_ARITHMETIC = 160,
-        OFS_MAX        = 255
-    ;
+class AllFloatWriteable extends Composite {
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        // Initial best guess order of frequency.
+        $this->aParsers = [
+            new FPRDirect(),
+            new GPRIndirect(),
+            new GPRIndirectUpdating(),
+            new GPRIndirectDisplacement(),
+            new GPRIndirectIndexed(),
+            new GPRIndirectIndexedDisplacement(),
+        ];
+    }
 }

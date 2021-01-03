@@ -1,0 +1,93 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+const PASS = 1;
+const FAIL = 0;
+
+const EXAMPLES = [
+    // Example Assembler Statement => Expected Outcome
+    'rts'                                          => PASS,
+    'bra      #0'                                  => FAIL,
+    'jmp      r0'                                  => FAIL,
+    'jmp      (r0)'                                => PASS,
+    'jsr      (a0)+'                               => FAIL,
+    'pea      8(r7, r15.w * 2)'                    => PASS,
+    'lea      -2(r7, r15.w * 2), (a0)'             => PASS,
+    'bnz.b    r0, #0'                              => FAIL,
+    'bnz.b    r0, #-1'                             => FAIL,
+    'bnz.b    r0, 0x00'                            => FAIL,
+    'bnz.b    r0, .target'                         => PASS,
+    'biz.w    (r0), .target'                       => PASS,
+    'bpl.l    r1, .target'                         => PASS,
+    'bmi.l    r7, .target'                         => PASS,
+    'biz.w    #1, .target'                         => PASS,
+    'fbpl.s   fp1, .target'                        => PASS,
+    'fbpl.s   #0., .target'                        => PASS,
+    'add.b    #1, r0'                              => PASS,
+    'add.w    r0, r1'                              => PASS,
+    'add.l    r1, (r0)'                            => PASS,
+    'add.l    #200, 30(pc)'                        => FAIL,
+    'add.q    8(r7, r15.w * 2), 8(r7, r15.w * 4)'  => PASS,
+    'add.q    8(r7, r15.w * 2), 8(r7, r15.w * 2)'  => PASS,
+    'bclr.w   #0x3F, d0'                           => PASS,
+    'bset.q   #0, 0xabadcafe(a0, d0.l * 8)'        => PASS,
+    'move.q   #1, #2'                              => FAIL,
+    'fmoveb.d #1, fp1'                             => PASS,
+    'fmoves.d (a0), fp0'                           => PASS,
+    'fmul.s   #-3.90625e-3, fp15'                  => PASS,
+    'fdiv.d   #1.28e2, 32(a0, d2.l * 8)'           => PASS,
+    'blt.b    d0, d1, .unresolved_local'           => PASS,
+    'blt.b    d0, d1, unresolved_global'           => PASS,
+    'bgt.w    r0, (r15), #-32'                     => PASS,
+    'bgt.w    r0, (r15), #0x20'                    => PASS,
+    'bne.q    (r0), (r1), #0xFFFFFFF0'             => PASS,
+    'bgt.l    r1, r1, .doesnt_matter'              => PASS,
+    'beq.l    r1, r1, .doesnt_matter'              => PASS,
+    'bne.l    #1, #2, .doesnt_matter'              => PASS,
+    'beq.l    #1, #2, .doesnt_matter'              => PASS,
+    'fble.s   fp0, fp1, .fless_or_equal'           => PASS,
+    'fbeq.d   (r1), (r1)+, .not_totally_silly'     => PASS,
+    'fbeq.d   fp0, fp0, .totally_silly'            => PASS,
+    'fbne.s   #1., #2., .doesnt_matter'            => PASS,
+    'bnz.l    #1, #-10'                            => PASS
+
+];
+
+$oParser = new Parser\Instruction\Line();
+
+foreach (EXAMPLES as $sInput => $iExpect) {
+    printf("\t%-50s => ", $sInput);
+    try {
+        echo bin2hex($oParser->parse($sInput));
+        if ($iExpect === FAIL) {
+            echo " - UNEXPECTED OUTCOME";
+        }
+    } catch (\Throwable $oError) {
+        echo "Parse Error: ", get_class($oError), " - ", $oError->getMessage();
+        if ($iExpect === PASS) {
+            echo " - UNEXPECTED OUTCOME";
+        } else {
+            echo " (Expected outcome)";
+        }
+    }
+    echo "\n";
+}

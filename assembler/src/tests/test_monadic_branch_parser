@@ -1,0 +1,97 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+const PASS = 1;
+const FAIL = 0;
+
+const TPL_MONADIC_PASS_EXAMPLE = [
+    '%s.%s #%s, #-16',
+    '%s.%s #%s, #-127',
+    '%s.%s #%s, #-256',
+    '%s.%s #%s, #16',
+    '%s.%s #%s, #256',
+    '%s.%s #%s, .unresolved'
+];
+
+const TPL_IMONADIC = [
+    'biz', 'bnz', 'bmi', 'bpl'
+];
+
+const TPL_ISIZE = [
+    'b', 'w', 'l', 'q'
+];
+
+const TPL_IIMMEDIATES = [
+    'b' => [0, 1, -1, 127, -128],
+    'w' => [0, 1, -1, 32767, -32768],
+    'l' => [0, 1, -1, 2147483647, -2147483648],
+    'q' => [0, 1, -1, PHP_INT_MAX, PHP_INT_MIN],
+];
+
+const TPL_FMONADIC = [
+    'fbiz', 'fbnz', 'fbmi', 'fbpl'
+];
+
+const TPL_FSIZE = [
+    's', 'd'
+];
+
+const TPL_FIMMEDIATES = [
+    's' => ['0.', '1.', '-1.', '1.18e-38', '-1.18e-38', '3.4e38', '-3.4e38'],
+    'd' => ['0.', '1.', '-1.', '2.2250738585072e-308', '-2.2250738585072e-308', '1.7976931348623E+308', '-1.7976931348623E+308'],
+];
+
+$oParser = new Parser\Instruction\Line();
+
+foreach (TPL_ISIZE as $sSize) {
+    foreach (TPL_IIMMEDIATES[$sSize] as $iImmediate) {
+        foreach (TPL_IMONADIC as $sMnemonic) {
+            foreach (TPL_MONADIC_PASS_EXAMPLE as $sTemplate) {
+                $sInput = sprintf($sTemplate, $sMnemonic, $sSize, $iImmediate);
+                printf("\t%-40s => ", $sInput);
+                try {
+                    echo bin2hex($oParser->parse($sInput));
+                } catch (\Throwable $oError) {
+                    echo "Parse Error: ", get_class($oError), " - ", $oError->getMessage();
+                }
+                echo "\n";
+            }
+        }
+    }
+}
+
+foreach (TPL_FSIZE as $sSize) {
+    foreach (TPL_FIMMEDIATES[$sSize] as $sImmediate) {
+        foreach (TPL_FMONADIC as $sMnemonic) {
+            foreach (TPL_MONADIC_PASS_EXAMPLE as $sTemplate) {
+                $sInput = sprintf($sTemplate, $sMnemonic, $sSize, $sImmediate);
+                printf("\t%-40s => ", $sInput);
+                try {
+                    echo bin2hex($oParser->parse($sInput));
+                } catch (\Throwable $oError) {
+                    echo "Parse Error: ", get_class($oError), " - ", $oError->getMessage();
+                }
+                echo "\n";
+            }
+        }
+    }
+}

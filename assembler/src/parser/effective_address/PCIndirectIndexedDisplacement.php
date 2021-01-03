@@ -28,7 +28,7 @@ use ABadCafe\MC64K\Parser;
 class PCIndirectIndexedDisplacement implements IParser, EffectiveAddress\IRegisterIndirectIndexed {
 
     use TOperationSizeAware;
-    use TSignedDisplacementAware;
+    use Parser\Utils\TSignedDisplacementAware;
 
     /**
      * Required match
