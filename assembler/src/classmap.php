@@ -13,6 +13,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\Instruction\\OperandSet\\IntegerMonadicBranch' => '/parser/instruction/operand_set/IntegerMonadicBranch.php',
   'ABadCafe\\MC64K\\Parser\\Instruction\\OperandSet\\TBranching' => '/parser/instruction/operand_set/TBranching.php',
   'ABadCafe\\MC64K\\Parser\\Instruction\\OperandSet\\IntegerMonadic' => '/parser/instruction/operand_set/IntegerMonadic.php',
+  'ABadCafe\\MC64K\\Parser\\Instruction\\OperandSet\\IFixedBranch' => '/parser/instruction/operand_set/IFixedBranch.php',
   'ABadCafe\\MC64K\\Parser\\Instruction\\OperandSet\\FloatToIntegerDyadic' => '/parser/instruction/operand_set/FloatToIntegerDyadic.php',
   'ABadCafe\\MC64K\\Parser\\Instruction\\OperandSet\\FloatDyadic' => '/parser/instruction/operand_set/FloatDyadic.php',
   'ABadCafe\\MC64K\\Parser\\Instruction\\OperandSet\\FloatDyadicBranch' => '/parser/instruction/operand_set/FloatDyadicBranch.php',

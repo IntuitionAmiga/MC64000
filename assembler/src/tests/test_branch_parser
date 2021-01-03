@@ -1,0 +1,156 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+const PASS = 1;
+const FAIL = 0;
+
+const EXAMPLES = [
+    'biz.b #0, #-16'  => PASS,
+    'biz.b #0, #-132'  => PASS,
+    'biz.b #0, #-256'  => PASS,
+    'biz.b #0, #16'   => PASS,
+    'biz.b #0, #256'  => PASS,
+    'biz.b #0, .unresolved'  => PASS,
+
+    'bnz.b #0, #-16'  => PASS,
+    'bnz.b #0, #-127'  => PASS,
+    'bnz.b #0, #-256' => PASS,
+    'bnz.b #0, #16'   => PASS,
+    'bnz.b #0, #256'  => PASS,
+    'bnz.b #0, .unresolved'  => PASS,
+
+    'bmi.b #0, #-16'  => PASS,
+    'bmi.b #0, #-127'  => PASS,
+    'bmi.b #0, #-256' => PASS,
+    'bmi.b #0, #16'   => PASS,
+    'bmi.b #0, #256'  => PASS,
+    'bmi.b #0, .unresolved'  => PASS,
+
+    'bpl.b #0, #-16'  => PASS,
+    'bpl.b #0, #-127'  => PASS,
+    'bpl.b #0, #-256' => PASS,
+    'bpl.b #0, #16'   => PASS,
+    'bpl.b #0, #256'  => PASS,
+    'bpl.b #0, .unresolved'  => PASS,
+
+    'biz.b #127, #-16'  => PASS,
+    'biz.b #127, #-127'  => PASS,
+    'biz.b #127, #-256'  => PASS,
+    'biz.b #127, #16'   => PASS,
+    'biz.b #127, #256'  => PASS,
+    'biz.b #127, .unresolved'  => PASS,
+
+    'bnz.b #127, #-16'  => PASS,
+    'bnz.b #127, #-127'  => PASS,
+    'bnz.b #127, #-256' => PASS,
+    'bnz.b #127, #16'   => PASS,
+    'bnz.b #127, #256'  => PASS,
+    'bnz.b #127, .unresolved'  => PASS,
+
+    'bmi.b #127, #-16'  => PASS,
+    'bmi.b #127, #-127'  => PASS,
+    'bmi.b #127, #-256' => PASS,
+    'bmi.b #127, #16'   => PASS,
+    'bmi.b #127, #256'  => PASS,
+    'bmi.b #127, .unresolved'  => PASS,
+
+    'bpl.b #127, #-16'  => PASS,
+    'bpl.b #127, #-127'  => PASS,
+    'bpl.b #127, #-256' => PASS,
+    'bpl.b #127, #16'   => PASS,
+    'bpl.b #127, #256'  => PASS,
+    'bpl.b #127, .unresolved'  => PASS,
+
+    'biz.b #-127, #-16'  => PASS,
+    'biz.b #-127, #-127'  => PASS,
+    'biz.b #-127, #-256'  => PASS,
+    'biz.b #-127, #16'   => PASS,
+    'biz.b #-127, #256'  => PASS,
+    'biz.b #-127, .unresolved'  => PASS,
+
+    'bnz.b #-127, #-16'  => PASS,
+    'bnz.b #-127, #-127'  => PASS,
+    'bnz.b #-127, #-256' => PASS,
+    'bnz.b #-127, #16'   => PASS,
+    'bnz.b #-127, #256'  => PASS,
+    'bnz.b #-127, .unresolved'  => PASS,
+
+    'bmi.b #-127, #-16'  => PASS,
+    'bmi.b #-127, #-127'  => PASS,
+    'bmi.b #-127, #-256' => PASS,
+    'bmi.b #-127, #16'   => PASS,
+    'bmi.b #-127, #256'  => PASS,
+    'bmi.b #-127, .unresolved'  => PASS,
+
+    'bpl.b #-127, #-16'  => PASS,
+    'bpl.b #-127, #-127'  => PASS,
+    'bpl.b #-127, #-256' => PASS,
+    'bpl.b #-127, #16'   => PASS,
+    'bpl.b #-127, #256'  => PASS,
+    'bpl.b #-127, .unresolved'  => PASS,
+
+//     'biz.q #' . PHP_INT_MAX . ', #-20' => PASS,
+//     'bnz.q #' . PHP_INT_MAX . ', #-20' => PASS,
+//     'biz.q #' . PHP_INT_MAX . ', #20'  => PASS,
+//     'bnz.q #' . PHP_INT_MAX . ', #20'  => PASS,
+//     'biz.q #' . PHP_INT_MAX . ', .target' => PASS,
+//     'bnz.q #' . PHP_INT_MAX . ', .target' => PASS,
+//
+//     'biz.q #0, #20'  => PASS,
+//     'bnz.q #0, #20'  => PASS,
+//     'biz.q #0, .target' => PASS,
+//     'bnz.q #0, .target' => PASS,
+//
+//     'fbiz.d #6.5535e5, #-20' => PASS,
+//     'fbnz.d #6.5535e5, #-20' => PASS,
+//     'fbiz.d #6.5535e5, #20'  => PASS,
+//     'fbnz.d #6.5535e5, #20'  => PASS,
+//     'fbiz.d #6.5535e5, .target' => PASS,
+//     'fbnz.d #6.5535e5, .target' => PASS,
+//     'fbiz.d #0., #-20' => PASS,
+//     'fbnz.d #0., #-20' => PASS,
+//     'fbiz.d #0., #20'  => PASS,
+//     'fbnz.d #0., #20'  => PASS,
+//     'fbiz.d #0., .target' => PASS,
+//     'fbnz.d #0., .target' => PASS,
+
+];
+
+$oParser = new Parser\Instruction\Line();
+
+foreach (EXAMPLES as $sInput => $iExpect) {
+    printf("\t%-50s => ", $sInput);
+    try {
+        echo bin2hex($oParser->parse($sInput));
+        if ($iExpect === FAIL) {
+            echo " - UNEXPECTED OUTCOME";
+        }
+    } catch (\Throwable $oError) {
+        echo "Parse Error: ", get_class($oError), " - ", $oError->getMessage();
+        if ($iExpect === PASS) {
+            echo " - UNEXPECTED OUTCOME";
+        } else {
+            echo " (Expected outcome)";
+        }
+    }
+    echo "\n";
+}

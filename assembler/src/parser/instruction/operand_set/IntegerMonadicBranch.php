@@ -39,22 +39,22 @@ class IntegerMonadicBranch extends Monadic {
      * Map of opcode keys to test functions for resolving immediate branches taken or not.
      */
     const OPCODES = [
-        IControl::BIZ_B => 'isZero',
-        IControl::BIZ_W => 'isZero',
-        IControl::BIZ_L => 'isZero',
-        IControl::BIZ_Q => 'isZero',
-        IControl::BNZ_B => 'isNotZero',
-        IControl::BNZ_W => 'isNotZero',
-        IControl::BNZ_L => 'isNotZero',
-        IControl::BNZ_Q => 'isNotZero',
-        IControl::BMI_B => 'isMinus',
-        IControl::BMI_W => 'isMinus',
-        IControl::BMI_L => 'isMinus',
-        IControl::BMI_Q => 'isMinus',
-        IControl::BPL_B => 'isPlus',
-        IControl::BPL_W => 'isPlus',
-        IControl::BPL_L => 'isPlus',
-        IControl::BPL_Q => 'isPlus',
+        IControl::BIZ_B => 'foldIsZero',
+        IControl::BIZ_W => 'foldIsZero',
+        IControl::BIZ_L => 'foldIsZero',
+        IControl::BIZ_Q => 'foldIsZero',
+        IControl::BNZ_B => 'foldIsNotZero',
+        IControl::BNZ_W => 'foldIsNotZero',
+        IControl::BNZ_L => 'foldIsNotZero',
+        IControl::BNZ_Q => 'foldIsNotZero',
+        IControl::BMI_B => 'foldIsMinus',
+        IControl::BMI_W => 'foldIsMinus',
+        IControl::BMI_L => 'foldIsMinus',
+        IControl::BMI_Q => 'foldIsMinus',
+        IControl::BPL_B => 'foldIsPlus',
+        IControl::BPL_W => 'foldIsPlus',
+        IControl::BPL_L => 'foldIsPlus',
+        IControl::BPL_Q => 'foldIsPlus',
     ];
 
 
@@ -108,43 +108,32 @@ class IntegerMonadicBranch extends Monadic {
         return $sBytecode;
     }
 
-    private function isZero(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        if (0 !== $iImmediate) {
-            // Not zero? Do nothing.
-            return '';
-        }
-        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    /**
+     * Trampoline to TBranching code folders
+     */
+    private function foldIsZero(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return $this->foldImmediateIsEqual($iImmediate, 0, $iDisplacement, $iOriginalSize);
     }
 
-    private function isNotZero(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        if (0 === $iImmediate) {
-            // Is zero? Do nothing.
-            return '';
-        }
-        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    /**
+     * Trampoline to TBranching code folders
+     */
+    private function foldIsNotZero(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return $this->foldImmediateIsNotEqual($iImmediate, 0, $iDisplacement, $iOriginalSize);
     }
 
-    private function isMinus(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        if ($iImmediate >= 0) {
-            // Not negative? Do nothing.
-            return '';
-        }
-        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    /**
+     * Trampoline to TBranching code folders
+     */
+    private function foldIsMinus(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return $this->foldImmediateIsLessThan($iImmediate, 0, $iDisplacement, $iOriginalSize);
     }
 
-    private function isPlus(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        if ($iImmediate < 0) {
-            // Negative? Do nothing.
-            return '';
-        }
-        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
-    }
-
-    private function encodeFixedBranch(int $iDisplacement, int $iOriginalSize) : string {
-        if ($iDisplacement < 0) {
-            $iDisplacement = $iDisplacement + $iOriginalSize - self::FIXED_LENGTH;
-        }
-        return chr(IControl::BRA) . pack('V', $iDisplacement);
+    /**
+     * Trampoline to TBranching code folders
+     */
+    private function foldIsPlus(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return $this->foldImmediateIsGreaterOrEqual($iImmediate, 0, $iDisplacement, $iOriginalSize);
     }
 
 }

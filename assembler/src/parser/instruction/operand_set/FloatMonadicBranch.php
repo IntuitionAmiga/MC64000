@@ -39,14 +39,14 @@ class FloatMonadicBranch extends Monadic {
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IControl::FBIZ_S => 'isZero',
-        IControl::FBIZ_D => 'isZero',
-        IControl::FBNZ_S => 'isNotZero',
-        IControl::FBNZ_D => 'isNotZero',
-        IControl::FBMI_S => 'isMinus',
-        IControl::FBMI_D => 'isMinus',
-        IControl::FBPL_S => 'isPlus',
-        IControl::FBPL_D => 'isPlus',
+        IControl::FBIZ_S => 'foldIsZero',
+        IControl::FBIZ_D => 'foldIsZero',
+        IControl::FBNZ_S => 'foldIsNotZero',
+        IControl::FBNZ_D => 'foldIsNotZero',
+        IControl::FBMI_S => 'foldIsMinus',
+        IControl::FBMI_D => 'foldIsMinus',
+        IControl::FBPL_S => 'foldIsPlus',
+        IControl::FBPL_D => 'foldIsPlus',
     ];
 
     /**
@@ -98,43 +98,32 @@ class FloatMonadicBranch extends Monadic {
         return $sBytecode;
     }
 
-    private function isZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        if (0.0 !== $fImmediate) {
-            // Not zero? Do nothing.
-            return '';
-        }
-        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    /**
+     * Trampoline to TBranching code folders
+     */
+    private function foldIsZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return $this->foldImmediateIsEqual($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 
-    private function isNotZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        if (0.0 === $fImmediate) {
-            // Is zero? Do nothing.
-            return '';
-        }
-        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    /**
+     * Trampoline to TBranching code folders
+     */
+    private function foldIsNotZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return $this->foldImmediateIsNotEqual($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 
-    private function isMinus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        if ($fImmediate >= 0.0) {
-            // Not negative? Do nothing.
-            return '';
-        }
-        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
+    /**
+     * Trampoline to TBranching code folders
+     */
+    private function foldIsMinus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return $this->foldImmediateIsLessThan($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 
-    private function isPlus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        if ($fImmediate < 0.0) {
-            // Negative? Do nothing.
-            return '';
-        }
-        return $this->encodeFixedBranch($iDisplacement, $iOriginalSize);
-    }
-
-    private function encodeFixedBranch(int $iDisplacement, int $iOriginalSize) : string {
-        if ($iDisplacement < 0) {
-            $iDisplacement = $iDisplacement + $iOriginalSize - self::FIXED_LENGTH;
-        }
-        return chr(IControl::BRA) . pack('V', $iDisplacement);
+    /**
+     * Trampoline to TBranching code folders
+     */
+    private function foldIsPlus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return $this->foldImmediateIsGreaterOrEqual($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 
 }
