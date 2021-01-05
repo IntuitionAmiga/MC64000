@@ -15,17 +15,17 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction;
 use ABadCafe\MC64K;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Tokeniser;
 
 /**
- * Parser\Instruction\Line
+ * Statement
  *
  * Parses a complete assembler instruction statement into bytecode.
  */
-class Line implements MC64K\IParser, Defs\Mnemonic\IMatches {
+class Statement implements MC64K\IParser, Defs\Mnemonic\IMatches {
 
     private Tokeniser\Instruction $oTokeniser;
 

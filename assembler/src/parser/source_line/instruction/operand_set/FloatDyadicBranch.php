@@ -15,11 +15,12 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
-use ABadCafe\MC64K\Parser;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\UnhandledCodeFoldException;
+use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
-use ABadCafe\MC64K\Parser\Instruction\CodeFoldException;
-use ABadCafe\MC64K\Parser\Instruction\UnhandledCodeFoldException;
 
 /**
  * FloatDyadicBranch
@@ -57,9 +58,9 @@ class FloatDyadicBranch extends Dyadic {
      * Constructor
      */
     public function __construct() {
-        $this->oSrcParser = new Parser\EffectiveAddress\AllFloatReadable();
-        $this->oDstParser = new Parser\EffectiveAddress\AllFloatReadable();
-        $this->oTgtParser = new Parser\Instruction\Operand\BranchDisplacement();
+        $this->oSrcParser = new EffectiveAddress\AllFloatReadable();
+        $this->oDstParser = new EffectiveAddress\AllFloatReadable();
+        $this->oTgtParser = new Operand\BranchDisplacement();
         parent::__construct();
     }
 

@@ -15,32 +15,34 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
-use ABadCafe\MC64K\Parser;
-use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 
 /**
- * IntegerMonadic
+ * FloatToIntegerDyadic
  *
- * For all vanilla integer destination @ source -> destination operations
+ * For all vanilla float to integer conversions
  */
-class IntegerMonadic extends Monadic {
+class FloatToIntegerDyadic extends Dyadic {
 
     /**
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IControl::JMP,
-        IControl::JSR,
-        IDataMove::PEA,
+        IDataMove::FMOVES_L,
+        IDataMove::FMOVES_Q,
+        IDataMove::FMOVED_L,
+        IDataMove::FMOVED_Q,
     ];
 
     /**
      * Constructor
      */
     public function __construct() {
-        $this->oSrcParser = new Parser\EffectiveAddress\AllControlAddressing();
+        $this->oSrcParser = new EffectiveAddress\AllFloatReadable();
+        $this->oDstParser = new EffectiveAddress\AllIntegerWriteable();
+        parent::__construct();
     }
 
     /**

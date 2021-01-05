@@ -15,9 +15,8 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
-
-use ABadCafe\MC64K\Parser\Instruction;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 
 /**

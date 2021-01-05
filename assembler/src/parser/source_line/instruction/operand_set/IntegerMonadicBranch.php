@@ -15,10 +15,12 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
+use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
-use ABadCafe\MC64K\Parser\Instruction\CodeFoldException;
 
 /**
  * IntegerMonadicBranch
@@ -63,8 +65,8 @@ class IntegerMonadicBranch extends Monadic {
      * Constructor
      */
     public function __construct() {
-        $this->oSrcParser = new Parser\EffectiveAddress\AllIntegerReadable();
-        $this->oTgtParser = new Parser\Instruction\Operand\BranchDisplacement();
+        $this->oSrcParser = new EffectiveAddress\AllIntegerReadable();
+        $this->oTgtParser = new Operand\BranchDisplacement();
     }
 
     /**

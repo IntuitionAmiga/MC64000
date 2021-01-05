@@ -15,22 +15,23 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
-use ABadCafe\MC64K\Parser;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction;
+use ABadCafe\MC64K\Parser\EffectiveAddress;
 
 /**
  * Monadic
  *
  * Base for all vanilla monadic operations
  */
-abstract class Monadic implements Parser\Instruction\IOperandSetParser {
+abstract class Monadic implements Instruction\IOperandSetParser {
 
     const
         DEF_OPERAND_SRC   = 0,
         MIN_OPERAND_COUNT = 1
     ;
 
-    protected Parser\EffectiveAddress\IParser $oSrcParser;
+    protected EffectiveAddress\IParser $oSrcParser;
 
     /**
      * @inheritDoc

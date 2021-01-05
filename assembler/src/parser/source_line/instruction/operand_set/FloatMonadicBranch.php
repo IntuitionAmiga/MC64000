@@ -15,10 +15,11 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
-use ABadCafe\MC64K\Parser;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
+use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
-use ABadCafe\MC64K\Parser\Instruction\CodeFoldException;
 
 /**
  * FloatMonadicBranch
@@ -53,8 +54,8 @@ class FloatMonadicBranch extends Monadic {
      * Constructor
      */
     public function __construct() {
-        $this->oSrcParser = new Parser\EffectiveAddress\AllFloatReadable();
-        $this->oTgtParser = new Parser\Instruction\Operand\BranchDisplacement();
+        $this->oSrcParser = new EffectiveAddress\AllFloatReadable();
+        $this->oTgtParser = new Operand\BranchDisplacement();
     }
 
     /**
@@ -125,5 +126,4 @@ class FloatMonadicBranch extends Monadic {
     private function foldIsPlus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
         return $this->foldImmediateIsGreaterOrEqual($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
-
 }

@@ -15,8 +15,8 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
-use ABadCafe\MC64K\Parser;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
 
@@ -81,8 +81,8 @@ class FloatDyadic extends Dyadic {
      * Constructor
      */
     public function __construct() {
-        $this->oSrcParser = new Parser\EffectiveAddress\AllFloatReadable();
-        $this->oDstParser = new Parser\EffectiveAddress\AllFloatWriteable();
+        $this->oSrcParser = new EffectiveAddress\AllFloatReadable();
+        $this->oDstParser = new EffectiveAddress\AllFloatWriteable();
         parent::__construct();
     }
 

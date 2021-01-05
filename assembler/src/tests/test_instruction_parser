@@ -72,7 +72,7 @@ const EXAMPLES = [
 
 ];
 
-$oParser = new Parser\Instruction\Line();
+$oParser = new Parser\SourceLine\Instruction\Statement();
 
 foreach (EXAMPLES as $sInput => $iExpect) {
     printf("\t%-50s => ", $sInput);

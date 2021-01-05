@@ -60,7 +60,7 @@ const TPL_FIMMEDIATES = [
     'd' => ['0.', '1.', '-1.', '2.2250738585072e-308', '-2.2250738585072e-308', '1.7976931348623E+308', '-1.7976931348623E+308'],
 ];
 
-$oParser = new Parser\Instruction\Line();
+$oParser = new Parser\SourceLine\Instruction\Statement();
 
 foreach (TPL_ISIZE as $sSize) {
     foreach (TPL_IIMMEDIATES[$sSize] as $iImmediate) {

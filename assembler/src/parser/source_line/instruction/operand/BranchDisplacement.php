@@ -15,10 +15,10 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\Operand;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\UnhandledCodeFoldException;
 use ABadCafe\MC64K;
 use ABadCafe\MC64K\Parser;
-use ABadCafe\MC64K\Parser\Instruction\UnhandledCodeFoldException;
 
 /**
  * BranchDisplacement

@@ -15,31 +15,28 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction;
 
 /**
- * IOperandSetParser
+ * CodeFoldException
  *
- * Top level interface for instruction operand parsers.
+ * Exception raised where code can be folded
  */
-interface IOperandSetParser {
+class CodeFoldException extends \Exception {
 
-    const DEFAULT_SIZE = 8;
+    protected string $sAlternative;
 
-    /**
-     * Returns the set of Opcodes this particular OperandParser is applicable to.
-     *
-     * @return int[]
-     */
-    public function getOpcodes() : array;
+    public function __construct(string $sMessage, string $sAlternative = '') {
+        parent::__construct($sMessage);
+        $this->sAlternative = $sAlternative;
+    }
 
     /**
-     * Parses the set of operands associated with some operation.
+     * Get the alternative bytecode
      *
-     * @param  int      $iOpcode
-     * @param  string[] $aOperands
-     * @param  int[]    $aSizes
-     * @return string   bytecode
+     * @return string
      */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string;
+    public final function getAlternativeBytecode() : string {
+        return $this->sAlternative;
+    }
 }

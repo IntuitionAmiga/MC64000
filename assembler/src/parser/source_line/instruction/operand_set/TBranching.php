@@ -15,17 +15,17 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Parser;
-use ABadCafe\MC64K\Parser\Instruction\Operand\BranchDisplacement;
 
 /**
  * TBranching
  */
 trait TBranching {
 
-    private Parser\Instruction\Operand\BranchDisplacement $oTgtParser;
+    private Operand\BranchDisplacement $oTgtParser;
 
     /**
      * Checks the last parsed branch displacement agains the current bytecode to make sure that
@@ -161,7 +161,7 @@ trait TBranching {
             throw new \UnexpectedValueException('Unable to encode fixed branch for #' . $iProposedDisplacement);
         }
 
-        if (BranchDisplacement::UNRESOLVED === $iDisplacement) {
+        if (Operand\BranchDisplacement::UNRESOLVED === $iDisplacement) {
             $iOpcode = IControl::BRA;
             $aRange  = IFixedBranch::RANGES[$iOpcode];
             return $this->generateFixedBranchBytecode(

@@ -15,8 +15,8 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\Instruction\OperandSet;
-use ABadCafe\MC64K\Parser;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs;
 
 /**
@@ -31,7 +31,7 @@ abstract class Dyadic extends Monadic {
         MIN_OPERAND_COUNT = 2
     ;
 
-    protected Parser\EffectiveAddress\IParser $oDstParser;
+    protected EffectiveAddress\IParser $oDstParser;
 
     /**
      * @var int[] $aSameAsDestination
