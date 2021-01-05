@@ -25,6 +25,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\Dyadic' => '/parser/source_line/instruction/operand_set/Dyadic.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\IntegerDyadic' => '/parser/source_line/instruction/operand_set/IntegerDyadic.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\IntegerToFloatDyadic' => '/parser/source_line/instruction/operand_set/IntegerToFloatDyadic.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\IntegerMonadicAddress' => '/parser/source_line/instruction/operand_set/IntegerMonadicAddress.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\IntegerImmediate' => '/parser/effective_address/IntegerImmediate.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\GPRIndirectUpdating' => '/parser/effective_address/GPRIndirectUpdating.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\AllFloatReadable' => '/parser/effective_address/AllFloatReadable.php',

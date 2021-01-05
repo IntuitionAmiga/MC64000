@@ -21,27 +21,26 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 
 /**
- * IntegerMonadic
+ * IntegerMonadicAddress
  *
- * For all vanilla integer destination @ source -> destination operations
+ * For instructions with a single control addressing mode operand
  */
-class IntegerMonadic extends Monadic {
+class IntegerMonadicAddress extends Monadic {
 
     /**
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IDataMove::CLR_B,
-        IDataMove::CLR_W,
-        IDataMove::CLR_L,
-        IDataMove::CLR_Q,
+        IControl::JMP,
+        IControl::JSR,
+        IDataMove::PEA,
     ];
 
     /**
      * Constructor
      */
     public function __construct() {
-        $this->oSrcParser = new EffectiveAddress\AllIntegerWriteable();
+        $this->oSrcParser = new EffectiveAddress\AllControlAddressing();
     }
 
     /**

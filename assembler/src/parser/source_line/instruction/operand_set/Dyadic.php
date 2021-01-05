@@ -38,6 +38,9 @@ abstract class Dyadic extends Monadic {
      */
     protected static array $aSameAsDestination = [];
 
+    protected ?string $sDstBytecode;
+    protected ?string $sSrcBytecode;
+
     /**
      * Base constructor
      */
@@ -56,11 +59,11 @@ abstract class Dyadic extends Monadic {
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
 
-        $iDstIndex    = $this->getDestinationOperandIndex();
-        $sDstBytecode = $this->oDstParser
+        $iDstIndex          = $this->getDestinationOperandIndex();
+        $this->sDstBytecode = $this->oDstParser
             ->setOperationSize($aSizes[$iDstIndex] ?? self::DEFAULT_SIZE)
             ->parse($aOperands[$iDstIndex]);
-        if (null === $sDstBytecode) {
+        if (null === $this->sDstBytecode) {
             throw new \UnexpectedValueException(
                 $aOperands[$iDstIndex] . ' not a valid destination operand'
             );
@@ -72,10 +75,13 @@ abstract class Dyadic extends Monadic {
             ->parse($aOperands[$iSrcIndex]);
         if (null === $sSrcBytecode) {
             throw new \UnexpectedValueException(
-                $aOperands[$iSrcIndex] . ' not a valid source operand');
+                $aOperands[$iSrcIndex] . ' not a valid source operand'
+            );
         }
 
-        return $sDstBytecode . $this->optimiseSourceOperandBytecode($sSrcBytecode, $sDstBytecode);
+        $this->sSrcBytecode = $this->optimiseSourceOperandBytecode($sSrcBytecode, $this->sDstBytecode);
+
+        return $this->sDstBytecode . $this->sSrcBytecode;
     }
 
     /**

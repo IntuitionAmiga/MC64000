@@ -340,7 +340,7 @@ Unlink
 
 General syntax:
 
-        unlk rN>
+        unlk <rN>
 
 | Mnemonic | Bytecode | Ext 0 |
 | - | - | - |

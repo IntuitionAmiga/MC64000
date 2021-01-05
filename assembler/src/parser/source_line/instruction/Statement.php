@@ -40,6 +40,7 @@ class Statement implements MC64K\IParser, Defs\Mnemonic\IMatches {
     public function __construct() {
         $this->oTokeniser = new Tokeniser\Instruction();
         $this->addOperandSetParser(new OperandSet\None());
+        $this->addOperandSetParser(new OperandSet\IntegerMonadicAddress());
         $this->addOperandSetParser(new OperandSet\IntegerMonadic());
         $this->addOperandSetParser(new OperandSet\IntegerMonadicBranch());
         $this->addOperandSetParser(new OperandSet\FloatMonadicBranch());
