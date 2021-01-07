@@ -1,0 +1,123 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+const PASS = 1;
+const FAIL = 0;
+
+const TPL_DYADIC_PASS_EXAMPLE = [
+    '%s.%s %s, %s, #-32',
+    '%s.%s %s, %s, #32',
+    '%s.%s %s, %s, #-256',
+    '%s.%s %s, %s, #256',
+    '%s.%s %s, %s, .unk',
+    '%s.%s %s, %s, #0',
+];
+
+const TPL_IDYADIC = [
+    'blt', 'ble', 'beq', 'bge', 'bgt', 'bne'
+];
+
+const TPL_ISIZE = [
+    'b', 'w', 'l', 'q'
+];
+
+const TPL_IOPERANDS = [
+    'b' => ['r0', '(r1)', '(r8)+',  '#0', '#1', '#-1', '#127', '#-128'],
+    'w' => ['r2', '(r3)', '(r9)+',  '#0', '#1', '#-1', '#32767', '#-32768'],
+    'l' => ['r4', '(r5)', '(r10)+', '#0', '#1', '#-1', '#2147483647', '#-2147483648'],
+    'q' => ['r6', '(r7)', '(r11)+', '#0', '#1', '#-1', '#' . PHP_INT_MAX, '#' . PHP_INT_MIN],
+];
+
+const TPL_FDYADIC = [
+    'fblt', 'fble', 'fbeq', 'fbge', 'fbgt'
+];
+
+const TPL_FSIZE = [
+    's', 'd'
+];
+
+const TPL_FOPERANDS = [
+    's' => ['fp0', '(r0)', '#0.', '#1.', '#-1.', '#1.18e-38', '#-1.18e-38', '#3.4e38', '#-3.4e38'],
+    'd' => ['fp1', '(r1)', '#0.', '#1.', '#-1.', '#2.22e-308', '#-2.22e-308', '#1.79e+308', '#-1.797e+308'],
+];
+
+function formatBytecode(string $sBinary) : string {
+    return implode(' ', str_split(bin2hex($sBinary), 2));
+}
+
+$oParser = new Parser\SourceLine\Instruction\Statement();
+
+echo "Testing integer dyadic compare and brach...\n";
+
+foreach (TPL_ISIZE as $sSize) {
+    foreach (TPL_IOPERANDS[$sSize] as $sSrcImmediate) {
+        foreach (TPL_IOPERANDS[$sSize] as $sDstImmediate) {
+            foreach (TPL_IDYADIC as $sMnemonic) {
+                foreach (TPL_DYADIC_PASS_EXAMPLE as $sTemplate) {
+                    $sInput = sprintf($sTemplate, $sMnemonic, $sSize, $sSrcImmediate, $sDstImmediate);
+                    printf("\t%-56s => ", $sInput);
+                    try {
+                        $sOutput = $oParser->parse($sInput);
+                        if (!$sOutput) {
+                            echo "(empty)";
+                            break;
+                        } else {
+                            echo strlen($sOutput), ": ", formatBytecode($sOutput);
+                        }
+                    } catch (\Throwable $oError) {
+                        echo $oError->getMessage();
+                    }
+                    echo "\n";
+                }
+                echo "\n";
+            }
+        }
+    }
+}
+
+echo "\nTesting floating point dyadic compare and branch...\n";
+
+foreach (TPL_FSIZE as $sSize) {
+    foreach (TPL_FOPERANDS[$sSize] as $sSrcImmediate) {
+        foreach (TPL_FOPERANDS[$sSize] as $sDstImmediate) {
+            foreach (TPL_FDYADIC as $sMnemonic) {
+                foreach (TPL_DYADIC_PASS_EXAMPLE as $sTemplate) {
+                    $sInput = sprintf($sTemplate, $sMnemonic, $sSize, $sSrcImmediate, $sDstImmediate);
+                    printf("\t%-56s => ", $sInput);
+                    try {
+                        $sOutput = $oParser->parse($sInput);
+                        if (!$sOutput) {
+                            echo "(empty)";
+                            break;
+                        } else {
+                            echo strlen($sOutput), ": ", formatBytecode($sOutput);
+                        }
+                    } catch (\Throwable $oError) {
+                        echo $oError->getMessage();
+                    }
+                    echo "\n";
+                }
+                echo "\n";
+            }
+        }
+    }
+}

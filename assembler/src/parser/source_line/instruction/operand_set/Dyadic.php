@@ -18,6 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs;
+use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 
 /**
  * Dyadic
@@ -118,5 +119,80 @@ abstract class Dyadic extends Monadic {
             $sSrcBytecode = chr(Defs\EffectiveAddress\IOther::SAME_AS_DEST);
         }
         return $sSrcBytecode;
+    }
+
+
+
+    /**
+     * Common dyadic code folder:
+     *
+     * Emit a clr.b <destination> operation, used for folding out code where immediate zero is a source.
+     *
+     * @param  string $sSrcBytecode
+     * @param  string $sDstBytecode
+     * @return string
+     */
+    protected function foldClearDestinationByte(string $sSrcBytecode, string $sDstBytecode) : string {
+        return chr(IDataMove::CLR_B) . $sDstBytecode;
+    }
+
+    /**
+     * Common dyadic code folder:
+     *
+     * Emit a clr.w <destination> operation, used for folding out code where immediate zero is a source.
+     *
+     * @param  string $sSrcBytecode
+     * @param  string $sDstBytecode
+     * @return string
+     */
+    protected function foldClearDestinationWord(string $sSrcBytecode, string $sDstBytecode) : string {
+        return chr(IDataMove::CLR_W) . $sDstBytecode;
+    }
+
+    /**
+     * Common dyadic code folder:
+     *
+     * Emit a clr.l <destination> operation, used for folding out code where immediate zero is a source.
+     *
+     * @param  string $sSrcBytecode
+     * @param  string $sDstBytecode
+     * @return string
+     */
+    protected function foldClearDestinationLong(string $sSrcBytecode, string $sDstBytecode) : string {
+        return chr(IDataMove::CLR_L) . $sDstBytecode;
+    }
+
+    /**
+     * Emit a clr.q <destination> operation, used for folding out code where immediate zero is a source.
+     *
+     * @param  string $sSrcBytecode
+     * @param  string $sDstBytecode
+     * @return string
+     */
+    protected function foldClearDestinationQuad(string $sSrcBytecode, string $sDstBytecode) : string {
+        return chr(IDataMove::CLR_Q) . $sDstBytecode;
+    }
+
+    /**
+     * Common dyadic code folder:
+     *
+     * Emit nothing
+     *
+     * @param  string $sSrcBytecode
+     * @param  string $sDstBytecode
+     * @return string
+     */
+    protected function foldEmpty(string $sSrcBytecode, string $sDstBytecode) : string {
+        return '';
+    }
+    /**
+     * Throw an exception where immediate zero is an illegal source operand
+     *
+     * @param  string $sSrcBytecode
+     * @param  string $sDstBytecode
+     * @return string
+     */
+    protected function trapIllegal(string $sSrcBytecode, string $sDstBytecode) : string {
+        throw new \UnexpectedValueException('Immediate zero is an illegal source operand for this operation');
     }
 }

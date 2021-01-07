@@ -17,6 +17,8 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\UnhandledCodeFoldException;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Parser;
 
@@ -25,24 +27,55 @@ use ABadCafe\MC64K\Parser;
  */
 trait TBranching {
 
-    private Operand\BranchDisplacement $oTgtParser;
+    protected Operand\BranchDisplacement $oTgtParser;
 
     /**
-     * Checks the last parsed branch displacement agains the current bytecode to make sure that
+     * @param  string $sSource
+     * @param  bool   $bOperandSideEffects
+     * @return string
+     * @throws CodeFoldException|UnhandledCodeFoldException
+     */
+    protected function parseBranchDisplacement(string $sSource, bool $bOperandSideEffects) : string {
+        try {
+            return $this->oTgtParser->parse($sSource);
+        } catch (CodeFoldException $oFold) {
+            if ($bOperandSideEffects) {
+                throw new UnhandledCodeFoldException("Cannot fold zero branch as one or both operands have side effects");
+            }
+            throw $oFold;
+        }
+    }
+
+    protected function checkShortBranchDisplacement() : void {
+        $iDisplacement = $this->oTgtParser->getLastDisplacement();
+        if (0 === $iDisplacement) {
+            throw new \UnexpectedValueException('Short branch cannot be unresolved');
+        }
+        if (
+            $iDisplacement < IFixedBranch::RANGES[IControl::BRA_B][IFixedBranch::MAX_REVERSE] ||
+            $iDisplacement > IFixedBranch::RANGES[IControl::BRA_B][IFixedBranch::MAX_FORWARD]
+        ) {
+            throw new \RangeException('Short branch specified but target ' . $iDisplacement . ' is out of range');
+        }
+        $this->checkBranchDisplacement(chr(0));
+    }
+
+    /**
+     * Checks the last parsed branch displacement against the current bytecode to make sure that
      * a backwards branch target doesn't land on or within the current instruction, which is not
      * recoverable.
      *
      * @param string $sInstructionBytecode
      * @throws \UnexpectedValueException
      */
-    private function checkBranchDisplacement(string $sInstructionBytecode) : void {
+    protected function checkBranchDisplacement(string $sInstructionBytecode) : void {
         $iDisplacement = $this->oTgtParser->getLastDisplacement();
         if ($iDisplacement < 0) {
             $iInstructionLength = strlen($sInstructionBytecode) + 1;
             $iDisplacement      = -$iDisplacement;
             if ($iDisplacement <= $iInstructionLength) {
                 throw new \UnexpectedValueException(
-                    'Invalid target -' . $iDisplacement .
+                    'Invalid branch target -' . $iDisplacement .
                     '; must be further than -' . $iInstructionLength .
                     ' to avoid infinite loop/corrupted PC'
                 );
@@ -60,7 +93,7 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    private function foldImmediateIsLessThan($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldImmediateIsLessThan($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
         return $mSrcImmediate < $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
     }
 
@@ -74,7 +107,7 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    private function foldImmediateIsLessThanOrEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldImmediateIsLessOrEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
         return $mSrcImmediate <= $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
     }
 
@@ -88,7 +121,7 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    private function foldImmediateIsEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldImmediateIsEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
         return $mSrcImmediate == $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
     }
 
@@ -102,7 +135,7 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    private function foldImmediateIsGreaterOrEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldImmediateIsGreaterOrEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
         return $mSrcImmediate >= $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
     }
 
@@ -116,7 +149,7 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    private function foldImmediateIsGreaterThan($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldImmediateIsGreaterThan($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
         return $mSrcImmediate > $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
     }
 
@@ -130,7 +163,7 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    private function foldImmediateIsNotEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldImmediateIsNotEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
         return $mSrcImmediate != $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
     }
 

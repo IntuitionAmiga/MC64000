@@ -82,7 +82,6 @@ class IntegerMonadicBranch extends Monadic {
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
 
-        $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
         $iSrcIndex     = $this->getSourceOperandIndex();
         $sSrcBytecode  = $this->oSrcParser
             ->setOperationSize($aSizes[$iSrcIndex] ?? self::DEFAULT_SIZE)
@@ -92,6 +91,11 @@ class IntegerMonadicBranch extends Monadic {
                 $aOperands[$iSrcIndex] . ' not a valid comparison operand'
             );
         }
+
+        $sDisplacement = $this->parseBranchDisplacement(
+            $aOperands[self::OPERAND_TARGET],
+            $this->oSrcParser->hasSideEffects()
+        );
 
         $sBytecode = $sSrcBytecode . $sDisplacement;
         $this->checkBranchDisplacement($sBytecode);

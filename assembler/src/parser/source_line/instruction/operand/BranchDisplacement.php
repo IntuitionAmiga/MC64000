@@ -16,6 +16,7 @@
 declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\UnhandledCodeFoldException;
 use ABadCafe\MC64K;
 use ABadCafe\MC64K\Parser;
@@ -57,7 +58,7 @@ class BranchDisplacement implements MC64K\IParser {
             );
 
             if (0 === $this->iLastDisplacement) {
-                throw new UnhandledCodeFoldException('Branch has no effect');
+                throw new CodeFoldException('Branch has no effect');
             }
 
             return pack('V', $this->iLastDisplacement);

@@ -58,6 +58,13 @@ class IntegerImmediate implements IParser, EffectiveAddress\IOther {
     /**
      * @inheritDoc
      */
+    public function hasSideEffects() : bool {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function parse(string $sSource) : ?string {
         $this->iLastParsed = null;
         if (preg_match(self::MATCH, $sSource, $aMatches)) {

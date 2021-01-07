@@ -44,10 +44,10 @@ class IntegerDyadicBranch extends Dyadic {
         IControl::BLT_W => 'foldImmediateIsLessThan',
         IControl::BLT_L => 'foldImmediateIsLessThan',
         IControl::BLT_Q => 'foldImmediateIsLessThan',
-        IControl::BLE_B => 'foldImmediateIsLessThanOrEqual',
-        IControl::BLE_W => 'foldImmediateIsLessThanOrEqual',
-        IControl::BLE_L => 'foldImmediateIsLessThanOrEqual',
-        IControl::BLE_Q => 'foldImmediateIsLessThanOrEqual',
+        IControl::BLE_B => 'foldImmediateIsLessOrEqual',
+        IControl::BLE_W => 'foldImmediateIsLessOrEqual',
+        IControl::BLE_L => 'foldImmediateIsLessOrEqual',
+        IControl::BLE_Q => 'foldImmediateIsLessOrEqual',
         IControl::BEQ_B => 'foldImmediateIsEqual',
         IControl::BEQ_W => 'foldImmediateIsEqual',
         IControl::BEQ_L => 'foldImmediateIsEqual',
@@ -90,7 +90,6 @@ class IntegerDyadicBranch extends Dyadic {
 
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
 
-        $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
         $iDstIndex     = $this->getDestinationOperandIndex();
         $sDstBytecode  = $this->oDstParser
             ->setOperationSize($aSizes[$iDstIndex] ?? self::DEFAULT_SIZE)
@@ -110,6 +109,11 @@ class IntegerDyadicBranch extends Dyadic {
                 $aOperands[$iSrcIndex] . ' not a valid comparison operand'
             );
         }
+
+        $sDisplacement = $this->parseBranchDisplacement(
+            $aOperands[self::OPERAND_TARGET],
+            $this->oDstParser->hasSideEffects() || $this->oSrcParser->hasSideEffects()
+        );
 
         $sBytecode = $sDstBytecode . $sSrcBytecode . $sDisplacement;
         $this->checkBranchDisplacement($sBytecode);

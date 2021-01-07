@@ -47,6 +47,13 @@ abstract class Composite implements IParser {
     /**
      * @inheritDoc
      */
+    public function hasSideEffects() : bool {
+        return $this->oParsedBy ? $this->oParsedBy->hasSideEffects() : true;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function parse(string $sSource) : ?string {
         $this->oParsedBy = null;
         foreach ($this->aParsers as $oParser) {

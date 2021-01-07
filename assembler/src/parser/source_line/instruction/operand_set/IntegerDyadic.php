@@ -40,95 +40,96 @@ class IntegerDyadic extends Dyadic {
     ;
 
     /**
-     * The set of specific opcodes that this Operand Parser applies to
+     * The set of specific opcodes that this Operand Parser applies to, mapped to folding
+     * cases for given immediate source operands
      */
     const OPCODES = [
-        IDataMove::MOVE_B   => self::CLEAR_8,
-        IDataMove::MOVE_W   => self::CLEAR_16,
-        IDataMove::MOVE_L   => self::CLEAR_32,
-        IDataMove::MOVE_Q   => self::CLEAR_64,
-        ILogical::AND_B     => self::CLEAR_8,
-        ILogical::AND_W     => self::CLEAR_16,
-        ILogical::AND_L     => self::CLEAR_32,
-        ILogical::AND_Q     => self::CLEAR_64,
-        ILogical::OR_B      => self::FOLD,
-        ILogical::OR_W      => self::FOLD,
-        ILogical::OR_L      => self::FOLD,
-        ILogical::OR_Q      => self::FOLD,
-        ILogical::EOR_B     => null,
-        ILogical::EOR_W     => null,
-        ILogical::EOR_L     => null,
-        ILogical::EOR_Q     => null,
-        ILogical::NOT_B     => null,
-        ILogical::NOT_W     => null,
-        ILogical::NOT_L     => null,
-        ILogical::NOT_Q     => null,
-        ILogical::LSL_B     => self::FOLD,
-        ILogical::LSL_W     => self::FOLD,
-        ILogical::LSL_L     => self::FOLD,
-        ILogical::LSL_Q     => self::FOLD,
-        ILogical::LSR_B     => self::FOLD,
-        ILogical::LSR_W     => self::FOLD,
-        ILogical::LSR_L     => self::FOLD,
-        ILogical::LSR_Q     => self::FOLD,
-        ILogical::ROL_B     => self::FOLD,
-        ILogical::ROL_W     => self::FOLD,
-        ILogical::ROL_L     => self::FOLD,
-        ILogical::ROL_Q     => self::FOLD,
-        ILogical::ROR_B     => self::FOLD,
-        ILogical::ROR_W     => self::FOLD,
-        ILogical::ROR_L     => self::FOLD,
-        ILogical::ROR_Q     => self::FOLD,
-        ILogical::BCLR_B    => null,
-        ILogical::BCLR_W    => null,
-        ILogical::BCLR_L    => null,
-        ILogical::BCLR_Q    => null,
-        ILogical::BSET_B    => null,
-        ILogical::BSET_W    => null,
-        ILogical::BSET_L    => null,
-        ILogical::BSET_Q    => null,
-        IArithmetic::EXTB_W => self::CLEAR_16,
-        IArithmetic::EXTB_L => self::CLEAR_32,
-        IArithmetic::EXTB_Q => self::CLEAR_64,
-        IArithmetic::EXTW_L => self::CLEAR_32,
-        IArithmetic::EXTW_Q => self::CLEAR_64,
-        IArithmetic::EXTL_Q => self::CLEAR_64,
-        IArithmetic::ASL_B  => self::FOLD,
-        IArithmetic::ASL_W  => self::FOLD,
-        IArithmetic::ASL_L  => self::FOLD,
-        IArithmetic::ASL_Q  => self::FOLD,
-        IArithmetic::ASR_B  => self::FOLD,
-        IArithmetic::ASR_W  => self::FOLD,
-        IArithmetic::ASR_L  => self::FOLD,
-        IArithmetic::ASR_Q  => self::FOLD,
-        IArithmetic::ADD_B  => self::FOLD,
-        IArithmetic::ADD_W  => self::FOLD,
-        IArithmetic::ADD_L  => self::FOLD,
-        IArithmetic::ADD_Q  => self::FOLD,
-        IArithmetic::SUB_B  => self::FOLD,
-        IArithmetic::SUB_W  => self::FOLD,
-        IArithmetic::SUB_L  => self::FOLD,
-        IArithmetic::SUB_Q  => self::FOLD,
-        IArithmetic::NEG_B  => null,
-        IArithmetic::NEG_W  => null,
-        IArithmetic::NEG_L  => null,
-        IArithmetic::NEG_Q  => null,
-        IArithmetic::MULS_B => self::CLEAR_8,
-        IArithmetic::MULS_W => self::CLEAR_16,
-        IArithmetic::MULS_L => self::CLEAR_32,
-        IArithmetic::MULS_Q => self::CLEAR_64,
-        IArithmetic::MULU_B => self::CLEAR_8,
-        IArithmetic::MULU_W => self::CLEAR_16,
-        IArithmetic::MULU_L => self::CLEAR_32,
-        IArithmetic::MULU_Q => self::CLEAR_64,
-        IArithmetic::DIVS_B => self::THROW,
-        IArithmetic::DIVS_W => self::THROW,
-        IArithmetic::DIVS_L => self::THROW,
-        IArithmetic::DIVS_Q => self::THROW,
-        IArithmetic::DIVU_B => self::THROW,
-        IArithmetic::DIVU_W => self::THROW,
-        IArithmetic::DIVU_L => self::THROW,
-        IArithmetic::DIVU_Q => self::THROW,
+        IDataMove::MOVE_B   => [0 => 'foldClearDestinationByte'],
+        IDataMove::MOVE_W   => [0 => 'foldClearDestinationWord'],
+        IDataMove::MOVE_L   => [0 => 'foldClearDestinationLong'],
+        IDataMove::MOVE_Q   => [0 => 'foldClearDestinationQuad'],
+        ILogical::AND_B     => [0 => 'foldClearDestinationByte'],
+        ILogical::AND_W     => [0 => 'foldClearDestinationWord'],
+        ILogical::AND_L     => [0 => 'foldClearDestinationLong'],
+        ILogical::AND_Q     => [0 => 'foldClearDestinationQuad'],
+        ILogical::OR_B      => [0 => 'foldEmpty'],
+        ILogical::OR_W      => [0 => 'foldEmpty'],
+        ILogical::OR_L      => [0 => 'foldEmpty'],
+        ILogical::OR_Q      => [0 => 'foldEmpty'],
+        ILogical::EOR_B     => [],
+        ILogical::EOR_W     => [],
+        ILogical::EOR_L     => [],
+        ILogical::EOR_Q     => [],
+        ILogical::NOT_B     => [],
+        ILogical::NOT_W     => [],
+        ILogical::NOT_L     => [],
+        ILogical::NOT_Q     => [],
+        ILogical::LSL_B     => [0 => 'foldEmpty'],
+        ILogical::LSL_W     => [0 => 'foldEmpty'],
+        ILogical::LSL_L     => [0 => 'foldEmpty'],
+        ILogical::LSL_Q     => [0 => 'foldEmpty'],
+        ILogical::LSR_B     => [0 => 'foldEmpty'],
+        ILogical::LSR_W     => [0 => 'foldEmpty'],
+        ILogical::LSR_L     => [0 => 'foldEmpty'],
+        ILogical::LSR_Q     => [0 => 'foldEmpty'],
+        ILogical::ROL_B     => [0 => 'foldEmpty'],
+        ILogical::ROL_W     => [0 => 'foldEmpty'],
+        ILogical::ROL_L     => [0 => 'foldEmpty'],
+        ILogical::ROL_Q     => [0 => 'foldEmpty'],
+        ILogical::ROR_B     => [0 => 'foldEmpty'],
+        ILogical::ROR_W     => [0 => 'foldEmpty'],
+        ILogical::ROR_L     => [0 => 'foldEmpty'],
+        ILogical::ROR_Q     => [0 => 'foldEmpty'],
+        ILogical::BCLR_B    => [],
+        ILogical::BCLR_W    => [],
+        ILogical::BCLR_L    => [],
+        ILogical::BCLR_Q    => [],
+        ILogical::BSET_B    => [],
+        ILogical::BSET_W    => [],
+        ILogical::BSET_L    => [],
+        ILogical::BSET_Q    => [],
+        IArithmetic::EXTB_W => [0 => 'foldClearDestinationWord'],
+        IArithmetic::EXTB_L => [0 => 'foldClearDestinationLong'],
+        IArithmetic::EXTB_Q => [0 => 'foldClearDestinationQuad'],
+        IArithmetic::EXTW_L => [0 => 'foldClearDestinationLong'],
+        IArithmetic::EXTW_Q => [0 => 'foldClearDestinationQuad'],
+        IArithmetic::EXTL_Q => [0 => 'foldClearDestinationQuad'],
+        IArithmetic::ASL_B  => [0 => 'foldEmpty'],
+        IArithmetic::ASL_W  => [0 => 'foldEmpty'],
+        IArithmetic::ASL_L  => [0 => 'foldEmpty'],
+        IArithmetic::ASL_Q  => [0 => 'foldEmpty'],
+        IArithmetic::ASR_B  => [0 => 'foldEmpty'],
+        IArithmetic::ASR_W  => [0 => 'foldEmpty'],
+        IArithmetic::ASR_L  => [0 => 'foldEmpty'],
+        IArithmetic::ASR_Q  => [0 => 'foldEmpty'],
+        IArithmetic::ADD_B  => [0 => 'foldEmpty'],
+        IArithmetic::ADD_W  => [0 => 'foldEmpty'],
+        IArithmetic::ADD_L  => [0 => 'foldEmpty'],
+        IArithmetic::ADD_Q  => [0 => 'foldEmpty'],
+        IArithmetic::SUB_B  => [0 => 'foldEmpty'],
+        IArithmetic::SUB_W  => [0 => 'foldEmpty'],
+        IArithmetic::SUB_L  => [0 => 'foldEmpty'],
+        IArithmetic::SUB_Q  => [0 => 'foldEmpty'],
+        IArithmetic::NEG_B  => [0 => 'foldEmpty'],
+        IArithmetic::NEG_W  => [0 => 'foldEmpty'],
+        IArithmetic::NEG_L  => [0 => 'foldEmpty'],
+        IArithmetic::NEG_Q  => [0 => 'foldEmpty'],
+        IArithmetic::MULS_B => [0 => 'foldClearDestinationByte', 1 => 'foldEmpty'],
+        IArithmetic::MULS_W => [0 => 'foldClearDestinationWord', 1 => 'foldEmpty'],
+        IArithmetic::MULS_L => [0 => 'foldClearDestinationLong', 1 => 'foldEmpty'],
+        IArithmetic::MULS_Q => [0 => 'foldClearDestinationQuad', 1 => 'foldEmpty'],
+        IArithmetic::MULU_B => [0 => 'foldClearDestinationByte', 1 => 'foldEmpty'],
+        IArithmetic::MULU_W => [0 => 'foldClearDestinationWord', 1 => 'foldEmpty'],
+        IArithmetic::MULU_L => [0 => 'foldClearDestinationLong', 1 => 'foldEmpty'],
+        IArithmetic::MULU_Q => [0 => 'foldClearDestinationQuad', 1 => 'foldEmpty'],
+        IArithmetic::DIVS_B => [0 => 'trapIllegal', 1 => 'foldEmpty'],
+        IArithmetic::DIVS_W => [0 => 'trapIllegal', 1 => 'foldEmpty'],
+        IArithmetic::DIVS_L => [0 => 'trapIllegal', 1 => 'foldEmpty'],
+        IArithmetic::DIVS_Q => [0 => 'trapIllegal', 1 => 'foldEmpty'],
+        IArithmetic::DIVU_B => [0 => 'trapIllegal', 1 => 'foldEmpty'],
+        IArithmetic::DIVU_W => [0 => 'trapIllegal', 1 => 'foldEmpty'],
+        IArithmetic::DIVU_L => [0 => 'trapIllegal', 1 => 'foldEmpty'],
+        IArithmetic::DIVU_Q => [0 => 'trapIllegal', 1 => 'foldEmpty'],
     ];
 
     /**
@@ -149,37 +150,19 @@ class IntegerDyadic extends Dyadic {
 
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
         $sFullByteCode = parent::parse($iOpcode, $aOperands, $aSizes);
-        if ($this->oSrcParser->wasImmediate() && 0 == $this->oSrcParser->getImmediate()) {
-            if (isset(self::OPCODES[$iOpcode])) {
-                $sAlternativeBytecode = '';
-                switch(self::OPCODES[$iOpcode]) {
-                    case self::CLEAR_8:
-                        $sAlternativeBytecode = chr(IDataMove::CLR_B) . $this->sDstBytecode;
-                        break;
-                    case self::CLEAR_16:
-                        $sAlternativeBytecode = chr(IDataMove::CLR_W) . $this->sDstBytecode;
-                        break;
-                    case self::CLEAR_32:
-                        $sAlternativeBytecode = chr(IDataMove::CLR_L) . $this->sDstBytecode;
-                        break;
-                    case self::CLEAR_64:
-                        $sAlternativeBytecode = chr(IDataMove::CLR_Q) . $this->sDstBytecode;
-                        break;
-                    case self::THROW:
-                        throw new \UnexpectedValueException('Immediate zero is an illegal source operand for this operation');
-                        break;
-                    case self::FOLD:
-                        break;
-                    default:
-                        throw new \UnexpectedValueException('Immediate zero resulted in an unhandled case');
-                        break;
-                }
+
+        if ($this->oSrcParser->wasImmediate()) {
+            $iImmediate = $this->oSrcParser->getImmediate();
+            if (isset(self::OPCODES[$iOpcode][$iImmediate])) {
+                $cCallback = [$this, self::OPCODES[$iOpcode][$iImmediate]];
+                $sAlternativeBytecode = $cCallback($this->sSrcBytecode, $this->sDstBytecode);
                 throw new CodeFoldException(
-                    'Immediate Zero Source Operand',
+                    'Immediate Source Operand',
                     $sAlternativeBytecode
                 );
             }
         }
+
         return $sFullByteCode;
     }
 

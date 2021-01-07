@@ -51,6 +51,13 @@ class FloatImmediate implements IParser, EffectiveAddress\IOther {
     /**
      * @inheritDoc
      */
+    public function hasSideEffects() : bool {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function parse(string $sSource) : ?string {
         $this->fLastParsed = null;
         if (preg_match(self::MATCH, $sSource, $aMatches)) {

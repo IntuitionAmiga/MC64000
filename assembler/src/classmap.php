@@ -17,6 +17,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\IFixedBranch' => '/parser/source_line/instruction/operand_set/IFixedBranch.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\FloatToIntegerDyadic' => '/parser/source_line/instruction/operand_set/FloatToIntegerDyadic.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\FloatDyadic' => '/parser/source_line/instruction/operand_set/FloatDyadic.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\BranchDisplacementOnly' => '/parser/source_line/instruction/operand_set/BranchDisplacementOnly.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\FloatDyadicBranch' => '/parser/source_line/instruction/operand_set/FloatDyadicBranch.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\Monadic' => '/parser/source_line/instruction/operand_set/Monadic.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\IntegerDyadicBranch' => '/parser/source_line/instruction/operand_set/IntegerDyadicBranch.php',
