@@ -64,6 +64,14 @@ class IntegerDyadicBranch extends Dyadic {
         IControl::BNE_W => 'foldImmediateIsNotEqual',
         IControl::BNE_L => 'foldImmediateIsNotEqual',
         IControl::BNE_Q => 'foldImmediateIsNotEqual',
+        IControl::BBS_B => 'foldImmediateBitSetByte',
+        IControl::BBS_W => 'foldImmediateBitSetWord',
+        IControl::BBS_L => 'foldImmediateBitSetLong',
+        IControl::BBS_Q => 'foldImmediateBitSetQuad',
+        IControl::BBC_B => 'foldImmediateBitClearByte',
+        IControl::BBC_W => 'foldImmediateBitClearWord',
+        IControl::BBC_L => 'foldImmediateBitClearLong',
+        IControl::BBC_Q => 'foldImmediateBitClearQuad',
     ];
 
     /**
@@ -147,5 +155,117 @@ class IntegerDyadicBranch extends Dyadic {
         }
 
         return $sBytecode;
+    }
+
+    /**
+     * For bbs.b with a pair of immediate operands, evaluates the outcome and generates
+     * the appropriate optimised bytecode (empty if branch is not taken, BRA if it is).
+     *
+     * @param  int|float $mSrcImmediate
+     * @param  int|float $mDstImmediate
+     * @param  int       $iDisplacement
+     * @param  int       $iOriginalSize
+     * @return string
+     */
+    protected function foldImmediateBitSetByte($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return (1<<($mSrcImmediate & 7)) & $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    }
+
+    /**
+     * For bbs.w with a pair of immediate operands, evaluates the outcome and generates
+     * the appropriate optimised bytecode (empty if branch is not taken, BRA if it is).
+     *
+     * @param  int|float $mSrcImmediate
+     * @param  int|float $mDstImmediate
+     * @param  int       $iDisplacement
+     * @param  int       $iOriginalSize
+     * @return string
+     */
+    protected function foldImmediateBitSetWord($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return (1<<($mSrcImmediate & 15)) & $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    }
+
+    /**
+     * For bbs.l with a pair of immediate operands, evaluates the outcome and generates
+     * the appropriate optimised bytecode (empty if branch is not taken, BRA if it is).
+     *
+     * @param  int|float $mSrcImmediate
+     * @param  int|float $mDstImmediate
+     * @param  int       $iDisplacement
+     * @param  int       $iOriginalSize
+     * @return string
+     */
+    protected function foldImmediateBitSetLong($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return (1<<($mSrcImmediate & 31)) & $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    }
+
+    /**
+     * For bbs.q with a pair of immediate operands, evaluates the outcome and generates
+     * the appropriate optimised bytecode (empty if branch is not taken, BRA if it is).
+     *
+     * @param  int|float $mSrcImmediate
+     * @param  int|float $mDstImmediate
+     * @param  int       $iDisplacement
+     * @param  int       $iOriginalSize
+     * @return string
+     */
+    protected function foldImmediateBitSetQuad($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return (1<<($mSrcImmediate & 63)) & $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    }
+
+    /**
+     * For bbc.b with a pair of immediate operands, evaluates the outcome and generates
+     * the appropriate optimised bytecode (empty if branch is not taken, BRA if it is).
+     *
+     * @param  int|float $mSrcImmediate
+     * @param  int|float $mDstImmediate
+     * @param  int       $iDisplacement
+     * @param  int       $iOriginalSize
+     * @return string
+     */
+    protected function foldImmediateBitClearByte($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return 0 === ((1<<($mSrcImmediate & 7)) & $mDstImmediate) ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    }
+
+    /**
+     * For bbc.w with a pair of immediate operands, evaluates the outcome and generates
+     * the appropriate optimised bytecode (empty if branch is not taken, BRA if it is).
+     *
+     * @param  int|float $mSrcImmediate
+     * @param  int|float $mDstImmediate
+     * @param  int       $iDisplacement
+     * @param  int       $iOriginalSize
+     * @return string
+     */
+    protected function foldImmediateBitClearWord($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return 0 === ((1<<($mSrcImmediate & 15)) & $mDstImmediate) ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    }
+
+    /**
+     * For bbc.l with a pair of immediate operands, evaluates the outcome and generates
+     * the appropriate optimised bytecode (empty if branch is not taken, BRA if it is).
+     *
+     * @param  int|float $mSrcImmediate
+     * @param  int|float $mDstImmediate
+     * @param  int       $iDisplacement
+     * @param  int       $iOriginalSize
+     * @return string
+     */
+    protected function foldImmediateBitClearLong($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return 0 === ((1<<($mSrcImmediate & 31)) & $mDstImmediate) ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    }
+
+    /**
+     * For bbc.q with a pair of immediate operands, evaluates the outcome and generates
+     * the appropriate optimised bytecode (empty if branch is not taken, BRA if it is).
+     *
+     * @param  int|float $mSrcImmediate
+     * @param  int|float $mDstImmediate
+     * @param  int       $iDisplacement
+     * @param  int       $iOriginalSize
+     * @return string
+     */
+    protected function foldImmediateBitClearQuad($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+        return 0 === ((1<<($mSrcImmediate & 63)) & $mDstImmediate) ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
     }
 }

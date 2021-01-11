@@ -1,0 +1,53 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+const PASS = 1;
+const FAIL = 0;
+
+const EXAMPLES = [
+    // Example Assembler Statement => Expected Outcome
+    'hcf #0'          => PASS,
+    'hcf #-1'         => PASS,
+    'hcf #0xABADCAFE' => PASS,
+    'rts'             => PASS,
+];
+
+$oParser = new Parser\SourceLine\Instruction\Statement();
+
+foreach (EXAMPLES as $sInput => $iExpect) {
+    printf("\t%-50s => ", $sInput);
+    try {
+        echo bin2hex($oParser->parse($sInput));
+        if ($iExpect === FAIL) {
+            echo " - UNEXPECTED OUTCOME";
+        }
+    } catch (\Throwable $oError) {
+        echo "Parse Error: ", get_class($oError), " - ", $oError->getMessage();
+        if ($iExpect === PASS) {
+            echo " - UNEXPECTED OUTCOME";
+            echo $oError, "\n";
+        } else {
+            echo " (Expected outcome)";
+        }
+    }
+    echo "\n";
+}

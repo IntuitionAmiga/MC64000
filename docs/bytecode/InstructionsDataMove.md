@@ -299,9 +299,9 @@ Swap register fragments
 
 General syntax:
 
-        swap[.<l|q>] r<N>
+        swap[.<l|q>] r<S>, r<D>
 
-* The unsized variant replicates the original 16-bit word swap of the 6800x0.
+* The unsized variant replicates the original 16-bit word swap of the 680x0.
 * The .l variant performs a 32-bit byteswap of the lower half of the register.
 * The .q variant performs a 64-bit byteswap of the entire register.
 
@@ -328,7 +328,7 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 |
 | - | - | - | - | - | - | - |
-| `link r<N>, #<D>`| 0x6C | 0x0*N* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `link r<N>, #<D>`| 0x6C | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* | 0x0*N* |
 
 ___
 
@@ -352,15 +352,18 @@ ___
 
 Load Effective Address
 
-        '<ea> -> r<N>'
+        '<ea> -> <ea(d)>'
 
 General syntax:
 
-        lea <ea>, r<N>
+        lea <ea>, <ea(d)>
 
-| Mnemonic | Bytecode | Ext 0 | Ext 1 | ... |
-| - | - | - | - | - |
-| `lea <ea>, r<N>`| 0x6E | 0x0*N* | 0x*EA* | ...|
+* Peforms a dereferencing operation, converting a complex address to a simple address.
+* The address indicated by the source EA is written to the location implied by the destination EA.
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `lea <ea>, <ea(d)>` | 0x4D | 0x*EA*(d) | ... | 0x*EA* | ... |
 
 ___
 

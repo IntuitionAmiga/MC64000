@@ -18,7 +18,11 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction;
 use ABadCafe\MC64K;
 use ABadCafe\MC64K\Defs;
+use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
+use ABadCafe\MC64K\Defs\Mnemonic\ILogical;
+use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Tokeniser;
+use ABadCafe\MC64K\Parser\EffectiveAddress;
 
 /**
  * Statement
@@ -33,6 +37,7 @@ class Statement implements MC64K\IParser, Defs\Mnemonic\IMatches {
      * @var IOperandSetParser[] $aOperandParsers
      */
     private array $aOperandParsers = [];
+    private array $aCoverage = [];
 
     /**
      * Constructor
@@ -51,8 +56,71 @@ class Statement implements MC64K\IParser, Defs\Mnemonic\IMatches {
         $this->addOperandSetParser(new OperandSet\FloatDyadicBranch());
         $this->addOperandSetParser(new OperandSet\FloatToIntegerDyadic());
         $this->addOperandSetParser(new OperandSet\IntegerToFloatDyadic());
+        $this->addOperandSetParser(new OperandSet\PackedGPRPair());
+        $this->addOperandSetParser(new OperandSet\PackedFPRPair());
 
-        echo "Coverage: ", count($this->aOperandParsers), " opcodes.\n";
+        // Now for the awkward gits...
+        $this->addOperandSetParser(new OperandSet\CustomDyadic(
+            [IDataMove::LEA],
+            new EffectiveAddress\AllControlAddressing(),
+            new EffectiveAddress\AllIntegerWriteable()
+        ));
+
+        $this->addOperandSetParser(new OperandSet\CustomDyadic(
+            [
+                IDataMove::SAVEM,
+                IDataMove::FSAVEM,
+            ],
+            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::WORD)),
+            new EffectiveAddress\GPRIndirectUpdating()
+        ));
+
+        $this->addOperandSetParser(new OperandSet\CustomDyadic(
+            [
+                IDataMove::LOADM,
+                IDataMove::FLOADM,
+            ],
+            new EffectiveAddress\GPRIndirectUpdating(),
+            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::WORD))
+        ));
+
+        $this->addOperandSetParser(new OperandSet\CustomDyadic(
+            [IDataMove::LINK],
+            new EffectiveAddress\ARDirect(),
+            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::WORD))
+        ));
+
+        $this->addOperandSetParser(new OperandSet\CustomMonadic(
+            [IDataMove::UNLK],
+            new EffectiveAddress\ARDirect()
+        ));
+
+        $this->addOperandSetParser(new OperandSet\CustomMonadicBranch(
+            [IControl::DBNZ],
+            new EffectiveAddress\AllIntegerWriteable()
+        ));
+
+        $this->addOperandSetParser(new OperandSet\CustomMonadic(
+            [IControl::HCF],
+            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::LONG)),
+            [IControl::HCF => chr(0xFF)]
+        ));
+
+        // Todo - this probably isn't ideal.
+        $this->addOperandSetParser(new OperandSet\CustomDyadic(
+            [
+                ILogical::BFCLR,
+                ILogical::BFSET,
+                ILogical::BFINS,
+                ILogical::BFEXTS,
+                ILogical::BFEXTU,
+                ILogical::BFFFO,
+                ILogical::BFCNT,
+                ILogical::BFXXX,
+            ],
+            new EffectiveAddress\GPRDirect(),
+            new EffectiveAddress\GPRDirect()
+        ));
     }
 
     /**
@@ -88,7 +156,27 @@ class Statement implements MC64K\IParser, Defs\Mnemonic\IMatches {
      */
     private function addOperandSetParser(IOperandSetParser $oOperandParser) : void {
         foreach ($oOperandParser->getOpcodes() as $iOpcode) {
+
+            if (isset($this->aOperandParsers[(string)$iOpcode])) {
+                throw new \Exception(
+                    "Duplicate Opcode Handler entry for Opcode #" . $iOpcode
+                );
+            }
+
             $this->aOperandParsers[(string)$iOpcode] = $oOperandParser;
         }
+        $this->aCoverage = [];
+    }
+
+    public function getCoverage() : array {
+        if (empty($this->aCoverage)) {
+            $aMnemonics = array_flip(Defs\Mnemonic\IMatches::MATCHES);
+            foreach ($this->aOperandParsers as $iOpcode => $oOperandParser) {
+                $aName = explode('\\',  get_class($oOperandParser));
+                $this->aCoverage[$iOpcode] = [$aMnemonics[$iOpcode], end($aName)];
+            }
+        }
+        ksort($this->aCoverage);
+        return $this->aCoverage;
     }
 }

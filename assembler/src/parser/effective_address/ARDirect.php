@@ -21,36 +21,14 @@ use ABadCafe\MC64K\Defs\Register;
 use ABadCafe\MC64K\Parser;
 
 /**
- * GPRDirect
+ * ARDirect
  *
- * Basic parser for GPR direct modes.
+ * Basic parser for Address Register direct
  */
-class GPRDirect implements IParser, EffectiveAddress\IRegisterDirect {
-
-    use TOperationSizeAware;
+class ARDirect extends GPRDirect {
 
     /**
      * Required match
      */
-    const
-        MATCH         = '/^' . self::RDA . '$/',
-        MATCHED_NAME  = 0
-    ;
-
-    /**
-     * @inheritDoc
-     */
-    public function hasSideEffects() : bool {
-        return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function parse(string $sSource) : ?string {
-        if (preg_match(static::MATCH, $sSource, $aMatches)) {
-            return chr(self::OFS_GPR_DIR + Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_NAME]));
-        }
-        return null;
-    }
+    const MATCH = '/^' . self::RA . '$/';
 }

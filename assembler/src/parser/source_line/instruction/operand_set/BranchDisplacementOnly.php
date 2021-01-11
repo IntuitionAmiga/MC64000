@@ -32,9 +32,14 @@ class BranchDisplacementOnly implements Instruction\IOperandSetParser {
     const OPCODES = [
         IControl::BRA_B,
         IControl::BRA,
-        IControl::BSR
+        IControl::BSR_B,
+        IControl::BSR,
     ];
 
+    const SHORT = [
+        IControl::BRA_B => 1,
+        IControl::BSR_B => 1,
+    ];
 
     public function __construct() {
         $this->oTgtParser = new Operand\BranchDisplacement();
@@ -58,7 +63,7 @@ class BranchDisplacementOnly implements Instruction\IOperandSetParser {
 
         $sBytecode = $this->oTgtParser->parse($aOperands[0]);
 
-        if (IControl::BRA_B === $iOpcode) {
+        if (isset(self::SHORT[$iOpcode])) {
             $this->checkShortBranchDisplacement();
             $sBytecode = $sBytecode[0];
         } else {
