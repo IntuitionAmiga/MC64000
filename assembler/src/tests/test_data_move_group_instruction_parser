@@ -65,6 +65,17 @@ const EXAMPLES = [
     'floadm +(a7), #0x1234' => PASS,
     'floadm -(a7), #0x1234' => PASS,
     'floadm (a7),  #0x1234'  => FAIL,
+
+    'clr.b  d0'     => PASS,
+    'clr.w  (a0)'   => PASS,
+    'clr.l  (a1)+'  => PASS,
+    'clr.q  (a2)-'  => PASS,
+    'clr.w  +(r0)'  => PASS,
+    'clr.l  -(r0)'  => PASS,
+    'clr.q  (sp)'   => PASS,
+    'clr.b  #10'    => FAIL,
+    'clr.b  10(pc)' => FAIL,
+
 ];
 
 function formatBytecode(string $sBinary) : string {
