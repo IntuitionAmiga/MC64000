@@ -49,4 +49,11 @@ class PackedFPRPair extends PackedRegisterPair {
     public function getOpcodes() : array {
         return self::OPCODES;
     }
+
+    /**
+     * @inheritDoc
+     */
+    protected function foldIfOperandsSame(int $iOpcode) : bool {
+        return IDataMove::FEXG === $iOpcode;
+    }
 }

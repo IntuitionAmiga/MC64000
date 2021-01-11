@@ -87,7 +87,7 @@ class Statement implements MC64K\IParser, Defs\Mnemonic\IMatches {
         $this->addOperandSetParser(new OperandSet\CustomDyadic(
             [IDataMove::LINK],
             new EffectiveAddress\ARDirect(),
-            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::WORD))
+            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::LONG))
         ));
 
         $this->addOperandSetParser(new OperandSet\CustomMonadic(

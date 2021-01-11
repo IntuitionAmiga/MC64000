@@ -48,7 +48,7 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
 | - | - | - | - | - | - |
-| `savem #<R>, <ea>` | 0x51 | 0x*EA* | ... | 0x*RR* | 0x*RR* |
+| `savem #<R>, <ea>` | 0x51 | 0x*RR* | 0x*RR* | 0x*EA* | ... |
 
 ___
 
@@ -65,9 +65,9 @@ General syntax:
 * Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding GPR is loaded.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
-| Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
+| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | ... |
 | - | - | - | - | - | - |
-| `loadm <ea>, #<R>` | 0x52 | 0x*EA* | ... | 0x*RR* | 0x*RR* |
+| `loadm <ea>, #<R>` | 0x52 | 0x*RR* | 0x*RR* | 0x*EA* | ... |
 
 ___
 
@@ -231,7 +231,7 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
 | - | - | - | - | - | - |
-| `floadm <ea>, #<R>` | 0x62 | 0x*EA* | ... | 0x*RR* | 0x*RR* |
+| `floadm <ea>, #<R>` | 0x62 | 0x*RR* | 0x*RR* | 0x*EA* | ... |
 
 ___
 
@@ -301,7 +301,7 @@ General syntax:
 
         swap[.<l|q>] r<S>, r<D>
 
-* The unsized variant replicates the original 16-bit word swap of the 680x0.
+* The unsized variant replicates the original 16-bit word swap of the 680x0, affectomg the lower 32-bit half of the register.
 * The .l variant performs a 32-bit byteswap of the lower half of the register.
 * The .q variant performs a 64-bit byteswap of the entire register.
 
@@ -324,7 +324,8 @@ General syntax:
 
         link r<N>, #<D>
 
-* Displacement should be negative to allocate stack space.
+* Displacement size is 32 bits, allowing for very large allocations.
+* As per 680x0, displacement should be negative to allocate stack space.
 
 | Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 |
 | - | - | - | - | - | - | - |
@@ -352,18 +353,18 @@ ___
 
 Load Effective Address
 
-        '<ea> -> <ea(d)>'
+        '<ea(s)> -> <ea(d)>'
 
 General syntax:
 
-        lea <ea>, <ea(d)>
+        lea <ea(s)>, <ea(d)>
 
 * Peforms a dereferencing operation, converting a complex address to a simple address.
 * The address indicated by the source EA is written to the location implied by the destination EA.
 
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| Mnemonic | Bytecode | Ext 0 | ... | Ext N | ... |
 | - | - | - | - | - | - |
-| `lea <ea>, <ea(d)>` | 0x4D | 0x*EA*(d) | ... | 0x*EA* | ... |
+| `lea <ea>, <ea(d)>` | 0x4D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 

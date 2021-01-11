@@ -54,11 +54,19 @@ abstract class PackedRegisterPair extends Dyadic {
         }
 
         $iDstReg = ord($sDstBytecode) & 0x0F;
-        $iSrcReg = ord($sSrcBytecode)  & 0x0F;
-        if (IDataMove::EXG === $iOpcode && $iDstReg === $iSrcReg) {
+        $iSrcReg = ord($sSrcBytecode) & 0x0F;
+        if ($iDstReg === $iSrcReg && $this->foldIfOperandsSame($iOpcode)) {
             throw new CodeFoldException('Operation has no effect');
         }
         $iByte   = $iSrcReg << 4 | $iDstReg;
         return chr($iByte);
     }
+
+    /**
+     * Depending on the operation, where source and destination are the same, it may be better to fold out the code.
+     *
+     * @param  int  $iOpcode
+     * @return bool
+     */
+    protected abstract function foldIfOperandsSame(int $iOpdcode) : bool;
 }
