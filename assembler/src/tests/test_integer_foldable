@@ -1,0 +1,176 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+const CLEAR = 3;
+const FOLD  = 2;
+const PASS  = 1;
+const FAIL  = 0;
+
+const EXAMPLES = [
+    'clr.b r0' => PASS,
+    'clr.w r0' => PASS,
+    'clr.l r0' => PASS,
+    'clr.q r0' => PASS,
+
+    'and.b #1, r0' => PASS,
+    'and.w #1, r0' => PASS,
+    'and.l #1, r0' => PASS,
+    'and.q #1, r0' => PASS,
+    'and.b #0, r0' => CLEAR,
+    'and.w #0, r0' => CLEAR,
+    'and.l #0, r0' => CLEAR,
+    'and.q #0, r0' => CLEAR,
+
+    'or.b #1, r0' => PASS,
+    'or.w #1, r0' => PASS,
+    'or.l #1, r0' => PASS,
+    'or.q #1, r0' => PASS,
+    'or.b #0, r0' => FOLD,
+    'or.w #0, r0' => FOLD,
+    'or.l #0, r0' => FOLD,
+    'or.q #0, r0' => FOLD,
+
+    'lsl.b #1, r0' => PASS,
+    'lsl.w #1, r0' => PASS,
+    'lsl.l #1, r0' => PASS,
+    'lsl.q #1, r0' => PASS,
+    'lsl.b #0, r0' => FOLD,
+    'lsl.w #0, r0' => FOLD,
+    'lsl.l #0, r0' => FOLD,
+    'lsl.q #0, r0' => FOLD,
+
+    'lsr.b #1, r0' => PASS,
+    'lsr.w #1, r0' => PASS,
+    'lsr.l #1, r0' => PASS,
+    'lsr.q #1, r0' => PASS,
+    'lsr.b #0, r0' => FOLD,
+    'lsr.w #0, r0' => FOLD,
+    'lsr.l #0, r0' => FOLD,
+    'lsr.q #0, r0' => FOLD,
+
+    'add.b #1, r0' => PASS,
+    'add.w #1, r0' => PASS,
+    'add.l #1, r0' => PASS,
+    'add.q #1, r0' => PASS,
+    'add.b #0, r0' => FOLD,
+    'add.w #0, r0' => FOLD,
+    'add.l #0, r0' => FOLD,
+    'add.q #0, r0' => FOLD,
+
+    'sub.b #1, r0' => PASS,
+    'sub.w #1, r0' => PASS,
+    'sub.l #1, r0' => PASS,
+    'sub.q #1, r0' => PASS,
+    'sub.b #0, r0' => FOLD,
+    'sub.w #0, r0' => FOLD,
+    'sub.l #0, r0' => FOLD,
+    'sub.q #0, r0' => FOLD,
+
+    'muls.b #3, r0' => PASS,
+    'muls.w #3, r0' => PASS,
+    'muls.l #3, r0' => PASS,
+    'muls.q #3, r0' => PASS,
+    'muls.b #1, r0' => FOLD,
+    'muls.w #1, r0' => FOLD,
+    'muls.l #1, r0' => FOLD,
+    'muls.q #1, r0' => FOLD,
+    'muls.b #0, r0' => CLEAR,
+    'muls.w #0, r0' => CLEAR,
+    'muls.l #0, r0' => CLEAR,
+    'muls.q #0, r0' => CLEAR,
+
+    'mulu.b #3, r0' => PASS,
+    'mulu.w #3, r0' => PASS,
+    'mulu.l #3, r0' => PASS,
+    'mulu.q #3, r0' => PASS,
+    'mulu.b #1, r0' => FOLD,
+    'mulu.w #1, r0' => FOLD,
+    'mulu.l #1, r0' => FOLD,
+    'mulu.q #1, r0' => FOLD,
+    'mulu.b #0, r0' => CLEAR,
+    'mulu.w #0, r0' => CLEAR,
+    'mulu.l #0, r0' => CLEAR,
+    'mulu.q #0, r0' => CLEAR,
+
+    'divs.b #3, r0' => PASS,
+    'divs.w #3, r0' => PASS,
+    'divs.l #3, r0' => PASS,
+    'divs.q #3, r0' => PASS,
+    'divs.b #1, r0' => FOLD,
+    'divs.w #1, r0' => FOLD,
+    'divs.l #1, r0' => FOLD,
+    'divs.q #1, r0' => FOLD,
+    'divs.b #0, r0' => FAIL,
+    'divs.w #0, r0' => FAIL,
+    'divs.l #0, r0' => FAIL,
+    'divs.q #0, r0' => FAIL,
+
+    'divu.b #3, r0' => PASS,
+    'divu.w #3, r0' => PASS,
+    'divu.l #3, r0' => PASS,
+    'divu.q #3, r0' => PASS,
+    'divu.b #1, r0' => FOLD,
+    'divu.w #1, r0' => FOLD,
+    'divu.l #1, r0' => FOLD,
+    'divu.q #1, r0' => FOLD,
+    'divu.b #0, r0' => FAIL,
+    'divu.w #0, r0' => FAIL,
+    'divu.l #0, r0' => FAIL,
+    'divu.q #0, r0' => FAIL,
+];
+
+$oParser = new Parser\SourceLine\Instruction\Statement();
+
+foreach (EXAMPLES as $sInput => $iExpect) {
+    printf("\t%-50s => ", $sInput);
+    try {
+        $sBytecode = $oParser->parse($sInput);
+        echo bin2hex($sBytecode);
+
+        switch ($iExpect) {
+            case FAIL:
+                echo " - UNEXPECTED OUTCOME";
+                break;
+            case FOLD:
+                if (strlen($sBytecode) > 0) {
+                    echo " - UNEXPECTED OUTCOME";
+                } else {
+                    echo "    - Folded";
+                }
+                break;
+            case CLEAR:
+                echo " - Cleared";
+                break;
+            default;
+                break;
+        }
+
+    } catch (\Throwable $oError) {
+        echo "Parse Error: ", get_class($oError), " - ", $oError->getMessage();
+        if ($iExpect !== FAIL) {
+            echo " - UNEXPECTED OUTCOME";
+        } else {
+            echo " (Expected outcome)";
+        }
+    }
+    echo "\n";
+}

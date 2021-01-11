@@ -57,11 +57,10 @@ interface IDataMove extends IByteCodeGroups {
         SWAP     = self::OFS_DATA_MOVE + 28,
         SWAP_L   = self::OFS_DATA_MOVE + 29,
         SWAP_Q   = self::OFS_DATA_MOVE + 30,
-        LINK     = self::OFS_DATA_MOVE + 30,
-        UNLK     = self::OFS_DATA_MOVE + 31,
-        LEA      = self::OFS_DATA_MOVE + 32,
-        PEA      = self::OFS_DATA_MOVE + 33 // 0x6F
-
+        LINK     = self::OFS_DATA_MOVE + 31,
+        UNLK     = self::OFS_DATA_MOVE + 32,
+        LEA      = self::OFS_DATA_MOVE + 33,
+        PEA      = self::OFS_DATA_MOVE + 34 // 0x6F
     ;
 
 }

@@ -128,7 +128,7 @@ interface IOperandSizes {
         IControl::BBC_Q => [1, 8],
 
         // Go on, why not?
-        'dbnz'    => IControl::DBNZ,
+        IControl::DBNZ  => [4],
 
         // Data Movement
         IDataMove::MOVE_B => [1, 1],
@@ -162,8 +162,8 @@ interface IOperandSizes {
 //        'swap'     => IDataMove::SWAP,
 //        'swap.l'   => IDataMove::SWAP_L,
 //        'swap.q'   => IDataMove::SWAP_Q,
-//        'link'     => IDataMove::LINK,
-//        'unlk'     => IDataMove::UNLK,
+        IDataMove::LINK => [8, 4],
+        IDataMove::UNLK => [8],
 //        'lea'      => IDataMove::LEA,
 //        'pea'      => IDataMove::PEA,
 

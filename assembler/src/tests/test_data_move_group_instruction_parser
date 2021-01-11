@@ -1,0 +1,110 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+const PASS = 1;
+const FAIL = 0;
+
+const EXAMPLES = [
+    // Example Assembler Statement => Expected Outcome
+    'link a0, #-32'        => PASS,
+    'link r0, #-32'        => PASS,
+    'link d0, #-32'        => FAIL,
+    'link (a0), #-40'      => FAIL,
+    'unlk a0'              => PASS,
+    'unlk r0'              => PASS,
+    'unlk d0'              => FAIL,
+    'unlk (a0)'            => FAIL,
+    'exg  r0, r1'          => PASS,
+    'exg  d0, r1'          => PASS,
+    'exg  r1, d0'          => PASS,
+    'exg  r1, a0'          => PASS,
+    'exg  a0, d0'          => PASS,
+    'exg  (a0), a0'        => FAIL,
+    'exg  r0, r0'          => PASS,
+    'fexg  fp0, fp1'       => PASS,
+    'fexg  fp2, fp2'       => PASS,
+    'swap r0, r1'          => PASS,
+    'swap.l r2, r3'        => PASS,
+    'swap.q r4, r5'        => PASS,
+    'savem #0x1234, (a7)+' => PASS,
+    'savem #0x1234, (a7)-' => PASS,
+    'savem #0x1234, +(a7)' => PASS,
+    'savem #0x1234, -(a7)' => PASS,
+    'savem #0x1234, (a7)'  => FAIL,
+    'loadm (a7)+, #0x1234' => PASS,
+    'loadm (a7)-, #0x1234' => PASS,
+    'loadm +(a7), #0x1234' => PASS,
+    'loadm -(a7), #0x1234' => PASS,
+    'loadm (a7),  #0x1234'  => FAIL,
+    'fsavem #0x1234, (a7)+' => PASS,
+    'fsavem #0x1234, (a7)-' => PASS,
+    'fsavem #0x1234, +(a7)' => PASS,
+    'fsavem #0x1234, -(a7)' => PASS,
+    'fsavem #0x1234, (a7)'  => FAIL,
+    'floadm (a7)+, #0x1234' => PASS,
+    'floadm (a7)-, #0x1234' => PASS,
+    'floadm +(a7), #0x1234' => PASS,
+    'floadm -(a7), #0x1234' => PASS,
+    'floadm (a7),  #0x1234'  => FAIL,
+
+    'clr.b  d0'     => PASS,
+    'clr.w  (a0)'   => PASS,
+    'clr.l  (a1)+'  => PASS,
+    'clr.q  (a2)-'  => PASS,
+    'clr.w  +(r0)'  => PASS,
+    'clr.l  -(r0)'  => PASS,
+    'clr.q  (sp)'   => PASS,
+    'clr.b  #10'    => FAIL,
+    'clr.b  10(pc)' => FAIL,
+
+];
+
+function formatBytecode(string $sBinary) : string {
+    return implode(' ', str_split(bin2hex($sBinary), 2));
+}
+
+
+$oParser = new Parser\SourceLine\Instruction\Statement();
+
+foreach (EXAMPLES as $sInput => $iExpect) {
+    printf("\t%-50s => ", $sInput);
+    try {
+        $sOutput = $oParser->parse($sInput);
+        if (!$sOutput) {
+            echo "(empty)";
+        } else {
+            echo formatBytecode($sOutput);
+        }
+        if ($iExpect === FAIL) {
+            echo " - UNEXPECTED OUTCOME";
+        }
+    } catch (\Throwable $oError) {
+        echo get_class($oError), " - ", $oError->getMessage();
+        if ($iExpect === PASS) {
+            echo " - UNEXPECTED OUTCOME";
+            echo $oError, "\n";
+        } else {
+            echo " (Expected outcome)";
+        }
+    }
+    echo "\n";
+}

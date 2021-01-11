@@ -24,12 +24,13 @@ const PASS = 1;
 const FAIL = 0;
 
 const TPL_MONADIC_PASS_EXAMPLE = [
-    '%s.%s #%s, #-16',
-    '%s.%s #%s, #-127',
-    '%s.%s #%s, #-256',
-    '%s.%s #%s, #16',
-    '%s.%s #%s, #256',
-    '%s.%s #%s, .unresolved'
+    '%s.%s %s, #-16',
+    '%s.%s %s, #-127',
+    '%s.%s %s, #-256',
+    '%s.%s %s, #16',
+    '%s.%s %s, #256',
+    '%s.%s %s, .unk',
+    '%s.%s %s, #0'
 ];
 
 const TPL_IMONADIC = [
@@ -40,11 +41,11 @@ const TPL_ISIZE = [
     'b', 'w', 'l', 'q'
 ];
 
-const TPL_IIMMEDIATES = [
-    'b' => [0, 1, -1, 127, -128],
-    'w' => [0, 1, -1, 32767, -32768],
-    'l' => [0, 1, -1, 2147483647, -2147483648],
-    'q' => [0, 1, -1, PHP_INT_MAX, PHP_INT_MIN],
+const TPL_IOPERANDS = [
+    'b' => ['r0', '(r1)', '(r8)+',  '#0', '#1', '#-1', '#127',            '#-128'],
+    'w' => ['r2', '(r3)', '(r9)+',  '#0', '#1', '#-1', '#32767',          '#-32768'],
+    'l' => ['r4', '(r5)', '(r10)+', '#0', '#1', '#-1', '#2147483647',     '#-2147483648'],
+    'q' => ['r6', '(r7)', '(r11)+', '#0', '#1', '#-1', '#' . PHP_INT_MAX, '#' . PHP_INT_MIN],
 ];
 
 const TPL_FMONADIC = [
@@ -55,43 +56,61 @@ const TPL_FSIZE = [
     's', 'd'
 ];
 
-const TPL_FIMMEDIATES = [
-    's' => ['0.', '1.', '-1.', '1.18e-38', '-1.18e-38', '3.4e38', '-3.4e38'],
-    'd' => ['0.', '1.', '-1.', '2.2250738585072e-308', '-2.2250738585072e-308', '1.7976931348623E+308', '-1.7976931348623E+308'],
+const TPL_FOPERANDS = [
+    's' => ['#0.', '#1.', '#-1.', '#1.18e-38',  '#-1.18e-38',  '#3.4e38',    '#-3.4e38'],
+    'd' => ['#0.', '#1.', '#-1.', '#2.22e-308', '#-2.22e-308', '#1.79e+308', '#-1.79e+308'],
 ];
 
-$oParser = new Parser\Instruction\Line();
+function formatBytecode(string $sBinary) : string {
+    return implode(' ', str_split(bin2hex($sBinary), 2));
+}
+
+$oParser = new Parser\SourceLine\Instruction\Statement();
 
 foreach (TPL_ISIZE as $sSize) {
-    foreach (TPL_IIMMEDIATES[$sSize] as $iImmediate) {
+    foreach (TPL_IOPERANDS[$sSize] as $sOperand) {
         foreach (TPL_IMONADIC as $sMnemonic) {
             foreach (TPL_MONADIC_PASS_EXAMPLE as $sTemplate) {
-                $sInput = sprintf($sTemplate, $sMnemonic, $sSize, $iImmediate);
-                printf("\t%-40s => ", $sInput);
+                $sInput = sprintf($sTemplate, $sMnemonic, $sSize, $sOperand);
+                printf("\t%-56s => ", $sInput);
                 try {
-                    echo bin2hex($oParser->parse($sInput));
+                    $sOutput = $oParser->parse($sInput);
+                    if (!$sOutput) {
+                        echo "(empty)";
+                        break;
+                    } else {
+                        echo strlen($sOutput), ": ", formatBytecode($sOutput);
+                    }
                 } catch (\Throwable $oError) {
-                    echo "Parse Error: ", get_class($oError), " - ", $oError->getMessage();
+                    echo $oError->getMessage();
                 }
                 echo "\n";
             }
+            echo "\n";
         }
     }
 }
 
 foreach (TPL_FSIZE as $sSize) {
-    foreach (TPL_FIMMEDIATES[$sSize] as $sImmediate) {
+    foreach (TPL_FOPERANDS[$sSize] as $sOperand) {
         foreach (TPL_FMONADIC as $sMnemonic) {
             foreach (TPL_MONADIC_PASS_EXAMPLE as $sTemplate) {
-                $sInput = sprintf($sTemplate, $sMnemonic, $sSize, $sImmediate);
-                printf("\t%-40s => ", $sInput);
+                $sInput = sprintf($sTemplate, $sMnemonic, $sSize, $sOperand);
+                printf("\t%-56s => ", $sInput);
                 try {
-                    echo bin2hex($oParser->parse($sInput));
+                    $sOutput = $oParser->parse($sInput);
+                    if (!$sOutput) {
+                        echo "(empty)";
+                        break;
+                    } else {
+                        echo strlen($sOutput), ": ", formatBytecode($sOutput);
+                    }
                 } catch (\Throwable $oError) {
-                    echo "Parse Error: ", get_class($oError), " - ", $oError->getMessage();
+                    echo $oError->getMessage();
                 }
                 echo "\n";
             }
+            echo "\n";
         }
     }
 }

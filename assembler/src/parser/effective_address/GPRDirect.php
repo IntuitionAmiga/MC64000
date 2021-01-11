@@ -32,15 +32,23 @@ class GPRDirect implements IParser, EffectiveAddress\IRegisterDirect {
     /**
      * Required match
      */
-    const MATCH = '/^' . self::RDA . '$/';
+    const
+        MATCH         = '/^' . self::RDA . '$/',
+        MATCHED_NAME  = 0
+    ;
 
-    const MATCHED_NAME = 0;
+    /**
+     * @inheritDoc
+     */
+    public function hasSideEffects() : bool {
+        return false;
+    }
 
     /**
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
-        if (preg_match(self::MATCH, $sSource, $aMatches)) {
+        if (preg_match(static::MATCH, $sSource, $aMatches)) {
             return chr(self::OFS_GPR_DIR + Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_NAME]));
         }
         return null;
