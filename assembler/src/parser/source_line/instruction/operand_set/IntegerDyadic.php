@@ -167,16 +167,26 @@ class IntegerDyadic extends Dyadic {
             );
         }
 
-        if ($this->oSrcParser->wasImmediate() && !$this->oDstParser->hasSideEffects()) {
+        if ($this->oSrcParser->wasImmediate()) {
             $iImmediate = $this->oSrcParser->getImmediate();
             if (isset(self::OPCODES[$iOpcode][$iImmediate])) {
                 $sFoldFunc = self::OPCODES[$iOpcode][$iImmediate];
                 $cCallback = [$this, $sFoldFunc];
                 $sAlternativeBytecode = $cCallback($this->sSrcBytecode, $this->sDstBytecode);
-                throw new CodeFoldException(
-                    'SrcEA #' . $iImmediate . ' using ' . $sFoldFunc,
-                    $sAlternativeBytecode
-                );
+                if (empty($sAlternativeBytecode)) {
+                    // If we don't lose side any important effects, empty is fine
+                    if (false === $this->oDstParser->hasSideEffects()) {
+                        throw new CodeFoldException(
+                            'SrcEA #' . $iImmediate . ' using ' . $sFoldFunc,
+                            $sAlternativeBytecode
+                        );
+                    }
+                } else {
+                    throw new CodeFoldException(
+                        'SrcEA #' . $iImmediate . ' using ' . $sFoldFunc,
+                        $sAlternativeBytecode
+                    );
+                }
             }
         }
 
