@@ -45,7 +45,7 @@ while ( ($sSourceLine = fgets($rSource)) ) {
         $sBytecode  = $oParser->parse($sStatement);
         $iLength    = $sBytecode ? strlen($sBytecode) : 0;
         printf(
-            "%4d [%5d]   %-44s : [%2d] %s\n",
+            "%4d [%5d]   %-50s : [%2d] %s\n",
             $iLine,
             $iCodePos,
             $sStatement,
