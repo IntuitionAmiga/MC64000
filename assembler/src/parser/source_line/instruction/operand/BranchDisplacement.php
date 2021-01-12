@@ -58,7 +58,7 @@ class BranchDisplacement implements MC64K\IParser {
             );
 
             if (0 === $this->iLastDisplacement) {
-                throw new CodeFoldException('Branch has no effect');
+                throw new CodeFoldException('Branch to next instruction has no useful effect');
             }
 
             return pack('V', $this->iLastDisplacement);

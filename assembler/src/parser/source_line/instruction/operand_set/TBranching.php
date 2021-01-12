@@ -46,6 +46,9 @@ trait TBranching {
         }
     }
 
+    /**
+     *
+     */
     protected function checkShortBranchDisplacement() : void {
         $iDisplacement = $this->oTgtParser->getLastDisplacement();
         if (0 === $iDisplacement) {

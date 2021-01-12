@@ -128,9 +128,12 @@ class IntegerDyadicBranch extends Dyadic {
 
         // Check for foldable immediates
         if ($this->oDstParser->wasImmediate() && $this->oSrcParser->wasImmediate()) {
-            $cCallback = [$this, self::OPCODES[$iOpcode]];
+            $sFoldFunc = self::OPCODES[$iOpcode];
+            $cCallback = [$this, $sFoldFunc];
             throw new CodeFoldException(
-                'Compile time constant comparison',
+                'SrcEA #' . $this->oSrcParser->getImmediate() . ', ' .
+                'DstEA #' . $this->oDstParser->getImmediate() .
+                ' using ' . $sFoldFunc,
                 $cCallback(
                     $this->oSrcParser->getImmediate(),
                     $this->oDstParser->getImmediate(),
@@ -142,9 +145,12 @@ class IntegerDyadicBranch extends Dyadic {
 
         // Check for foldable EA. These are where the source EA is exactly the same as the destination
         if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {
-            $cCallback = [$this, self::OPCODES[$iOpcode]];
+            $sFoldFunc = self::OPCODES[$iOpcode];
+            $cCallback = [$this, $sFoldFunc];
             throw new CodeFoldException(
-                'Runtime invariant comparison',
+                'SrcEA ' . $aOperands[$iSrcIndex] . ', ' .
+                'DstEA ' . $aOperands[$iDstIndex] .
+                ' using ' . $sFoldFunc,
                 $cCallback(
                     1, // doesn't matter
                     1, // doesn't matter

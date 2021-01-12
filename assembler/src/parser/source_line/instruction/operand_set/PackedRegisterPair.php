@@ -32,8 +32,7 @@ abstract class PackedRegisterPair extends Dyadic {
      */
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
-
-        $iDstIndex          = $this->getDestinationOperandIndex();
+        $iDstIndex    = $this->getDestinationOperandIndex();
         $sDstBytecode = $this->oDstParser
             ->setOperationSize($aSizes[$iDstIndex] ?? self::DEFAULT_SIZE)
             ->parse($aOperands[$iDstIndex]);
@@ -56,7 +55,10 @@ abstract class PackedRegisterPair extends Dyadic {
         $iDstReg = ord($sDstBytecode) & 0x0F;
         $iSrcReg = ord($sSrcBytecode) & 0x0F;
         if ($iDstReg === $iSrcReg && $this->foldIfOperandsSame($iOpcode)) {
-            throw new CodeFoldException('Operation has no effect');
+            throw new CodeFoldException(
+                'Src Reg ' . $aOperands[$iSrcIndex] . ', ' .
+                'Dst Reg ' . $aOperands[$iDstIndex] . ' using foldIfOperandsSame'
+            );
         }
         $iByte   = $iSrcReg << 4 | $iDstReg;
         return chr($iByte);
