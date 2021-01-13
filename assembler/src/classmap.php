@@ -4,8 +4,14 @@ namespace ABadCafe\MC64K;
 
 const CLASS_MAP = [
   'ABadCafe\\MC64K\\IParser' => '/IParser.php',
+  'ABadCafe\\MC64K\\Parser\\SourceFile' => '/parser/SourceFile.php',
   'ABadCafe\\MC64K\\Parser\\Utils\\TSignedDisplacementAware' => '/parser/utils/TSignedDisplacementAware.php',
   'ABadCafe\\MC64K\\Parser\\Utils\\Hex' => '/parser/utils/Hex.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\TParser' => '/parser/source_line/TParser.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\IParser' => '/parser/source_line/IParser.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\Processor' => '/parser/source_line/Processor.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\Label\\Exported' => '/parser/source_line/label/Exported.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\Label\\Local' => '/parser/source_line/label/Local.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\CodeFoldException' => '/parser/source_line/instruction/CodeFoldException.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\IOperandSetParser' => '/parser/source_line/instruction/IOperandSetParser.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\UnhandledCodeFoldException' => '/parser/source_line/instruction/UnhandledCodeFoldException.php',

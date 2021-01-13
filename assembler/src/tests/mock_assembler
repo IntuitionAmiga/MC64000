@@ -32,7 +32,7 @@ if (!file_exists($sSourceFile) || !is_readable($sSourceFile)) {
     exit(1);
 }
 
-$oParser = new Parser\SourceLine\Instruction\Statement();
+$oParser = new Parser\SourceLine\Processor();
 
 $rSource  = fopen($sSourceFile, 'r');
 $iLine    = 0;
@@ -40,20 +40,20 @@ $iCodePos = 0;
 
 while ( ($sSourceLine = fgets($rSource)) ) {
     ++$iLine;
-    if (preg_match('/^\s+(.*?)$/m', rtrim($sSourceLine), $aMatches)) {
-        $sStatement = $aMatches[1];
-        $sBytecode  = $oParser->parse($sStatement);
-        $iLength    = $sBytecode ? strlen($sBytecode) : 0;
-        printf(
-            "%4d [%5d]   %-50s : [%2d] %s\n",
-            $iLine,
-            $iCodePos,
-            $sStatement,
-            $iLength,
-            Utils\Binary::format($sBytecode)
-        );
-        $iCodePos += $iLength;
-    }
+    $sBytecode  = $oParser
+        ->setCurrentLine($iLine)
+        ->setCurrentPosition($iCodePos)
+        ->parse($sSourceLine);
+    $iLength = $sBytecode ? strlen($sBytecode) : 0;
+    printf(
+        "%4d [%5d]   %-50s : [%2d] %s\n",
+        $iLine,
+        $iCodePos,
+        rtrim($sSourceLine),
+        $iLength,
+        Utils\Binary::format($sBytecode)
+    );
+    $iCodePos += $iLength;
 }
 
 fclose($rSource);
