@@ -23,6 +23,9 @@ use ABadCafe\MC64K\Defs\Mnemonic\ILogical;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Tokeniser;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
+use ABadCafe\MC64K\Utils\Log;
+use ABadCafe\MC64K\Utils\Binary;
+
 
 /**
  * Statement
@@ -145,6 +148,12 @@ class Statement implements MC64K\IParser, Defs\Mnemonic\IMatches {
                     $aSizes
                 );
             } catch (CodeFoldException $oFold) {
+                Log::printf(
+                    'Folding %s to \'%s\' (%s)',
+                    $sSource,
+                    Binary::format($oFold->getAlternativeBytecode()),
+                    $oFold->getMessage()
+                );
                 return $oFold->getAlternativeBytecode();
             }
         }

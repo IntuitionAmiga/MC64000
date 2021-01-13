@@ -86,9 +86,11 @@ class FloatMonadicBranch extends Monadic {
         $this->checkBranchDisplacement($sBytecode);
 
         if ($this->oSrcParser->wasImmediate()) {
-            $cCallback = [$this, self::OPCODES[$iOpcode]];
+            $sFoldFunc = self::OPCODES[$iOpcode];
+            $cCallback = [$this, $sFoldFunc];
             throw new CodeFoldException(
-                'Compile time constant comparison ',
+                'SrcEA #' . $this->oSrcParser->getImmediate() .
+                ' using ' . $sFoldFunc,
                 $cCallback(
                     $this->oSrcParser->getImmediate(),
                     $this->oTgtParser->getLastDisplacement(),

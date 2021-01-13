@@ -58,6 +58,7 @@ abstract class Dyadic extends Monadic {
      * @inheritDoc
      */
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
+        $this->sSrcBytecode = null;
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
 
         $iDstIndex          = $this->getDestinationOperandIndex();
@@ -121,7 +122,9 @@ abstract class Dyadic extends Monadic {
         return $sSrcBytecode;
     }
 
-
+    protected function sourceOperandWasOptimised() : bool {
+        return $this->sSrcBytecode === chr(Defs\EffectiveAddress\IOther::SAME_AS_DEST);
+    }
 
     /**
      * Common dyadic code folder:

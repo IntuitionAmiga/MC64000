@@ -132,6 +132,13 @@ class IntegerDyadic extends Dyadic {
         IArithmetic::DIVU_Q => [0 => 'trapIllegal', 1 => 'foldEmpty'],
     ];
 
+    const SKIP_IF_OPERANDS_SAME = [
+        IDataMove::MOVE_B   => 1,
+        IDataMove::MOVE_W   => 1,
+        IDataMove::MOVE_L   => 1,
+        IDataMove::MOVE_Q   => 1,
+    ];
+
     /**
      * Constructor
      */
@@ -151,15 +158,35 @@ class IntegerDyadic extends Dyadic {
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
         $sFullByteCode = parent::parse($iOpcode, $aOperands, $aSizes);
 
+        if (
+            isset(self::SKIP_IF_OPERANDS_SAME[$iOpcode]) &&
+            $this->sourceOperandWasOptimised()
+        ) {
+            throw new CodeFoldException(
+                'Operation has no effect'
+            );
+        }
+
         if ($this->oSrcParser->wasImmediate()) {
             $iImmediate = $this->oSrcParser->getImmediate();
             if (isset(self::OPCODES[$iOpcode][$iImmediate])) {
-                $cCallback = [$this, self::OPCODES[$iOpcode][$iImmediate]];
+                $sFoldFunc = self::OPCODES[$iOpcode][$iImmediate];
+                $cCallback = [$this, $sFoldFunc];
                 $sAlternativeBytecode = $cCallback($this->sSrcBytecode, $this->sDstBytecode);
-                throw new CodeFoldException(
-                    'Immediate Source Operand',
-                    $sAlternativeBytecode
-                );
+                if (empty($sAlternativeBytecode)) {
+                    // If we don't lose side any important effects, empty is fine
+                    if (false === $this->oDstParser->hasSideEffects()) {
+                        throw new CodeFoldException(
+                            'SrcEA #' . $iImmediate . ' using ' . $sFoldFunc,
+                            $sAlternativeBytecode
+                        );
+                    }
+                } else {
+                    throw new CodeFoldException(
+                        'SrcEA #' . $iImmediate . ' using ' . $sFoldFunc,
+                        $sAlternativeBytecode
+                    );
+                }
             }
         }
 
