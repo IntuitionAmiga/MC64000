@@ -1,0 +1,64 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+$oRegistry = new Parser\SourceLine\Label\Registry;
+
+$oRegistry->setCurrentFile('mock_00.s');
+
+try {
+    $oRegistry->addGlobal('main', 10, 9);
+    $oRegistry->addGlobal('info', 20, 100);
+    $oRegistry->addGlobal('main', 40, 150);
+    exit("FAILURE - did not catch duplicate global");
+} catch (\Exception $oError) {
+    echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
+}
+
+try {
+    $oRegistry->addLocal('loop', 30, 50);
+    $oRegistry->addLocal('test', 45, 160);
+    $oRegistry->addLocal('loop', 50, 200);
+    exit("FAILURE - did not catch duplicate local");
+} catch (\Exception $oError) {
+    echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
+}
+
+$oRegistry->setCurrentFile('mock_01.s');
+
+try {
+    $oRegistry->addGlobal('debug', 10, 250);
+    $oRegistry->addGlobal('info',  20, 400);
+    exit("FAILURE - did not catch duplicate global");
+} catch (\Exception $oError) {
+    echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
+}
+
+try {
+    $oRegistry->addLocal('loop', 15, 275);
+    $oRegistry->addLocal('test', 25, 300);
+    $oRegistry->addLocal('loop', 39, 500);
+    exit("FAILURE - did not catch duplicate local");
+} catch (\Exception $oError) {
+    echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
+}
+
+print_r($oRegistry);

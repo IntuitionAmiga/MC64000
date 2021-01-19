@@ -28,12 +28,20 @@ class Exported implements SourceLine\IParser {
 
     use SourceLine\TParser;
 
-    private array $aPosition = [];
+    private Registry $oLabelRegistry;
 
+    /**
+     * @param Registry $oLabelRegistry
+     */
+    public function __construct(Registry $oLabelRegistry) {
+        $this->oLabelRegistry = $oLabelRegistry;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function parse(string $sSource) : ?string {
-        $this->aPosition[$sSource] = $this->iCurrentOutputPosition;
-        Log::printf(
-            "Exported Label '%s' on line %d, code position %d",
+        $this->oLabelRegistry->addGlobal(
             $sSource,
             $this->iCurrentLineNumber,
             $this->iCurrentOutputPosition

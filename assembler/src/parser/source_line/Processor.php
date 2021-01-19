@@ -29,13 +29,16 @@ class Processor implements IParser {
 
     use TParser;
 
+    private Label\Registry $oLabelRegistry;
+
     private array $aParsers = [];
 
     public function __construct() {
+        $this->oLabelRegistry = new Label\Registry();
         $this->aParsers = [
-            new Instruction\Statement(),
-            new Label\Local(),
-            new Label\Exported()
+            new Instruction\Statement($this->oLabelRegistry),
+            new Label\Local($this->oLabelRegistry),
+            new Label\Exported($this->oLabelRegistry)
         ];
     }
 

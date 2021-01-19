@@ -11,6 +11,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\SourceLine\\IParser' => '/parser/source_line/IParser.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Processor' => '/parser/source_line/Processor.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Label\\Exported' => '/parser/source_line/label/Exported.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\Label\\Registry' => '/parser/source_line/label/Registry.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Label\\Local' => '/parser/source_line/label/Local.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\CodeFoldException' => '/parser/source_line/instruction/CodeFoldException.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\IOperandSetParser' => '/parser/source_line/instruction/IOperandSetParser.php',
