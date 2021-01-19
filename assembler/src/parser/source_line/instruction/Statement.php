@@ -40,6 +40,8 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
 
     private Tokeniser\Instruction $oTokeniser;
 
+    private SourceLine\Label\Registry $oLabelRegistry;
+
     /**
      * @var IOperandSetParser[] $aOperandParsers
      */
@@ -49,7 +51,8 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct(SourceLine\Label\Registry $oLabelRegistry) {
+        $this->oLabelRegistry = $oLabelRegistry;
         $this->oTokeniser = new Tokeniser\Instruction();
         $this->addOperandSetParser(new OperandSet\None());
         $this->addOperandSetParser(new OperandSet\BranchDisplacementOnly());

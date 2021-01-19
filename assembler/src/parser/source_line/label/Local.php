@@ -42,7 +42,7 @@ class Local implements SourceLine\IParser {
      */
     public function parse(string $sSource) : ?string {
         $this->oLabelRegistry->addGlobal(
-            $sSource,
+            rtrim($sSource, ':'),
             $this->iCurrentLineNumber,
             $this->iCurrentOutputPosition
         );
