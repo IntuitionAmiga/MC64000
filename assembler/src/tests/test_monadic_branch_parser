@@ -65,7 +65,7 @@ function formatBytecode(string $sBinary) : string {
     return implode(' ', str_split(bin2hex($sBinary), 2));
 }
 
-$oParser = new Parser\SourceLine\Instruction\Statement();
+$oParser = new Parser\SourceLine\Instruction\Statement(new Parser\SourceLine\Label\Registry());
 
 foreach (TPL_ISIZE as $sSize) {
     foreach (TPL_IOPERANDS[$sSize] as $sOperand) {

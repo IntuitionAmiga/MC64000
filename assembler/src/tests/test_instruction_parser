@@ -91,7 +91,7 @@ const EXAMPLES = [
 
 ];
 
-$oParser = new Parser\SourceLine\Instruction\Statement();
+$oParser = new Parser\SourceLine\Instruction\Statement(new Parser\SourceLine\Label\Registry());
 
 foreach (EXAMPLES as $sInput => $iExpect) {
     printf("\t%-50s => ", $sInput);

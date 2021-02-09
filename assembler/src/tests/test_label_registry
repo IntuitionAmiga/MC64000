@@ -20,7 +20,7 @@ namespace ABadCafe\MC64K;
 
 require_once '../MC64K.php';
 
-$oRegistry = new Parser\SourceLine\Label\Registry;
+$oRegistry = new Parser\SourceLine\Label\Registry();
 
 $oRegistry->setCurrentFile('mock_00.s');
 

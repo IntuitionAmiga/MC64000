@@ -55,17 +55,17 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
         $this->oLabelRegistry = $oLabelRegistry;
         $this->oTokeniser = new Tokeniser\Instruction();
         $this->addOperandSetParser(new OperandSet\None());
-        $this->addOperandSetParser(new OperandSet\BranchDisplacementOnly());
+        $this->addOperandSetParser(new OperandSet\BranchDisplacementOnly($oLabelRegistry));
         $this->addOperandSetParser(new OperandSet\IntegerMonadicAddress());
         $this->addOperandSetParser(new OperandSet\IntegerMonadic());
-        $this->addOperandSetParser(new OperandSet\IntegerMonadicBranch());
-        $this->addOperandSetParser(new OperandSet\FloatMonadicBranch());
+        $this->addOperandSetParser(new OperandSet\IntegerMonadicBranch($oLabelRegistry));
+        $this->addOperandSetParser(new OperandSet\FloatMonadicBranch($oLabelRegistry));
         $this->addOperandSetParser(new OperandSet\IntegerDyadic());
-        $this->addOperandSetParser(new OperandSet\IntegerDyadicBranch());
+        $this->addOperandSetParser(new OperandSet\IntegerDyadicBranch($oLabelRegistry));
         $this->addOperandSetParser(new OperandSet\FloatDyadic());
-        $this->addOperandSetParser(new OperandSet\FloatDyadicBranch());
-        $this->addOperandSetParser(new OperandSet\FloatToIntegerDyadic());
-        $this->addOperandSetParser(new OperandSet\IntegerToFloatDyadic());
+        $this->addOperandSetParser(new OperandSet\FloatDyadicBranch($oLabelRegistry));
+        $this->addOperandSetParser(new OperandSet\FloatToIntegerDyadic($oLabelRegistry));
+        $this->addOperandSetParser(new OperandSet\IntegerToFloatDyadic($oLabelRegistry));
         $this->addOperandSetParser(new OperandSet\PackedGPRPair());
         $this->addOperandSetParser(new OperandSet\PackedFPRPair());
 
@@ -107,7 +107,8 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
 
         $this->addOperandSetParser(new OperandSet\CustomMonadicBranch(
             [IControl::DBNZ],
-            new EffectiveAddress\AllIntegerWriteable()
+            new EffectiveAddress\AllIntegerWriteable(),
+            $oLabelRegistry
         ));
 
         $this->addOperandSetParser(new OperandSet\CustomMonadic(
