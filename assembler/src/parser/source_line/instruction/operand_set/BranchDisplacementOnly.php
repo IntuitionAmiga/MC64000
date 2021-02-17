@@ -64,12 +64,18 @@ class BranchDisplacementOnly implements Instruction\IOperandSetParser {
         }
 
         $bShort = isset(self::SHORT[$iOpcode]);
+        $sLabel = $aOperands[0];
+        $oState = State\Common::get();
 
-        State\Common::get()->setCurrentStatementLength(
+        $oState->setCurrentStatementLength(
             1 + ($bShort ? Defs\IBranchLimits::SHORT_DISPLACEMENT_SIZE : Defs\IBranchLimits::DISPLACEMENT_SIZE)
         );
 
-        $sBytecode = $this->oTgtParser->parse($aOperands[0]);
+        $sBytecode = $this->oTgtParser->parse($sLabel);
+
+        if ($this->oTgtParser->wasUnresolved()) {
+            $oState->addUnresolvedLabel($sLabel);
+        }
 
         if ($bShort) {
             $this->checkShortBranchDisplacement();
@@ -77,6 +83,8 @@ class BranchDisplacementOnly implements Instruction\IOperandSetParser {
         } else {
             $this->checkBranchDisplacement($sBytecode);
         }
+
+
 
         return $sBytecode;
     }

@@ -36,8 +36,9 @@ class Common {
     private static ?self $oInstance = null; // Singleton
 
     private array
-        $aGlobalLabels = [],
-        $aLocalLabels  = []
+        $aGlobalLabels     = [],
+        $aLocalLabels      = [],
+        $aUnresolvedLabels = []
     ;
 
     private string $sCurrentFilename = '';
@@ -80,10 +81,11 @@ class Common {
             if (isset($this->aLocalLabels[$sFilename])) {
                 throw new \Exception("File already processed");
             }
-            $this->sCurrentFilename         = $sFilename;
-            $this->iCurrentLineNumber       = 0;
-            $this->iCurrentStatementLength  = 0;
-            $this->aLocalLabels[$sFilename] = [];
+            $this->sCurrentFilename              = $sFilename;
+            $this->iCurrentLineNumber            = 0;
+            $this->iCurrentStatementLength       = 0;
+            $this->aLocalLabels[$sFilename]      = [];
+            $this->aUnresolvedLabels[$sFilename] = [];
         }
         return $this;
     }
@@ -258,5 +260,12 @@ class Common {
             return $aLabels[$sLabel][self::I_POSN];
         }
         return null;
+    }
+
+    public function addUnresolvedLabel(string $sLabel) : self {
+        $this->aUnresolvedLabels[$this->sCurrentFilename][$sLabel] = [
+            self::I_POSN => $this->iCurrentStatementPosition + $this->iCurrentStatementLength - Defs\IBranchLimits::DISPLACEMENT_SIZE
+        ];
+        return $this;
     }
 }

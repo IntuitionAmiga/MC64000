@@ -72,6 +72,10 @@ class BranchDisplacement implements MC64K\IParser {
         throw new \UnexpectedValueException($sSource . ' could not be parsed');
     }
 
+    public function wasUnresolved() : bool {
+        return Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT === $this->iLastDisplacement;
+    }
+
     /**
      * Returns the integer value of the most recently processed branch displacement.
      *
