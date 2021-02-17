@@ -16,8 +16,8 @@
 declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\SourceLine\Label;
-use  ABadCafe\MC64K\Parser\SourceLine;
-use ABadCafe\MC64K\Utils\Log;
+use ABadCafe\MC64K\Parser\SourceLine;
+use ABadCafe\MC64K\State;
 
 /**
  * Exported
@@ -28,24 +28,11 @@ class Exported implements SourceLine\IParser {
 
     use SourceLine\TParser;
 
-    private Registry $oLabelRegistry;
-
-    /**
-     * @param Registry $oLabelRegistry
-     */
-    public function __construct(Registry $oLabelRegistry) {
-        $this->oLabelRegistry = $oLabelRegistry;
-    }
-
     /**
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
-        $this->oLabelRegistry->addGlobal(
-            rtrim($sSource, ':'),
-            $this->iCurrentLineNumber,
-            $this->iCurrentOutputPosition
-        );
+        State\Common::get()->addGlobalLabel(rtrim($sSource, ':'));
         return '';
     }
 }

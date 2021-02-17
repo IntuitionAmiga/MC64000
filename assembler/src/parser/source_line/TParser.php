@@ -22,26 +22,6 @@ namespace ABadCafe\MC64K\Parser\SourceLine;
  */
 trait TParser {
 
-    protected int $iCurrentLineNumber = 0;
-
-    protected int $iCurrentOutputPosition = 0;
-
-    /**
-     * @implements IParser::setCurrentLine()
-     */
-    public function setCurrentLine(int $iLineNumber) : self {
-        $this->iCurrentLineNumber = $iLineNumber;
-        return $this;
-    }
-
-    /**
-     * @implements IParser::setCurrentPosition()
-     */
-    public function setCurrentPosition(int $iPosition) : self {
-        $this->iCurrentOutputPosition = $iPosition;
-        return $this;
-    }
-
     /**
      * @implements IParser::checkLine()
      */

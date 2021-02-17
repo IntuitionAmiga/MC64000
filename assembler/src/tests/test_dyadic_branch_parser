@@ -64,7 +64,7 @@ function formatBytecode(string $sBinary) : string {
     return implode(' ', str_split(bin2hex($sBinary), 2));
 }
 
-$oParser = new Parser\SourceLine\Instruction\Statement(new Parser\SourceLine\Label\Registry());
+$oParser = new Parser\SourceLine\Instruction\Statement();
 
 echo "Testing integer dyadic compare and brach...\n";
 

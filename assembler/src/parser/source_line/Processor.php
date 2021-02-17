@@ -17,6 +17,8 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\SourceLine;
 
+use ABadCafe\MC64K\State;
+
 /**
  * Processor
  *
@@ -27,18 +29,13 @@ class Processor implements IParser {
 
     const COMMENT_MATCH = '/(?:;|\/\/).*$/';
 
-    use TParser;
-
-    private Label\Registry $oLabelRegistry;
-
     private array $aParsers = [];
 
     public function __construct() {
-        $this->oLabelRegistry = new Label\Registry();
         $this->aParsers = [
-            new Instruction\Statement($this->oLabelRegistry),
-            new Label\Local($this->oLabelRegistry),
-            new Label\Exported($this->oLabelRegistry)
+            new Instruction\Statement(),
+            new Label\Local(),
+            new Label\Exported()
         ];
     }
 
@@ -59,10 +56,7 @@ class Processor implements IParser {
         }
         foreach ($this->aParsers as $oParser) {
             if ($oParser->checkLine($sSourceLine)) {
-                return $oParser
-                    ->setCurrentLine($this->iCurrentLineNumber)
-                    ->setCurrentPosition($this->iCurrentOutputPosition)
-                    ->parse($sSourceLine);
+                return $oParser->parse($sSourceLine);
             }
         }
         return '';

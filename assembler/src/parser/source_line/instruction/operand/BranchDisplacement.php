@@ -65,6 +65,7 @@ class BranchDisplacement implements MC64K\IParser {
         }
         // TODO - handle labels
         if (preg_match(self::MATCH_LABEL, $sSource, $aMatches)) {
+
             return pack('V', self::UNRESOLVED);
         }
 

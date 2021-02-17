@@ -20,45 +20,45 @@ namespace ABadCafe\MC64K;
 
 require_once '../MC64K.php';
 
-$oRegistry = new Parser\SourceLine\Label\Registry();
+$oState = State\Common::get();
 
-$oRegistry->setCurrentFile('mock_00.s');
+$oState->setCurrentFilename('mock_00.s');
 
 try {
-    $oRegistry->addGlobal('main', 10, 9);
-    $oRegistry->addGlobal('info', 20, 100);
-    $oRegistry->addGlobal('main', 40, 150);
+    $oState->addGlobalLabel('main', 10, 9);
+    $oState->addGlobalLabel('info', 20, 100);
+    $oState->addGlobalLabel('main', 40, 150);
     exit("FAILURE - did not catch duplicate global");
 } catch (\Exception $oError) {
     echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
 }
 
 try {
-    $oRegistry->addLocal('loop', 30, 50);
-    $oRegistry->addLocal('test', 45, 160);
-    $oRegistry->addLocal('loop', 50, 200);
+    $oState->addLocalLabel('loop', 30, 50);
+    $oState->addLocalLabel('test', 45, 160);
+    $oState->addLocalLabel('loop', 50, 200);
     exit("FAILURE - did not catch duplicate local");
 } catch (\Exception $oError) {
     echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
 }
 
-$oRegistry->setCurrentFile('mock_01.s');
+$oState->setCurrentFilename('mock_01.s');
 
 try {
-    $oRegistry->addGlobal('debug', 10, 250);
-    $oRegistry->addGlobal('info',  20, 400);
+    $oState->addGlobalLabel('debug', 10, 250);
+    $oState->addGlobalLabel('info',  20, 400);
     exit("FAILURE - did not catch duplicate global");
 } catch (\Exception $oError) {
     echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
 }
 
 try {
-    $oRegistry->addLocal('loop', 15, 275);
-    $oRegistry->addLocal('test', 25, 300);
-    $oRegistry->addLocal('loop', 39, 500);
+    $oState->addLocalLabel('loop', 15, 275);
+    $oState->addLocalLabel('test', 25, 300);
+    $oState->addLocalLabel('loop', 39, 500);
     exit("FAILURE - did not catch duplicate local");
 } catch (\Exception $oError) {
     echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
 }
 
-print_r($oRegistry);
+print_r($oState);

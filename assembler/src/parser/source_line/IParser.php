@@ -28,14 +28,4 @@ interface IParser extends MC64K\IParser {
      */
     public function checkLine(string $sLine) : bool;
 
-    /**
-     * Set the line number in the current file.
-     */
-    public function setCurrentLine(int $iLineNumber) : self;
-
-    /**
-     * Set the current bytecode position
-     */
-    public function setCurrentPosition(int $iPosition) : self;
-
 }

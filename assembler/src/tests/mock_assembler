@@ -32,29 +32,28 @@ if (!file_exists($sSourceFile) || !is_readable($sSourceFile)) {
     exit(1);
 }
 
-$oParser = new Parser\SourceLine\Processor();
 
-$rSource  = fopen($sSourceFile, 'r');
-$iLine    = 0;
-$iCodePos = 0;
+$oParser = new Parser\SourceLine\Processor();
+$rSource = fopen($sSourceFile, 'r');
+$oState  = State\Common::get();
+
+$oState->setCurrentFilename($sSourceFile);
 
 while ( ($sSourceLine = fgets($rSource)) ) {
-    ++$iLine;
-    $sBytecode  = $oParser
-        ->setCurrentLine($iLine)
-        ->setCurrentPosition($iCodePos)
-        ->parse($sSourceLine);
+    $oState->incrementCurrentLineNumber();
+    $sBytecode  = $oParser->parse($sSourceLine);
     $iLength = $sBytecode ? strlen($sBytecode) : 0;
     printf(
         "%4d [%5d]   %-50s : [%2d] %s\n",
-        $iLine,
-        $iCodePos,
+        $oState->getCurrentLineNumber(),
+        $oState->getCurrentStatementPosition(),
         rtrim($sSourceLine),
         $iLength,
         Utils\Binary::format($sBytecode)
     );
-    $iCodePos += $iLength;
+    $oState->incrementStatementPosition($iLength);
 }
 
 fclose($rSource);
 
+print_r($oState);
