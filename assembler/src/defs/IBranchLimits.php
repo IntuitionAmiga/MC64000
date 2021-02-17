@@ -15,21 +15,12 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Utils;
+namespace ABadCafe\MC64K\Defs;
 
-/**
- * Basic Log Facility
- */
-class Log {
-
-    private static int $iLine  = 0;
-
-    /**
-     *
-     */
-    public static function printf(string $sFormat, ...$aVarArgs) : void {
-        fprintf(
-            STDERR, ('#%d ' . $sFormat . "\n"), self::$iLine++, ...$aVarArgs
-        );
-    }
+interface IBranchLimits {
+    const
+        UNRESOLVED_DISPLACEMENT = 0,
+        SHORT_DISPLACEMENT_SIZE = 1,
+        DISPLACEMENT_SIZE       = 4
+    ;
 }

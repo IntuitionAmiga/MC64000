@@ -18,6 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\State;
 
 use ABadCafe\MC64K\Utils\Log;
+use ABadCafe\MC64K\Defs;
 
 /**
  * DSG Antipattern: Dirty Great Singleton
@@ -44,7 +45,7 @@ class Common {
     private int
         $iCurrentLineNumber        = 0,
         $iCurrentStatementPosition = 0,
-        $iCurrentStatementOffset   = 0
+        $iCurrentStatementLength   = 0
     ;
 
     private function __construct() {
@@ -76,10 +77,13 @@ class Common {
      */
     public function setCurrentFilename(string $sFilename) : self {
         if ($this->sCurrentFilename !== $sFilename) {
-            $this->sCurrentFilename        = $sFilename;
-            $this->iCurrentLineNumber      = 0;
-            $this->iCurrentStatementOffset = 0;
-
+            if (isset($this->aLocalLabels[$sFilename])) {
+                throw new \Exception("File already processed");
+            }
+            $this->sCurrentFilename         = $sFilename;
+            $this->iCurrentLineNumber       = 0;
+            $this->iCurrentStatementLength  = 0;
+            $this->aLocalLabels[$sFilename] = [];
         }
         return $this;
     }
@@ -122,6 +126,7 @@ class Common {
      */
     public function setCurrentStatementPosition(int $iStatementPosition) : self {
         $this->iCurrentStatementPosition = $iStatementPosition;
+        $this->iCurrentStatementLength   = 0;
         return $this;
     }
 
@@ -131,6 +136,7 @@ class Common {
      */
     public function incrementStatementPosition(int $iCodeLength) : self {
         $this->iCurrentStatementPosition += $iCodeLength;
+        $this->iCurrentStatementLength   = 0;
         return $this;
     }
 
@@ -138,16 +144,16 @@ class Common {
     /**
      * @return int
      */
-    public function getCurrentStatementOffset() : int {
-        return $this->iCurrentStatementOffset;
+    public function getCurrentStatementLength() : int {
+        return $this->iCurrentStatementLength;
     }
 
     /**
-     * @param  int $iStatementOffset
+     * @param  int $iStatementLength
      * @return self
      */
-    public function setCurrentStatementOffet(int $iStatementOffset) : self {
-        $this->iCurrentStatementOffset = $iStatementOffset;
+    public function setCurrentStatementLength(int $iStatementLength) : self {
+        $this->iCurrentStatementLength = $iStatementLength;
         return $this;
     }
 
@@ -218,11 +224,38 @@ class Common {
     }
 
     /**
+     * @param  string $sLabel
+     * @return int
+     */
+    public function getBranchDisplacementForLabel(string $sLabel) : int {
+        $iPosition = $this->getPositionForLabel($sLabel);
+        if (null !== $iPosition) {
+            $iDisplacement = $iPosition - $this->iCurrentStatementPosition - $this->iCurrentStatementLength;
+            Log::printf(
+                "Resolved %s to displacement %d",
+                $sLabel,
+                $iDisplacement
+            );
+            return $iDisplacement;
+        }
+        return Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT;
+    }
+
+    /**
+     * @param  string $sLabel
      * @return int|null
      */
-    public function getPositionForLocal(string $sLabel) : ?int {
-        if (isset($this->aLocalLabels[$this->sCurrentFilename][$sLabel])) {
-            return $this->aLocalLabels[$this->sCurrentFilename][$sLabel][self::I_POSN];
+    public function getPositionForLabel(string $sLabel) : ?int {
+        $aLabels = ('.' === $sLabel[0]) ?
+            $this->aLocalLabels[$this->sCurrentFilename] :
+            $this->aGlobalLabels;
+        if (isset($aLabels[$sLabel])) {
+            Log::printf(
+                "Resolved %s to code position %d",
+                $sLabel,
+                $aLabels[$sLabel][self::I_POSN]
+            );
+            return $aLabels[$sLabel][self::I_POSN];
         }
         return null;
     }

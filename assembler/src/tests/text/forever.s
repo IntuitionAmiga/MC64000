@@ -1,7 +1,7 @@
 ; forever
 
-    clr.q d0
+    bra .unresolved
 
-.loop: ; this is a global label
+.loop: ; this is a local label
     hcf #0xABADCAFE
-    bra .loop
+    bra.b .loop

@@ -18,6 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
+use ABadCafe\MC64K\State;
 
 /**
  * CustomMonadicBranch
@@ -51,6 +52,7 @@ class CustomMonadicBranch extends CustomMonadic {
                 $aOperands[$iSrcIndex] . ' not a valid comparison operand'
             );
         }
+
         $sDisplacement = $this->parseBranchDisplacement(
             $aOperands[self::OPERAND_TARGET],
             $this->oSrcParser->hasSideEffects()

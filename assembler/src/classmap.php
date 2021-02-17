@@ -66,6 +66,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Utils\\Log' => '/utils/Log.php',
   'ABadCafe\\MC64K\\Tokeniser\\Instruction' => '/tokeniser/Instruction.php',
   'ABadCafe\\MC64K\\State\\Common' => '/state/Common.php',
+  'ABadCafe\\MC64K\\Defs\\IBranchLimits' => '/defs/IBranchLimits.php',
   'ABadCafe\\MC64K\\Defs\\IIntLimits' => '/defs/IIntLimits.php',
   'ABadCafe\\MC64K\\Defs\\Register\\INames' => '/defs/register/INames.php',
   'ABadCafe\\MC64K\\Defs\\Register\\Enumerator' => '/defs/register/Enumerator.php',

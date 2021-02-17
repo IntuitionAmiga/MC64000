@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\Defs;
+use ABadCafe\MC64K\State;
 
 /**
  * BranchDisplacementOnly
@@ -61,9 +63,15 @@ class BranchDisplacementOnly implements Instruction\IOperandSetParser {
             throw new \LengthException(__CLASS__ . ' expects a single operand, got ' . $iCount);
         }
 
+        $bShort = isset(self::SHORT[$iOpcode]);
+
+        State\Common::get()->setCurrentStatementLength(
+            1 + ($bShort ? Defs\IBranchLimits::SHORT_DISPLACEMENT_SIZE : Defs\IBranchLimits::DISPLACEMENT_SIZE)
+        );
+
         $sBytecode = $this->oTgtParser->parse($aOperands[0]);
 
-        if (isset(self::SHORT[$iOpcode])) {
+        if ($bShort) {
             $this->checkShortBranchDisplacement();
             $sBytecode = $sBytecode[0];
         } else {
