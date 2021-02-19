@@ -16,28 +16,28 @@
 declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
+use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\State;
+use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Defs;
 
-
 /**
- * CustomMonadicBranch
+ * MonadicBranch
+ *
+ * Common behaviours for single operand with branch displacement
  */
-class CustomMonadicBranch extends CustomMonadic {
+abstract class MonadicBranch extends Monadic {
 
     use TBranching;
 
     const
         OPERAND_TARGET    = 1,
-        MIN_OPERAND_COUNT = 2
+        MIN_OPERAND_COUNT = 2,
+        FIXED_LENGTH      = 4
     ;
-
-    public function __construct(array $aOpcodes, EffectiveAddress\IParser $oSrcParser) {
-        parent::__construct($aOpcodes, $oSrcParser);
-        $this->oTgtParser = new Operand\BranchDisplacement();
-    }
 
     /**
      * @inheritDoc
@@ -49,6 +49,7 @@ class CustomMonadicBranch extends CustomMonadic {
         $sSrcBytecode  = $this->oSrcParser
             ->setOperationSize($aSizes[$iSrcIndex] ?? self::DEFAULT_SIZE)
             ->parse($aOperands[$iSrcIndex]);
+
         if (null === $sSrcBytecode) {
             throw new \UnexpectedValueException(
                 $aOperands[$iSrcIndex] . ' not a valid comparison operand'
@@ -67,12 +68,36 @@ class CustomMonadicBranch extends CustomMonadic {
             $this->oSrcParser->hasSideEffects()
         );
 
+        $sBytecode = $sSrcBytecode . $sDisplacement;
+        $this->checkBranchDisplacement($sBytecode);
+
+        if ($this->oSrcParser->wasImmediate()) {
+            $sFoldFunc = static::OPCODES[$iOpcode];
+            $cCallback = [$this, $sFoldFunc];
+            $sFolded   =  $cCallback(
+                $this->oSrcParser->getImmediate(),
+                $this->oTgtParser->getLastDisplacement(),
+                strlen($sBytecode)
+            );
+
+            // If the folded code is not empty, make sure we handle any unresolved branch targets
+            if ($sFolded && $this->oTgtParser->wasUnresolved()) {
+                $oState
+                    ->setCurrentStatementLength(strlen($sFolded))
+                    ->addUnresolvedLabel($aOperands[self::OPERAND_TARGET]);
+            }
+
+            throw new CodeFoldException(
+                'SrcEA #' . $this->oSrcParser->getImmediate() .
+                ' using ' . $sFoldFunc,
+                $sFolded
+            );
+        }
+
         if ($this->oTgtParser->wasUnresolved()) {
             $oState->addUnresolvedLabel($aOperands[self::OPERAND_TARGET]);
         }
 
-        $sBytecode = $sSrcBytecode . $sDisplacement;
-        $this->checkBranchDisplacement($sBytecode);
         return $sBytecode;
     }
 

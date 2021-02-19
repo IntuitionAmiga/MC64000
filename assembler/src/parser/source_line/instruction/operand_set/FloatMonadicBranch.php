@@ -26,15 +26,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
  *
  * For all vanilla float compare and branch
  */
-class FloatMonadicBranch extends Monadic {
-
-    use TBranching;
-
-    const
-        OPERAND_TARGET    = 1,
-        MIN_OPERAND_COUNT = 2,
-        FIXED_LENGTH      = 4
-    ;
+class FloatMonadicBranch extends MonadicBranch {
 
     /**
      * The set of specific opcodes that this Operand Parser applies to
@@ -66,66 +58,30 @@ class FloatMonadicBranch extends Monadic {
     }
 
     /**
-     * @inheritDoc
-     */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
-        $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
-
-        $sDisplacement = $this->oTgtParser->parse($aOperands[self::OPERAND_TARGET]);
-        $iSrcIndex     = $this->getSourceOperandIndex();
-        $sSrcBytecode  = $this->oSrcParser
-            ->setOperationSize($aSizes[$iSrcIndex] ?? self::DEFAULT_SIZE)
-            ->parse($aOperands[$iSrcIndex]);
-        if (null === $sSrcBytecode) {
-            throw new \UnexpectedValueException(
-                $aOperands[$iSrcIndex] . ' not a valid comparison operand'
-            );
-        }
-
-        $sBytecode = $sSrcBytecode . $sDisplacement;
-        $this->checkBranchDisplacement($sBytecode);
-
-        if ($this->oSrcParser->wasImmediate()) {
-            $sFoldFunc = self::OPCODES[$iOpcode];
-            $cCallback = [$this, $sFoldFunc];
-            throw new CodeFoldException(
-                'SrcEA #' . $this->oSrcParser->getImmediate() .
-                ' using ' . $sFoldFunc,
-                $cCallback(
-                    $this->oSrcParser->getImmediate(),
-                    $this->oTgtParser->getLastDisplacement(),
-                    strlen($sBytecode)
-                )
-            );
-        }
-        return $sBytecode;
-    }
-
-    /**
      * Trampoline to TBranching code folders
      */
-    private function foldIsZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
         return $this->foldImmediateIsEqual($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 
     /**
      * Trampoline to TBranching code folders
      */
-    private function foldIsNotZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsNotZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
         return $this->foldImmediateIsNotEqual($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 
     /**
      * Trampoline to TBranching code folders
      */
-    private function foldIsMinus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsMinus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
         return $this->foldImmediateIsLessThan($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 
     /**
      * Trampoline to TBranching code folders
      */
-    private function foldIsPlus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsPlus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
         return $this->foldImmediateIsGreaterOrEqual($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 }

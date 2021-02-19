@@ -28,6 +28,7 @@ use ABadCafe\MC64K\Defs;
 class Common {
 
     const
+        I_NAME = 3,
         I_FILE = 2,
         I_LINE = 1,
         I_POSN = 0
@@ -155,6 +156,7 @@ class Common {
      * @return self
      */
     public function setCurrentStatementLength(int $iStatementLength) : self {
+        Log::printf("%s(%d)", __METHOD__, $iStatementLength);
         $this->iCurrentStatementLength = $iStatementLength;
         return $this;
     }
@@ -234,9 +236,12 @@ class Common {
         if (null !== $iPosition) {
             $iDisplacement = $iPosition - $this->iCurrentStatementPosition - $this->iCurrentStatementLength;
             Log::printf(
-                "Resolved %s to displacement %d",
+                "Resolved %s to displacement %d [%d - %d - %d]",
                 $sLabel,
-                $iDisplacement
+                $iDisplacement,
+                $iPosition,
+                $this->iCurrentStatementPosition,
+                $this->iCurrentStatementLength
             );
             return $iDisplacement;
         }
@@ -262,10 +267,19 @@ class Common {
         return null;
     }
 
+    /**
+     * @param  string $sLabel
+     * @return self
+     */
     public function addUnresolvedLabel(string $sLabel) : self {
-        $this->aUnresolvedLabels[$this->sCurrentFilename][$sLabel] = [
-            self::I_POSN => $this->iCurrentStatementPosition + $this->iCurrentStatementLength - Defs\IBranchLimits::DISPLACEMENT_SIZE
-        ];
+
+        $iLocation = $this->iCurrentStatementPosition + $this->iCurrentStatementLength - Defs\IBranchLimits::DISPLACEMENT_SIZE;
+
+        if (isset($this->aUnresolvedLabels[$this->sCurrentFilename][$sLabel][$this->iCurrentLineNumber])) {
+            throw new \Exception("Duplicate unresolved label reference to same line in same file");
+        }
+
+        $this->aUnresolvedLabels[$this->sCurrentFilename][$sLabel][$this->iCurrentLineNumber] = $iLocation;
         return $this;
     }
 }

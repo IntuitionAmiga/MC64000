@@ -21,20 +21,17 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\UnhandledCodeFoldException;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\State;
+use ABadCafe\MC64K\Defs;
 
 /**
  * FloatDyadicBranch
  *
  * For all vanilla float compare and branch
  */
-class FloatDyadicBranch extends Dyadic {
+class FloatDyadicBranch extends DyadicBranch {
 
-    use TBranching;
-
-    const
-        OPERAND_TARGET    = 2,
-        MIN_OPERAND_COUNT = 3
-    ;
+    const CB_DEFAULT = 1.0;
 
     /**
      * The set of specific opcodes that this Operand Parser applies to
@@ -69,77 +66,5 @@ class FloatDyadicBranch extends Dyadic {
      */
     public function getOpcodes() : array {
         return array_keys(self::OPCODES);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
-
-        $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
-
-        $iDstIndex     = $this->getDestinationOperandIndex();
-        $sDstBytecode  = $this->oDstParser
-            ->setOperationSize($aSizes[$iDstIndex] ?? self::DEFAULT_SIZE)
-            ->parse($aOperands[$iDstIndex]);
-        if (null === $sDstBytecode) {
-            throw new \UnexpectedValueException(
-                $aOperands[$iDstIndex] . ' not a valid comparison operand'
-            );
-        }
-
-        $iSrcIndex    = $this->getSourceOperandIndex();
-        $sSrcBytecode = $this->oSrcParser
-            ->setOperationSize($aSizes[$iSrcIndex] ?? self::DEFAULT_SIZE)
-            ->parse($aOperands[$iSrcIndex]);
-        if (null === $sSrcBytecode) {
-            throw new \UnexpectedValueException(
-                $aOperands[$iSrcIndex] . ' not a valid comparison operand'
-            );
-        }
-
-        $sDisplacement = $this->parseBranchDisplacement(
-            $aOperands[self::OPERAND_TARGET],
-            $this->oDstParser->hasSideEffects() || $this->oSrcParser->hasSideEffects()
-        );
-
-        $sBytecode = $sDstBytecode . $sSrcBytecode . $sDisplacement;
-        $this->checkBranchDisplacement($sBytecode);
-
-        // Check for foldable immediates
-        if ($this->oDstParser->wasImmediate() && $this->oSrcParser->wasImmediate()) {
-            $sFoldFunc = self::OPCODES[$iOpcode];
-            $cCallback = [$this, $sFoldFunc];
-            throw new CodeFoldException(
-                'SrcEA #' . $this->oSrcParser->getImmediate() . ', ' .
-                'DstEA #' . $this->oDstParser->getImmediate() .
-                ' using ' . $sFoldFunc,
-                $cCallback(
-                    $this->oSrcParser->getImmediate(),
-                    $this->oDstParser->getImmediate(),
-                    $this->oTgtParser->getLastDisplacement(),
-                    strlen($sBytecode)
-                )
-            );
-        }
-
-        // Check for foldable EA. These are where the source EA is exactly the same as the destination
-        if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {
-            $sFoldFunc = self::OPCODES[$iOpcode];
-            $cCallback = [$this, $sFoldFunc];
-            throw new CodeFoldException(
-                'SrcEA ' . $aOperands[$iSrcIndex] . ', ' .
-                'DstEA ' . $aOperands[$iDstIndex] .
-                ' using ' . $sFoldFunc,
-                $cCallback(
-                    1.0, // doesn't matter
-                    1.0, // doesn't matter
-                    $this->oTgtParser->getLastDisplacement(),
-                    strlen($sBytecode)
-                )
-            );
-        }
-
-        return $sBytecode;
     }
 }
