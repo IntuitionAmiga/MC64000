@@ -156,7 +156,7 @@ class Common {
      * @return self
      */
     public function setCurrentStatementLength(int $iStatementLength) : self {
-        Log::printf("%s(%d)", __METHOD__, $iStatementLength);
+        //Log::printf("%s(%d)", __METHOD__, $iStatementLength);
         $this->iCurrentStatementLength = $iStatementLength;
         return $this;
     }
@@ -181,12 +181,12 @@ class Common {
             self::I_LINE => $this->iCurrentLineNumber,
             self::I_POSN => $this->iCurrentStatementPosition
         ];
-        Log::printf(
-            "Added global label '%s' on line %d, code position %d",
-            $sLabel,
-            $this->iCurrentLineNumber,
-            $this->iCurrentStatementPosition
-        );
+//         Log::printf(
+//             "Added global label '%s' on line %d, code position %d",
+//             $sLabel,
+//             $this->iCurrentLineNumber,
+//             $this->iCurrentStatementPosition
+//         );
         return $this;
     }
 
@@ -209,12 +209,12 @@ class Common {
             self::I_LINE => $this->iCurrentLineNumber,
             self::I_POSN => $this->iCurrentStatementPosition
         ];
-        Log::printf(
-            "Added local label '%s' on line %d, code position %d",
-            $sLabel,
-            $this->sCurrentFilename,
-            $this->iCurrentStatementPosition
-        );
+//         Log::printf(
+//             "Added local label '%s' on line %d, code position %d",
+//             $sLabel,
+//             $this->sCurrentFilename,
+//             $this->iCurrentStatementPosition
+//         );
         return $this;
     }
 
@@ -235,14 +235,14 @@ class Common {
         $iPosition = $this->getPositionForLabel($sLabel);
         if (null !== $iPosition) {
             $iDisplacement = $iPosition - $this->iCurrentStatementPosition - $this->iCurrentStatementLength;
-            Log::printf(
-                "Resolved %s to displacement %d [%d - %d - %d]",
-                $sLabel,
-                $iDisplacement,
-                $iPosition,
-                $this->iCurrentStatementPosition,
-                $this->iCurrentStatementLength
-            );
+//             Log::printf(
+//                 "Resolved %s to displacement %d [%d - %d - %d]",
+//                 $sLabel,
+//                 $iDisplacement,
+//                 $iPosition,
+//                 $this->iCurrentStatementPosition,
+//                 $this->iCurrentStatementLength
+//             );
             return $iDisplacement;
         }
         return Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT;
@@ -258,7 +258,7 @@ class Common {
             $this->aGlobalLabels;
         if (isset($aLabels[$sLabel])) {
             Log::printf(
-                "Resolved %s to code position %d",
+                "Resolved label '%s' to bytecode position %d",
                 $sLabel,
                 $aLabels[$sLabel][self::I_POSN]
             );
@@ -279,7 +279,28 @@ class Common {
             throw new \Exception("Duplicate unresolved label reference to same line in same file");
         }
 
+        Log::printf(
+            "Recorded reference to unresolved label '%s' at bytecode position %d",
+            $sLabel,
+            $iLocation
+        );
+
         $this->aUnresolvedLabels[$this->sCurrentFilename][$sLabel][$this->iCurrentLineNumber] = $iLocation;
         return $this;
+    }
+
+    /**
+     *
+     */
+    public function dumpUnresolvedLabels() : void {
+        echo "\nFirst Pass unresolved label dump:\n";
+        foreach ($this->aUnresolvedLabels as $sFilename => &$aUnresolved) {
+            echo "\tIn source file '", $sFilename, "':\n";
+            foreach ($aUnresolved as $sLabel => &$aReferences) {
+                foreach ($aReferences as $iLineNumber => $iLocation) {
+                    echo "\t\tLine ", $iLineNumber, " (bytecode position ", $iLocation, ") => '", $sLabel, "'\n";
+                }
+            }
+        }
     }
 }

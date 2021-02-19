@@ -56,4 +56,4 @@ while ( ($sSourceLine = fgets($rSource)) ) {
 
 fclose($rSource);
 
-print_r($oState);
+$oState->dumpUnresolvedLabels();
