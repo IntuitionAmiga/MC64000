@@ -4,7 +4,6 @@ namespace ABadCafe\MC64K;
 
 const CLASS_MAP = [
   'ABadCafe\\MC64K\\IParser' => '/IParser.php',
-  'ABadCafe\\MC64K\\Parser\\SourceFile' => '/parser/SourceFile.php',
   'ABadCafe\\MC64K\\Parser\\Utils\\TSignedDisplacementAware' => '/parser/utils/TSignedDisplacementAware.php',
   'ABadCafe\\MC64K\\Parser\\Utils\\Hex' => '/parser/utils/Hex.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\TParser' => '/parser/source_line/TParser.php',
@@ -64,6 +63,9 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\GPRIndirect' => '/parser/effective_address/GPRIndirect.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\PCIndirectIndexed' => '/parser/effective_address/PCIndirectIndexed.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\Composite' => '/parser/effective_address/Composite.php',
+  'ABadCafe\\MC64K\\IO\\MockSourceFile' => '/io/MockSourceFile.php',
+  'ABadCafe\\MC64K\\IO\\ISourceFile' => '/io/ISourceFile.php',
+  'ABadCafe\\MC64K\\IO\\SourceFile' => '/io/SourceFile.php',
   'ABadCafe\\MC64K\\Utils\\Binary' => '/utils/Binary.php',
   'ABadCafe\\MC64K\\Utils\\Log' => '/utils/Log.php',
   'ABadCafe\\MC64K\\Tokeniser\\Instruction' => '/tokeniser/Instruction.php',

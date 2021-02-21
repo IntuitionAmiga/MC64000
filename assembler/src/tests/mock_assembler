@@ -32,20 +32,17 @@ if (!file_exists($sSourceFile) || !is_readable($sSourceFile)) {
     exit(1);
 }
 
-
+$oSource = new IO\SourceFile($sSourceFile);
 $oParser = new Parser\SourceLine\Processor();
-$rSource = fopen($sSourceFile, 'r');
 $oState  = State\Common::get();
+$oState->setCurrentFile($oSource);
 
-$oState->setCurrentFilename($sSourceFile);
-
-while ( ($sSourceLine = fgets($rSource)) ) {
-    $oState->incrementCurrentLineNumber();
+while ( ($sSourceLine = $oSource->readLine()) ) {
     $sBytecode  = $oParser->parse($sSourceLine);
     $iLength = $sBytecode ? strlen($sBytecode) : 0;
     printf(
         "%4d [%5d]   %-50s : [%2d] %s\n",
-        $oState->getCurrentLineNumber(),
+        $oSource->getLineNumber(),
         $oState->getCurrentStatementPosition(),
         rtrim($sSourceLine),
         $iLength,
@@ -53,7 +50,5 @@ while ( ($sSourceLine = fgets($rSource)) ) {
     );
     $oState->incrementStatementPosition($iLength);
 }
-
-fclose($rSource);
 
 $oState->dumpUnresolvedLabels();

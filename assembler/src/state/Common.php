@@ -19,6 +19,7 @@ namespace ABadCafe\MC64K\State;
 
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Defs;
+use ABadCafe\MC64K\IO;
 
 /**
  * DSG Antipattern: Dirty Great Singleton
@@ -36,22 +37,22 @@ class Common {
 
     private static ?self $oInstance = null; // Singleton
 
+    private IO\ISourceFile $oCurrentFile;
+
     private array
         $aGlobalLabels     = [],
         $aLocalLabels      = [],
         $aUnresolvedLabels = []
     ;
 
-    private string $sCurrentFilename = '';
 
     private int
-        $iCurrentLineNumber        = 0,
         $iCurrentStatementPosition = 0,
         $iCurrentStatementLength   = 0
     ;
 
     private function __construct() {
-
+        $this->oCurrentFile = new IO\MockSourceFile('', 'none');
     }
 
     /**
@@ -67,52 +68,22 @@ class Common {
     }
 
     /**
-     * @return string
-     */
-    public function getCurrentFilename() : string {
-        return $this->sCurrentFilename;
-    }
-
-    /**
-     * @param  string $sFile
+     * Set the file to work on.
+     *
+     * @param  IO\ISourceFile $oFile
      * @return self
      */
-    public function setCurrentFilename(string $sFilename) : self {
-        if ($this->sCurrentFilename !== $sFilename) {
-            if (isset($this->aLocalLabels[$sFilename])) {
-                throw new \Exception("File already processed");
+    public function setCurrentFile(IO\ISourceFile $oFile) : self {
+        if ($oFile !== $this->oCurrentFile) {
+            $sFilename = $oFile->getFilename();
+            if (isset($this->aFileList[$sFilename])) {
+                throw new \Exception('File ' . $sFilename . ' already processed');
             }
-            $this->sCurrentFilename              = $sFilename;
-            $this->iCurrentLineNumber            = 0;
+            $this->oCurrentFile                  = $oFile;
             $this->iCurrentStatementLength       = 0;
             $this->aLocalLabels[$sFilename]      = [];
             $this->aUnresolvedLabels[$sFilename] = [];
         }
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCurrentLineNumber() : int {
-        return $this->iCurrentLineNumber;
-    }
-
-    /**
-     * @param  int $iLineNumber
-     * @return self
-     */
-    public function setCurrentLineNumber(int $iLineNumber) : self {
-        $this->iCurrentLineNumber = $iLineNumber;
-        return $this;
-    }
-
-    /**
-     * @param  int $iLineCount
-     * @return self
-     */
-    public function incrementCurrentLineNumber(int $iLineCount = 1) : self {
-        $this->iCurrentLineNumber += $iLineCount;
         return $this;
     }
 
@@ -176,9 +147,12 @@ class Common {
                 ' on line ' . $this->aGlobalLabels[$sLabel][self::I_LINE]
             );
         }
+        $sCurrentFilename   = $this->oCurrentFile->getFilename();
+        $iCurrentLineNumber = $this->oCurrentFile->getLineNumber();
+
         $this->aGlobalLabels[$sLabel] = [
-            self::I_FILE => $this->sCurrentFilename,
-            self::I_LINE => $this->iCurrentLineNumber,
+            self::I_FILE => $sCurrentFilename,
+            self::I_LINE => $iCurrentLineNumber,
             self::I_POSN => $this->iCurrentStatementPosition
         ];
 //         Log::printf(
@@ -198,15 +172,17 @@ class Common {
      * @throws Exception
      */
     public function addLocalLabel(string $sLabel) : self {
-        if (isset($this->aLocalLabels[$this->sCurrentFilename][$sLabel])) {
+        $sCurrentFilename = $this->oCurrentFile->getFilename();
+        if (isset($this->aLocalLabels[$sCurrentFilename][$sLabel])) {
             throw new \Exception(
                 'Duplicate local: '     . $sLabel .
-                ' already declared in ' . $this->sCurrentFilename .
-                ' on line '             . $this->aLocalLabels[$this->sCurrentFilename][$sLabel][self::I_LINE]
+                ' already declared in ' . $sCurrentFilename .
+                ' on line '             . $this->aLocalLabels[$sCurrentFilename][$sLabel][self::I_LINE]
             );
         }
-        $this->aLocalLabels[$this->sCurrentFilename][$sLabel] = [
-            self::I_LINE => $this->iCurrentLineNumber,
+        $iCurrentLineNumber = $this->oCurrentFile->getLineNumber();
+        $this->aLocalLabels[$sCurrentFilename][$sLabel] = [
+            self::I_LINE => $iCurrentLineNumber,
             self::I_POSN => $this->iCurrentStatementPosition
         ];
 //         Log::printf(
@@ -253,8 +229,9 @@ class Common {
      * @return int|null
      */
     public function getPositionForLabel(string $sLabel) : ?int {
+        $sCurrentFilename = $this->oCurrentFile->getFilename();
         $aLabels = ('.' === $sLabel[0]) ?
-            $this->aLocalLabels[$this->sCurrentFilename] :
+            $this->aLocalLabels[$sCurrentFilename] :
             $this->aGlobalLabels;
         if (isset($aLabels[$sLabel])) {
             Log::printf(
@@ -274,8 +251,10 @@ class Common {
     public function addUnresolvedLabel(string $sLabel) : self {
 
         $iLocation = $this->iCurrentStatementPosition + $this->iCurrentStatementLength - Defs\IBranchLimits::DISPLACEMENT_SIZE;
+        $sCurrentFilename   = $this->oCurrentFile->getFilename();
+        $iCurrentLineNumber = $this->oCurrentFile->getLineNumber();
 
-        if (isset($this->aUnresolvedLabels[$this->sCurrentFilename][$sLabel][$this->iCurrentLineNumber])) {
+        if (isset($this->aUnresolvedLabels[$sCurrentFilename][$sLabel][$iCurrentLineNumber])) {
             throw new \Exception("Duplicate unresolved label reference to same line in same file");
         }
 
@@ -285,7 +264,7 @@ class Common {
             $iLocation
         );
 
-        $this->aUnresolvedLabels[$this->sCurrentFilename][$sLabel][$this->iCurrentLineNumber] = $iLocation;
+        $this->aUnresolvedLabels[$sCurrentFilename][$sLabel][$iCurrentLineNumber] = $iLocation;
         return $this;
     }
 
