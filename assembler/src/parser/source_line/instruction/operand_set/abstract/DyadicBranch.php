@@ -65,7 +65,7 @@ abstract class DyadicBranch extends Dyadic {
             );
         }
 
-        $oState = State\Common::get();
+        $oState = State\Coordinator::get();
         $oState->setCurrentStatementLength(
             Defs\IOpcodeLimits::SIZE +
             Defs\IBranchLimits::DISPLACEMENT_SIZE +

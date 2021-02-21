@@ -65,7 +65,7 @@ class BranchDisplacementOnly implements Instruction\IOperandSetParser {
 
         $bShort = isset(self::SHORT[$iOpcode]);
         $sLabel = $aOperands[0];
-        $oState = State\Common::get();
+        $oState = State\Coordinator::get();
 
         $oState->setCurrentStatementLength(
             Defs\IOpcodeLimits::SIZE +

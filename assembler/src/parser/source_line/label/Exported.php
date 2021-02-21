@@ -32,7 +32,7 @@ class Exported implements SourceLine\IParser {
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
-        State\Common::get()->addGlobalLabel(rtrim($sSource, ':'));
+        State\Coordinator::get()->addGlobalLabel(rtrim($sSource, ':'));
         return '';
     }
 }

@@ -56,7 +56,7 @@ abstract class MonadicBranch extends Monadic {
             );
         }
 
-        $oState = State\Common::get();
+        $oState = State\Coordinator::get();
         $oState->setCurrentStatementLength(
             Defs\IOpcodeLimits::SIZE +
             Defs\IBranchLimits::DISPLACEMENT_SIZE +

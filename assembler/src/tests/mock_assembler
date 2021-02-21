@@ -34,7 +34,7 @@ if (!file_exists($sSourceFile) || !is_readable($sSourceFile)) {
 
 $oSource = new IO\SourceFile($sSourceFile);
 $oParser = new Parser\SourceLine\Processor();
-$oState  = State\Common::get();
+$oState  = State\Coordinator::get();
 $oState->setCurrentFile($oSource);
 $oOutput = $oState->getOutput();
 

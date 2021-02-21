@@ -55,7 +55,7 @@ class CustomMonadicBranch extends CustomMonadic {
             );
         }
 
-        $oState = State\Common::get();
+        $oState = State\Coordinator::get();
         $oState->setCurrentStatementLength(
             Defs\IOpcodeLimits::SIZE +
             Defs\IBranchLimits::DISPLACEMENT_SIZE +

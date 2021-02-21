@@ -26,7 +26,7 @@ use ABadCafe\MC64K\IO;
  *
  * It may not be the right tool for most things, but here, it makes some sense.
  */
-class Common {
+class Coordinator {
 
     const
         I_NAME = 3,
@@ -131,12 +131,6 @@ class Common {
             self::I_LINE => $iCurrentLineNumber,
             self::I_POSN => $iCurrentStatementPosition
         ];
-//         Log::printf(
-//             "Added global label '%s' on line %d, code position %d",
-//             $sLabel,
-//             $iCurrentLineNumber,
-//             $iCurrentStatementPosition
-//         );
         return $this;
     }
 

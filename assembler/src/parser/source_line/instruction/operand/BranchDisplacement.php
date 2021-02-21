@@ -65,7 +65,7 @@ class BranchDisplacement implements MC64K\IParser {
         }
         // TODO - handle labels
         if (preg_match(self::MATCH_LABEL, $sSource, $aMatches)) {
-            $this->iLastDisplacement = State\Common::get()->getBranchDisplacementForLabel($aMatches[self::MATCHED_LABEL]);
+            $this->iLastDisplacement = State\Coordinator::get()->getBranchDisplacementForLabel($aMatches[self::MATCHED_LABEL]);
             return pack('V', $this->iLastDisplacement);
         }
 

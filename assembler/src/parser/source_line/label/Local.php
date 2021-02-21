@@ -32,7 +32,7 @@ class Local implements SourceLine\IParser {
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
-        State\Common::get()->addLocalLabel(rtrim($sSource, ':'));
+        State\Coordinator::get()->addLocalLabel(rtrim($sSource, ':'));
         return '';
     }
 }
