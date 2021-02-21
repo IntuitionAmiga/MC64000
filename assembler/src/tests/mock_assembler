@@ -36,6 +36,7 @@ $oSource = new IO\SourceFile($sSourceFile);
 $oParser = new Parser\SourceLine\Processor();
 $oState  = State\Common::get();
 $oState->setCurrentFile($oSource);
+$oOutput = $oState->getOutput();
 
 while ( ($sSourceLine = $oSource->readLine()) ) {
     $sBytecode  = $oParser->parse($sSourceLine);
@@ -43,12 +44,14 @@ while ( ($sSourceLine = $oSource->readLine()) ) {
     printf(
         "%4d [%5d]   %-50s : [%2d] %s\n",
         $oSource->getLineNumber(),
-        $oState->getCurrentStatementPosition(),
+        $oOutput->getCurrentStatementPosition(),
         rtrim($sSourceLine),
         $iLength,
         Utils\Binary::format($sBytecode)
     );
-    $oState->incrementStatementPosition($iLength);
+    $oOutput->appendStatement($sBytecode);
 }
 
 $oState->dumpUnresolvedLabels();
+
+echo "\n", Utils\Binary::format($oOutput->getBytecode()), "\n";

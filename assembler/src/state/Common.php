@@ -38,6 +38,7 @@ class Common {
     private static ?self $oInstance = null; // Singleton
 
     private IO\ISourceFile $oCurrentFile;
+    private Output $oOutput;
 
     private array
         $aGlobalLabels     = [],
@@ -51,8 +52,12 @@ class Common {
         $iCurrentStatementLength   = 0
     ;
 
+    /**
+     * Constructor
+     */
     private function __construct() {
-        $this->oCurrentFile = new IO\MockSourceFile('', 'none');
+        $this->oCurrentFile = new IO\SourceString('', 'none');
+        $this->oOutput      = new Output;
     }
 
     /**
@@ -87,48 +92,19 @@ class Common {
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getCurrentStatementPosition() : int {
-        return $this->iCurrentStatementPosition;
+    public function getCurrentFile() : IO\ISourceFile {
+        return $this->oCurrentFile;
+    }
+
+    public function getOutput() : Output {
+        return $this->oOutput;
     }
 
     /**
-     * @param  int $iStatementPosition
-     * @return self
+     * Simple trampoline
      */
-    public function setCurrentStatementPosition(int $iStatementPosition) : self {
-        $this->iCurrentStatementPosition = $iStatementPosition;
-        $this->iCurrentStatementLength   = 0;
-        return $this;
-    }
-
-    /**
-     * @param  int $iCodeLength
-     * @return self
-     */
-    public function incrementStatementPosition(int $iCodeLength) : self {
-        $this->iCurrentStatementPosition += $iCodeLength;
-        $this->iCurrentStatementLength   = 0;
-        return $this;
-    }
-
-
-    /**
-     * @return int
-     */
-    public function getCurrentStatementLength() : int {
-        return $this->iCurrentStatementLength;
-    }
-
-    /**
-     * @param  int $iStatementLength
-     * @return self
-     */
-    public function setCurrentStatementLength(int $iStatementLength) : self {
-        //Log::printf("%s(%d)", __METHOD__, $iStatementLength);
-        $this->iCurrentStatementLength = $iStatementLength;
+    public function setCurrentStatementLength(int $iLength) : self {
+        $this->oOutput->setCurrentStatementLength($iLength);
         return $this;
     }
 
@@ -147,19 +123,19 @@ class Common {
                 ' on line ' . $this->aGlobalLabels[$sLabel][self::I_LINE]
             );
         }
-        $sCurrentFilename   = $this->oCurrentFile->getFilename();
-        $iCurrentLineNumber = $this->oCurrentFile->getLineNumber();
-
+        $sCurrentFilename          = $this->oCurrentFile->getFilename();
+        $iCurrentLineNumber        = $this->oCurrentFile->getLineNumber();
+        $iCurrentStatementPosition = $this->oOutput->getCurrentStatementPosition();
         $this->aGlobalLabels[$sLabel] = [
             self::I_FILE => $sCurrentFilename,
             self::I_LINE => $iCurrentLineNumber,
-            self::I_POSN => $this->iCurrentStatementPosition
+            self::I_POSN => $iCurrentStatementPosition
         ];
 //         Log::printf(
 //             "Added global label '%s' on line %d, code position %d",
 //             $sLabel,
-//             $this->iCurrentLineNumber,
-//             $this->iCurrentStatementPosition
+//             $iCurrentLineNumber,
+//             $iCurrentStatementPosition
 //         );
         return $this;
     }
@@ -180,16 +156,18 @@ class Common {
                 ' on line '             . $this->aLocalLabels[$sCurrentFilename][$sLabel][self::I_LINE]
             );
         }
-        $iCurrentLineNumber = $this->oCurrentFile->getLineNumber();
+        $iCurrentLineNumber        = $this->oCurrentFile->getLineNumber();
+        $iCurrentStatementPosition = $this->oOutput->getCurrentStatementPosition();
+
         $this->aLocalLabels[$sCurrentFilename][$sLabel] = [
             self::I_LINE => $iCurrentLineNumber,
-            self::I_POSN => $this->iCurrentStatementPosition
+            self::I_POSN => $iCurrentStatementPosition
         ];
 //         Log::printf(
 //             "Added local label '%s' on line %d, code position %d",
 //             $sLabel,
-//             $this->sCurrentFilename,
-//             $this->iCurrentStatementPosition
+//             $sCurrentFilename,
+//             $iCurrentStatementPosition
 //         );
         return $this;
     }
@@ -210,7 +188,7 @@ class Common {
     public function getBranchDisplacementForLabel(string $sLabel) : int {
         $iPosition = $this->getPositionForLabel($sLabel);
         if (null !== $iPosition) {
-            $iDisplacement = $iPosition - $this->iCurrentStatementPosition - $this->iCurrentStatementLength;
+            $iDisplacement = $this->oOutput->getDisplacmentForPosition($iPosition);
 //             Log::printf(
 //                 "Resolved %s to displacement %d [%d - %d - %d]",
 //                 $sLabel,
@@ -250,7 +228,7 @@ class Common {
      */
     public function addUnresolvedLabel(string $sLabel) : self {
 
-        $iLocation = $this->iCurrentStatementPosition + $this->iCurrentStatementLength - Defs\IBranchLimits::DISPLACEMENT_SIZE;
+        $iLocation          = $this->oOutput->getCurrentOffset() - Defs\IBranchLimits::DISPLACEMENT_SIZE;
         $sCurrentFilename   = $this->oCurrentFile->getFilename();
         $iCurrentLineNumber = $this->oCurrentFile->getLineNumber();
 
