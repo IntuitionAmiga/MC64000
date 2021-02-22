@@ -38,7 +38,8 @@ class Coordinator {
     private static ?self $oInstance = null; // Singleton
 
     private IO\ISourceFile $oCurrentFile;
-    private Output $oOutput;
+    private LabelLocation  $oLabelLocation;
+    private Output         $oOutput;
 
     private array
         $aGlobalLabels     = [],
@@ -56,8 +57,9 @@ class Coordinator {
      * Constructor
      */
     private function __construct() {
-        $this->oCurrentFile = new IO\SourceString('', 'none');
-        $this->oOutput      = new Output;
+        $this->oCurrentFile   = new IO\SourceString('', 'none');
+        $this->oLabelLocation = new LabelLocation();
+        $this->oOutput        = new Output;
     }
 
     /**
@@ -81,9 +83,9 @@ class Coordinator {
     public function setCurrentFile(IO\ISourceFile $oFile) : self {
         if ($oFile !== $this->oCurrentFile) {
             $sFilename = $oFile->getFilename();
-            if (isset($this->aFileList[$sFilename])) {
-                throw new \Exception('File ' . $sFilename . ' already processed');
-            }
+//             if (isset($this->aFileList[$sFilename])) {
+//                 throw new \Exception('File ' . $sFilename . ' already processed');
+//             }
             $this->oCurrentFile                  = $oFile;
             $this->iCurrentStatementLength       = 0;
             $this->aLocalLabels[$sFilename]      = [];
@@ -116,6 +118,13 @@ class Coordinator {
      * @throws Exception
      */
     public function addGlobalLabel(string $sLabel) : self {
+
+        $this->oLabelLocation->addGlobal(
+            $this->oCurrentFile,
+            $sLabel,
+            $this->oOutput->getCurrentStatementPosition()
+        );
+
         if (isset($this->aGlobalLabels[$sLabel])) {
             throw new \Exception(
                 'Duplicate global: '    . $sLabel .
@@ -142,6 +151,14 @@ class Coordinator {
      * @throws Exception
      */
     public function addLocalLabel(string $sLabel) : self {
+
+        $this->oLabelLocation->addLocal(
+            $this->oCurrentFile,
+            $sLabel,
+            $this->oOutput->getCurrentStatementPosition()
+        );
+
+
         $sCurrentFilename = $this->oCurrentFile->getFilename();
         if (isset($this->aLocalLabels[$sCurrentFilename][$sLabel])) {
             throw new \Exception(

@@ -70,6 +70,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Utils\\Log' => '/utils/Log.php',
   'ABadCafe\\MC64K\\Tokeniser\\Instruction' => '/tokeniser/Instruction.php',
   'ABadCafe\\MC64K\\State\\Output' => '/state/Output.php',
+  'ABadCafe\\MC64K\\State\\LabelLocation' => '/state/LabelLocation.php',
   'ABadCafe\\MC64K\\State\\Coordinator' => '/state/Coordinator.php',
   'ABadCafe\\MC64K\\Defs\\IOpcodeLimits' => '/defs/IOpcodeLimits.php',
   'ABadCafe\\MC64K\\Defs\\IBranchLimits' => '/defs/IBranchLimits.php',
