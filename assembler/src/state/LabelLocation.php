@@ -20,6 +20,11 @@ namespace ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\IO;
 
+/**
+ * LabelLocation
+ *
+ * Responsible for keeping track of where labels are declared and referenced.
+ */
 class LabelLocation {
 
     const
@@ -40,7 +45,7 @@ class LabelLocation {
      * @param  string         $sLabel
      * @param  int            $iOffset
      * @return self
-     * @throws Exception
+     * @throws \Exception
      */
     public function addGlobal(IO\ISourceFile $oFile, string $sLabel, int $iOffset) : self {
         if (isset($this->aGlobalLabels[$sLabel])) {
@@ -66,12 +71,13 @@ class LabelLocation {
     }
 
     /**
-     * Add a local label to the registry. A local label can be declared only once in the current file.
+     * Add a local label to the registry. A local label can be declared only once in given file.
      *
-     * @param  string $sLabel
-     * @param  int    $iOffset
+     * @param  IO\File $oFile
+     * @param  string  $sLabel
+     * @param  int     $iOffset
      * @return self
-     * @throws Exception
+     * @throws \Exception
      */
     public function addLocal(IO\ISourceFile $oFile, string $sLabel, int $iOffset) : self {
         $sCurrentFile = $oFile->getFilename();
@@ -106,43 +112,62 @@ class LabelLocation {
     }
 
     /**
-     * Obtains the offset for a currently declared local label in the specified file (if given) or the
-     * current file.
+     * Obtains the offset for a locally declared label (if known) in the specified file.
+     *
+     * @param  IO\ISourceFile $oFile
+     * @param  string         $sLabel
+     * @return int|null
      */
     public function getPositionForLocal(IO\ISourceFile $oFile, string $sLabel) : ?int {
         $sFile = $oFile->getFilename();
         if (isset($this->aLocalLabels[$sFile][$sLabel])) {
+            Log::printf(
+                "Resolved local label '%s' to bytecode position %d",
+                $sLabel,
+                $this->aLocalLabels[$sFile][$sLabel][self::I_OFST]
+            );
             return $this->aLocalLabels[$sFile][$sLabel][self::I_OFST];
         }
         return null;
     }
 
+    /**
+     * Obtains the offset for a globally declared label (if known)
+     *
+     * @param  string $sLabel
+     * @return int|null
+     */
     public function getPositionForGlobal(string $sLabel) : ?int {
         if (isset($this->aGlobalLabels[$sLabel])) {
+            Log::printf(
+                "Resolved label '%s' to bytecode position %d",
+                $sLabel,
+                $this->aGlobalLabels[$sLabel][self::I_POSN]
+            );
             return $this->aGlobalLabels[$sLabel][self::I_OFST];
         }
         return null;
     }
 
     /**
-     * @param  string $sLabel
+     * Records an instance of an unresolved label reference.
+     *
+     * @param  IO\ISourceFile $oFile
+     * @param  string         $sLabel
+     * @parma  int            $iLocation
      * @return self
      */
-    public function addUnresolvedLabel(IO\ISourceFile $oFile, string $sLabel, int $iLocation) : self {
-
+    public function addUnresolved(IO\ISourceFile $oFile, string $sLabel, int $iLocation) : self {
         $sCurrentFilename   = $oFile->getFilename();
         $iCurrentLineNumber = $oFile->getLineNumber();
-
         if (isset($this->aUnresolvedLabels[$sCurrentFilename][$sLabel][$iCurrentLineNumber])) {
             throw new \Exception("Duplicate unresolved label reference to same line in same file");
         }
-
         Log::printf(
             "Recorded reference to unresolved label '%s' at bytecode position %d",
             $sLabel,
             $iLocation
         );
-
         $this->aUnresolvedLabels[$sCurrentFilename][$sLabel][$iCurrentLineNumber] = $iLocation;
         return $this;
     }

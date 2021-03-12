@@ -21,6 +21,8 @@ use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Defs;
 
 /**
+ * Output
+ *
  * Bytecode output
  */
 class Output {
@@ -37,7 +39,7 @@ class Output {
     }
 
     /**
-     * Add a complete bytecode statement.
+     * Add a complete bytecode statement to the buffer.
      * Resets the current statement position and length properties
      *
      * @param  string $sBytecode
@@ -51,6 +53,8 @@ class Output {
     }
 
     /**
+     * Returns the current internal statement position.
+     *
      * @return int
      */
     public function getCurrentStatementPosition() : int {
@@ -58,6 +62,8 @@ class Output {
     }
 
     /**
+     * Returns the current internal statement length.
+     *
      * @return int
      */
     public function getCurrentStatementLength() : int {
@@ -65,6 +71,8 @@ class Output {
     }
 
     /**
+     * Sets the current internal statement length, used to track the size of the bytecode of the operation so far.
+     *
      * @param  int $iStatementLength
      * @return self
      */
@@ -74,6 +82,8 @@ class Output {
     }
 
     /**
+     * Returns the displacement for a given position.
+     *
      * @param  int $iPosition
      * @return int
      */
@@ -82,6 +92,8 @@ class Output {
     }
 
     /**
+     * Returns the current offset into the bytecode.
+     *
      * @return int
      */
     public function getCurrentOffset() : int {

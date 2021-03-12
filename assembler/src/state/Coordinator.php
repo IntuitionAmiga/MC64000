@@ -22,36 +22,19 @@ use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\IO;
 
 /**
+ * Coordinator
+ *
  * DSG Antipattern: Dirty Great Singleton
  *
  * It may not be the right tool for most things, but here, it makes some sense.
  */
 class Coordinator {
 
-    const
-        I_NAME = 3,
-        I_FILE = 2,
-        I_LINE = 1,
-        I_POSN = 0
-    ;
-
     private static ?self $oInstance = null; // Singleton
 
     private IO\ISourceFile $oCurrentFile;
     private LabelLocation  $oLabelLocation;
     private Output         $oOutput;
-
-    private array
-        $aGlobalLabels     = [],
-        $aLocalLabels      = [],
-        $aUnresolvedLabels = []
-    ;
-
-
-    private int
-        $iCurrentStatementPosition = 0,
-        $iCurrentStatementLength   = 0
-    ;
 
     /**
      * Constructor
@@ -87,9 +70,6 @@ class Coordinator {
 //                 throw new \Exception('File ' . $sFilename . ' already processed');
 //             }
             $this->oCurrentFile                  = $oFile;
-            $this->iCurrentStatementLength       = 0;
-            $this->aLocalLabels[$sFilename]      = [];
-            $this->aUnresolvedLabels[$sFilename] = [];
         }
         return $this;
     }
@@ -118,28 +98,11 @@ class Coordinator {
      * @throws Exception
      */
     public function addGlobalLabel(string $sLabel) : self {
-
         $this->oLabelLocation->addGlobal(
             $this->oCurrentFile,
             $sLabel,
             $this->oOutput->getCurrentStatementPosition()
         );
-
-        if (isset($this->aGlobalLabels[$sLabel])) {
-            throw new \Exception(
-                'Duplicate global: '    . $sLabel .
-                ' already declared in ' . $this->aGlobalLabels[$sLabel][self::I_FILE] .
-                ' on line ' . $this->aGlobalLabels[$sLabel][self::I_LINE]
-            );
-        }
-        $sCurrentFilename          = $this->oCurrentFile->getFilename();
-        $iCurrentLineNumber        = $this->oCurrentFile->getLineNumber();
-        $iCurrentStatementPosition = $this->oOutput->getCurrentStatementPosition();
-        $this->aGlobalLabels[$sLabel] = [
-            self::I_FILE => $sCurrentFilename,
-            self::I_LINE => $iCurrentLineNumber,
-            self::I_POSN => $iCurrentStatementPosition
-        ];
         return $this;
     }
 
@@ -151,35 +114,11 @@ class Coordinator {
      * @throws Exception
      */
     public function addLocalLabel(string $sLabel) : self {
-
         $this->oLabelLocation->addLocal(
             $this->oCurrentFile,
             $sLabel,
             $this->oOutput->getCurrentStatementPosition()
         );
-
-
-        $sCurrentFilename = $this->oCurrentFile->getFilename();
-        if (isset($this->aLocalLabels[$sCurrentFilename][$sLabel])) {
-            throw new \Exception(
-                'Duplicate local: '     . $sLabel .
-                ' already declared in ' . $sCurrentFilename .
-                ' on line '             . $this->aLocalLabels[$sCurrentFilename][$sLabel][self::I_LINE]
-            );
-        }
-        $iCurrentLineNumber        = $this->oCurrentFile->getLineNumber();
-        $iCurrentStatementPosition = $this->oOutput->getCurrentStatementPosition();
-
-        $this->aLocalLabels[$sCurrentFilename][$sLabel] = [
-            self::I_LINE => $iCurrentLineNumber,
-            self::I_POSN => $iCurrentStatementPosition
-        ];
-//         Log::printf(
-//             "Added local label '%s' on line %d, code position %d",
-//             $sLabel,
-//             $sCurrentFilename,
-//             $iCurrentStatementPosition
-//         );
         return $this;
     }
 
@@ -200,14 +139,14 @@ class Coordinator {
         $iPosition = $this->getPositionForLabel($sLabel);
         if (null !== $iPosition) {
             $iDisplacement = $this->oOutput->getDisplacmentForPosition($iPosition);
-//             Log::printf(
-//                 "Resolved %s to displacement %d [%d - %d - %d]",
-//                 $sLabel,
-//                 $iDisplacement,
-//                 $iPosition,
-//                 $this->iCurrentStatementPosition,
-//                 $this->iCurrentStatementLength
-//             );
+            Log::printf(
+                "Resolved %s to displacement %d [%d - %d - %d]",
+                $sLabel,
+                $iDisplacement,
+                $iPosition,
+                $this->oOutput->getCurrentStatementPosition(),
+                $this->oOutput->getCurrentStatementLength()
+            );
             return $iDisplacement;
         }
         return Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT;
@@ -218,19 +157,9 @@ class Coordinator {
      * @return int|null
      */
     public function getPositionForLabel(string $sLabel) : ?int {
-        $sCurrentFilename = $this->oCurrentFile->getFilename();
-        $aLabels = ('.' === $sLabel[0]) ?
-            $this->aLocalLabels[$sCurrentFilename] :
-            $this->aGlobalLabels;
-        if (isset($aLabels[$sLabel])) {
-            Log::printf(
-                "Resolved label '%s' to bytecode position %d",
-                $sLabel,
-                $aLabels[$sLabel][self::I_POSN]
-            );
-            return $aLabels[$sLabel][self::I_POSN];
-        }
-        return null;
+        return ('.' === $sLabel[0]) ?
+            $this->oLabelLocation->getPositionForLocal($this->oCurrentFile, $sLabel) :
+            $this->oLabelLocation->getPositionForGlobal($this->oCurrentFile, $sLabel);
     }
 
     /**
@@ -238,22 +167,12 @@ class Coordinator {
      * @return self
      */
     public function addUnresolvedLabel(string $sLabel) : self {
-
-        $iLocation          = $this->oOutput->getCurrentOffset() - Defs\IBranchLimits::DISPLACEMENT_SIZE;
-        $sCurrentFilename   = $this->oCurrentFile->getFilename();
-        $iCurrentLineNumber = $this->oCurrentFile->getLineNumber();
-
-        if (isset($this->aUnresolvedLabels[$sCurrentFilename][$sLabel][$iCurrentLineNumber])) {
-            throw new \Exception("Duplicate unresolved label reference to same line in same file");
-        }
-
-        Log::printf(
-            "Recorded reference to unresolved label '%s' at bytecode position %d",
+        $iLocation = $this->oOutput->getCurrentOffset() - Defs\IBranchLimits::DISPLACEMENT_SIZE;
+        $this->oLabelLocation->addUnresolved(
+            $this->oCurrentFile,
             $sLabel,
             $iLocation
         );
-
-        $this->aUnresolvedLabels[$sCurrentFilename][$sLabel][$iCurrentLineNumber] = $iLocation;
         return $this;
     }
 
@@ -262,13 +181,14 @@ class Coordinator {
      */
     public function dumpUnresolvedLabels() : void {
         echo "\nFirst Pass unresolved label dump:\n";
-        foreach ($this->aUnresolvedLabels as $sFilename => &$aUnresolved) {
-            echo "\tIn source file '", $sFilename, "':\n";
-            foreach ($aUnresolved as $sLabel => &$aReferences) {
-                foreach ($aReferences as $iLineNumber => $iLocation) {
-                    echo "\t\tLine ", $iLineNumber, " (bytecode position ", $iLocation, ") => '", $sLabel, "'\n";
-                }
-            }
-        }
+//         foreach ($this->aUnresolvedLabels as $sFilename => &$aUnresolved) {
+//             echo "\tIn source file '", $sFilename, "':\n";
+//             foreach ($aUnresolved as $sLabel => &$aReferences) {
+//                 foreach ($aReferences as $iLineNumber => $iLocation) {
+//                     echo "\t\tLine ", $iLineNumber, " (bytecode position ", $iLocation, ") => '", $sLabel, "'\n";
+//                 }
+//             }
+//         }
+        print_r($this->oLabelLocation);
     }
 }
