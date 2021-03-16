@@ -18,9 +18,9 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Defs\EffectiveAddress;
 
 /**
- * Effective Adddress Modes
+ * IMatches
  *
- * Defines a set of regular expression rules for matching trimmed Effective Address strings
+ * Defines a set of regular expression rules for matching trimmed Effective Address strings.
  */
 interface IMatches extends IRegisterDirect, IRegisterIndirect, IRegisterIndirectIndexed, IOther {
 

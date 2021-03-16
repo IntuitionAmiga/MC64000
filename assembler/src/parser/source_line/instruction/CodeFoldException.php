@@ -20,7 +20,10 @@ namespace ABadCafe\MC64K\Parser\SourceLine\Instruction;
 /**
  * CodeFoldException
  *
- * Exception raised where code can be folded
+ * Exception raised where code can be folded. The intention of a code folding exception is to be thrown deep in a parsing layer
+ * where an alternative set of instructions to those being assembled has been identified as a more efficient code path. This is
+ * usually the elimination of code that has no effect. The exception then bubbles up through the parser heirarchy and is caught
+ * at the bytecode generation phase which may decide to use it instead of the instruction under evaluation.
  */
 class CodeFoldException extends \Exception {
 

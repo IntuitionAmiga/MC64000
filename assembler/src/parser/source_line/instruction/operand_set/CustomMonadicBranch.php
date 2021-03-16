@@ -18,9 +18,14 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
+use ABadCafe\MC64K\State;
+use ABadCafe\MC64K\Defs;
+
 
 /**
  * CustomMonadicBranch
+ *
+ * For custom single operand with branch operations.
  */
 class CustomMonadicBranch extends CustomMonadic {
 
@@ -51,10 +56,22 @@ class CustomMonadicBranch extends CustomMonadic {
                 $aOperands[$iSrcIndex] . ' not a valid comparison operand'
             );
         }
+
+        $oState = State\Coordinator::get();
+        $oState->setCurrentStatementLength(
+            Defs\IOpcodeLimits::SIZE +
+            Defs\IBranchLimits::DISPLACEMENT_SIZE +
+            strlen($sSrcBytecode)
+        );
+
         $sDisplacement = $this->parseBranchDisplacement(
             $aOperands[self::OPERAND_TARGET],
             $this->oSrcParser->hasSideEffects()
         );
+
+        if ($this->oTgtParser->wasUnresolved()) {
+            $oState->addUnresolvedLabel($aOperands[self::OPERAND_TARGET]);
+        }
 
         $sBytecode = $sSrcBytecode . $sDisplacement;
         $this->checkBranchDisplacement($sBytecode);

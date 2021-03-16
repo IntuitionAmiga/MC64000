@@ -20,7 +20,7 @@ namespace ABadCafe\MC64K\Parser\Utils;
 /**
  * Hex
  *
- * Utilities for dealing with hexadecimal values
+ * Utilities for dealing with hexadecimal values.
  */
 class Hex {
 

@@ -25,7 +25,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
 /**
  * IntegerDyadic
  *
- * For all vanilla integer destination @ source -> destination operations
+ * For all vanilla integer destination @ source -> destination operations.
  */
 class IntegerDyadic extends Dyadic {
 

@@ -20,7 +20,7 @@ namespace ABadCafe\MC64K\Parser\SourceLine\Instruction;
 /**
  * UnhandledCodeFoldException
  *
- * Exception raised where code can not yet be folded
+ * Exception raised where code can not yet be folded. This exception will lead to a failure to assemble the file.
  */
 class UnhandledCodeFoldException extends \Exception {
 

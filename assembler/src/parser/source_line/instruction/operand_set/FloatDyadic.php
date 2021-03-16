@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
 /**
  * FloatDyadic
  *
- * For all vanilla float destination @ source -> destination operations
+ * For all vanilla float destination @ source -> destination operations.
  */
 class FloatDyadic extends Dyadic {
 

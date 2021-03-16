@@ -25,11 +25,11 @@ class Log {
     private static int $iLine  = 0;
 
     /**
-     *
+     * @param string $sFormat
      */
     public static function printf(string $sFormat, ...$aVarArgs) : void {
         fprintf(
-            STDERR, ('%4d ' . $sFormat . "\n"), self::$iLine++, ...$aVarArgs
+            STDERR, ('#%d ' . $sFormat . "\n"), self::$iLine++, ...$aVarArgs
         );
     }
 }

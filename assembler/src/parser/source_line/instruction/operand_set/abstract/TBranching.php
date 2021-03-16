@@ -20,10 +20,13 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\UnhandledCodeFoldException;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\Defs\IBranchLimits;
 use ABadCafe\MC64K\Parser;
 
 /**
  * TBranching
+ *
+ * Trait that provides a set of common behavioural requirements for set parsers that branch.
  */
 trait TBranching {
 
@@ -47,7 +50,7 @@ trait TBranching {
     }
 
     /**
-     *
+     * @throws \RangeException|\UnexpectedValueException
      */
     protected function checkShortBranchDisplacement() : void {
         $iDisplacement = $this->oTgtParser->getLastDisplacement();
@@ -197,7 +200,7 @@ trait TBranching {
             throw new \UnexpectedValueException('Unable to encode fixed branch for #' . $iProposedDisplacement);
         }
 
-        if (Operand\BranchDisplacement::UNRESOLVED === $iDisplacement) {
+        if (IBranchLimits::UNRESOLVED_DISPLACEMENT === $iDisplacement) {
             $iOpcode = IControl::BRA;
             $aRange  = IFixedBranch::RANGES[$iOpcode];
             return $this->generateFixedBranchBytecode(

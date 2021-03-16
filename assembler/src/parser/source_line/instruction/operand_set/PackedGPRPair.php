@@ -24,7 +24,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 /**
  * PackedGPRPair
  *
- * For register to register operations where both registers are packed into a single byte
+ * For register to register operations where both registers are packed into a single byte.
  */
 class PackedGPRPair extends PackedRegisterPair {
 

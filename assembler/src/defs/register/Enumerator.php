@@ -21,6 +21,8 @@ use \OutOfBoundsException;
 
 /**
  * Enumerator
+ *
+ * Maps a register name back to an enumerated value.
  */
 class Enumerator implements INames {
 

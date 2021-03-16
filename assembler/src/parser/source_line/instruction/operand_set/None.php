@@ -22,7 +22,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 /**
  * None
  *
- * For those operations that have no operands to parse
+ * For those operations that have no operands to parse.
  */
 class None implements Instruction\IOperandSetParser {
 

@@ -20,7 +20,7 @@ namespace ABadCafe\MC64K\Defs\EffectiveAddress;
 /**
  * IRegisterDirect
  *
- * Enumerates the bytecodes for register direct addressing modes
+ * Enumerates the bytecodes for register direct addressing modes.
  */
 interface IRegisterDirect extends IByteCodeGroups {
 

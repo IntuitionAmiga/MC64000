@@ -20,7 +20,7 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
 /**
  * IDataMove
  *
- * Enumerates data movement instructions
+ * Enumerates data movement instruction opcodes.
  */
 interface IDataMove extends IByteCodeGroups {
     const

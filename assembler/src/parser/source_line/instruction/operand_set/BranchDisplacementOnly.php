@@ -19,11 +19,13 @@ namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\Defs;
+use ABadCafe\MC64K\State;
 
 /**
  * BranchDisplacementOnly
  *
- * For those operations that have a displacement only
+ * For those operations that have a displacement only.
  */
 class BranchDisplacementOnly implements Instruction\IOperandSetParser {
 
@@ -61,9 +63,24 @@ class BranchDisplacementOnly implements Instruction\IOperandSetParser {
             throw new \LengthException(__CLASS__ . ' expects a single operand, got ' . $iCount);
         }
 
-        $sBytecode = $this->oTgtParser->parse($aOperands[0]);
+        $bShort = isset(self::SHORT[$iOpcode]);
+        $sLabel = $aOperands[0];
+        $oState = State\Coordinator::get();
 
-        if (isset(self::SHORT[$iOpcode])) {
+        $oState->setCurrentStatementLength(
+            Defs\IOpcodeLimits::SIZE +
+            ($bShort ?
+                Defs\IBranchLimits::SHORT_DISPLACEMENT_SIZE :
+                Defs\IBranchLimits::DISPLACEMENT_SIZE)
+        );
+
+        $sBytecode = $this->oTgtParser->parse($sLabel);
+
+        if ($this->oTgtParser->wasUnresolved()) {
+            $oState->addUnresolvedLabel($sLabel);
+        }
+
+        if ($bShort) {
             $this->checkShortBranchDisplacement();
             $sBytecode = $sBytecode[0];
         } else {

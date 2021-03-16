@@ -20,26 +20,28 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\UnhandledCodeFoldException;
 use ABadCafe\MC64K;
 use ABadCafe\MC64K\Parser;
+use ABadCafe\MC64K\Defs;
+use ABadCafe\MC64K\State;
 
 /**
  * BranchDisplacement
+ *
+ * Operand parser for branch targets.
  */
 class BranchDisplacement implements MC64K\IParser {
 
     use Parser\Utils\TSignedDisplacementAware;
 
-    const UNRESOLVED = 0;
-
     const
         MATCH_NUMERIC = '/^#' . Parser\EffectiveAddress\IParser::D32 . '$/',
-        MATCH_LABEL   = '/^(\.){0,1}[a-zA-Z_]+$/',
+        MATCH_LABEL   = '/^(\.){0,1}[a-zA-Z_]{1}[0-9a-zA-Z_]{0,}$/',
         MATCHED_LABEL = 0,
         MATCHED_LOCAL = 1,
         MATCHED_DISP  = 1,
         MATCHED_HEX   = 2
     ;
 
-    private int $iLastDisplacement = self::UNRESOLVED;
+    private int $iLastDisplacement = Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT;
 
     /**
      * @inheritDoc
@@ -50,7 +52,7 @@ class BranchDisplacement implements MC64K\IParser {
      * @throws CodeFoldException
      */
     public function parse(string $sSource) : ?string {
-        $this->iLastDisplacement = self::UNRESOLVED;
+        $this->iLastDisplacement = Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT;
         if (preg_match(self::MATCH_NUMERIC, $sSource, $aMatches)) {
             $this->iLastDisplacement = $this->parseDisplacement(
                 $aMatches[self::MATCHED_DISP],
@@ -65,10 +67,15 @@ class BranchDisplacement implements MC64K\IParser {
         }
         // TODO - handle labels
         if (preg_match(self::MATCH_LABEL, $sSource, $aMatches)) {
-            return pack('V', self::UNRESOLVED);
+            $this->iLastDisplacement = State\Coordinator::get()->getBranchDisplacementForLabel($aMatches[self::MATCHED_LABEL]);
+            return pack('V', $this->iLastDisplacement);
         }
 
         throw new \UnexpectedValueException($sSource . ' could not be parsed');
+    }
+
+    public function wasUnresolved() : bool {
+        return Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT === $this->iLastDisplacement;
     }
 
     /**

@@ -16,6 +16,7 @@
 declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction;
+use ABadCafe\MC64K\Parser\SourceLine;
 use ABadCafe\MC64K;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
@@ -26,13 +27,16 @@ use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Utils\Binary;
 
-
 /**
  * Statement
  *
  * Parses a complete assembler instruction statement into bytecode.
  */
-class Statement implements MC64K\IParser, Defs\Mnemonic\IMatches {
+class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
+
+    use SourceLine\TParser;
+
+    const BASIC_LINE_MATCH = '/^\s+[a-z2]+/';
 
     private Tokeniser\Instruction $oTokeniser;
 
@@ -161,7 +165,26 @@ class Statement implements MC64K\IParser, Defs\Mnemonic\IMatches {
     }
 
     /**
+     * Returns the set of covered mnemonics
+     *
+     * @return string[2][]
+     */
+    public function getCoverage() : array {
+        if (empty($this->aCoverage)) {
+            $aMnemonics = array_flip(Defs\Mnemonic\IMatches::MATCHES);
+            foreach ($this->aOperandParsers as $iOpcode => $oOperandParser) {
+                $aName = explode('\\',  get_class($oOperandParser));
+                $this->aCoverage[$iOpcode] = [$aMnemonics[$iOpcode], end($aName)];
+            }
+        }
+        ksort($this->aCoverage);
+        return $this->aCoverage;
+    }
+
+    /**
      * Add an OperandSetParser
+     *
+     * @param IOperandSetParser $oOperandParser
      */
     private function addOperandSetParser(IOperandSetParser $oOperandParser) : void {
         foreach ($oOperandParser->getOpcodes() as $iOpcode) {
@@ -177,15 +200,5 @@ class Statement implements MC64K\IParser, Defs\Mnemonic\IMatches {
         $this->aCoverage = [];
     }
 
-    public function getCoverage() : array {
-        if (empty($this->aCoverage)) {
-            $aMnemonics = array_flip(Defs\Mnemonic\IMatches::MATCHES);
-            foreach ($this->aOperandParsers as $iOpcode => $oOperandParser) {
-                $aName = explode('\\',  get_class($oOperandParser));
-                $this->aCoverage[$iOpcode] = [$aMnemonics[$iOpcode], end($aName)];
-            }
-        }
-        ksort($this->aCoverage);
-        return $this->aCoverage;
-    }
+
 }

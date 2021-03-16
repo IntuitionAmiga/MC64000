@@ -20,6 +20,8 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 
 /**
  * IFixedBranch
+ *
+ * Defines a number of encoding properties for fixed branches.
  */
 interface IFixedBranch {
     const

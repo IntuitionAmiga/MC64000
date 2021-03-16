@@ -21,7 +21,7 @@ use ABadCafe\MC64K\Parser\EffectiveAddress;
 /**
  * CustomMonadic
  *
- * For all vanilla integer destination @ source -> destination operations
+ * For custom single operand operations.
  */
 class CustomMonadic extends Monadic {
 

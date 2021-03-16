@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 /**
  * Dyadic
  *
- * Base for all vanilla destination @ source -> destination operations
+ * Base for all vanilla destination @ source -> destination operations.
  */
 abstract class Dyadic extends Monadic {
 

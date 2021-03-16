@@ -20,7 +20,7 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
 /**
  * ILogical
  *
- * Enumerates bitwise logic instructions
+ * Enumerates bitwise logic instruction opcodes.
  */
 interface ILogical extends IByteCodeGroups {
     const

@@ -18,7 +18,9 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Defs\Register;
 
 /**
- * Registers
+ * INames
+ *
+ * Defines and maps allowed Register names and aliases.
  */
 interface INames {
 

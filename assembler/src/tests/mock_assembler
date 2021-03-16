@@ -32,29 +32,34 @@ if (!file_exists($sSourceFile) || !is_readable($sSourceFile)) {
     exit(1);
 }
 
-$oParser = new Parser\SourceLine\Instruction\Statement();
+$oSource = new IO\SourceFile($sSourceFile);
+$oParser = new Parser\SourceLine\Processor();
+$oState  = State\Coordinator::get();
+$oState->setCurrentFile($oSource);
+$oOutput = $oState->getOutput();
 
-$rSource  = fopen($sSourceFile, 'r');
-$iLine    = 0;
-$iCodePos = 0;
-
-while ( ($sSourceLine = fgets($rSource)) ) {
-    ++$iLine;
-    if (preg_match('/^\s+(.*?)$/m', rtrim($sSourceLine), $aMatches)) {
-        $sStatement = $aMatches[1];
-        $sBytecode  = $oParser->parse($sStatement);
-        $iLength    = $sBytecode ? strlen($sBytecode) : 0;
-        printf(
-            "%4d [%5d]   %-50s : [%2d] %s\n",
-            $iLine,
-            $iCodePos,
-            $sStatement,
-            $iLength,
-            Utils\Binary::format($sBytecode)
-        );
-        $iCodePos += $iLength;
-    }
+while ( ($sSourceLine = $oSource->readLine()) ) {
+    $sBytecode  = $oParser->parse($sSourceLine);
+    $iLength = $sBytecode ? strlen($sBytecode) : 0;
+    printf(
+        "%4d [%5d]   %-50s : [%2d] %s\n",
+        $oSource->getLineNumber(),
+        $oOutput->getCurrentStatementPosition(),
+        rtrim($sSourceLine),
+        $iLength,
+        Utils\Binary::format($sBytecode)
+    );
+    $oOutput->appendStatement($sBytecode);
 }
 
-fclose($rSource);
+$sBytecodePass1 = Utils\Binary::format($oOutput->getBytecode());
 
+$oSecondPass = new Process\SecondPass();
+$oSecondPass->resolveForwardsBranchReferences(
+    $oState->getLabelLocation(),
+    $oState->getOutput()
+);
+
+$sByteCodePass2 = Utils\Binary::format($oOutput->getBytecode());
+
+echo "Pass 1 BC: ", $sBytecodePass1, "\nPass 2 BC: ", $sByteCodePass2, "\n";

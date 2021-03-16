@@ -1,0 +1,64 @@
+#!/usr/bin/php -n
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+$oState = State\Coordinator::get();
+
+$oState->setCurrentFilename('mock_00.s');
+
+try {
+    $oState->addGlobalLabel('main', 10, 9);
+    $oState->addGlobalLabel('info', 20, 100);
+    $oState->addGlobalLabel('main', 40, 150);
+    exit("FAILURE - did not catch duplicate global");
+} catch (\Exception $oError) {
+    echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
+}
+
+try {
+    $oState->addLocalLabel('loop', 30, 50);
+    $oState->addLocalLabel('test', 45, 160);
+    $oState->addLocalLabel('loop', 50, 200);
+    exit("FAILURE - did not catch duplicate local");
+} catch (\Exception $oError) {
+    echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
+}
+
+$oState->setCurrentFilename('mock_01.s');
+
+try {
+    $oState->addGlobalLabel('debug', 10, 250);
+    $oState->addGlobalLabel('info',  20, 400);
+    exit("FAILURE - did not catch duplicate global");
+} catch (\Exception $oError) {
+    echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
+}
+
+try {
+    $oState->addLocalLabel('loop', 15, 275);
+    $oState->addLocalLabel('test', 25, 300);
+    $oState->addLocalLabel('loop', 39, 500);
+    exit("FAILURE - did not catch duplicate local");
+} catch (\Exception $oError) {
+    echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
+}
+
+print_r($oState);
