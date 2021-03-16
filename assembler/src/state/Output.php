@@ -34,8 +34,24 @@ class Output {
         $iCurrentStatementLength   = 0
     ;
 
+    /**
+     * @return string
+     */
     public function getBytecode() : string {
         return $this->sBytecode;
+    }
+
+    /**
+     * Patches the bytecode buffer (overwrites a section) at the given offset. This is used during
+     * the second pass to inject previously branch offsets and such.
+     *
+     * @param  string $sPatch
+     * @param  int    $iOffset
+     * @return self
+     */
+    public function patch(string $sPatch, int $iOffset) : self {
+        $this->sBytecode = substr_replace($this->sBytecode, $sPatch, $iOffset, strlen($sPatch));
+        return $this;
     }
 
     /**

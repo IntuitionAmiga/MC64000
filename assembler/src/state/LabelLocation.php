@@ -16,7 +16,7 @@
 declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\State;
-
+use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\IO;
 
@@ -171,4 +171,48 @@ class LabelLocation {
         $this->aUnresolvedLabels[$sCurrentFilename][$sLabel][$iCurrentLineNumber] = $iLocation;
         return $this;
     }
+
+    /**
+     * Resolves any branch targets that were unresolved at the time of generation during the first pass.
+     *
+     * @return object[]
+     */
+    public function resolveBranchTargetList() : array {
+        $aResult = [];
+        foreach ($this->aUnresolvedLabels as $sCurrentFilename => $aUnresolvedMap) {
+            foreach ($aUnresolvedMap as $sLabel => $aUnresolvedLocation) {
+                if (Defs\ILabel::LOCAL_PREFIX_CHAR === $sLabel[0]) {
+                    if (!isset($this->aLocalLabels[$sCurrentFilename][$sLabel])) {
+                        throw new \Exception(
+                            sprintf("Reference to undeclared local label %s in %s", $sLabel, $sCurrentFilename)
+                        );
+                    }
+                    $oTarget = (object)[
+                        'iLabelPosition' => $this->aLocalLabels[$sCurrentFilename][$sLabel][self::I_OFST],
+                        'sLabel'         => $sLabel,
+                        'sFilename'      => $sCurrentFilename,
+                        'iLineNumber'    => $this->aLocalLabels[$sCurrentFilename][$sLabel][self::I_LINE]
+                    ];
+                } else {
+                    if (!isset($this->aGlobalLabels[$sLabel])) {
+                        throw new \Exception(
+                            sprintf("Reference to undeclared global label %s in %s", $sLabel, $sCurrentFilename)
+                        );
+                    }
+                    $oTarget = (object)[
+                        'iLabelPosition' => $this->aGlobalLabels[$sLabel][self::I_OFST],
+                        'sLabel'         => $sLabel,
+                        'sFilename'      => $sCurrentFilename,
+                        'iLineNumber'    => $this->aGlobalLabels[$sLabel][self::I_LINE]
+                    ];
+                }
+
+                foreach ($aUnresolvedLocation as $iLineNumber => $iReferencePosition) {
+                    $aResult[$iReferencePosition] = $oTarget;
+                }
+            }
+        }
+        return $aResult;
+    }
+
 }

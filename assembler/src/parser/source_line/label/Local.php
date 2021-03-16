@@ -18,13 +18,14 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\SourceLine\Label;
 use ABadCafe\MC64K\Parser\SourceLine;
 use ABadCafe\MC64K\State;
+use ABadCafe\MC64K\Defs;
 
 /**
  * Local
  */
 class Local implements SourceLine\IParser {
 
-    const BASIC_LINE_MATCH = '/^\.[a-z0-9_]+\:/';
+    const BASIC_LINE_MATCH = Defs\ILabel::LOCAL_MATCH;
 
     use SourceLine\TParser;
 
@@ -32,7 +33,7 @@ class Local implements SourceLine\IParser {
      * @inheritDoc
      */
     public function parse(string $sSource) : ?string {
-        State\Coordinator::get()->addLocalLabel(rtrim($sSource, ':'));
+        State\Coordinator::get()->addLocalLabel(rtrim($sSource, Defs\ILabel::SUFFIX_CHAR));
         return '';
     }
 }

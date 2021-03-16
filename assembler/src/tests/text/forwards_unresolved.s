@@ -12,6 +12,8 @@
 
     clr.q d0
 
+    bsr unresolved_global
+
 .unresolved_1:
     rts
 
@@ -22,3 +24,5 @@
 .unresolved_2:
     rts
 
+unresolved_global:
+   rts

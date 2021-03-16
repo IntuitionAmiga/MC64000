@@ -74,12 +74,25 @@ class Coordinator {
         return $this;
     }
 
+    /**
+     * @return IO\ISourceFile
+     */
     public function getCurrentFile() : IO\ISourceFile {
         return $this->oCurrentFile;
     }
 
+    /**
+     * @return Output
+     */
     public function getOutput() : Output {
         return $this->oOutput;
+    }
+
+    /**
+     * @return LabelLocation
+     */
+    public function getLabelLocation() : LabelLocation {
+        return $this->oLabelLocation;
     }
 
     /**
@@ -123,15 +136,6 @@ class Coordinator {
     }
 
     /**
-     * Returns the global symbol table.
-     *
-     * @return array
-     */
-    public function getGlobals() : array {
-        return $this->aGlobalLabels;
-    }
-
-    /**
      * @param  string $sLabel
      * @return int
      */
@@ -157,9 +161,9 @@ class Coordinator {
      * @return int|null
      */
     public function getPositionForLabel(string $sLabel) : ?int {
-        return ('.' === $sLabel[0]) ?
+        return (Defs\ILabel::LOCAL_PREFIX_CHAR === $sLabel[0]) ?
             $this->oLabelLocation->getPositionForLocal($this->oCurrentFile, $sLabel) :
-            $this->oLabelLocation->getPositionForGlobal($this->oCurrentFile, $sLabel);
+            $this->oLabelLocation->getPositionForGlobal($sLabel);
     }
 
     /**

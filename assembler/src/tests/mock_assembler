@@ -52,6 +52,14 @@ while ( ($sSourceLine = $oSource->readLine()) ) {
     $oOutput->appendStatement($sBytecode);
 }
 
-$oState->dumpUnresolvedLabels();
+$sBytecodePass1 = Utils\Binary::format($oOutput->getBytecode());
 
-echo "\n", Utils\Binary::format($oOutput->getBytecode()), "\n";
+$oSecondPass = new Process\SecondPass();
+$oSecondPass->resolveForwardsBranchReferences(
+    $oState->getLabelLocation(),
+    $oState->getOutput()
+);
+
+$sByteCodePass2 = Utils\Binary::format($oOutput->getBytecode());
+
+echo "Pass 1 BC: ", $sBytecodePass1, "\nPass 2 BC: ", $sByteCodePass2, "\n";

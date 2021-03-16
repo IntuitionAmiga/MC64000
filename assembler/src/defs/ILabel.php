@@ -15,21 +15,13 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Utils;
+namespace ABadCafe\MC64K\Defs;
 
-/**
- * Basic Log Facility
- */
-class Log {
-
-    private static int $iLine  = 0;
-
-    /**
-     * @param string $sFormat
-     */
-    public static function printf(string $sFormat, ...$aVarArgs) : void {
-        fprintf(
-            STDERR, ('#%d ' . $sFormat . "\n"), self::$iLine++, ...$aVarArgs
-        );
-    }
+interface ILabel {
+    const
+        SUFFIX_CHAR       = ':',
+        LOCAL_PREFIX_CHAR = '.',
+        LOCAL_MATCH       = '/^\.[a-z0-9_]+\:/',
+        GLOBAL_MATCH      = '/^[a-z0-9_]+\:/'
+    ;
 }
