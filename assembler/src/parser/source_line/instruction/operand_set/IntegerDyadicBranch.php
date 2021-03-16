@@ -26,7 +26,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 /**
  * IntegerDyadicBranch
  *
- * For all vanilla integer compare and branch
+ * For all vanilla integer compare and branch operations.
  */
 class IntegerDyadicBranch extends DyadicBranch {
 

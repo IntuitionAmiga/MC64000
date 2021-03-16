@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\IO;
 
 /**
  * ISourceFile
+ *
+ * Basic interface for input source files.
  */
 interface ISourceFile {
 

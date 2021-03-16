@@ -25,7 +25,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
 /**
  * CustomDyadic
  *
- * For specialised subsets
+ * For specialised subsets that can be composed together.
  */
 class CustomDyadic extends Dyadic {
 

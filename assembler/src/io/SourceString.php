@@ -18,7 +18,9 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\IO;
 
 /**
- * String based implementation of ISourceFile
+ * SourceString
+ *
+ * String based implementation of ISourceFile interface. For mocking, debugging etc.
  */
 class SourceString implements ISourceFile {
 

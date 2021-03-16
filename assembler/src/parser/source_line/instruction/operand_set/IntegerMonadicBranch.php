@@ -25,7 +25,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 /**
  * IntegerMonadicBranch
  *
- * For all vanilla integer compare and branch
+ * For all vanilla single integer integer test and branch operations.
  */
 class IntegerMonadicBranch extends MonadicBranch {
 

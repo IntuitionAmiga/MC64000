@@ -41,6 +41,8 @@ class Processor implements IParser {
 
     /**
      * Stub - always true
+     *
+     * @inheritDoc
      */
     public function checkLine(string $sLine) : bool {
         return true;
@@ -62,12 +64,11 @@ class Processor implements IParser {
         return '';
     }
 
-    public function dump() {
-
-    }
-
     /**
      * Removes any comment guff
+     *
+     * @param  string $sSourceLine
+     * @return string
      */
     private function cleanSourceLine(string $sSourceLine) : string {
         return rtrim(preg_replace(self::COMMENT_MATCH, '', $sSourceLine));

@@ -18,7 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Defs\EffectiveAddress;
 
 /**
- * Effective Adddress Modes
+ * IByteCodeNames
  *
  * Enumerates the expected bytecode for an effective address format.
  */

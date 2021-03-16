@@ -27,7 +27,7 @@ use ABadCafe\MC64K\Defs;
 /**
  * FloatDyadicBranch
  *
- * For all vanilla float compare and branch
+ * For all vanilla float compare and branch operations.
  */
 class FloatDyadicBranch extends DyadicBranch {
 

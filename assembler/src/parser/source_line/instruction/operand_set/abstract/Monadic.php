@@ -22,7 +22,7 @@ use ABadCafe\MC64K\Parser\EffectiveAddress;
 /**
  * Monadic
  *
- * Base for all vanilla monadic operations
+ * Base for all vanilla monadic operations.
  */
 abstract class Monadic implements Instruction\IOperandSetParser {
 

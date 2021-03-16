@@ -20,6 +20,8 @@ namespace ABadCafe\MC64K\IO;
 
 /**
  * SourceFile
+ *
+ * Primary implementation of the ISourceFile interface for reading source files from disk.
  */
 final class SourceFile implements ISourceFile {
     private        $rSource;

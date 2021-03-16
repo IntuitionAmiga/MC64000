@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 /**
  * IntegerMonadic
  *
- * For all vanilla integer destination @ source -> destination operations
+ * For all vanilla single operand integer operations.
  */
 class IntegerMonadic extends Monadic {
 

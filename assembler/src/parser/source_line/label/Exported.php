@@ -22,6 +22,8 @@ use ABadCafe\MC64K\Defs;
 
 /**
  * Exported
+ *
+ * Source Line Parser implementation for globally exported label declarations.
  */
 class Exported implements SourceLine\IParser {
 

@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 /**
  * IntegerMonadicAddress
  *
- * For instructions with a single control addressing mode operand
+ * For instructions with a single control addressing mode operand.
  */
 class IntegerMonadicAddress extends Monadic {
 

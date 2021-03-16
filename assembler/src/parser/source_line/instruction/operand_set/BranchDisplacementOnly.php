@@ -25,7 +25,7 @@ use ABadCafe\MC64K\State;
 /**
  * BranchDisplacementOnly
  *
- * For those operations that have a displacement only
+ * For those operations that have a displacement only.
  */
 class BranchDisplacementOnly implements Instruction\IOperandSetParser {
 

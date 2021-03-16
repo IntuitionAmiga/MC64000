@@ -22,6 +22,8 @@ use ABadCafe\MC64K\Defs;
 
 /**
  * Local
+ *
+ * Source Line Parser for locally declared labels.
  */
 class Local implements SourceLine\IParser {
 

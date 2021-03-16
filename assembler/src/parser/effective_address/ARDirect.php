@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * ARDirect
  *
- * Basic parser for Address Register direct
+ * Basic parser for Address Register direct modes.
  */
 class ARDirect extends GPRDirect {
 

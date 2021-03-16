@@ -27,7 +27,7 @@ use ABadCafe\MC64K\Defs;
 /**
  * MonadicBranch
  *
- * Common behaviours for single operand with branch displacement
+ * Common behaviours for single operand with branch displacement.
  */
 abstract class MonadicBranch extends Monadic {
 

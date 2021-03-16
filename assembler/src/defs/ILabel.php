@@ -17,6 +17,11 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Defs;
 
+/**
+ * ILabel
+ *
+ * Defines constants pertaining to label definitions.
+ */
 interface ILabel {
     const
         SUFFIX_CHAR       = ':',

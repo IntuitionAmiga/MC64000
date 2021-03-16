@@ -22,7 +22,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 /**
  * IntegerToFloatDyadic
  *
- * For all vanilla integer to float conversions
+ * For all vanilla integer to float conversion operations.
  */
 class IntegerToFloatDyadic extends Dyadic {
 

@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
 
 /**
  * IMatches
+ *
+ * Maps mnemonic names to their corresponding bytecode values
  */
 interface IMatches {
     const MATCHES = [

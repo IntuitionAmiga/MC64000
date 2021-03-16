@@ -24,6 +24,8 @@ use ABadCafe\MC64K\Defs;
 
 /**
  * CustomMonadicBranch
+ *
+ * For custom single operand with branch operations.
  */
 class CustomMonadicBranch extends CustomMonadic {
 

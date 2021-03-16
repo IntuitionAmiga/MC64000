@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
 
 /**
  * IOperandSizes
+ *
+ * Defines the expected sizes of operands associated with each instruction.
  */
 interface IOperandSizes {
     const MAP = [

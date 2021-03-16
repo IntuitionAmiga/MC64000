@@ -17,6 +17,11 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Defs;
 
+/**
+ * IOpcodeLimits
+ *
+ * Defines constants and limits for opcodes.
+ */
 interface IOpcodeLimits {
     const
         MIN  = 0,

@@ -21,7 +21,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * TSignedDisplacementAware
  *
- * Utilities for parsing 32-bit signed displacement components of effective addresses and branches
+ * Utilities for parsing 32-bit signed displacement components of effective addresses and branches.
  */
 trait TSignedDisplacementAware {
 

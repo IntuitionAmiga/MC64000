@@ -26,7 +26,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * TBranching
  *
- * Trait that provides a set of common behavioural requirements for set parsers that branch
+ * Trait that provides a set of common behavioural requirements for set parsers that branch.
  */
 trait TBranching {
 

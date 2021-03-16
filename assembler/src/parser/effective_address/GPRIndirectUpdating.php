@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Parser;
 /**
  * GPRIndirectUpdating
  *
- * Basic parser for GPR indirect with pre/post increment / decrement
+ * Basic parser for GPR indirect with pre/post increment / decrement behaviours.
  */
 class GPRIndirectUpdating extends GPRIndirect {
 

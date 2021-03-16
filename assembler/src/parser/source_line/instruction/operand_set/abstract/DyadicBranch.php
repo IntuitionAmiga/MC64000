@@ -27,7 +27,7 @@ use ABadCafe\MC64K\State;
 /**
  * DyadicBranch
  *
- * Common behaviours for double operand with branch displacement
+ * Common behaviours for double operand with branch displacement.
  */
 abstract class DyadicBranch extends Dyadic {
 

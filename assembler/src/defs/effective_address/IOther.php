@@ -20,7 +20,7 @@ namespace ABadCafe\MC64K\Defs\EffectiveAddress;
 /**
  * IOther
  *
- * Enumerates the bytecodes for the remaining sundry addressing modes
+ * Enumerates the bytecodes for the remaining sundry addressing modes.
  */
 interface IOther extends IByteCodeGroups {
     const

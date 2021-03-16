@@ -22,6 +22,8 @@ use ABadCafe\MC64K\Parser;
 
 /**
  * FixedInteger
+ *
+ * Operand parser for fixed integer values.
  */
 class FixedInteger implements MC64K\IParser, Defs\IIntLimits {
 

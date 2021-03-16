@@ -20,6 +20,8 @@ use ABadCafe\MC64K;
 
 /**
  * IParser
+ *
+ * Main interface for Source Line level parsers.
  */
 interface IParser extends MC64K\IParser {
 

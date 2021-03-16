@@ -17,6 +17,11 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Defs;
 
+/**
+ * IIntLimits
+ *
+ * Defines constants and limits associated with integer values.
+ */
 interface IIntLimits {
 
     const

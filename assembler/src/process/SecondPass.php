@@ -24,13 +24,12 @@ use ABadCafe\MC64K\Utils\Log;
 /**
  * SecondPass
  *
- * Process for performing various jobs after assembling the initial output buffer
- *
+ * Process for performing various jobs after assembling the initial output buffer.
  */
 class SecondPass {
 
     /**
-     * Resolve forwards branch target references that were not resolved during the first pass. This will throw if
+     * Resolves forwards branch target references that were not resolved during the first pass. This will throw if
      * any of the unresolved references refer to a target that has not been declared at any time.
      *
      * @param  State\LabelLocation $oLabelLocation

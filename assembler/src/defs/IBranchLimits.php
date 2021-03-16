@@ -17,6 +17,11 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Defs;
 
+/**
+ * IBranchLimits
+ *
+ * Defines constants and limits associated with branch operations.
+ */
 interface IBranchLimits {
     const
         UNRESOLVED_DISPLACEMENT = 0,

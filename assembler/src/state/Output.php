@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Defs;
 /**
  * Output
  *
- * Bytecode output
+ * Bytecode output buffer object. Holds the assembled code so far.
  */
 class Output {
 

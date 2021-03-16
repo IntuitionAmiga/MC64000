@@ -24,7 +24,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 /**
  * FloatMonadicBranch
  *
- * For all vanilla float compare and branch
+ * For single operand vanilla float compare and branch operations.
  */
 class FloatMonadicBranch extends MonadicBranch {
 

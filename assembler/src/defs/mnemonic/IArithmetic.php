@@ -18,9 +18,9 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Defs\Mnemonic;
 
 /**
- * ILogical
+ * IArithmetic
  *
- * Enumerates arithmetic instructions
+ * Enumerates arithmetic instruction opcodes.
  */
 interface IArithmetic extends IByteCodeGroups {
     const

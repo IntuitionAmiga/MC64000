@@ -25,6 +25,8 @@ use ABadCafe\MC64K\State;
 
 /**
  * BranchDisplacement
+ *
+ * Operand parser for branch targets.
  */
 class BranchDisplacement implements MC64K\IParser {
 

@@ -20,6 +20,7 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
 /**
  * IByteCodeGroups
  *
+ * Enumerates the group offsets for different opcode classes.
  */
 interface IByteCodeGroups {
     const
