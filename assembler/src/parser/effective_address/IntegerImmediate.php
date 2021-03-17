@@ -17,6 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\EffectiveAddress;
+use ABadCafe\MC64K\Defs\IIntLimits;
 use ABadCafe\MC64K\Parser;
 
 /**
@@ -37,10 +38,10 @@ class IntegerImmediate implements IParser, EffectiveAddress\IOther {
     ;
 
     const INT_RANGES = [
-        self::INT_IMM_BYTE => [-128, 127, 'c'],
-        self::INT_IMM_WORD => [-32768, 32767, 'v'],
-        self::INT_IMM_LONG => [-2147483648, 2147483647, 'V'],
-        self::INT_IMM_QUAD => [PHP_INT_MIN, PHP_INT_MAX, 'P']
+        self::INT_IMM_BYTE => [IIntLimits::BYTE_MIN_SIGNED, IIntLimits::BYTE_MAX_SIGNED, IIntLimits::BYTE_BIN_FORMAT],
+        self::INT_IMM_WORD => [IIntLimits::WORD_MIN_SIGNED, IIntLimits::WORD_MAX_SIGNED, IIntLimits::WORD_BIN_FORMAT],
+        self::INT_IMM_LONG => [IIntLimits::LONG_MIN_SIGNED, IIntLimits::LONG_MAX_SIGNED, IIntLimits::LONG_BIN_FORMAT],
+        self::INT_IMM_QUAD => [IIntLimits::QUAD_MIN_SIGNED, IIntLimits::QUAD_MAX_SIGNED, IIntLimits::QUAD_BIN_FORMAT]
     ];
 
     /**
@@ -144,8 +145,8 @@ class IntegerImmediate implements IParser, EffectiveAddress\IOther {
 
         // Gratuitous hack to extract the integer representation that was present because base_convert() returns
         // a numeric string of the unsigned value.
-        $sEncoded =  pack('V2', $iLower, $iUpper);
-        $aData    = unpack('P', $sEncoded);
+        $sEncoded = pack(IIntLimits::LONG_BIN_FORMAT . '2', $iLower, $iUpper);
+        $aData    = unpack(IIntLimits::QUAD_BIN_FORMAT, $sEncoded);
         $this->iLastParsed = $aData[0];
         return chr(self::INT_IMM_QUAD) . $sEncoded;
     }

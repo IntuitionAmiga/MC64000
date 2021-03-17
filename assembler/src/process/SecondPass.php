@@ -52,7 +52,7 @@ class SecondPass {
                 $iDisplacement
             );
             $oOutput->patch(
-                pack('V', $iDisplacement),
+                pack(Defs\IIntLimits::LONG_BIN_FORMAT, $iDisplacement),
                 $iReferenceOffset
             );
         }

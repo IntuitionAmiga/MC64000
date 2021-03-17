@@ -17,6 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\Defs\IIntLimits;
 
 /**
  * IFixedBranch
@@ -32,7 +33,17 @@ interface IFixedBranch {
     ;
 
     const RANGES = [
-        IControl::BRA_B => [-128, 127, 1, 'c'],
-        IControl::BRA   => [-2147483648, 2147483647, 4, 'V']
+        IControl::BRA_B => [
+            IIntLimits::BYTE_MIN_SIGNED,
+            IIntLimits::BYTE_MAX_SIGNED,
+            IIntLimits::BYTE,
+            IIntLimits::BYTE_BIN_FORMAT
+        ],
+        IControl::BRA   => [
+            IIntLimits::LONG_MIN_SIGNED,
+            IIntLimits::LONG_MAX_SIGNED,
+            IIntLimits::LONG,
+            IIntLimits::LONG_BIN_FORMAT
+        ]
     ];
 }

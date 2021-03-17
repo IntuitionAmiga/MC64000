@@ -35,30 +35,52 @@ interface IIntLimits {
         BIN_FORMAT   = 3
     ;
 
+    const
+        BYTE_MIN_SIGNED   = -128,
+        BYTE_MAX_SIGNED   = 127,
+        BYTE_MAX_UNSIGNED = 0xFF,
+        BYTE_BIN_FORMAT   = 'C',
+        WORD_MIN_SIGNED   = -32768,
+        WORD_MAX_SIGNED   = 32767,
+        WORD_MAX_UNSIGNED = 0xFFFF,
+        WORD_BIN_FORMAT   = 'v',
+        LONG_MIN_SIGNED   = -2147483648,
+        LONG_MAX_SIGNED   = 2147483647,
+        LONG_MAX_UNSIGNED = 0xFFFFFFFF,
+        LONG_BIN_FORMAT   = 'V',
+        QUAD_MIN_SIGNED   = PHP_INT_MIN,
+        QUAD_MAX_SIGNED   = PHP_INT_MAX,
+        QUAD_MAX_UNSIGNED = -1, // this is a hack, we mean all bits 1,
+        QUAD_BIN_FORMAT   = 'P'
+    ;
+
+    /**
+     * Map of properties per word type
+     */
     const WORD_SIZES = [
         self::BYTE => [
-            self::MIN_SIGNED   => -128,
-            self::MIN_SIGNED   => 127,
-            self::MAX_UNSIGNED => 0xFF,
-            self::BIN_FORMAT   => 'C'
+            self::MIN_SIGNED   => self::BYTE_MIN_SIGNED,
+            self::MIN_SIGNED   => self::BYTE_MAX_SIGNED,
+            self::MAX_UNSIGNED => self::BYTE_MAX_UNSIGNED,
+            self::BIN_FORMAT   => self::BYTE_BIN_FORMAT
         ],
         self::WORD => [
-            self::MIN_SIGNED   => -32768,
-            self::MIN_SIGNED   => 32767,
-            self::MAX_UNSIGNED => 0xFFFF,
-            self::BIN_FORMAT   => 'v'
+            self::MIN_SIGNED   => self::WORD_MIN_SIGNED,
+            self::MIN_SIGNED   => self::WORD_MAX_SIGNED,
+            self::MAX_UNSIGNED => self::WORD_MAX_UNSIGNED,
+            self::BIN_FORMAT   => self::WORD_BIN_FORMAT
         ],
         self::LONG => [
-            self::MIN_SIGNED   => -2147483648,
-            self::MIN_SIGNED   => 2147483647,
-            self::MAX_UNSIGNED => 0xFFFFFFFF,
-            self::BIN_FORMAT   => 'V'
+            self::MIN_SIGNED   => self::LONG_MIN_SIGNED,
+            self::MIN_SIGNED   => self::LONG_MAX_SIGNED,
+            self::MAX_UNSIGNED => self::LONG_MAX_UNSIGNED,
+            self::BIN_FORMAT   => self::LONG_BIN_FORMAT
         ],
         self::QUAD => [
-            self::MIN_SIGNED   => PHP_INT_MIN,
-            self::MIN_SIGNED   => PHP_INT_MAX,
-            self::MAX_UNSIGNED => -1, // this is a hack, we mean all bits 1,
-            self::BIN_FORMAT   => 'P'
+            self::MIN_SIGNED   => self::QUAD_MIN_SIGNED,
+            self::MIN_SIGNED   => self::QUAD_MAX_SIGNED,
+            self::MAX_UNSIGNED => self::QUAD_MAX_UNSIGNED,
+            self::BIN_FORMAT   => self::QUAD_BIN_FORMAT
         ]
     ];
 
