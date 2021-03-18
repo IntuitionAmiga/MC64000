@@ -63,12 +63,12 @@ class BranchDisplacement implements MC64K\IParser {
                 throw new CodeFoldException('Branch to next instruction has no useful effect');
             }
 
-            return pack('V', $this->iLastDisplacement);
+            return pack(Defs\IIntLimits::LONG_BIN_FORMAT, $this->iLastDisplacement);
         }
         // TODO - handle labels
         if (preg_match(self::MATCH_LABEL, $sSource, $aMatches)) {
             $this->iLastDisplacement = State\Coordinator::get()->getBranchDisplacementForLabel($aMatches[self::MATCHED_LABEL]);
-            return pack('V', $this->iLastDisplacement);
+            return pack(Defs\IIntLimits::LONG_BIN_FORMAT, $this->iLastDisplacement);
         }
 
         throw new \UnexpectedValueException($sSource . ' could not be parsed');

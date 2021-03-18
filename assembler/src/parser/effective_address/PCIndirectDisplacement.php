@@ -18,6 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Register;
+use ABadCafe\MC64K\Defs\IIntLimits;
 use ABadCafe\MC64K\Parser;
 
 /**
@@ -63,7 +64,7 @@ class PCIndirectDisplacement implements IParser, EffectiveAddress\IOther {
                     $aMatches[self::MATCHED_DISP],
                     !empty($aMatches[self::MATCHED_HEX])
                 );
-                return chr($iOffset) . pack('V', $iDisplacement);
+                return chr($iOffset) . pack(IIntLimits::LONG_BIN_FORMAT, $iDisplacement);
             }
         }
         return null;

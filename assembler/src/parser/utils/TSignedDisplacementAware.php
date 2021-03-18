@@ -17,6 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\Utils;
 use ABadCafe\MC64K\Parser;
+use ABadCafe\MC64K\Defs\IIntLimits;
 
 /**
  * TSignedDisplacementAware
@@ -60,7 +61,7 @@ trait TSignedDisplacementAware {
     private function parseDecimalDisplacement(string $sDisplacement) : int {
         $iDisplacement = (int)$sDisplacement;
         // Test against limits for signed 32-bit integer
-        if ($iDisplacement >= -2147483648 && $iDisplacement <= 2147483647) {
+        if ($iDisplacement >= IIntLimits::LONG_MIN_SIGNED && $iDisplacement <= IIntLimits::LONG_MAX_SIGNED) {
             return $iDisplacement;
         }
         throw new \RangeError('Displacement ' . $sDisplacement . ' is too large');
