@@ -39,11 +39,15 @@ interface IBinaryChunk {
 
     /**
      * Returns the chunk length in bytes (not including the type header)
+     *
+     * @return int
      */
     public function getChunkLength() : int;
 
     /**
      * Returns the chunk data
+     *
+     * @return string
      */
     public function getChunkData() : string;
 }

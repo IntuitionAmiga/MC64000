@@ -1,0 +1,8 @@
+{
+    "name": "My First Project",
+    "description": "All abord the roflcopter for fun and failure!",
+    "output": "bin/first.mc64k",
+    "sources": [
+        "src/main.s"
+    ]
+}
