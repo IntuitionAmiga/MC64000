@@ -65,11 +65,7 @@ class Coordinator {
      */
     public function setCurrentFile(IO\ISourceFile $oFile) : self {
         if ($oFile !== $this->oCurrentFile) {
-            $sFilename = $oFile->getFilename();
-//             if (isset($this->aFileList[$sFilename])) {
-//                 throw new \Exception('File ' . $sFilename . ' already processed');
-//             }
-            $this->oCurrentFile                  = $oFile;
+            $this->oCurrentFile = $oFile;
         }
         return $this;
     }
