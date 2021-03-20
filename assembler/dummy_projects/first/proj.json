@@ -2,7 +2,13 @@
     "name": "My First Project",
     "description": "All abord the roflcopter for fun and failure!",
     "output": "bin/first.mc64k",
+    "options": {
+
+    },
     "sources": [
-        "src/main.s"
+        "src/main.s",
+        "src/fold_to_empty.s",
+        "src/fold_to_fixed.s",
+        "src/fold_to_clear.s"
     ]
 }

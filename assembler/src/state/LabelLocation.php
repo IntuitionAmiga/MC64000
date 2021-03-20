@@ -62,9 +62,10 @@ class LabelLocation {
             self::I_OFST => $iOffset
         ];
         Log::printf(
-            "Added global label '%s' on line %d, code position %d",
+            "Added global label '%s' on line %d of %s, code position %d",
             $sLabel,
             $iLine,
+            $oFile->getFilename(),
             $iOffset
         );
         return $this;
