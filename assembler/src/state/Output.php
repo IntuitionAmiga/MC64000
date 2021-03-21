@@ -16,7 +16,7 @@
 declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\State;
-
+use ABadCafe\MC64K\IO;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Defs;
 
@@ -25,7 +25,9 @@ use ABadCafe\MC64K\Defs;
  *
  * Bytecode output buffer object. Holds the assembled code so far.
  */
-class Output {
+class Output implements IO\Output\IBinaryChunk {
+
+    const CHUNK_TYPE = 'ByteCode';
 
     private string $sBytecode = '';
 
@@ -33,6 +35,27 @@ class Output {
         $iCurrentStatementPosition = 0,
         $iCurrentStatementLength   = 0
     ;
+
+    /**
+     * @inheritDoc
+     */
+    public function getChunkType() : string {
+        return self::CHUNK_TYPE;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getChunkLength() : int {
+        return strlen($this->sBytecode);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getChunkData() : string {
+        return $this->sBytecode;
+    }
 
     /**
      * @return string

@@ -1,6 +1,6 @@
 <?php
 
- /**
+/**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
  *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
  *   88888b.d88888 888    888 888          d8P 888  888  d8P
@@ -15,39 +15,19 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\IO\Output;
+namespace ABadCafe\MC64K\Defs\Project;
 
 /**
- * IBinaryChunk
+ * IOptions
  *
- * Basic interface for binary writeable chunks
+ * Defines constants for project options
  */
-interface IBinaryChunk {
+interface IOptions {
 
     const
-        TYPE_SIZE = 8,
-        ALIGNMENT = 8
+        LOG_CODE_FOLD     = 'log_code_folds',
+        LOG_LABEL_ADD     = 'log_label_add',
+        LOG_LABEL_REF     = 'log_label_ref',
+        LOG_LABEL_RESOLVE = 'log_label_resolve'
     ;
-
-
-    /**
-     * Returns the chunk ID (8 bytes)
-     *
-     * @return string
-     */
-    public function getChunkType() : string;
-
-    /**
-     * Returns the chunk length in bytes (not including the type header)
-     *
-     * @return int
-     */
-    public function getChunkLength() : int;
-
-    /**
-     * Returns the chunk data
-     *
-     * @return string
-     */
-    public function getChunkData() : string;
 }

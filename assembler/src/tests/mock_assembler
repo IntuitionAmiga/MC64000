@@ -63,3 +63,8 @@ $oSecondPass->resolveForwardsBranchReferences(
 $sByteCodePass2 = Utils\Binary::format($oOutput->getBytecode());
 
 echo "Pass 1 BC: ", $sBytecodePass1, "\nPass 2 BC: ", $sByteCodePass2, "\n";
+
+preg_match('/\/(\w+)(\.\w+){0,1}$/', $sSourceFile, $aMatches);
+$sOutput = 'output/' . $aMatches[1] . '.mc64k';
+$oWriter = new IO\Output\Binary($sOutput);
+$oWriter->writeChunk($oOutput);

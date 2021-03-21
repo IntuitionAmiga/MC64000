@@ -28,6 +28,7 @@ class Binary {
 
     private string $sFilename;
     private        $rOutput;
+    private int    $iChunkNumber = 0;
 
     const
         HEADER_MAGIC = 'MC64000X',

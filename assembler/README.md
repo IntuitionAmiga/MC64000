@@ -1,6 +1,6 @@
 ## Assembler
 
-This subdirectory contains PHP7.4 sources for the MC64000 bytecode assembler (WIP)
+This subdirectory contains PHP7.4 sources for the MC64000 bytecode assembler (WIP). For usage documentation on the _masm_ tool, please refer to [MASM](../docs/assembler/README.md)
 
 ## Programming Model
 
@@ -27,8 +27,8 @@ To assist migration of assembly sources from existing 680x0 projects, the follow
     - The convention ensures that a7 is regarded as the stack pointer.
 
 |     | .q (quadword) | .l (longword) | .w (word) | .b (byte) |
-| --- | ------------- | --------------| --------- | --------- |  
-| MSB | 63            | 31            | 15        | 7         | 
+| --- | ------------- | --------------| --------- | --------- |
+| MSB | 63            | 31            | 15        | 7         |
 | r15 / a7 / sp | | | | |
 | ... |               |               |           |           |
 | r8 / a0 |               |               |           |           |
@@ -65,7 +65,7 @@ An integer value is embedded in the bytecode stream.
 * _Valid for source operands only._
 * _Signed decimal and unsigned hexadecimal representations supported_.
 * _Operation size determines valid range for integer and number of bytes embedded._
- 
+
 Examples:
 
 * \#0
