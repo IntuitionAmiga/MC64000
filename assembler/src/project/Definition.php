@@ -17,6 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Project;
 
+use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Utils\Log;
 
 /**
@@ -118,6 +119,16 @@ class Definition {
         $this->sDescription   = (string)($oProjectData->description ?? '');
         $this->sOutputBinary  = (string)$oProjectData->output;
 
+        if (!empty($oProjectData->options) && (
+            is_object($oProjectData->options) ||
+            is_array($oProjectData->options)
+        )) {
+            $oState = State\Coordinator::get();
+            foreach ((array)$oProjectData->options as $sOption => $mValue) {
+                $oState->setOption($sOption, $mValue);
+            }
+        }
+
         Log::printf(
             "Project file %s loaded successfully:\n\tName:   %s\n\tInfo:   %s\n\tOutput: %s\n\tFiles:  %d",
             $sProjectFile,
@@ -126,6 +137,7 @@ class Definition {
             $this->sOutputBinary,
             count($this->aSourceFiles)
         );
+
 
         return $this;
     }

@@ -84,6 +84,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Defs\\IIntLimits' => '/defs/IIntLimits.php',
   'ABadCafe\\MC64K\\Defs\\Register\\INames' => '/defs/register/INames.php',
   'ABadCafe\\MC64K\\Defs\\Register\\Enumerator' => '/defs/register/Enumerator.php',
+  'ABadCafe\\MC64K\\Defs\\Project\\IOptions' => '/defs/project/IOptions.php',
   'ABadCafe\\MC64K\\Defs\\Mnemonic\\IDataMove' => '/defs/mnemonic/IDataMove.php',
   'ABadCafe\\MC64K\\Defs\\Mnemonic\\IControl' => '/defs/mnemonic/IControl.php',
   'ABadCafe\\MC64K\\Defs\\Mnemonic\\IByteCodeGroups' => '/defs/mnemonic/IByteCodeGroups.php',

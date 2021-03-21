@@ -35,6 +35,7 @@ class Coordinator {
     private IO\ISourceFile $oCurrentFile;
     private LabelLocation  $oLabelLocation;
     private Output         $oOutput;
+    private array          $aOptions = [];
 
     /**
      * Constructor
@@ -55,6 +56,37 @@ class Coordinator {
             self::$oInstance = new self;
         }
         return self::$oInstance;
+    }
+
+    /**
+     * Apply a set of options
+     */
+    public function setOptions(array $aOptions) : self {
+        $this->aOptions = array_merge($this->aOptions, $aOptions);
+        return $this;
+    }
+
+    /**
+     * Set a single option
+     *
+     * @param  string $oOptionName
+     * @param  mixed  $mValue
+     * @return self
+     */
+    public function setOption(string $sOptionName, $mValue) : self {
+        $this->aOptions[$sOptionName] = $mValue;
+        return $this;
+    }
+
+    /**
+     * Get an option value
+     *
+     * @param  string      $oOptionName
+     * @param  mixed|null  $mDefault
+     * @return mixed|null
+     */
+    public function getOption(string $sOptionName, $mDefault = null) {
+        return $this->aOptions[$sOptionName] ?? $mDefault;
     }
 
     /**
@@ -139,14 +171,16 @@ class Coordinator {
         $iPosition = $this->getPositionForLabel($sLabel);
         if (null !== $iPosition) {
             $iDisplacement = $this->oOutput->getDisplacmentForPosition($iPosition);
-            Log::printf(
-                "Resolved %s to displacement %d [%d - %d - %d]",
-                $sLabel,
-                $iDisplacement,
-                $iPosition,
-                $this->oOutput->getCurrentStatementPosition(),
-                $this->oOutput->getCurrentStatementLength()
-            );
+            if ($this->getOption(Defs\Project\IOptions::LOG_LABEL_RESOLVE)) {
+                Log::printf(
+                    "Resolved %s to displacement %d [%d - %d - %d]",
+                    $sLabel,
+                    $iDisplacement,
+                    $iPosition,
+                    $this->oOutput->getCurrentStatementPosition(),
+                    $this->oOutput->getCurrentStatementLength()
+                );
+            }
             return $iDisplacement;
         }
         return Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT;
@@ -174,21 +208,5 @@ class Coordinator {
             $iLocation
         );
         return $this;
-    }
-
-    /**
-     *
-     */
-    public function dumpUnresolvedLabels() : void {
-        echo "\nFirst Pass unresolved label dump:\n";
-//         foreach ($this->aUnresolvedLabels as $sFilename => &$aUnresolved) {
-//             echo "\tIn source file '", $sFilename, "':\n";
-//             foreach ($aUnresolved as $sLabel => &$aReferences) {
-//                 foreach ($aReferences as $iLineNumber => $iLocation) {
-//                     echo "\t\tLine ", $iLineNumber, " (bytecode position ", $iLocation, ") => '", $sLabel, "'\n";
-//                 }
-//             }
-//         }
-        print_r($this->oLabelLocation);
     }
 }
