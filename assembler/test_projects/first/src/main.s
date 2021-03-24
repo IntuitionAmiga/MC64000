@@ -12,9 +12,17 @@
 ;
 ; My first project - main.s
 
+    ; Testing directives
+    @def MASM_VERSION "Hello world 1"
+    @undef MASM_VERSION
+    @define MASM_VERSION "Hello world 2"
+    @undefine MASM_VERSION
+
 main:
-    ; Using position independend calls for now
+    ; Using position independent calls for now
     bsr fold_to_empty_source_matches_destination
     bsr fold_to_empty_immediate_zero
     bsr fold_to_empry_conditional_always_taken_to_next_position
-    rts
+
+    ; this has been defined as rts globally so should not trigger an error
+    get_to_the_chopper

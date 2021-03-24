@@ -39,12 +39,15 @@ class Definition {
      */
     private array $aSourceFiles;
 
+    private State\DefinitionSet $oDefinitionSet;
+
     /**
      * Constructor - must be given a valid project file definition.
      *
      * @param string $sProjectFile
      */
     public function __construct(string $sProjectFile) {
+        $this->oDefinitionSet = new State\DefinitionSet();
         $this->load($sProjectFile);
     }
 
@@ -67,6 +70,13 @@ class Definition {
      */
     public function getSourceList() : array {
         return $this->aSourceFiles;
+    }
+
+    /**
+     * Return the definition set (could be empty)
+     */
+    public function getDefinitionSet() : State\DefinitionSet {
+        return $this->oDefinitionSet;
     }
 
     /**
@@ -129,6 +139,15 @@ class Definition {
             }
         }
 
+        if (!empty($oProjectData->define) && (
+            is_object($oProjectData->define) ||
+            is_array($oProjectData->define)
+        )) {
+            foreach ((array)$oProjectData->define as $sDefine => $sValue) {
+                $this->oDefinitionSet->add($sDefine, (string)$sValue);
+            }
+        }
+
         Log::printf(
             "Project file %s loaded successfully:\n\tName:   %s\n\tInfo:   %s\n\tOutput: %s\n\tFiles:  %d",
             $sProjectFile,
@@ -137,7 +156,6 @@ class Definition {
             $this->sOutputBinary,
             count($this->aSourceFiles)
         );
-
 
         return $this;
     }
