@@ -33,6 +33,7 @@ class Processor implements IParser {
 
     public function __construct() {
         $this->aParsers = [
+            new Directive\Statement(),
             new Instruction\Statement(),
             new Label\Local(),
             new Label\Exported()
@@ -52,7 +53,7 @@ class Processor implements IParser {
      * @inheritDoc
      */
     public function parse(string $sSourceLine) : ?string {
-        $sSourceLine = $this->cleanSourceLine($sSourceLine);
+        $sSourceLine = $this->preprocessSourceLine($sSourceLine);
         if (empty($sSourceLine)) {
             return '';
         }
@@ -65,13 +66,17 @@ class Processor implements IParser {
     }
 
     /**
-     * Removes any comment guff
+     * Removes any comment guff and handles any definition preprocessing
      *
      * @param  string $sSourceLine
      * @return string
      */
-    private function cleanSourceLine(string $sSourceLine) : string {
-        return rtrim(preg_replace(self::COMMENT_MATCH, '', $sSourceLine));
+    private function preprocessSourceLine(string $sSourceLine) : string {
+        return State\Coordinator::get()
+            ->getDefinitionSet()
+            ->applyTo(
+                rtrim(preg_replace(self::COMMENT_MATCH, '', $sSourceLine))
+            );
     }
 }
 

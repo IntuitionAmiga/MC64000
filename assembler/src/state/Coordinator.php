@@ -16,7 +16,7 @@
 declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\State;
-
+use ABadCafe\MC64K\Project;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\IO;
@@ -35,15 +35,18 @@ class Coordinator {
     private IO\ISourceFile $oCurrentFile;
     private LabelLocation  $oLabelLocation;
     private Output         $oOutput;
+    private DefinitionSet  $oDefinitionSet, $oGlobalDefinitionSet;
     private array          $aOptions = [];
 
     /**
      * Constructor
      */
     private function __construct() {
-        $this->oCurrentFile   = new IO\SourceString('', 'none');
-        $this->oLabelLocation = new LabelLocation();
-        $this->oOutput        = new Output;
+        $this->oCurrentFile         = new IO\SourceString('', 'none');
+        $this->oLabelLocation       = new LabelLocation();
+        $this->oOutput              = new Output();
+        $this->oGlobalDefinitionSet =
+        $this->oDefinitionSet       = new DefinitionSet();
     }
 
     /**
@@ -56,6 +59,27 @@ class Coordinator {
             self::$oInstance = new self;
         }
         return self::$oInstance;
+    }
+
+    /**
+     * Returns the current DefinitionSet. This has scope for the current file only and can
+     * undefine and redefine anything in the global set.
+     *
+     * @return DefinitionSet
+     */
+    public function getDefinitionSet() : DefinitionSet {
+        return $this->oDefinitionSet;
+    }
+
+    /**
+     * Set the global definition set.
+     *
+     * @param  DefinitionSet $oDefinitionSet
+     * @return self (fluent)
+     */
+    public function setGlobalDefinitionSet(DefinitionSet $oDefinitionSet) : self {
+        $this->oGlobalDefinitionSet = $oDefinitionSet;
+        return $this;
     }
 
     /**
@@ -97,7 +121,8 @@ class Coordinator {
      */
     public function setCurrentFile(IO\ISourceFile $oFile) : self {
         if ($oFile !== $this->oCurrentFile) {
-            $this->oCurrentFile = $oFile;
+            $this->oCurrentFile   = $oFile;
+            $this->oDefinitionSet = clone $this->oGlobalDefinitionSet;
         }
         return $this;
     }

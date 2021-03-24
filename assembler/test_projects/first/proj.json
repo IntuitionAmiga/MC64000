@@ -13,5 +13,8 @@
         "src/fold_to_empty.s",
         "src/fold_to_fixed.s",
         "src/fold_to_clear.s"
-    ]
+    ],
+    "define": {
+        "get_to_the_chopper": "rts"
+    }
 }
