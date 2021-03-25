@@ -38,7 +38,11 @@ The key to assembling with _masm_ is to define the project file. This is a JSON 
     "description": "Optional description here.",
     "output": "bin/example.mc64k",
     "options": {
+        "log_code_folds": true
     },
+    "defines": {
+        "F_PI": "#3.1415926535898"
+    }
     "sources": [
         "src/example.s"
     ]
@@ -57,7 +61,7 @@ Note that all paths are relative to the location of the project file itself. The
     * Sources are assembled in the strict order given.
     * Files declared here must exist when _masm_ is invoked.
 
-The _options_ section is a key-value set of options for the assembler. All values are scalar. Non-scalar values will be ignored. Currently, the following are defined:
+The optional _options_ section is a key-value set of options for the assembler. All values are scalar. Non-scalar values will be ignored. Currently, the following are defined:
 
 * log_code_folds
     * bool (default _false_)
@@ -71,3 +75,39 @@ The _options_ section is a key-value set of options for the assembler. All value
 * log_label_resolve
     * bool (default _false_)
     * if _true_, label resolution events will be logged.
+
+Note that options can be locally using _directives_.
+
+The optional _defines_ section is a key-value set of name/string substitutions to declare. These definitions are global but can be removed and redefined locally using _directives_.
+
+### Directives
+
+Directives are instructions for the assembler that are embedded within a source file. Directives are indicated using the `@` sigil and take effect from their point of invocation onwards:
+
+```
+    @define ONE #1
+    @define BASE_DISPLACEMENT 8
+    @enable log_code_folds
+    
+    divu.q ONE, BASE_DISPLACEMENT(r15) ; Expect the log to indicate this was folded away
+```
+
+The following directives exist:
+
+* define
+    * Defines a string substitution.
+    * `@define <name> <value>`
+    * `@def` accepted as short form.
+* undefine
+    * Removes a string substitution.
+    * `@undefine <name>`
+    * `@undef` accepted as short form.
+* enable
+    * Turns on a switch _option_.
+    * `@enable <option>`
+    * `@en` accepted as short form.
+* disable
+    * Turns on a switch _option_.
+    * `@disable <option>`
+    * `@dis` accepted as short form.
+

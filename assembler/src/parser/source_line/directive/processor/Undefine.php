@@ -21,22 +21,27 @@ use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 
 /**
- * Local
+ * Undefine
  *
- * Source Line Parser for locally declared labels.
+ * Allows the locally scoped removal of literal substitutions.
+ *
+ *    @undefine M_PI
+ *    @undef    five
+ *
+ * This is necessary if we want to locally redefine the meaning of a global define.
  */
 class Undefine implements Directive\IProcessor {
 
     const
-        EXTRACT_MATCH    = '/^\s+@(?:undef|undefine)\s+([a-zA-Z_]{1}[a-zA-Z0-9_]*)/',
-        KEYWORDS = [
+        EXTRACT_MATCH = '/^\s+@(?:undef|undefine)\s+([a-zA-Z_]{1}[a-zA-Z0-9_]*)/',
+        KEYWORDS      = [
             'undef',
             'undefine'
         ]
     ;
 
     /**
-     * @return string[]
+     * @inheritDoc
      */
     public function getMatchingKeywords() : array {
         return self::KEYWORDS;

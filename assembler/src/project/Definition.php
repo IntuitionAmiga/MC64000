@@ -39,7 +39,9 @@ class Definition {
      */
     private array $aSourceFiles;
 
+    private State\Options       $oOptions;
     private State\DefinitionSet $oDefinitionSet;
+
 
     /**
      * Constructor - must be given a valid project file definition.
@@ -47,6 +49,7 @@ class Definition {
      * @param string $sProjectFile
      */
     public function __construct(string $sProjectFile) {
+        $this->oOptions       = new State\Options();
         $this->oDefinitionSet = new State\DefinitionSet();
         $this->load($sProjectFile);
     }
@@ -74,9 +77,20 @@ class Definition {
 
     /**
      * Return the definition set (could be empty)
+     *
+     * @return State\DefinitionSet
      */
     public function getDefinitionSet() : State\DefinitionSet {
         return $this->oDefinitionSet;
+    }
+
+    /**
+     * Return the options (could be empty)#*
+     *
+     * @return State\Options
+     */
+    public function getOptions() : State\Options {
+        return $this->oOptions;
     }
 
     /**
@@ -133,17 +147,14 @@ class Definition {
             is_object($oProjectData->options) ||
             is_array($oProjectData->options)
         )) {
-            $oState = State\Coordinator::get();
-            foreach ((array)$oProjectData->options as $sOption => $mValue) {
-                $oState->setOption($sOption, $mValue);
-            }
+            $this->oOptions->import((array)$oProjectData->options);
         }
 
-        if (!empty($oProjectData->define) && (
-            is_object($oProjectData->define) ||
-            is_array($oProjectData->define)
+        if (!empty($oProjectData->defines) && (
+            is_object($oProjectData->defines) ||
+            is_array($oProjectData->defines)
         )) {
-            foreach ((array)$oProjectData->define as $sDefine => $sValue) {
+            foreach ((array)$oProjectData->defines as $sDefine => $sValue) {
                 $this->oDefinitionSet->add($sDefine, (string)$sValue);
             }
         }

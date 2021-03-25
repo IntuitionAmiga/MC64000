@@ -40,6 +40,7 @@ class Statement implements SourceLine\IParser {
      * Constructor
      */
     public function __construct() {
+        $this->addDirective(new Processor\Flag());
         $this->addDirective(new Processor\Define());
         $this->addDirective(new Processor\Undefine());
     }

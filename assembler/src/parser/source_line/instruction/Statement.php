@@ -153,7 +153,7 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
                     $aSizes
                 );
             } catch (CodeFoldException $oFold) {
-                if (State\Coordinator::get()->getOption(Defs\Project\IOptions::LOG_CODE_FOLD)) {
+                if (State\Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_CODE_FOLD)) {
                     Log::printf(
                         'Folding %s to \'%s\' (%s)',
                         $sSource,

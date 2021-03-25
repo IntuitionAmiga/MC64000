@@ -32,21 +32,23 @@ class Coordinator {
 
     private static ?self $oInstance = null; // Singleton
 
+    private Options        $oGlobalOptions, $oOptions;
+    private DefinitionSet  $oGlobalDefinitionSet, $oDefinitionSet;
     private IO\ISourceFile $oCurrentFile;
     private LabelLocation  $oLabelLocation;
     private Output         $oOutput;
-    private DefinitionSet  $oDefinitionSet, $oGlobalDefinitionSet;
-    private array          $aOptions = [];
 
     /**
      * Constructor
      */
     private function __construct() {
+        $this->oGlobalOptions       =
+        $this->oOptions             = new Options();
+        $this->oGlobalDefinitionSet =
+        $this->oDefinitionSet       = new DefinitionSet();
         $this->oCurrentFile         = new IO\SourceString('', 'none');
         $this->oLabelLocation       = new LabelLocation();
         $this->oOutput              = new Output();
-        $this->oGlobalDefinitionSet =
-        $this->oDefinitionSet       = new DefinitionSet();
     }
 
     /**
@@ -62,6 +64,13 @@ class Coordinator {
     }
 
     /**
+     * @return Options
+     */
+    public function getOptions() : Options {
+        return $this->oOptions;
+    }
+
+    /**
      * Returns the current DefinitionSet. This has scope for the current file only and can
      * undefine and redefine anything in the global set.
      *
@@ -72,7 +81,7 @@ class Coordinator {
     }
 
     /**
-     * Set the global definition set.
+     * Set the global definition set. Used during Project import.
      *
      * @param  DefinitionSet $oDefinitionSet
      * @return self (fluent)
@@ -83,34 +92,14 @@ class Coordinator {
     }
 
     /**
-     * Apply a set of options
-     */
-    public function setOptions(array $aOptions) : self {
-        $this->aOptions = array_merge($this->aOptions, $aOptions);
-        return $this;
-    }
-
-    /**
-     * Set a single option
+     * Set the global options. Used during Project import.
      *
-     * @param  string $oOptionName
-     * @param  mixed  $mValue
+     * @param  Options $oOptions
      * @return self
      */
-    public function setOption(string $sOptionName, $mValue) : self {
-        $this->aOptions[$sOptionName] = $mValue;
+    public function setGlobalOptions(Options $oOptions) : self {
+        $this->oGlobalOptions = $oOptions;
         return $this;
-    }
-
-    /**
-     * Get an option value
-     *
-     * @param  string      $oOptionName
-     * @param  mixed|null  $mDefault
-     * @return mixed|null
-     */
-    public function getOption(string $sOptionName, $mDefault = null) {
-        return $this->aOptions[$sOptionName] ?? $mDefault;
     }
 
     /**
@@ -122,6 +111,7 @@ class Coordinator {
     public function setCurrentFile(IO\ISourceFile $oFile) : self {
         if ($oFile !== $this->oCurrentFile) {
             $this->oCurrentFile   = $oFile;
+            $this->oOptions       = clone $this->oGlobalOptions;
             $this->oDefinitionSet = clone $this->oGlobalDefinitionSet;
         }
         return $this;
@@ -196,7 +186,7 @@ class Coordinator {
         $iPosition = $this->getPositionForLabel($sLabel);
         if (null !== $iPosition) {
             $iDisplacement = $this->oOutput->getDisplacmentForPosition($iPosition);
-            if ($this->getOption(Defs\Project\IOptions::LOG_LABEL_RESOLVE)) {
+            if ($this->oOptions->isEnabled(Defs\Project\IOptions::LOG_LABEL_RESOLVE)) {
                 Log::printf(
                     "Resolved %s to displacement %d [%d - %d - %d]",
                     $sLabel,
