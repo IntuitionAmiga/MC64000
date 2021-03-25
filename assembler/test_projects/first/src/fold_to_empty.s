@@ -124,7 +124,10 @@ fold_to_empty_immediate_one:
     divu.b #1, 1(r12)
     divu.w #1, 2(r13)
     divu.l #1, 4(r14)
+
+    @enable log_code_folds
     divu.q #1, 8(r15)
+    @disable log_code_folds
 
     rts ; return will not fold - check the bytecode for the 0x07 return opcode
 
