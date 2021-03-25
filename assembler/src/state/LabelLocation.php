@@ -61,7 +61,7 @@ class LabelLocation {
             self::I_LINE => $iLine,
             self::I_OFST => $iOffset
         ];
-        if (Coordinator::get()->getOption(Defs\Project\IOptions::LOG_LABEL_ADD)) {
+        if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_ADD)) {
             Log::printf(
                 "Added global label '%s' on line %d of %s, code position %d",
                 $sLabel,
@@ -96,7 +96,7 @@ class LabelLocation {
             self::I_LINE => $iLine,
             self::I_OFST => $iOffset
         ];
-        if (Coordinator::get()->getOption(Defs\Project\IOptions::LOG_LABEL_ADD)) {
+        if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_ADD)) {
             Log::printf(
                 "Added local label '%s' on line %d, code position %d",
                 $sLabel,
@@ -126,7 +126,7 @@ class LabelLocation {
     public function getPositionForLocal(IO\ISourceFile $oFile, string $sLabel) : ?int {
         $sFile = $oFile->getFilename();
         if (isset($this->aLocalLabels[$sFile][$sLabel])) {
-            if (Coordinator::get()->getOption(Defs\Project\IOptions::LOG_LABEL_RESOLVE)) {
+            if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_RESOLVE)) {
                 Log::printf(
                     "Resolved local label '%s' to bytecode position %d",
                     $sLabel,
@@ -146,7 +146,7 @@ class LabelLocation {
      */
     public function getPositionForGlobal(string $sLabel) : ?int {
         if (isset($this->aGlobalLabels[$sLabel])) {
-            if (Coordinator::get()->getOption(Defs\Project\IOptions::LOG_LABEL_RESOLVE)) {
+            if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_RESOLVE)) {
                 Log::printf(
                     "Resolved label '%s' to bytecode position %d",
                     $sLabel,
@@ -172,7 +172,7 @@ class LabelLocation {
         if (isset($this->aUnresolvedLabels[$sCurrentFilename][$sLabel][$iCurrentLineNumber])) {
             throw new \Exception("Duplicate unresolved label reference to same line in same file");
         }
-        if (Coordinator::get()->getOption(Defs\Project\IOptions::LOG_LABEL_ADD)) {
+        if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_ADD)) {
             Log::printf(
                 "Recorded reference to unresolved label '%s' at bytecode position %d",
                 $sLabel,

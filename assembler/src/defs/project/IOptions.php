@@ -25,9 +25,24 @@ namespace ABadCafe\MC64K\Defs\Project;
 interface IOptions {
 
     const
+        TYPE_ANY    = 0,
+        TYPE_BOOL   = 1,
+        TYPE_INT    = 2,
+        TYPE_FLOAT  = 3,
+        TYPE_STRING = 4
+    ;
+
+    const
         LOG_CODE_FOLD     = 'log_code_folds',
         LOG_LABEL_ADD     = 'log_label_add',
         LOG_LABEL_REF     = 'log_label_ref',
         LOG_LABEL_RESOLVE = 'log_label_resolve'
     ;
+
+    const TYPE_MAP = [
+        self::LOG_CODE_FOLD     => self::TYPE_BOOL,
+        self::LOG_LABEL_ADD     => self::TYPE_BOOL,
+        self::LOG_LABEL_REF     => self::TYPE_BOOL,
+        self::LOG_LABEL_RESOLVE => self::TYPE_BOOL,
+    ];
 }

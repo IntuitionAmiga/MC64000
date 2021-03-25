@@ -51,7 +51,9 @@ class Assembler {
      */
     public function loadProject(string $sProjectFile) : self {
         $this->oProject = new Project\Definition($sProjectFile);
-        State\Coordinator::get()->setGlobalDefinitionSet($this->oProject->getDefinitionSet());
+        State\Coordinator::get()
+            ->setGlobalOptions($this->oProject->getOptions())
+            ->setGlobalDefinitionSet($this->oProject->getDefinitionSet());
         return $this;
     }
 

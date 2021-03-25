@@ -14,7 +14,7 @@
         "src/fold_to_fixed.s",
         "src/fold_to_clear.s"
     ],
-    "define": {
+    "defines": {
         "get_to_the_chopper": "rts"
     }
 }

@@ -21,20 +21,19 @@ use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 
 /**
- * Define
+ * Flag
  *
- * Allows locally scoped defining of literal substitutions:
- *
- *    @def     M_PI   #3.1415926535898
- *    @define  five   5
+ * Allows the locally scoped override of assembler option flags.
  */
-class Define implements Directive\IProcessor {
+class Flag implements Directive\IProcessor {
 
     const
-        EXTRACT_MATCH = '/^\s+@(?:def|define)\s+([a-zA-Z_]{1}[a-zA-Z0-9_]*)\s+(.*)/',
+        EXTRACT_MATCH = '/^\s+@(en|dis)(?:able){0,1}\s+([a-zA-Z0-9_]+)/',
         KEYWORDS      = [
-            'def',
-            'define'
+            'en',
+            'dis',
+            'enable',
+            'disable'
         ]
     ;
 
@@ -51,7 +50,15 @@ class Define implements Directive\IProcessor {
     public function process(string $sSource) {
         preg_match(self::EXTRACT_MATCH, rtrim($sSource), $aMatches);
         if (!empty($aMatches[1]) && !empty($aMatches[2])) {
-            State\Coordinator::get()->getDefinitionSet()->add($aMatches[1], $aMatches[2]);
+            switch ($aMatches[1]) {
+                case 'en':
+                    State\Coordinator::get()->getOptions()->enable($aMatches[2]);
+                    break;
+                case 'dis':
+                    State\Coordinator::get()->getOptions()->disable($aMatches[2]);
+                default:
+                    break;
+            }
         }
     }
 }
