@@ -20,7 +20,6 @@ use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Utils\Log;
 
-
 /**
  * SecondPass
  *
@@ -38,10 +37,17 @@ class SecondPass {
      */
     public function resolveForwardsBranchReferences(State\LabelLocation $oLabelLocation, State\Output $oOutput) : void {
         $aBranchTargets = $oLabelLocation->resolveBranchTargetList();
+
+        $bLogResolution = State\Coordinator::get()
+            ->getOptions()
+            ->isEnabled(Defs\Project\IOptions::LOG_LABEL_RESOLVE);
+
+        $bLogResolution &&
         Log::printf('There are %d 32-bit forwards branch references to resolve...', count($aBranchTargets));
         foreach ($aBranchTargets as $iReferenceOffset => $oResolved) {
             $iTargetOffset = $oResolved->iLabelPosition;
             $iDisplacement = $iTargetOffset - $iReferenceOffset - Defs\IBranchLimits::DISPLACEMENT_SIZE;
+            $bLogResolution &&
             Log::printf(
                 "\tReference to %s (%s@%d) at offset %d points to offset %d, displacement size is %d",
                 $oResolved->sLabel,

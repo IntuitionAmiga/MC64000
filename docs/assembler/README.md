@@ -88,7 +88,7 @@ Directives are instructions for the assembler that are embedded within a source 
     @define ONE #1
     @define BASE_DISPLACEMENT 8
     @enable log_code_folds
-    
+
     divu.q ONE, BASE_DISPLACEMENT(r15) ; Expect the log to indicate this was folded away
 ```
 
@@ -110,4 +110,8 @@ The following directives exist:
     * Turns on a switch _option_.
     * `@disable <option>`
     * `@dis` accepted as short form.
-
+* export
+    * Indicates that a global label is to be exported.
+    * `@export <label>`
+    * As the label to export must be global, the directive does not have to be in the same file as the definition.
+    * Only exported labels are visible to code outside the assembled binary.

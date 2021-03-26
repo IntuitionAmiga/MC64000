@@ -22,7 +22,7 @@ namespace ABadCafe\MC64K\Defs;
  *
  * Defines constants pertaining basic identifier matches:
  *
- *     1. Length must be between 1-256
+ *     1. Length must be between 1-255
  *     2. First character must be a letter or an underscore
  *     3. Subsequent characters can be a letter, number or underscore
  */
@@ -36,7 +36,7 @@ interface IIdentifier {
         /**
          * @const int MIN_LENGTH
          */
-        MAX_LENGTH = 256,
+        MAX_LENGTH = 255,
 
         /**
          * @const string BASIC_MATCH

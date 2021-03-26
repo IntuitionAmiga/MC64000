@@ -30,9 +30,9 @@ class Options {
     private array $aBoolOptions = [];
 
     /**
-     * @var mixed[] $aOtherOptions
+     * @var mixed[] $aAllOptions
      */
-    private array $aOtherOptions = [];
+    private array $aAllOptions = [];
 
     /**
      * Import a key-value set of options
@@ -43,9 +43,9 @@ class Options {
             switch ($iKind) {
                 case Defs\Project\IOptions::TYPE_BOOL:
                     $this->aBoolOptions[$sOption] = (bool)$mValue;
-                    break;
+                    // fall through
                 default:
-                    $this->aOtherOptions[$sOption] = $mValue;
+                    $this->aAllOptions[$sOption] = $mValue;
                     break;
             }
         }
@@ -59,6 +59,7 @@ class Options {
      * @return self   fluent
      */
     public function enable(string $sOption) : self {
+        $this->aAllOptions[$sOption] =
         $this->aBoolOptions[$sOption] = true;
         return $this;
     }
@@ -70,6 +71,7 @@ class Options {
      * @return self   fluent
      */
     public function disable(string $sOption) : self {
+        $this->aAllOptions[$sOption] =
         $this->aBoolOptions[$sOption] = false;
         return $this;
     }
@@ -82,5 +84,16 @@ class Options {
      */
     public function isEnabled(string $sOption) : bool {
         return $this->aBoolOptions[$sOption] ?? false;
+    }
+
+    /**
+     * Returns a value set for an option, or the supplied default if the option has no defined value.
+     *
+     * @param  string $sOption
+     * @param  mixed  $mDefault
+     * @return mixed
+     */
+    public function get(string $sOption, $mDefault = null) {
+        return $this->aAllOptions[$sOption] ?? $mDefault;
     }
 }

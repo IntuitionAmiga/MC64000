@@ -255,10 +255,14 @@ fold_to_empty_conditional_always_taken_to_next_position:
     fble.d #ONE., #ONE., #0
     fbeq.s #ONE., #ONE., #0
     fbeq.d #ONE., #ONE., #0
-    fbge.s #3., #2., #0
-    fbge.d #3., #2., #0
-    fbgt.s #3., #2., #0
-    fbgt.d #3., #2., #0
+
+    @enable log_code_folds
+    fbge.s F_PI, #2., #0
+    fbge.d F_PI, #2., #0
+
+    @disable log_code_folds
+    fbgt.s F_PI, #2., #0
+    fbgt.d F_PI, #2., #0
     beq.b r0, r0, #0
     beq.w r0, r0, #0
     beq.l r0, r0, #0
