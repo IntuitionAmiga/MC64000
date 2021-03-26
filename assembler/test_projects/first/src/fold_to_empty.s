@@ -16,10 +16,13 @@
 .locally_never_get_here:
     rts
 
+    ; Just for fun
+    @def ONE  1
+
 fold_to_empty_source_matches_destination:
     ; These fold because the source and destination are the same
     exg    r0, r0
-    fexg  fp1, fp1
+    fexg   fp1, fp1
     move.b d0, d0
     move.w d0, d0
     move.l d0, d0
@@ -76,166 +79,166 @@ fold_to_empty_immediate_zero:
     rts ; return will not fold - check the bytecode for the 0x07 return opcode
 
 fold_to_empty_immediate_one:
-    muls.b #1, r0
-    muls.w #1, r1
-    muls.l #1, r2
-    muls.q #1, r3
-    mulu.b #1, r4
-    mulu.w #1, r5
-    mulu.l #1, r6
-    mulu.q #1, r7
-    divs.b #1, r8
-    divs.w #1, r9
-    divs.l #1, r10
-    divs.q #1, r11
-    divu.b #1, r12
-    divu.w #1, r13
-    divu.l #1, r14
-    divu.q #1, r15
+    muls.b #ONE, r0
+    muls.w #ONE, r1
+    muls.l #ONE, r2
+    muls.q #ONE, r3
+    mulu.b #ONE, r4
+    mulu.w #ONE, r5
+    mulu.l #ONE, r6
+    mulu.q #ONE, r7
+    divs.b #ONE, r8
+    divs.w #ONE, r9
+    divs.l #ONE, r10
+    divs.q #ONE, r11
+    divu.b #ONE, r12
+    divu.w #ONE, r13
+    divu.l #ONE, r14
+    divu.q #ONE, r15
 
-    muls.b #1, (r0)
-    muls.w #1, (r1)
-    muls.l #1, (r2)
-    muls.q #1, (r3)
-    mulu.b #1, (r4)
-    mulu.w #1, (r5)
-    mulu.l #1, (r6)
-    mulu.q #1, (r7)
-    divs.b #1, (r8)
-    divs.w #1, (r9)
-    divs.l #1, (r10)
-    divs.q #1, (r11)
-    divu.b #1, (r12)
-    divu.w #1, (r13)
-    divu.l #1, (r14)
-    divu.q #1, (r15)
-    muls.b #1, 1(r0)
-    muls.w #1, 2(r1)
-    muls.l #1, 3(r2)
-    muls.q #1, 8(r3)
-    mulu.b #1, 1(r4)
-    mulu.w #1, 2(r5)
-    mulu.l #1, 4(r6)
-    mulu.q #1, 8(r7)
-    divs.b #1, 1(r8)
-    divs.w #1, 2(r9)
-    divs.l #1, 4(r10)
-    divs.q #1, 9(r11)
-    divu.b #1, 1(r12)
-    divu.w #1, 2(r13)
-    divu.l #1, 4(r14)
+    muls.b #ONE, (r0)
+    muls.w #ONE, (r1)
+    muls.l #ONE, (r2)
+    muls.q #ONE, (r3)
+    mulu.b #ONE, (r4)
+    mulu.w #ONE, (r5)
+    mulu.l #ONE, (r6)
+    mulu.q #ONE, (r7)
+    divs.b #ONE, (r8)
+    divs.w #ONE, (r9)
+    divs.l #ONE, (r10)
+    divs.q #ONE, (r11)
+    divu.b #ONE, (r12)
+    divu.w #ONE, (r13)
+    divu.l #ONE, (r14)
+    divu.q #ONE, (r15)
+    muls.b #ONE, 1(r0)
+    muls.w #ONE, 2(r1)
+    muls.l #ONE, 3(r2)
+    muls.q #ONE, 8(r3)
+    mulu.b #ONE, 1(r4)
+    mulu.w #ONE, 2(r5)
+    mulu.l #ONE, 4(r6)
+    mulu.q #ONE, 8(r7)
+    divs.b #ONE, 1(r8)
+    divs.w #ONE, 2(r9)
+    divs.l #ONE, 4(r10)
+    divs.q #ONE, 9(r11)
+    divu.b #ONE, 1(r12)
+    divu.w #ONE, 2(r13)
+    divu.l #ONE, 4(r14)
 
     @enable log_code_folds
-    divu.q #1, 8(r15)
+    divu.q #ONE, 8(r15)
     @disable log_code_folds
 
     rts ; return will not fold - check the bytecode for the 0x07 return opcode
 
 fold_to_empty_conditional_never_taken:
-    biz.b  #1, .locally_never_get_here
-    biz.w  #1, .locally_never_get_here
-    biz.l  #1, .locally_never_get_here
-    biz.q  #1, .locally_never_get_here
+    biz.b  #ONE, .locally_never_get_here
+    biz.w  #ONE, .locally_never_get_here
+    biz.l  #ONE, .locally_never_get_here
+    biz.q  #ONE, .locally_never_get_here
     bnz.b  #0, .locally_never_get_here
     bnz.w  #0, .locally_never_get_here
     bnz.l  #0, .locally_never_get_here
     bnz.q  #0, .locally_never_get_here
-    bmi.b  #1, .locally_never_get_here
-    bmi.w  #1, .locally_never_get_here
-    bmi.l  #1, .locally_never_get_here
-    bmi.q  #1, .locally_never_get_here
+    bmi.b  #ONE, .locally_never_get_here
+    bmi.w  #ONE, .locally_never_get_here
+    bmi.l  #ONE, .locally_never_get_here
+    bmi.q  #ONE, .locally_never_get_here
     bpl.b  #-1, .locally_never_get_here
     bpl.w  #-1, .locally_never_get_here
     bpl.l  #-1, .locally_never_get_here
     bpl.q  #-1, .locally_never_get_here
-    fbiz.s  #1., .locally_never_get_here
-    fbiz.d  #1., .locally_never_get_here
-    fbnz.s  #0., .locally_never_get_here
-    fbnz.d  #0., .locally_never_get_here
-    fbmi.s  #1., .locally_never_get_here
-    fbmi.d  #1., .locally_never_get_here
-    fbpl.s  #-1., .locally_never_get_here
-    fbpl.d  #-1., .locally_never_get_here
-    bne.b #1, #1, .locally_never_get_here
-    bne.w #1, #1, .locally_never_get_here
-    bne.l #1, #1, .locally_never_get_here
-    bne.q #1, #1, .locally_never_get_here
-    blt.b #1, #0, .locally_never_get_here
-    blt.w #1, #0, .locally_never_get_here
-    blt.l #1, #0, .locally_never_get_here
-    blt.q #1, #0, .locally_never_get_here
-    ble.b #1, #0, .locally_never_get_here
-    ble.w #1, #0, .locally_never_get_here
-    ble.l #1, #0, .locally_never_get_here
-    ble.q #1, #0, .locally_never_get_here
-    beq.b #1, #-1, .locally_never_get_here
-    beq.w #1, #-1, .locally_never_get_here
-    beq.l #1, #-1, .locally_never_get_here
-    beq.q #1, #-1, .locally_never_get_here
-    bge.b #1, #2, .locally_never_get_here
-    bge.w #1, #2, .locally_never_get_here
-    bge.l #1, #2, .locally_never_get_here
-    bge.q #1, #2, .locally_never_get_here
-    bgt.b #1, #2, .locally_never_get_here
-    bgt.w #1, #2, .locally_never_get_here
-    bgt.l #1, #2, .locally_never_get_here
-    bgt.q #1, #2, .locally_never_get_here
-    fbne.s #1., #1., .locally_never_get_here
-    fbne.d #1., #1., .locally_never_get_here
-    fblt.s #1., #0., .locally_never_get_here
-    fblt.d #1., #0., .locally_never_get_here
-    fble.s #1., #0., .locally_never_get_here
-    fble.d #1., #0., .locally_never_get_here
-    fbeq.s #1., #-1., .locally_never_get_here
-    fbeq.d #1., #-1., .locally_never_get_here
-    fbge.s #1., #2., .locally_never_get_here
-    fbge.d #1., #2., .locally_never_get_here
-    fbgt.s #1., #2., .locally_never_get_here
-    fbgt.d #1., #2., .locally_never_get_here
+    fbiz.s #ONE., .locally_never_get_here
+    fbiz.d #ONE., .locally_never_get_here
+    fbnz.s #0., .locally_never_get_here
+    fbnz.d #0., .locally_never_get_here
+    fbmi.s #ONE., .locally_never_get_here
+    fbmi.d #ONE., .locally_never_get_here
+    fbpl.s #-1., .locally_never_get_here
+    fbpl.d #-1., .locally_never_get_here
+    bne.b  #ONE, #ONE, .locally_never_get_here
+    bne.w  #ONE, #ONE, .locally_never_get_here
+    bne.l  #ONE, #ONE, .locally_never_get_here
+    bne.q  #ONE, #ONE, .locally_never_get_here
+    blt.b  #ONE, #0, .locally_never_get_here
+    blt.w  #ONE, #0, .locally_never_get_here
+    blt.l  #ONE, #0, .locally_never_get_here
+    blt.q  #ONE, #0, .locally_never_get_here
+    ble.b  #ONE, #0, .locally_never_get_here
+    ble.w  #ONE, #0, .locally_never_get_here
+    ble.l  #ONE, #0, .locally_never_get_here
+    ble.q  #ONE, #0, .locally_never_get_here
+    beq.b  #ONE, #-1, .locally_never_get_here
+    beq.w  #ONE, #-1, .locally_never_get_here
+    beq.l  #ONE, #-1, .locally_never_get_here
+    beq.q  #ONE, #-1, .locally_never_get_here
+    bge.b  #ONE, #2, .locally_never_get_here
+    bge.w  #ONE, #2, .locally_never_get_here
+    bge.l  #ONE, #2, .locally_never_get_here
+    bge.q  #ONE, #2, .locally_never_get_here
+    bgt.b  #ONE, #2, .locally_never_get_here
+    bgt.w  #ONE, #2, .locally_never_get_here
+    bgt.l  #ONE, #2, .locally_never_get_here
+    bgt.q  #ONE, #2, .locally_never_get_here
+    fbne.s #ONE., #ONE., .locally_never_get_here
+    fbne.d #ONE., #ONE., .locally_never_get_here
+    fblt.s #ONE., #0., .locally_never_get_here
+    fblt.d #ONE., #0., .locally_never_get_here
+    fble.s #ONE., #0., .locally_never_get_here
+    fble.d #ONE., #0., .locally_never_get_here
+    fbeq.s #ONE., #-1., .locally_never_get_here
+    fbeq.d #ONE., #-1., .locally_never_get_here
+    fbge.s #ONE., #2., .locally_never_get_here
+    fbge.d #ONE., #2., .locally_never_get_here
+    fbgt.s #ONE., #2., .locally_never_get_here
+    fbgt.d #ONE., #2., .locally_never_get_here
 
     rts ; return will not fold - check the bytecode for the 0x07 return opcode
 
-fold_to_empry_conditional_always_taken_to_next_position:
+fold_to_empty_conditional_always_taken_to_next_position:
     biz.b  #0, #0
     biz.w  #0, #0
     biz.l  #0, #0
     biz.q  #0, #0
-    bnz.b  #1, #0
-    bnz.w  #1, #0
-    bnz.l  #1, #0
-    bnz.q  #1, #0
+    bnz.b  #ONE, #0
+    bnz.w  #ONE, #0
+    bnz.l  #ONE, #0
+    bnz.q  #ONE, #0
     bmi.b  #-1, #0
     bmi.w  #-1, #0
     bmi.l  #-1, #0
     bmi.q  #-1, #0
-    bpl.b  #1, #0
-    bpl.w  #1, #0
-    bpl.l  #1, #0
-    bpl.q  #1, #0
+    bpl.b  #ONE, #0
+    bpl.w  #ONE, #0
+    bpl.l  #ONE, #0
+    bpl.q  #ONE, #0
     fbiz.s  #0., #0
     fbiz.d  #0., #0
-    fbnz.s  #1., #0
-    fbnz.d  #1., #0
+    fbnz.s  #ONE., #0
+    fbnz.d  #ONE., #0
     fbmi.s  #-1., #0
     fbmi.d  #-1., #0
-    fbpl.s  #1., #0
-    fbpl.d  #1., #0
-    bne.b #0, #1, #0
-    bne.w #0, #1, #0
-    bne.l #0, #1, #0
-    bne.q #0, #1, #0
-    blt.b #1, #2, #0
-    blt.w #1, #2, #0
-    blt.l #1, #2, #0
-    blt.q #1, #2, #0
-    ble.b #1, #1, #0
-    ble.w #1, #1, #0
-    ble.l #1, #1, #0
-    ble.q #1, #1, #0
-    beq.b #1, #1, #0
-    beq.w #1, #1, #0
-    beq.l #1, #1, #0
-    beq.q #1, #1, #0
+    fbpl.s  #ONE., #0
+    fbpl.d  #ONE., #0
+    bne.b #0, #ONE, #0
+    bne.w #0, #ONE, #0
+    bne.l #0, #ONE, #0
+    bne.q #0, #ONE, #0
+    blt.b #ONE, #2, #0
+    blt.w #ONE, #2, #0
+    blt.l #ONE, #2, #0
+    blt.q #ONE, #2, #0
+    ble.b #ONE, #ONE, #0
+    ble.w #ONE, #ONE, #0
+    ble.l #ONE, #ONE, #0
+    ble.q #ONE, #ONE, #0
+    beq.b #ONE, #ONE, #0
+    beq.w #ONE, #ONE, #0
+    beq.l #ONE, #ONE, #0
+    beq.q #ONE, #ONE, #0
     bge.b #2, #2, #0
     bge.w #2, #2, #0
     bge.l #2, #2, #0
@@ -244,14 +247,14 @@ fold_to_empry_conditional_always_taken_to_next_position:
     bgt.w #3, #2, #0
     bgt.l #3, #2, #0
     bgt.q #3, #2, #0
-    fbne.s #0., #1., #0
-    fbne.d #0., #1., #0
-    fblt.s #1., #2., #0
-    fblt.d #1., #2., #0
-    fble.s #1., #1., #0
-    fble.d #1., #1., #0
-    fbeq.s #1., #1., #0
-    fbeq.d #1., #1., #0
+    fbne.s #0., #ONE., #0
+    fbne.d #0., #ONE., #0
+    fblt.s #ONE., #2., #0
+    fblt.d #ONE., #2., #0
+    fble.s #ONE., #ONE., #0
+    fble.d #ONE., #ONE., #0
+    fbeq.s #ONE., #ONE., #0
+    fbeq.d #ONE., #ONE., #0
     fbge.s #3., #2., #0
     fbge.d #3., #2., #0
     fbgt.s #3., #2., #0

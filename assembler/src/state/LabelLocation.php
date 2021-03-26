@@ -37,6 +37,17 @@ class LabelLocation {
     private array  $aGlobalLabels     = [];
     private array  $aLocalLabels      = [];
     private array  $aUnresolvedLabels = [];
+    private array  $aExportedLabels   = [];
+
+    /**
+     * Register a label for export. This will be sanity checked in the second pass.
+     *
+     * @param string $sLabel
+     */
+    public function registerExport(string $sLabel) : self {
+        $this->aExportedLabels[$sLabel] = $sLabel;
+        return $this;
+    }
 
     /**
      * Add a global label to the registry. A global label can be declared only once.
