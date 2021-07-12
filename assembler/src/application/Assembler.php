@@ -96,7 +96,9 @@ class Assembler {
         $oWriter = new IO\Output\Binary(
             $this->oProject->getBaseDirectoryPath() . $this->oProject->getOutputBinaryPath()
         );
-        $oWriter->writeChunk(State\Coordinator::get()->getOutput());
+        $oState = State\Coordinator::get();
+        $oWriter->writeChunk($oState->getOutput());
+        $oWriter->writeChunk(new IO\Output\ExportList($oState->getLabelLocation()));
         return $this;
     }
 

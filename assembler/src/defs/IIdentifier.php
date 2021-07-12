@@ -18,15 +18,29 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Defs;
 
 /**
- * ILabel
+ * IIdentifier
  *
- * Defines constants pertaining to label definitions.
+ * Defines constants pertaining basic identifier matches:
+ *
+ *     1. Length must be between 1-255
+ *     2. First character must be a letter or an underscore
+ *     3. Subsequent characters can be a letter, number or underscore
  */
-interface ILabel extends IIdentifier {
+interface IIdentifier {
     const
-        SUFFIX_CHAR       = ':',
-        LOCAL_PREFIX_CHAR = '.',
-        LOCAL_MATCH       = '/^\.' . self::BASIC_MATCH . '\:/',
-        GLOBAL_MATCH      = '/^'   . self::BASIC_MATCH . '\:/'
+        /**
+         * @const int MIN_LENGTH
+         */
+        MIN_LENGTH = 1,
+
+        /**
+         * @const int MIN_LENGTH
+         */
+        MAX_LENGTH = 255,
+
+        /**
+         * @const string BASIC_MATCH
+         */
+        BASIC_MATCH = '[A-Za-z_][A-Za-z0-9_]{0,' . (self::MAX_LENGTH - 1) . '}'
     ;
 }

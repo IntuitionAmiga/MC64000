@@ -19,7 +19,7 @@ declare(strict_types = 1);
 require_once 'src/MC64K.php';
 
 if ((int)$_SERVER['argc'] < 2) {
-    echo "No project file specified.\n";
+    echo "No project file specified\nUsage: masm <path to project file>";
     exit(0);
 }
 

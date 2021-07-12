@@ -1,0 +1,16 @@
+{
+    "name": "Labels",
+    "description": "Test for labels",
+    "output": "bin/labels.mc64k",
+    "options": {
+        "log_code_folds": false,
+        "log_label_add": true,
+        "log_label_ref": true,
+        "log_label_resolve": true
+    },
+    "sources": [
+        "src/main.s"
+    ],
+    "defines": {
+    }
+}

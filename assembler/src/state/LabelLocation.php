@@ -37,6 +37,17 @@ class LabelLocation {
     private array  $aGlobalLabels     = [];
     private array  $aLocalLabels      = [];
     private array  $aUnresolvedLabels = [];
+    private array  $aExportedLabels   = [];
+
+    /**
+     * Register a label for export. This will be sanity checked in the second pass.
+     *
+     * @param string $sLabel
+     */
+    public function registerExport(string $sLabel) : self {
+        $this->aExportedLabels[$sLabel] = $sLabel;
+        return $this;
+    }
 
     /**
      * Add a global label to the registry. A global label can be declared only once.
@@ -186,7 +197,10 @@ class LabelLocation {
     /**
      * Resolves any branch targets that were unresolved at the time of generation during the first pass.
      *
+     * Throws if an unresolved refrence cannot be resolved.
+     *
      * @return object[]
+     * @throws \Exception
      */
     public function resolveBranchTargetList() : array {
         $aResult = [];
@@ -226,4 +240,25 @@ class LabelLocation {
         return $aResult;
     }
 
+    /**
+     * Returns the set of exported labels.
+     *
+     * @return object[]
+     */
+    public function resolveExports() : array {
+        $aResult = [];
+        foreach ($this->aExportedLabels as $sLabel) {
+            if (!isset($this->aGlobalLabels[$sLabel])) {
+                throw new \Exception(
+                    sprintf("Exported global label %s has not been defined", $sLabel)
+                );
+            }
+            $aResult[] = (object)[
+                'sLabel'         => $sLabel,
+                'iLabelPosition' => $this->aGlobalLabels[$sLabel][self::I_OFST],
+                'sFilename'      => $this->aGlobalLabels[$sLabel][self::I_FILE]
+            ];
+        }
+        return $aResult;
+    }
 }

@@ -19,9 +19,9 @@ namespace ABadCafe\MC64K\IO\Output;
 use ABadCafe\MC64K\Defs\IIntLimits;
 
 /**
- * IBinaryChunk
+ * ChunkList
  *
- * Basic interface for binary writeable chunks
+ * List of chunks to be included
  */
 class ChunkList implements IBinaryChunk {
 
