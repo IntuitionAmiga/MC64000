@@ -39,16 +39,40 @@ use ABadCafe\MC64K\State;
 class ExportList implements IBinaryChunk {
 
     const
-        TYPE  = 'EXPORTED'
+        TYPE  = 'Exported'
     ;
 
-    private array $aExports;
+    private string $sBinary;
 
     /**
+     * Constructor. Builds the binary represntation for the export list.
+     *
      * @param State\LabelLocation $oLabelLocation
      */
     public function __construct(State\LabelLocation $oLabelLocation) {
-        $this->aExports = $oLabelLocation->resolveExports();
+        $aExports = $oLabelLocation->resolveExports();
+        $this->sBinary =
+            // Label Count
+            pack('V', count($aExports)) .
+
+            // Offset table
+            pack('C*', ...array_column($aExports, 'iLabelPosition')) .
+
+            // Label lengths
+            pack('C*', ...array_map(
+                function (object $oSymbol) {
+                    return strlen($oSymbol->sLabel);
+                },
+                $aExports
+            )) .
+
+            // Label names
+            implode('', array_map(
+                function (object $oSymbol) {
+                    return $oSymbol->sLabel . "\0";
+                },
+                $aExports
+            ));
     }
 
     /**
@@ -62,17 +86,19 @@ class ExportList implements IBinaryChunk {
 
     /**
      * Returns the chunk length in bytes (not including the type header)
+     *
+     * @return int
      */
     public function getChunkLength() : int {
-        return 0;
+        return strlen($this->sBinary);
     }
 
     /**
-     * Returns the chunk data
+     * Returns the chunk data as a binary string.
      *
      * @return string
      */
     public function getChunkData() : string {
-        return '';
+        return $this->sBinary;
     }
 }
