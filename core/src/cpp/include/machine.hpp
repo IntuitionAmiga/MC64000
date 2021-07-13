@@ -22,6 +22,32 @@ namespace MC64K {
 
         #include "machine/register.hpp"
 
+        class StaticInterpreter {
+
+        private:
+            static Register::GeneralPurpose aGPR[Register::GeneralPurpose::MAX];
+            static Register::FloatingPoint  aFPR[Register::FloatingPoint::MAX];
+
+            static const uint8* programCounter;
+
+        public:
+            static void dumpState();
+
+            static Register::GeneralPurpose& gpr(const unsigned int r) {
+                return aGPR[r & Register::GeneralPurpose::MASK];
+            }
+
+            static Register::FloatingPoint& fpr(const unsigned int r) {
+                return aFPR[r & Register::FloatingPoint::MASK];
+            }
+
+            static void setProgramCounter(const uint8* newProgramCounter) {
+                programCounter = newProgramCounter;
+            }
+
+            static void run();
+        };
+
     };
 }
 #endif

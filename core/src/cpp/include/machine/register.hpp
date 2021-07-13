@@ -21,36 +21,97 @@
  * MC64K::Register
  */
 namespace Register {
+
     union GeneralPurpose {
-        private:
-            uint64*  pu64;
-            int64*   pi64;
-            uint32*  pu32;
-            int32*   pi32;
-            uint16*  pu16;
-            int16*   pi16;
-            uint8*   pu8;
-            int8*    pi8;
-            float64* pf64;
-            float32* pf32;
-            void*    p;
+    public:
+        enum Names {
+            R0   = 0,
+            R1   = 1,
+            R2   = 2,
+            R3   = 3,
+            R4   = 4,
+            R5   = 5,
+            R6   = 6,
+            R7   = 7,
+            R8   = 8,
+            R9   = 9,
+            R10  = 10,
+            R11  = 11,
+            R12  = 12,
+            R13  = 13,
+            R14  = 14,
+            R15  = 15,
 
-            uint64  u64;
-            int64   i64;
-            uint32  u32;
-            int32   i32;
-            uint16  u16;
-            int16   i16;
-            uint8   u8;
-            int8    i8;
+            D0   = R0,
+            D1   = R1,
+            D2   = R2,
+            D3   = R3,
+            D4   = R4,
+            D5   = R5,
+            D6   = R6,
+            D7   = R7,
+            A0   = R8,
+            A1   = R9,
+            A2   = R10,
+            A3   = R11,
+            A4   = R12,
+            A5   = R13,
+            A6   = R14,
+            A7   = R15,
+            SP   = R15,
+            MAX  = 16,
+            MASK = 0xF
+        };
 
-        public:
-            GeneralPurpose() : u64(0) {}
+        void*    pAny;
+        uint64*  pUQuad;
+        int64*   pIQuad;
+        uint32*  pULong;
+        int32*   pILong;
+        uint16*  pUWord;
+        int16*   pIWord;
+        uint8*   pUByte;
+        int8*    pIByte;
+        float64* pDouble;
+        float32* pFloat;
+
+        uint64   uQuad;
+        int64    iQuad;
+        uint32   uLong;
+        int32    iLong;
+        uint16   uWord;
+        int16    iWord;
+        uint8    uByte;
+        int8     iByte;
+        GeneralPurpose() : uQuad(0) {}
     };
 
     union FloatingPoint {
-        float64 f64;
-        float32 f32;
+    public:
+        enum Names {
+            FP0  = 0,
+            FP1  = 1,
+            FP2  = 2,
+            FP3  = 3,
+            FP4  = 4,
+            FP5  = 5,
+            FP6  = 6,
+            FP7  = 7,
+            FP8  = 8,
+            FP9  = 9,
+            FP10 = 10,
+            FP11 = 11,
+            FP12 = 12,
+            FP13 = 13,
+            FP14 = 14,
+            FP15 = 15,
+            MAX  = 16,
+            MASK = 0xF
+        };
+        uint64  uBinary;
+        float64 fDouble;
+        float32 fSingle;
+        FloatingPoint() : fDouble(0.0) {}
     };
 };
 

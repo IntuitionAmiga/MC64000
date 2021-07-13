@@ -1,3 +1,4 @@
 #!/bin/sh
-gcc -v -Wall -W dummy.cpp -o dummy
+gcc -Wall -W -Werror interpreter.cpp dummy.cpp -o dummy
+./dummy
 rm dummy
