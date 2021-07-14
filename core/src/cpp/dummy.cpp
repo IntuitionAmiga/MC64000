@@ -13,13 +13,32 @@ int main() {
     uint32 aTest[] = {
         0xABADCAFE,
         0x31337DAD,
+        100000000,
+        1
     };
 
-    // A single bytecode operation to test: move.l (d0), d1
+    // Simple bytecode test
     uint8 aByteCode[] = {
-        Opcode::MOVE_L,            // Opcode
-        EffectiveAddress::R1_DIR,  // Destination EA first
-        EffectiveAddress::R0_IND,  // Source EA second
+        Opcode::MOVE_L,
+        EffectiveAddress::R1_DIR,
+        EffectiveAddress::R0_IND_DSP,
+        8, 0, 0, 0,
+
+        Opcode::MOVE_L,
+        EffectiveAddress::R2_DIR,
+        EffectiveAddress::R0_IND_DSP,
+        12, 0, 0, 0,
+
+        Opcode::SUB_L,
+        EffectiveAddress::R1_DIR,
+        EffectiveAddress::R2_DIR,
+
+        Opcode::BNZ_L,
+        EffectiveAddress::R1_DIR,
+        (uint8)-9, 0xFF, 0xFF, 0xFF,
+
+        // done
+        Opcode::RTS
     };
 
     // Set up the interpreter. r0 shall contain the address of the test data.

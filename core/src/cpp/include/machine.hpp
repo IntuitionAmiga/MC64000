@@ -14,6 +14,8 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
+#include <time.h>
+
 /**
  * MC64K::Machine
  */
@@ -22,16 +24,41 @@ namespace MC64K {
 
         #include "machine/register.hpp"
 
+        /**
+         * StaticInterpreter
+         *
+         * Single threaded interpreter model.
+         */
         class StaticInterpreter {
+            public:
+            typedef enum {
+                UNINITIALISED = 0,
+                INITIALISED,
+                RUNNING,
+                COMPLETED,
+                ILLEGAL_OPCODE
+            } Status;
 
-        private:
+            enum DumpFlags {
+                STATE_GPR = 1,
+                STATE_FPR = 2,
+                STATE_TMP = 4
+            };
 
+            static void                      dumpState(const int iFlags);
+            static Register::GeneralPurpose& gpr(const unsigned int uReg);
+            static Register::FloatingPoint&  fpr(const unsigned int uReg);
+            static void                      setProgramCounter(const uint8* pNewProgramCounter);
+            static void                      run();
+
+            private:
             static Register::GeneralPurpose aGPR[Register::GeneralPurpose::MAX];
             static Register::FloatingPoint  aFPR[Register::FloatingPoint::MAX];
             static const uint8* pProgramCounter;
             static void* pDstEA;
             static void* pSrcEA;
             static void* pTmpEA;
+            static int iCallDepth;
 
             static enum  OperationSize {
                 SIZE_BYTE = 1,
@@ -40,34 +67,25 @@ namespace MC64K {
                 SIZE_QUAD = 8
             } eOperationSize;
 
-        public:
-            enum StateFlags {
-                STATE_GPR = 1,
-                STATE_FPR = 2,
-                STATE_TMP = 4
-            };
-
-            static void dumpState(const int iFlags);
-
-            static Register::GeneralPurpose& gpr(const unsigned int uReg) {
-                return aGPR[uReg & Register::GeneralPurpose::MASK];
-            }
-
-            static Register::FloatingPoint& fpr(const unsigned int uReg) {
-                return aFPR[uReg & Register::FloatingPoint::MASK];
-            }
-
-            static void setProgramCounter(const uint8* pNewProgramCounter) {
-                pProgramCounter = pNewProgramCounter;
-            }
-
-            static void run();
+            static Status eStatus;
 
             static void* decodeEffectiveAddress();
-        private:
-
         };
 
+        /**
+         * Nanosecond measurement
+         */
+        class NanoTime {
+            public:
+            typedef uint64 Value;
+
+            static Value mark() {
+                timespec oCurrent;
+                clock_gettime(CLOCK_MONOTONIC, &oCurrent);
+                Value  uMark = 1000000000UL * oCurrent.tv_sec ;
+                return uMark + oCurrent.tv_nsec;
+            }
+        };
     };
 }
 #endif

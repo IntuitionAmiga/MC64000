@@ -1,3 +1,15 @@
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *    - 64-bit 680x0-inspired Virtual Machine and assembler -
+ */
 #include "include/mc64k.hpp"
 #include <cstdio>
 
@@ -5,11 +17,11 @@ using namespace MC64K::Machine;
 using namespace MC64K::ByteCode;
 
 // Nasty macro that is here to be inlined / improved
-#define readDisplacement(p, a) \
-    a[0] = *p++; \
-    a[1] = *p++; \
-    a[2] = *p++; \
-    a[3] = *p++; \
+#define readDisplacement(a) \
+    a[0] = *pProgramCounter++; \
+    a[1] = *pProgramCounter++; \
+    a[2] = *pProgramCounter++; \
+    a[3] = *pProgramCounter++; \
 
 /**
  *
@@ -62,7 +74,7 @@ void* StaticInterpreter::decodeEffectiveAddress() {
 
         // Register Indirect with displacement <d32>(r<N>) / (<d32>, r<N>)
         case EffectiveAddress::OFS_GPR_IND_DSP:
-            readDisplacement(pProgramCounter, uBytes);
+            readDisplacement(uBytes);
             return aGPR[uEALower].pIByte + iDisplacement;
 
         // FPU Register Direct fp<N>
@@ -90,7 +102,7 @@ void* StaticInterpreter::decodeEffectiveAddress() {
             uint8 uBaseReg  = uIndexReg >> 4;
             uint8 uScale    = uEALower >> 2;
             uIndexReg      &= 0xF;
-            readDisplacement(pProgramCounter, uBytes);
+            readDisplacement(uBytes);
             switch (uEALower & 3) {
                 case 0: return aGPR[uBaseReg].pIByte + iDisplacement + (aGPR[uIndexReg].iByte << uScale);
                 case 1: return aGPR[uBaseReg].pIByte + iDisplacement + (aGPR[uIndexReg].iWord << uScale);
@@ -111,6 +123,7 @@ void* StaticInterpreter::decodeEffectiveAddress() {
         case EffectiveAddress::OFS_OTHER: {
             switch (uEALower) {
                 default:
+                    // TODO
                     break;
             }
             break;
