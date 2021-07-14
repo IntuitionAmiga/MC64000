@@ -25,27 +25,47 @@ namespace MC64K {
         class StaticInterpreter {
 
         private:
+
             static Register::GeneralPurpose aGPR[Register::GeneralPurpose::MAX];
             static Register::FloatingPoint  aFPR[Register::FloatingPoint::MAX];
+            static const uint8* pProgramCounter;
+            static void* pDstEA;
+            static void* pSrcEA;
+            static void* pTmpEA;
 
-            static const uint8* programCounter;
+            static enum  OperationSize {
+                SIZE_BYTE = 1,
+                SIZE_WORD = 2,
+                SIZE_LONG = 4,
+                SIZE_QUAD = 8
+            } eOperationSize;
 
         public:
-            static void dumpState();
+            enum StateFlags {
+                STATE_GPR = 1,
+                STATE_FPR = 2,
+                STATE_TMP = 4
+            };
 
-            static Register::GeneralPurpose& gpr(const unsigned int r) {
-                return aGPR[r & Register::GeneralPurpose::MASK];
+            static void dumpState(const int iFlags);
+
+            static Register::GeneralPurpose& gpr(const unsigned int uReg) {
+                return aGPR[uReg & Register::GeneralPurpose::MASK];
             }
 
-            static Register::FloatingPoint& fpr(const unsigned int r) {
-                return aFPR[r & Register::FloatingPoint::MASK];
+            static Register::FloatingPoint& fpr(const unsigned int uReg) {
+                return aFPR[uReg & Register::FloatingPoint::MASK];
             }
 
-            static void setProgramCounter(const uint8* newProgramCounter) {
-                programCounter = newProgramCounter;
+            static void setProgramCounter(const uint8* pNewProgramCounter) {
+                pProgramCounter = pNewProgramCounter;
             }
 
             static void run();
+
+            static void* decodeEffectiveAddress();
+        private:
+
         };
 
     };
