@@ -37,11 +37,11 @@ using namespace MC64K::ByteCode;
 #define asDouble(ea) *((float64*)(ea))
 
 // Nasty macro that is here to be inlined / improved
-#define readDisplacement(a) \
-    a[0] = *pProgramCounter++; \
-    a[1] = *pProgramCounter++; \
-    a[2] = *pProgramCounter++; \
-    a[3] = *pProgramCounter++; \
+#define readDisplacement() \
+    uBytes[0] = *pProgramCounter++; \
+    uBytes[1] = *pProgramCounter++; \
+    uBytes[2] = *pProgramCounter++; \
+    uBytes[3] = *pProgramCounter++; \
 
 #define bcc(c) if (c) pProgramCounter += iDisplacement;
 
@@ -79,74 +79,78 @@ void StaticInterpreter::run() {
                 ++iCallDepth;
                 break;
             case Opcode::JMP:
+
             case Opcode::JSR:
                 ++iCallDepth;
                 break;
+
             case Opcode::RTS:
                 if (0 == --iCallDepth) {
                     eStatus = COMPLETED;
                 }
                 break;
-            case Opcode::BIZ_B:  monadic(SIZE_BYTE); readDisplacement(uBytes); bcc(!asByte(pDstEA));       break;
-            case Opcode::BIZ_W:  monadic(SIZE_WORD); readDisplacement(uBytes); bcc(!asWord(pDstEA));       break;
-            case Opcode::BIZ_L:  monadic(SIZE_LONG); readDisplacement(uBytes); bcc(!asLong(pDstEA));       break;
-            case Opcode::BIZ_Q:  monadic(SIZE_QUAD); readDisplacement(uBytes); bcc(!asQuad(pDstEA));       break;
-            case Opcode::FBIZ_S: monadic(SIZE_LONG); readDisplacement(uBytes); bcc(!asSingle(pDstEA));     break;
-            case Opcode::FBIZ_D: monadic(SIZE_QUAD); readDisplacement(uBytes); bcc(!asDouble(pDstEA));     break;
-            case Opcode::BNZ_B:  monadic(SIZE_BYTE); readDisplacement(uBytes); bcc(asByte(pDstEA));        break;
-            case Opcode::BNZ_W:  monadic(SIZE_WORD); readDisplacement(uBytes); bcc(asWord(pDstEA));        break;
-            case Opcode::BNZ_L:  monadic(SIZE_LONG); readDisplacement(uBytes); bcc(asLong(pDstEA));        break;
-            case Opcode::BNZ_Q:  monadic(SIZE_QUAD); readDisplacement(uBytes); bcc(asQuad(pDstEA));        break;
-            case Opcode::FBNZ_S: monadic(SIZE_LONG); readDisplacement(uBytes); bcc(asSingle(pDstEA));      break;
-            case Opcode::FBNZ_D: monadic(SIZE_QUAD); readDisplacement(uBytes); bcc(asDouble(pDstEA));      break;
-            case Opcode::BMI_B:  monadic(SIZE_BYTE); readDisplacement(uBytes); bcc(0 > asByte(pDstEA));    break;
-            case Opcode::BMI_W:  monadic(SIZE_WORD); readDisplacement(uBytes); bcc(0 > asWord(pDstEA));    break;
-            case Opcode::BMI_L:  monadic(SIZE_LONG); readDisplacement(uBytes); bcc(0 > asLong(pDstEA));    break;
-            case Opcode::BMI_Q:  monadic(SIZE_QUAD); readDisplacement(uBytes); bcc(0 > asQuad(pDstEA));    break;
-            case Opcode::FBMI_S: monadic(SIZE_LONG); readDisplacement(uBytes); bcc(0 > asSingle(pDstEA));  break;
-            case Opcode::FBMI_D: monadic(SIZE_QUAD); readDisplacement(uBytes); bcc(0 > asDouble(pDstEA));  break;
-            case Opcode::BPL_B:  monadic(SIZE_BYTE); readDisplacement(uBytes); bcc(0 < asByte(pDstEA));    break;
-            case Opcode::BPL_W:  monadic(SIZE_WORD); readDisplacement(uBytes); bcc(0 < asWord(pDstEA));    break;
-            case Opcode::BPL_L:  monadic(SIZE_LONG); readDisplacement(uBytes); bcc(0 < asLong(pDstEA));    break;
-            case Opcode::BPL_Q:  monadic(SIZE_QUAD); readDisplacement(uBytes); bcc(0 < asQuad(pDstEA));    break;
-            case Opcode::FBPL_S: monadic(SIZE_LONG); readDisplacement(uBytes); bcc(0 < asSingle(pDstEA));  break;
-            case Opcode::FBPL_D: monadic(SIZE_QUAD); readDisplacement(uBytes); bcc(0 < asDouble(pDstEA));  break;
-            case Opcode::BLT_B:
-            case Opcode::BLT_W:
-            case Opcode::BLT_L:
-            case Opcode::BLT_Q:
-            case Opcode::FBLT_S:
-            case Opcode::FBLT_D:
-            case Opcode::BLE_B:
-            case Opcode::BLE_W:
-            case Opcode::BLE_L:
-            case Opcode::BLE_Q:
-            case Opcode::FBLE_S:
-            case Opcode::FBLE_D:
-            case Opcode::BEQ_B:
-            case Opcode::BEQ_W:
-            case Opcode::BEQ_L:
-            case Opcode::BEQ_Q:
-            case Opcode::FBEQ_S:
-            case Opcode::FBEQ_D:
-            case Opcode::BGE_B:
-            case Opcode::BGE_W:
-            case Opcode::BGE_L:
-            case Opcode::BGE_Q:
-            case Opcode::FBGE_S:
-            case Opcode::FBGE_D:
-            case Opcode::BGT_B:
-            case Opcode::BGT_W:
-            case Opcode::BGT_L:
-            case Opcode::BGT_Q:
-            case Opcode::FBGT_S:
-            case Opcode::FBGT_D:
-            case Opcode::BNE_B:
-            case Opcode::BNE_W:
-            case Opcode::BNE_L:
-            case Opcode::BNE_Q:
-            case Opcode::FBNE_S:
-            case Opcode::FBNE_D:
+
+            case Opcode::BIZ_B:  monadic(SIZE_BYTE); readDisplacement(); bcc(!asByte(pDstEA));       break;
+            case Opcode::BIZ_W:  monadic(SIZE_WORD); readDisplacement(); bcc(!asWord(pDstEA));       break;
+            case Opcode::BIZ_L:  monadic(SIZE_LONG); readDisplacement(); bcc(!asLong(pDstEA));       break;
+            case Opcode::BIZ_Q:  monadic(SIZE_QUAD); readDisplacement(); bcc(!asQuad(pDstEA));       break;
+            case Opcode::FBIZ_S: monadic(SIZE_LONG); readDisplacement(); bcc(!asSingle(pDstEA));     break;
+            case Opcode::FBIZ_D: monadic(SIZE_QUAD); readDisplacement(); bcc(!asDouble(pDstEA));     break;
+            case Opcode::BNZ_B:  monadic(SIZE_BYTE); readDisplacement(); bcc(asByte(pDstEA));        break;
+            case Opcode::BNZ_W:  monadic(SIZE_WORD); readDisplacement(); bcc(asWord(pDstEA));        break;
+            case Opcode::BNZ_L:  monadic(SIZE_LONG); readDisplacement(); bcc(asLong(pDstEA));        break;
+            case Opcode::BNZ_Q:  monadic(SIZE_QUAD); readDisplacement(); bcc(asQuad(pDstEA));        break;
+            case Opcode::FBNZ_S: monadic(SIZE_LONG); readDisplacement(); bcc(asSingle(pDstEA));      break;
+            case Opcode::FBNZ_D: monadic(SIZE_QUAD); readDisplacement(); bcc(asDouble(pDstEA));      break;
+            case Opcode::BMI_B:  monadic(SIZE_BYTE); readDisplacement(); bcc(0 > asByte(pDstEA));    break;
+            case Opcode::BMI_W:  monadic(SIZE_WORD); readDisplacement(); bcc(0 > asWord(pDstEA));    break;
+            case Opcode::BMI_L:  monadic(SIZE_LONG); readDisplacement(); bcc(0 > asLong(pDstEA));    break;
+            case Opcode::BMI_Q:  monadic(SIZE_QUAD); readDisplacement(); bcc(0 > asQuad(pDstEA));    break;
+            case Opcode::FBMI_S: monadic(SIZE_LONG); readDisplacement(); bcc(0 > asSingle(pDstEA));  break;
+            case Opcode::FBMI_D: monadic(SIZE_QUAD); readDisplacement(); bcc(0 > asDouble(pDstEA));  break;
+            case Opcode::BPL_B:  monadic(SIZE_BYTE); readDisplacement(); bcc(0 < asByte(pDstEA));    break;
+            case Opcode::BPL_W:  monadic(SIZE_WORD); readDisplacement(); bcc(0 < asWord(pDstEA));    break;
+            case Opcode::BPL_L:  monadic(SIZE_LONG); readDisplacement(); bcc(0 < asLong(pDstEA));    break;
+            case Opcode::BPL_Q:  monadic(SIZE_QUAD); readDisplacement(); bcc(0 < asQuad(pDstEA));    break;
+            case Opcode::FBPL_S: monadic(SIZE_LONG); readDisplacement(); bcc(0 < asSingle(pDstEA));  break;
+            case Opcode::FBPL_D: monadic(SIZE_QUAD); readDisplacement(); bcc(0 < asDouble(pDstEA));  break;
+
+            case Opcode::BLT_B:  dyadic(SIZE_BYTE); readDisplacement(); bcc(asByte(pSrcEA)   <  asByte(pDstEA));   break;
+            case Opcode::BLT_W:  dyadic(SIZE_WORD); readDisplacement(); bcc(asWord(pSrcEA)   <  asWord(pDstEA));   break;
+            case Opcode::BLT_L:  dyadic(SIZE_LONG); readDisplacement(); bcc(asLong(pSrcEA)   <  asLong(pDstEA));   break;
+            case Opcode::BLT_Q:  dyadic(SIZE_QUAD); readDisplacement(); bcc(asQuad(pSrcEA)   <  asQuad(pDstEA));   break;
+            case Opcode::FBLT_S: dyadic(SIZE_LONG); readDisplacement(); bcc(asSingle(pSrcEA) <  asSingle(pDstEA)); break;
+            case Opcode::FBLT_D: dyadic(SIZE_QUAD); readDisplacement(); bcc(asDouble(pSrcEA) <  asDouble(pDstEA)); break;
+            case Opcode::BLE_B:  dyadic(SIZE_BYTE); readDisplacement(); bcc(asByte(pSrcEA)   <= asByte(pDstEA));   break;
+            case Opcode::BLE_W:  dyadic(SIZE_WORD); readDisplacement(); bcc(asWord(pSrcEA)   <= asWord(pDstEA));   break;
+            case Opcode::BLE_L:  dyadic(SIZE_LONG); readDisplacement(); bcc(asLong(pSrcEA)   <= asLong(pDstEA));   break;
+            case Opcode::BLE_Q:  dyadic(SIZE_QUAD); readDisplacement(); bcc(asQuad(pSrcEA)   <= asQuad(pDstEA));   break;
+            case Opcode::FBLE_S: dyadic(SIZE_LONG); readDisplacement(); bcc(asSingle(pSrcEA) <= asSingle(pDstEA)); break;
+            case Opcode::FBLE_D: dyadic(SIZE_QUAD); readDisplacement(); bcc(asDouble(pSrcEA) <= asDouble(pDstEA)); break;
+            case Opcode::BEQ_B:  dyadic(SIZE_BYTE); readDisplacement(); bcc(asByte(pSrcEA)   == asByte(pDstEA));   break;
+            case Opcode::BEQ_W:  dyadic(SIZE_WORD); readDisplacement(); bcc(asWord(pSrcEA)   == asWord(pDstEA));   break;
+            case Opcode::BEQ_L:  dyadic(SIZE_LONG); readDisplacement(); bcc(asLong(pSrcEA)   == asLong(pDstEA));   break;
+            case Opcode::BEQ_Q:  dyadic(SIZE_QUAD); readDisplacement(); bcc(asQuad(pSrcEA)   == asQuad(pDstEA));   break;
+            case Opcode::FBEQ_S: dyadic(SIZE_LONG); readDisplacement(); bcc(asSingle(pSrcEA) == asSingle(pDstEA)); break;
+            case Opcode::FBEQ_D: dyadic(SIZE_QUAD); readDisplacement(); bcc(asDouble(pSrcEA) == asDouble(pDstEA)); break;
+            case Opcode::BGE_B:  dyadic(SIZE_BYTE); readDisplacement(); bcc(asByte(pSrcEA)   >= asByte(pDstEA));   break;
+            case Opcode::BGE_W:  dyadic(SIZE_WORD); readDisplacement(); bcc(asWord(pSrcEA)   >= asWord(pDstEA));   break;
+            case Opcode::BGE_L:  dyadic(SIZE_LONG); readDisplacement(); bcc(asLong(pSrcEA)   >= asLong(pDstEA));   break;
+            case Opcode::BGE_Q:  dyadic(SIZE_QUAD); readDisplacement(); bcc(asQuad(pSrcEA)   >= asQuad(pDstEA));   break;
+            case Opcode::FBGE_S: dyadic(SIZE_LONG); readDisplacement(); bcc(asSingle(pSrcEA) >= asSingle(pDstEA)); break;
+            case Opcode::FBGE_D: dyadic(SIZE_QUAD); readDisplacement(); bcc(asDouble(pSrcEA) >= asDouble(pDstEA)); break;
+            case Opcode::BGT_B:  dyadic(SIZE_BYTE); readDisplacement(); bcc(asByte(pSrcEA)   >  asByte(pDstEA));   break;
+            case Opcode::BGT_W:  dyadic(SIZE_WORD); readDisplacement(); bcc(asWord(pSrcEA)   >  asWord(pDstEA));   break;
+            case Opcode::BGT_L:  dyadic(SIZE_LONG); readDisplacement(); bcc(asLong(pSrcEA)   >  asLong(pDstEA));   break;
+            case Opcode::BGT_Q:  dyadic(SIZE_QUAD); readDisplacement(); bcc(asQuad(pSrcEA)   >  asQuad(pDstEA));   break;
+            case Opcode::FBGT_S: dyadic(SIZE_LONG); readDisplacement(); bcc(asSingle(pSrcEA) >  asSingle(pDstEA)); break;
+            case Opcode::FBGT_D: dyadic(SIZE_QUAD); readDisplacement(); bcc(asDouble(pSrcEA) >  asDouble(pDstEA)); break;
+            case Opcode::BNE_B:  dyadic(SIZE_BYTE); readDisplacement(); bcc(asByte(pSrcEA)   != asByte(pDstEA));   break;
+            case Opcode::BNE_W:  dyadic(SIZE_WORD); readDisplacement(); bcc(asWord(pSrcEA)   != asWord(pDstEA));   break;
+            case Opcode::BNE_L:  dyadic(SIZE_LONG); readDisplacement(); bcc(asLong(pSrcEA)   != asLong(pDstEA));   break;
+            case Opcode::BNE_Q:  dyadic(SIZE_QUAD); readDisplacement(); bcc(asQuad(pSrcEA)   != asQuad(pDstEA));   break;
+            case Opcode::FBNE_S: dyadic(SIZE_LONG); readDisplacement(); bcc(asSingle(pSrcEA) != asSingle(pDstEA)); break;
+            case Opcode::FBNE_D: dyadic(SIZE_QUAD); readDisplacement(); bcc(asDouble(pSrcEA) != asDouble(pDstEA)); break;
             case Opcode::BBS_B:
             case Opcode::BBS_W:
             case Opcode::BBS_L:
