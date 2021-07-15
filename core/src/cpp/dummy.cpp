@@ -13,9 +13,10 @@ int main() {
     uint32 aTest[] = {
         0xABADCAFE,
         0x31337DAD,
-        100000000,
+        1<<28,
         1
     };
+
 
     // Simple bytecode test
     uint8 aByteCode[] = {
@@ -29,20 +30,29 @@ int main() {
         EffectiveAddress::R0_IND_DSP,
         12, 0, 0, 0,
 
-        Opcode::SUB_L,
-        EffectiveAddress::R1_DIR,
-        EffectiveAddress::R2_DIR,
+        Opcode::BSR_B,
+        7,
 
-        Opcode::BNZ_L,
+        Opcode::DBNZ,
         EffectiveAddress::R1_DIR,
-        (uint8)-9, 0xFF, 0xFF, 0xFF,
+        (uint8)-8, 0xFF, 0xFF, 0xFF,
+
+        Opcode::RTS,
+
+        Opcode::ADD_L,
+        EffectiveAddress::R3_DIR,
+        EffectiveAddress::R2_DIR,
 
         // done
         Opcode::RTS
     };
 
+    uint8 aStack[32] = { 0 };
+
     // Set up the interpreter. r0 shall contain the address of the test data.
-    StaticInterpreter::gpr(0).pULong = aTest;
+    StaticInterpreter::gpr(0).pULong  = aTest;
+    StaticInterpreter::gpr(15).pUByte = aStack + 24;
+
     StaticInterpreter::setProgramCounter(aByteCode);
     StaticInterpreter::dumpState(iDumpState);
 

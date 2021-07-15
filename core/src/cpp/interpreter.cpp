@@ -34,7 +34,7 @@ const char* aStatusNames[] = {
     "Initialised",
     "Running",
     "Completed",
-    "Illegal Opcode",
+    "Unimplemented Opcode",
 };
 
 /**

@@ -11,28 +11,18 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 #include "include/mc64k.hpp"
+#include "include/gnarly.hpp"
 #include <cstdio>
 
 using namespace MC64K::Machine;
 using namespace MC64K::ByteCode;
-
-// Nasty macro that is here to be inlined / improved
-#define readDisplacement(a) \
-    a[0] = *pProgramCounter++; \
-    a[1] = *pProgramCounter++; \
-    a[2] = *pProgramCounter++; \
-    a[3] = *pProgramCounter++; \
 
 /**
  *
  */
 void* StaticInterpreter::decodeEffectiveAddress() {
 
-    // Union used to read 32-bit values from the bytecode into a useable value.
-    union {
-        int32 iDisplacement;
-        uint8 uBytes[4];
-    };
+    initDisplacement();
 
     uint8 uEffectiveAddress = *pProgramCounter++;
     uint8 uEALower = uEffectiveAddress & 0x0F; // Lower nybble varies, usually a register.
@@ -74,7 +64,7 @@ void* StaticInterpreter::decodeEffectiveAddress() {
 
         // Register Indirect with displacement <d32>(r<N>) / (<d32>, r<N>)
         case EffectiveAddress::OFS_GPR_IND_DSP:
-            readDisplacement(uBytes);
+            readDisplacement();
             return aGPR[uEALower].pIByte + iDisplacement;
 
         // FPU Register Direct fp<N>
@@ -102,7 +92,7 @@ void* StaticInterpreter::decodeEffectiveAddress() {
             uint8 uBaseReg  = uIndexReg >> 4;
             uint8 uScale    = uEALower >> 2;
             uIndexReg      &= 0xF;
-            readDisplacement(uBytes);
+            readDisplacement();
             switch (uEALower & 3) {
                 case 0: return aGPR[uBaseReg].pIByte + iDisplacement + (aGPR[uIndexReg].iByte << uScale);
                 case 1: return aGPR[uBaseReg].pIByte + iDisplacement + (aGPR[uIndexReg].iWord << uScale);

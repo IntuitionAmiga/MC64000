@@ -36,7 +36,7 @@ namespace MC64K {
                 INITIALISED,
                 RUNNING,
                 COMPLETED,
-                ILLEGAL_OPCODE
+                UNIMPLEMENTED_OPCODE
             } Status;
 
             enum DumpFlags {

@@ -301,7 +301,7 @@ General syntax:
 
         swap[.<l|q>] r<S>, r<D>
 
-* The unsized variant replicates the original 16-bit word swap of the 680x0, affectomg the lower 32-bit half of the register.
+* The unsized variant replicates the original 16-bit word swap of the 680x0, affecting the lower 32-bit half of the register.
 * The .l variant performs a 32-bit byteswap of the lower half of the register.
 * The .q variant performs a 64-bit byteswap of the entire register.
 
