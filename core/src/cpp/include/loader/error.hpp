@@ -1,5 +1,5 @@
-#ifndef __MC64K_BYTECODE_HPP__
-    #define __MC64K_BYTECODE_HPP__
+#ifndef __MC64K_LOADER_ERROR_HPP__
+#   define __MC64K_LOADER_ERROR_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,6 +14,16 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-    #include "bytecode/opcode.hpp"
-    #include "bytecode/effective_address.hpp"
+namespace MC64K {
+namespace Loader {
+namespace Error {
+
+class FileIO {
+    public:
+        const char* sFileName;
+        const char* sIssue;
+        FileIO(const char* sFileName, const char *sIssue) : sFileName(sFileName), sIssue(sIssue) {}
+};
+
+}}} // namespace
 #endif

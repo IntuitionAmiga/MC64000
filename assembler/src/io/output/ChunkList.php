@@ -21,12 +21,29 @@ use ABadCafe\MC64K\Defs\IIntLimits;
 /**
  * ChunkList
  *
- * List of chunks to be included
+ * List of chunks to be included.
+ *
+ *
+ * Binary Format
+ *
+ * The standard chunk header of magic + data size
+ * N pairs of {uint64 offset, char[8] magic} pairs
+ * Data size must be N * 16
+ *
+ * | Magic (8 bytes)           | +8
+ * | Chunk Data Size (8 bytes) | +16
+ * | Chunk #0 Offset (8 bytes) | +24
+ * | Chunk #0 Magic  (8 bytes) | +32
+ * | Chunk #1 Offset (8 bytes) | +40
+ * | Chunk #1 Magic  (8 bytes) | +48
+ * |          ....             | ...
+ * | Chunk #N Magic  (8 bytes) |
+ *
  */
 class ChunkList implements IBinaryChunk {
 
     const
-        TYPE  = 'CHNKLIST',
+        TYPE  = 'ChnkList',
         PAD   = self::ALIGNMENT - 1,
         ENTRY = 16
     ;

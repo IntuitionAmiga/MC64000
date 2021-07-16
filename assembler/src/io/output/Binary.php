@@ -28,11 +28,12 @@ class Binary {
 
     private string $sFilename;
     private        $rOutput;
-    private int    $iChunkNumber = 0;
+    private int    $iChunkNumber = 0, $iLoadSize = 0;
 
     const
-        HEADER_MAGIC = 'MC64000X',
-        HEADER_SIZE  = 8
+        HEADER_MAGIC = "MC64000X\0\0\0\0\0\0\0\0",
+        HEADER_SIZE  = 16,
+        HEADER_LOAD  = 8
     ;
 
     const PADS = [
@@ -63,17 +64,27 @@ class Binary {
     }
 
     /**
-     * Writes a chunk to the file. Returns the length written, including alignment padding.
+     * Writes a chunk to the file.
      *
      * @param  IBinaryChunk $oChunk
-     * @return int
+     * @return self (fluent)
      * @throws \Exception
      */
-    public function writeChunk(IBinaryChunk $oChunk) : int {
-        return
+    public function writeChunk(IBinaryChunk $oChunk) : self {
+        $iSize =
             $this->writeChunkHeader($oChunk) +
             $this->writeChunkBody($oChunk) +
             $this->writeChunkPadding($oChunk);
+        $this->iLoadSize += $iSize;
+        return $this;
+    }
+
+    /**
+     * Complete the file write. This will update the header with the total load size for the runtime.
+     */
+    public function complete() : void {
+        fseek($this->rOutput, self::HEADER_LOAD, SEEK_SET);
+        fwrite($this->rOutput, pack(IIntLimits::QUAD_BIN_FORMAT, $this->iLoadSize));
     }
 
     /**
@@ -159,7 +170,7 @@ class Binary {
      * @throws \Exception
      */
     private function writeHeader() {
-        if (IBinaryChunk::ALIGNMENT !== fwrite($this->rOutput, self::HEADER_MAGIC)) {
+        if (self::HEADER_SIZE !== fwrite($this->rOutput, self::HEADER_MAGIC)) {
             throw new \Exception("Unable to write file header to " . $this->sFilename);
         }
     }

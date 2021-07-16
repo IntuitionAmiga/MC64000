@@ -69,7 +69,7 @@ abstract class MonadicBranch extends Monadic {
         );
 
         $sBytecode = $sSrcBytecode . $sDisplacement;
-        $this->checkBranchDisplacement($sBytecode);
+        $this->checkBranchDisplacement($sBytecode, $this->oSrcParser->hasSideEffects());
 
         if ($this->oSrcParser->wasImmediate()) {
             $sFoldFunc = static::OPCODES[$iOpcode];

@@ -1,7 +1,4 @@
 #ifndef __MC64K_MACHINE_REGISTER_HPP__
-#   ifndef __MC64K_MACHINE_HPP__
-#       error "Header not included at correct scope"
-#   endif
 #   define __MC64K_MACHINE_REGISTER_HPP__
 
 /**
@@ -17,12 +14,16 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-/**
- * MC64K::Register
- */
+#include "scalar.hpp"
+
+namespace MC64K {
+namespace Machine {
 namespace Register {
 
-    union GeneralPurpose {
+/**
+ * GeneralPurpose
+ */
+union GeneralPurpose {
     public:
         enum Names {
             R0   = 0,
@@ -84,9 +85,12 @@ namespace Register {
         uint8    uByte;
         int8     iByte;
         GeneralPurpose() : uQuad(0) {}
-    };
+};
 
-    union FloatingPoint {
+/**
+ * FloatingPoint
+ */
+union FloatingPoint {
     public:
         enum Names {
             FP0  = 0,
@@ -112,7 +116,7 @@ namespace Register {
         float64 fDouble;
         float32 fSingle;
         FloatingPoint() : fDouble(0.0) {}
-    };
 };
 
+}}} // namespace
 #endif

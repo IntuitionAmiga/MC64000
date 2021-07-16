@@ -105,7 +105,8 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
 
         $this->addOperandSetParser(new OperandSet\CustomMonadicBranch(
             [IControl::DBNZ],
-            new EffectiveAddress\AllIntegerWriteable()
+            new EffectiveAddress\AllIntegerWriteable(),
+            true
         ));
 
         $this->addOperandSetParser(new OperandSet\CustomMonadic(

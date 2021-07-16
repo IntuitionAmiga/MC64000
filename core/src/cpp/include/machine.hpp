@@ -16,76 +16,29 @@
 
 #include <time.h>
 
+#include "machine/register.hpp"
+#include "machine/interpreter.hpp"
+
 /**
  * MC64K::Machine
  */
 namespace MC64K {
-    namespace Machine {
+namespace Machine {
 
-        #include "machine/register.hpp"
+/**
+ * Nanosecond measurement
+ */
+class NanoTime {
+    public:
+        typedef uint64 Value;
 
-        /**
-         * StaticInterpreter
-         *
-         * Single threaded interpreter model.
-         */
-        class StaticInterpreter {
-            public:
-            typedef enum {
-                UNINITIALISED = 0,
-                INITIALISED,
-                RUNNING,
-                COMPLETED,
-                UNIMPLEMENTED_OPCODE
-            } Status;
+        static Value mark() {
+            timespec oCurrent;
+            clock_gettime(CLOCK_MONOTONIC, &oCurrent);
+            Value  uMark = 1000000000UL * oCurrent.tv_sec ;
+            return uMark + oCurrent.tv_nsec;
+        }
+};
 
-            enum DumpFlags {
-                STATE_GPR = 1,
-                STATE_FPR = 2,
-                STATE_TMP = 4
-            };
-
-            static void                      dumpState(const int iFlags);
-            static Register::GeneralPurpose& gpr(const unsigned int uReg);
-            static Register::FloatingPoint&  fpr(const unsigned int uReg);
-            static void                      setProgramCounter(const uint8* pNewProgramCounter);
-            static void                      run();
-
-            private:
-            static Register::GeneralPurpose aGPR[Register::GeneralPurpose::MAX];
-            static Register::FloatingPoint  aFPR[Register::FloatingPoint::MAX];
-            static const uint8* pProgramCounter;
-            static void* pDstEA;
-            static void* pSrcEA;
-            static void* pTmpEA;
-            static int iCallDepth;
-
-            static enum  OperationSize {
-                SIZE_BYTE = 1,
-                SIZE_WORD = 2,
-                SIZE_LONG = 4,
-                SIZE_QUAD = 8
-            } eOperationSize;
-
-            static Status eStatus;
-
-            static void* decodeEffectiveAddress();
-        };
-
-        /**
-         * Nanosecond measurement
-         */
-        class NanoTime {
-            public:
-            typedef uint64 Value;
-
-            static Value mark() {
-                timespec oCurrent;
-                clock_gettime(CLOCK_MONOTONIC, &oCurrent);
-                Value  uMark = 1000000000UL * oCurrent.tv_sec ;
-                return uMark + oCurrent.tv_nsec;
-            }
-        };
-    };
-}
+}} // namespace
 #endif

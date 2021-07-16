@@ -1,3 +1,6 @@
+#ifndef __MC64K_HPP__
+    #define __MC64K_HPP__
+
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
  *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
@@ -11,20 +14,11 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#ifndef __MC64K_HPP__
-#  define __MC64K_HPP__
+    #ifndef __LP64__
+        #error "This codebase is intended for 64-bit targets only"
+    #endif
 
-typedef unsigned long int  uint64;
-typedef signed long int    int64;
-typedef unsigned int       uint32;
-typedef signed int         int32;
-typedef unsigned short int uint16;
-typedef signed short int   int16;
-typedef unsigned char      uint8;
-typedef signed char        int8;
-typedef double             float64;
-typedef float              float32;
+    #include "bytecode.hpp"
+    #include "machine.hpp"
 
-#include "bytecode.hpp"
-#include "machine.hpp"
 #endif

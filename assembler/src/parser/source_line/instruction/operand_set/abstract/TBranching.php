@@ -32,6 +32,8 @@ trait TBranching {
 
     protected Operand\BranchDisplacement $oTgtParser;
 
+    protected bool $bAllowBranchToSelf = false;
+
     /**
      * @param  string $sSource
      * @param  bool   $bOperandSideEffects
@@ -67,19 +69,23 @@ trait TBranching {
     }
 
     /**
-     * Checks the last parsed branch displacement against the current bytecode to make sure that
-     * a backwards branch target doesn't land on or within the current instruction, which is not
-     * recoverable.
+     * Checks the last parsed branch displacement against the current bytecode to make sure that a backwards branch
+     * target doesn't land on or within the current instruction, which is not recoverable. Exceptions to this are
+     * conditional branches to self where the operand(s) being tested have side effects that may result in a change
+     * of outcome from one iteration to the next.
      *
      * @param string $sInstructionBytecode
      * @throws \UnexpectedValueException
      */
-    protected function checkBranchDisplacement(string $sInstructionBytecode) : void {
+    protected function checkBranchDisplacement(string $sInstructionBytecode, bool $bOperandSideEffects) : void {
         $iDisplacement = $this->oTgtParser->getLastDisplacement();
         if ($iDisplacement < 0) {
             $iInstructionLength = strlen($sInstructionBytecode) + 1;
             $iDisplacement      = -$iDisplacement;
-            if ($iDisplacement <= $iInstructionLength) {
+            if (
+                $iDisplacement < $iInstructionLength ||
+                ($iDisplacement == $iInstructionLength && false === ($this->bAllowBranchToSelf || $bOperandSideEffects))
+            ) {
                 throw new \UnexpectedValueException(
                     'Invalid branch target -' . $iDisplacement .
                     '; must be further than -' . $iInstructionLength .

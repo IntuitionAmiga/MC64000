@@ -1,5 +1,5 @@
-#ifndef __MC64K_BYTECODE_HPP__
-    #define __MC64K_BYTECODE_HPP__
+#ifndef __MC64K_SCALAR_HPP__
+    #define __MC64K_SCALAR_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,6 +14,25 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-    #include "bytecode/opcode.hpp"
-    #include "bytecode/effective_address.hpp"
+/**
+ * Basic scalar type definitions
+ */
+typedef unsigned long int  uint64;
+typedef signed long int    int64;
+typedef unsigned int       uint32;
+typedef signed int         int32;
+typedef unsigned short int uint16;
+typedef signed short int   int16;
+typedef unsigned char      uint8;
+typedef signed char        int8;
+typedef double             float64;
+typedef float              float32;
+
+#define PFS16 "hd"
+#define PFU16 "hu"
+#define PFS32 "d"
+#define PFU32 "u"
+#define PFS64 "ld"
+#define PFU64 "lu"
+
 #endif

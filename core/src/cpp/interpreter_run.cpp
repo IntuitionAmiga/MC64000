@@ -14,8 +14,8 @@
 #include "include/gnarly.hpp"
 #include <cstdio>
 
-using namespace MC64K::Machine;
-using namespace MC64K::ByteCode;
+namespace Interpreter = MC64K::Machine::Interpreter;
+namespace Opcode      = MC64K::ByteCode::Opcode;
 
 inline void rolByte(uint8* pVal, uint8 size) {
     size &= 7;
@@ -68,7 +68,7 @@ inline void rorQuad(uint64* pVal, uint8 size) {
 /**
  *
  */
-void StaticInterpreter::run() {
+void Interpreter::Static::run() {
     if (!pProgramCounter) {
         return;
     }

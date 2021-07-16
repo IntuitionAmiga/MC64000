@@ -10,24 +10,25 @@
  *
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
-#include "include/mc64k.hpp"
+
 #include <cstdio>
+#include "machine/interpreter.hpp"
 
-using namespace MC64K::Machine;
-using namespace MC64K::ByteCode;
+namespace Interpreter = MC64K::Machine::Interpreter;
+namespace Register    = MC64K::Machine::Register;
 
-Register::GeneralPurpose StaticInterpreter::aGPR[Register::GeneralPurpose::MAX] = {};
-Register::FloatingPoint  StaticInterpreter::aFPR[Register::FloatingPoint::MAX]  = {};
+Register::GeneralPurpose Interpreter::Static::aGPR[Register::GeneralPurpose::MAX] = {};
+Register::FloatingPoint  Interpreter::Static::aFPR[Register::FloatingPoint::MAX]  = {};
 
-const uint8* StaticInterpreter::pProgramCounter = 0;
+const uint8* Interpreter::Static::pProgramCounter = 0;
 
-void* StaticInterpreter::pDstEA = 0;
-void* StaticInterpreter::pSrcEA = 0;
-void* StaticInterpreter::pTmpEA = 0;
-int   StaticInterpreter::iCallDepth = 0;
+void* Interpreter::Static::pDstEA = 0;
+void* Interpreter::Static::pSrcEA = 0;
+void* Interpreter::Static::pTmpEA = 0;
+int   Interpreter::Static::iCallDepth = 0;
 
-StaticInterpreter::OperationSize StaticInterpreter::eOperationSize = StaticInterpreter::SIZE_BYTE;
-StaticInterpreter::Status        StaticInterpreter::eStatus        = StaticInterpreter::UNINITIALISED;
+Interpreter::Static::OperationSize Interpreter::Static::eOperationSize = Interpreter::Static::SIZE_BYTE;
+Interpreter::Static::Status        Interpreter::Static::eStatus        = Interpreter::Static::UNINITIALISED;
 
 const char* aStatusNames[] = {
     "Uninitialised",
@@ -40,28 +41,28 @@ const char* aStatusNames[] = {
 /**
  *
  */
-Register::GeneralPurpose& StaticInterpreter::gpr(const unsigned int uReg) {
+Register::GeneralPurpose& Interpreter::Static::gpr(const unsigned int uReg) {
     return aGPR[uReg & Register::GeneralPurpose::MASK];
 }
 
 /**
  *
  */
-Register::FloatingPoint& StaticInterpreter::fpr(const unsigned int uReg) {
+Register::FloatingPoint& Interpreter::Static::fpr(const unsigned int uReg) {
     return aFPR[uReg & Register::FloatingPoint::MASK];
 }
 
 /**
  *
  */
-void StaticInterpreter::setProgramCounter(const uint8* pNewProgramCounter) {
+void Interpreter::Static::setProgramCounter(const uint8* pNewProgramCounter) {
     pProgramCounter = pNewProgramCounter;
 }
 
 /**
  *
  */
-void StaticInterpreter::dumpState(const int iFlags) {
+void Interpreter::Static::dumpState(const int iFlags) {
     std::printf(
         "Machine State\n"
         "\tProgram Counter: %p\n"

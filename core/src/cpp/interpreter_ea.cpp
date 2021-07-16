@@ -14,13 +14,13 @@
 #include "include/gnarly.hpp"
 #include <cstdio>
 
-using namespace MC64K::Machine;
-using namespace MC64K::ByteCode;
+namespace Interpreter      = MC64K::Machine::Interpreter;
+namespace EffectiveAddress = MC64K::ByteCode::EffectiveAddress;
 
 /**
  *
  */
-void* StaticInterpreter::decodeEffectiveAddress() {
+void* Interpreter::Static::decodeEffectiveAddress() {
 
     initDisplacement();
 

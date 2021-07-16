@@ -26,7 +26,7 @@ namespace ABadCafe\MC64K\IO;
 final class SourceFile implements ISourceFile {
     private        $rSource;
     private string $sFilename;
-    private string $sCurrentLine;
+    private string $sCurrentLine = '', $sLastLine = '';
     private int    $iLineNumber = 0;
 
     /**
@@ -61,6 +61,7 @@ final class SourceFile implements ISourceFile {
         $sLine = fgets($this->rSource);
         if (false !== $sLine) {
             ++$this->iLineNumber;
+            $this->sLastLine = $this->sCurrentLine;
             $this->sCurrentLine = $sLine;
             return $sLine;
         }
@@ -92,5 +93,14 @@ final class SourceFile implements ISourceFile {
      */
     public function getLine() : string {
         return $this->sCurrentLine;
+    }
+
+    /**
+     * Get the preceding line content
+     *
+     * @return string
+     */
+    public function getPrecedingLine() : string {
+        return $this->sLastLine;
     }
 }

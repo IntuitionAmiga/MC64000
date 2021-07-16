@@ -36,9 +36,10 @@ class CustomMonadicBranch extends CustomMonadic {
         MIN_OPERAND_COUNT = 2
     ;
 
-    public function __construct(array $aOpcodes, EffectiveAddress\IParser $oSrcParser) {
+    public function __construct(array $aOpcodes, EffectiveAddress\IParser $oSrcParser, bool $bAllowBranchToSelf) {
         parent::__construct($aOpcodes, $oSrcParser);
-        $this->oTgtParser = new Operand\BranchDisplacement();
+        $this->bAllowBranchToSelf = $bAllowBranchToSelf;
+        $this->oTgtParser         = new Operand\BranchDisplacement();
     }
 
     /**
@@ -74,7 +75,7 @@ class CustomMonadicBranch extends CustomMonadic {
         }
 
         $sBytecode = $sSrcBytecode . $sDisplacement;
-        $this->checkBranchDisplacement($sBytecode);
+        $this->checkBranchDisplacement($sBytecode, $this->oSrcParser->hasSideEffects());
         return $sBytecode;
     }
 

@@ -1,5 +1,5 @@
-#ifndef __MC64K_BYTECODE_HPP__
-    #define __MC64K_BYTECODE_HPP__
+#ifndef __MC64K_LOADER_HPP__
+#  define __MC64K_LOADER_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,6 +14,8 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-    #include "bytecode/opcode.hpp"
-    #include "bytecode/effective_address.hpp"
+#include "loader/error.hpp"
+#include "loader/chunk.hpp"
+#include "loader/binary.hpp"
+
 #endif

@@ -16,6 +16,10 @@
 
 declare(strict_types = 1);
 
+use ABadCafe\MC64K\Application;
+use ABadCafe\MC64K\Parser;
+use ABadCafe\MC64K\Utils\Log;
+
 require_once 'src/MC64K.php';
 
 if ((int)$_SERVER['argc'] < 2) {
@@ -23,11 +27,16 @@ if ((int)$_SERVER['argc'] < 2) {
     exit(0);
 }
 
-$sProjectFile = $_SERVER['argv'][1];
+// Only handle the exceptions we expect, as anything else is a software defect in this code to fix.
+try {
+    $sProjectFile = $_SERVER['argv'][1];
+    $oAssembler   = new Application\Assembler();
+    $oAssembler
+        ->loadProject($sProjectFile)
+        ->firstPass()
+        ->secondPass()
+        ->writeBinary();
+} catch (Parser\SourceError $oError) {
+    Log::write($oError->getMessage());
+}
 
-$oAssembler = new ABadCafe\MC64K\Application\Assembler();
-$oAssembler
-    ->loadProject($sProjectFile)
-    ->firstPass()
-    ->secondPass()
-    ->writeBinary();

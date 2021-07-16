@@ -32,4 +32,13 @@ class Log {
             STDERR, ('#%d ' . $sFormat . "\n"), self::$iLine++, ...$aVarArgs
         );
     }
+
+    /**
+     * @param string $sMessage
+     */
+    public static function write(string $sMessage) : void {
+        fprintf(
+            STDERR, "#%d %s\n", self::$iLine++, $sMessage
+        );
+    }
 }

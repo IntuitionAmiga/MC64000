@@ -4,6 +4,7 @@ namespace ABadCafe\MC64K;
 
 const CLASS_MAP = [
   'ABadCafe\\MC64K\\IParser' => '/IParser.php',
+  'ABadCafe\\MC64K\\Parser\\SourceError' => '/parser/SourceError.php',
   'ABadCafe\\MC64K\\Parser\\Utils\\TSignedDisplacementAware' => '/parser/utils/TSignedDisplacementAware.php',
   'ABadCafe\\MC64K\\Parser\\Utils\\Hex' => '/parser/utils/Hex.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\TParser' => '/parser/source_line/TParser.php',
