@@ -18,6 +18,9 @@ namespace MC64K {
 namespace Loader {
 namespace Error {
 
+/**
+ * Exception class for any sort of file IO related loading errors
+ */
 class FileIO {
     public:
         const char* sFileName;

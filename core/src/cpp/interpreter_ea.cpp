@@ -10,15 +10,17 @@
  *
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
-#include "include/mc64k.hpp"
-#include "include/gnarly.hpp"
+
+#include "machine/interpreter.hpp"
+#include "bytecode/effective_address.hpp"
+#include "gnarly.hpp"
 #include <cstdio>
 
 namespace Interpreter      = MC64K::Machine::Interpreter;
 namespace EffectiveAddress = MC64K::ByteCode::EffectiveAddress;
 
 /**
- *
+ * decodeEffectiveAddress()
  */
 void* Interpreter::Static::decodeEffectiveAddress() {
 

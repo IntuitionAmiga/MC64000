@@ -10,11 +10,15 @@
  *
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
-#include "include/mc64k.hpp"
-#include "include/gnarly.hpp"
+
+#include "machine/interpreter.hpp"
+#include "machine/timing.hpp"
+#include "bytecode/opcode.hpp"
+#include "gnarly.hpp"
 #include <cstdio>
 
 namespace Interpreter = MC64K::Machine::Interpreter;
+namespace Timing      = MC64K::Machine::Timing;
 namespace Opcode      = MC64K::ByteCode::Opcode;
 
 inline void rolByte(uint8* pVal, uint8 size) {
@@ -66,7 +70,7 @@ inline void rorQuad(uint64* pVal, uint8 size) {
 }
 
 /**
- *
+ * run()
  */
 void Interpreter::Static::run() {
     if (!pProgramCounter) {
@@ -79,7 +83,7 @@ void Interpreter::Static::run() {
     initDisplacement();
 
     uint64 uInstructionCount = 0;
-    NanoTime::Value uStart = NanoTime::mark();
+    Timing::Nanosecond::Value uStart = Timing::Nanosecond::mark();
 
     while (RUNNING == eStatus) {
         ++uInstructionCount;
@@ -405,7 +409,7 @@ void Interpreter::Static::run() {
         }
     }
 
-    NanoTime::Value uElapsed = NanoTime::mark() - uStart;
+    Timing::Nanosecond::Value uElapsed = Timing::Nanosecond::mark() - uStart;
 
     float64 fMIPS = (1000.0 * uInstructionCount) / (float64)uElapsed;
 

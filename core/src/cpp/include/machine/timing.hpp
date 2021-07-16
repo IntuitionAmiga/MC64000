@@ -1,5 +1,5 @@
-#ifndef __MC64K_LOADER_HPP__
-#  define __MC64K_LOADER_HPP__
+#ifndef __MC64K_MACHINE_TIMING_HPP__
+#   define __MC64K_MACHINE_TIMING_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,8 +14,26 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include "loader/error.hpp"
-#include "loader/chunk.hpp"
-#include "loader/binary.hpp"
+#include "mc64k.hpp"
+#include <time.h>
 
+namespace MC64K {
+namespace Machine {
+namespace Timing {
+/**
+ * Nanosecond measurement
+ */
+class Nanosecond {
+    public:
+        typedef uint64 Value;
+
+        static Value mark() {
+            timespec oCurrent;
+            clock_gettime(CLOCK_MONOTONIC, &oCurrent);
+            Value  uMark = 1000000000UL * oCurrent.tv_sec ;
+            return uMark + oCurrent.tv_nsec;
+        }
+};
+
+}}} // namespace
 #endif

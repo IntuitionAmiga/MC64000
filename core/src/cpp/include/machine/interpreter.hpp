@@ -15,8 +15,7 @@
  */
 
 #include "scalar.hpp"
-
-#include "machine/register.hpp"
+#include "register.hpp"
 
 namespace MC64K {
 namespace Machine {

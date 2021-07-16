@@ -1,10 +1,10 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "include/mc64k.hpp"
-#include "include/loader.hpp"
+#include "loader/binary.hpp"
+#include "loader/error.hpp"
 
-using namespace MC64K;
+namespace Loader = MC64K::Loader;
 
 int main(int iArgN, const char** aArgV) {
 
@@ -15,8 +15,6 @@ int main(int iArgN, const char** aArgV) {
 
     try {
         Loader::Binary oMC64KExecutabe(aArgV[1]);
-
-
 
     } catch (Loader::Error::FileIO oError) {
         std::printf("Unable to load binary file \"%s\", %s.\n", oError.sFileName, oError.sIssue);

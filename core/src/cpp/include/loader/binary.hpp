@@ -14,6 +14,7 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
+#include "error.hpp"
 #include <cstdio>
 
 namespace MC64K {

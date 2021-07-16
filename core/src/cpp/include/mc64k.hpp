@@ -18,7 +18,5 @@
         #error "This codebase is intended for 64-bit targets only"
     #endif
 
-    #include "bytecode.hpp"
-    #include "machine.hpp"
-
+    #include "scalar.hpp"
 #endif

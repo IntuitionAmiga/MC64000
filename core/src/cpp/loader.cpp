@@ -10,8 +10,9 @@
  *
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
-#include "include/mc64k.hpp"
-#include "include/loader.hpp"
+
+#include "mc64k.hpp"
+#include "loader/binary.hpp"
 
 using namespace MC64K::Loader;
 
