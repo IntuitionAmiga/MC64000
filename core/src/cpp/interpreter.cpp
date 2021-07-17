@@ -14,21 +14,19 @@
 #include <cstdio>
 #include "machine/interpreter.hpp"
 
-namespace Interpreter = MC64K::Machine::Interpreter;
-namespace Register    = MC64K::Machine::Register;
+namespace MC64K {
+namespace Machine {
 
-Register::GeneralPurpose Interpreter::Static::aGPR[Register::GeneralPurpose::MAX] = {};
-Register::FloatingPoint  Interpreter::Static::aFPR[Register::FloatingPoint::MAX]  = {};
+GPRegister   Interpreter::aGPR[GPRegister::MAX] = {};
+FPRegister   Interpreter::aFPR[FPRegister::MAX] = {};
+const uint8* Interpreter::pProgramCounter       = 0;
+void*        Interpreter::pDstEA                = 0;
+void*        Interpreter::pSrcEA                = 0;
+void*        Interpreter::pTmpEA                = 0;
+int          Interpreter::iCallDepth            = 0;
 
-const uint8* Interpreter::Static::pProgramCounter = 0;
-
-void* Interpreter::Static::pDstEA = 0;
-void* Interpreter::Static::pSrcEA = 0;
-void* Interpreter::Static::pTmpEA = 0;
-int   Interpreter::Static::iCallDepth = 0;
-
-Interpreter::Static::OperationSize Interpreter::Static::eOperationSize = Interpreter::Static::SIZE_BYTE;
-Interpreter::Static::Status        Interpreter::Static::eStatus        = Interpreter::Static::UNINITIALISED;
+Interpreter::OperationSize Interpreter::eOperationSize = Interpreter::SIZE_BYTE;
+Interpreter::Status        Interpreter::eStatus        = Interpreter::UNINITIALISED;
 
 const char* aStatusNames[] = {
     "Uninitialised",
@@ -39,30 +37,30 @@ const char* aStatusNames[] = {
 };
 
 /**
- *
+ * Get a general purpose register
  */
-Register::GeneralPurpose& Interpreter::Static::gpr(const unsigned int uReg) {
-    return aGPR[uReg & Register::GeneralPurpose::MASK];
+GPRegister& Interpreter::gpr(const unsigned int uReg) {
+    return aGPR[uReg & GPRegister::MASK];
 }
 
 /**
- *
+ * Get a floating point register
  */
-Register::FloatingPoint& Interpreter::Static::fpr(const unsigned int uReg) {
-    return aFPR[uReg & Register::FloatingPoint::MASK];
+FPRegister& Interpreter::fpr(const unsigned int uReg) {
+    return aFPR[uReg & FPRegister::MASK];
 }
 
 /**
- *
+ * Set the entry point
  */
-void Interpreter::Static::setProgramCounter(const uint8* pNewProgramCounter) {
+void Interpreter::setProgramCounter(const uint8* pNewProgramCounter) {
     pProgramCounter = pNewProgramCounter;
 }
 
 /**
- *
+ * Debugging
  */
-void Interpreter::Static::dumpState(const int iFlags) {
+void Interpreter::dumpState(const int iFlags) {
     std::printf(
         "Machine State\n"
         "\tProgram Counter: %p\n"
@@ -88,7 +86,7 @@ void Interpreter::Static::dumpState(const int iFlags) {
     }
     if (iFlags & STATE_GPR) {
         std::printf("GP Registers (%p)\n", aGPR);
-        for (int i = 0; i < Register::GeneralPurpose::MAX; ++i) {
+        for (int i = 0; i < GPRegister::MAX; ++i) {
             std::printf(
                 "\t%2d : 0x%016lX\n",
                 i,
@@ -98,7 +96,7 @@ void Interpreter::Static::dumpState(const int iFlags) {
     }
     if (iFlags & STATE_FPR) {
         std::printf("FP Registers (%p)\n", aFPR);
-        for (int i = 0; i < Register::GeneralPurpose::MAX; ++i) {
+        for (int i = 0; i < FPRegister::MAX; ++i) {
             std::printf(
                 "\t%2d : 0x%016lX %.15e %.7e\n",
                 i,
@@ -110,3 +108,5 @@ void Interpreter::Static::dumpState(const int iFlags) {
     }
 
 }
+
+}} // namespace

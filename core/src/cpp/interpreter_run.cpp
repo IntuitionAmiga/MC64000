@@ -17,9 +17,8 @@
 #include "gnarly.hpp"
 #include <cstdio>
 
-namespace Interpreter = MC64K::Machine::Interpreter;
-namespace Timing      = MC64K::Machine::Timing;
-namespace Opcode      = MC64K::ByteCode::Opcode;
+namespace MC64K {
+namespace Machine {
 
 inline void rolByte(uint8* pVal, uint8 size) {
     size &= 7;
@@ -72,7 +71,10 @@ inline void rorQuad(uint64* pVal, uint8 size) {
 /**
  * run()
  */
-void Interpreter::Static::run() {
+void Interpreter::run() {
+
+    using namespace MC64K::ByteCode;
+
     if (!pProgramCounter) {
         return;
     }
@@ -83,7 +85,7 @@ void Interpreter::Static::run() {
     initDisplacement();
 
     uint64 uInstructionCount = 0;
-    Timing::Nanosecond::Value uStart = Timing::Nanosecond::mark();
+    Nanoseconds::Value uStart = Nanoseconds::mark();
 
     while (RUNNING == eStatus) {
         ++uInstructionCount;
@@ -409,7 +411,7 @@ void Interpreter::Static::run() {
         }
     }
 
-    Timing::Nanosecond::Value uElapsed = Timing::Nanosecond::mark() - uStart;
+    Nanoseconds::Value uElapsed = Nanoseconds::mark() - uStart;
 
     float64 fMIPS = (1000.0 * uInstructionCount) / (float64)uElapsed;
 
@@ -420,3 +422,5 @@ void Interpreter::Static::run() {
         fMIPS
     );
 }
+
+}}

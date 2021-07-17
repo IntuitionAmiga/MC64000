@@ -18,12 +18,11 @@
 
 namespace MC64K {
 namespace Machine {
-namespace Register {
 
 /**
- * GeneralPurpose
+ * GPRegister
  */
-union GeneralPurpose {
+union GPRegister {
     public:
         enum Names {
             R0   = 0,
@@ -84,13 +83,13 @@ union GeneralPurpose {
         int16    iWord;
         uint8    uByte;
         int8     iByte;
-        GeneralPurpose() : uQuad(0) {}
+        GPRegister() : uQuad(0) {}
 };
 
 /**
- * FloatingPoint
+ * FPRegister
  */
-union FloatingPoint {
+union FPRegister {
     public:
         enum Names {
             FP0  = 0,
@@ -115,8 +114,8 @@ union FloatingPoint {
         uint64  uBinary;
         float64 fDouble;
         float32 fSingle;
-        FloatingPoint() : fDouble(0.0) {}
+        FPRegister() : fDouble(0.0) {}
 };
 
-}}} // namespace
+}} // namespace
 #endif

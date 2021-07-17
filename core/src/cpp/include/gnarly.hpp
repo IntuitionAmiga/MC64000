@@ -53,9 +53,9 @@
 #define todo() eStatus = UNIMPLEMENTED_OPCODE; break;
 
 #define pushProgramCounter() \
-    aGPR[Register::GeneralPurpose::SP].pUByte -= 8; \
-    aGPR[Register::GeneralPurpose::SP].pUByte = (uint8*)pProgramCounter;
+    aGPR[GPRegister::SP].pUByte -= 8; \
+    aGPR[GPRegister::SP].pUByte = (uint8*)pProgramCounter;
 
 #define popProgramCounter() \
-    pProgramCounter = (const uint8*)aGPR[Register::GeneralPurpose::SP].pUByte; \
-    aGPR[Register::GeneralPurpose::SP].pUByte += 8;
+    pProgramCounter = (const uint8*)aGPR[GPRegister::SP].pUByte; \
+    aGPR[GPRegister::SP].pUByte += 8;

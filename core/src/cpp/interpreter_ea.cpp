@@ -16,13 +16,16 @@
 #include "gnarly.hpp"
 #include <cstdio>
 
-namespace Interpreter      = MC64K::Machine::Interpreter;
-namespace EffectiveAddress = MC64K::ByteCode::EffectiveAddress;
+namespace MC64K {
+namespace Machine {
+
 
 /**
  * decodeEffectiveAddress()
  */
-void* Interpreter::Static::decodeEffectiveAddress() {
+void* Interpreter::decodeEffectiveAddress() {
+
+    using namespace MC64K::ByteCode;
 
     initDisplacement();
 
@@ -130,3 +133,5 @@ void* Interpreter::Static::decodeEffectiveAddress() {
     }
     return 0;
 }
+
+}} // namespace

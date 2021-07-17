@@ -19,14 +19,13 @@
 
 namespace MC64K {
 namespace Machine {
-namespace Interpreter {
 
 /**
  * Static
  *
  * Static, single threaded interpreter model.
  */
-class Static {
+class Interpreter {
 
     public:
         typedef enum {
@@ -43,20 +42,20 @@ class Static {
             STATE_TMP = 4
         };
 
-        static void                      dumpState(const int iFlags);
-        static Register::GeneralPurpose& gpr(const unsigned int uReg);
-        static Register::FloatingPoint&  fpr(const unsigned int uReg);
-        static void                      setProgramCounter(const uint8* pNewProgramCounter);
-        static void                      run();
+        static void        dumpState(const int iFlags);
+        static GPRegister& gpr(const unsigned int uReg);
+        static FPRegister& fpr(const unsigned int uReg);
+        static void        setProgramCounter(const uint8* pNewProgramCounter);
+        static void        run();
 
     private:
-        static Register::GeneralPurpose aGPR[Register::GeneralPurpose::MAX];
-        static Register::FloatingPoint  aFPR[Register::FloatingPoint::MAX];
+        static GPRegister   aGPR[GPRegister::MAX];
+        static FPRegister   aFPR[FPRegister::MAX];
         static const uint8* pProgramCounter;
-        static void* pDstEA;
-        static void* pSrcEA;
-        static void* pTmpEA;
-        static int iCallDepth;
+        static void*        pDstEA;
+        static void*        pSrcEA;
+        static void*        pTmpEA;
+        static int          iCallDepth;
 
         static enum  OperationSize {
             SIZE_BYTE = 1,
@@ -70,5 +69,5 @@ class Static {
         static void* decodeEffectiveAddress();
 };
 
-}}} // namespace
+}} // namespace
 #endif

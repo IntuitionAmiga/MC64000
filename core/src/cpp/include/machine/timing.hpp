@@ -19,11 +19,10 @@
 
 namespace MC64K {
 namespace Machine {
-namespace Timing {
 /**
  * Nanosecond measurement
  */
-class Nanosecond {
+class Nanoseconds {
     public:
         typedef uint64 Value;
 
@@ -35,5 +34,5 @@ class Nanosecond {
         }
 };
 
-}}} // namespace
+}} // namespace
 #endif
