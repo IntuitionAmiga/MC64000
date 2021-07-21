@@ -13,17 +13,15 @@
 ; My first project - main.s
 
     @export main
+    @export myfunc
     @enable log_label_add
     @stacksize 128
 main:
-    move.l #0x12345678, d0
-    move.l #1, d1
-.loop:
+    not.l d0, d0
     bsr myfunc
-    dbnz d0, .loop
     rts
 
 myfunc:
-    add.l d1, d2
+    add.l d0, d0
     rts
 

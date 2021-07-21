@@ -79,7 +79,8 @@ class ChunkList implements IBinaryChunk {
         if (self::TYPE_SIZE !== strlen($sChunkType)) {
             throw new \Exception('Invalid Chunk Type ID');
         }
-        $iExpectWriteSize = self::TYPE_SIZE + ($oChunk->getChunkLength() + self::PAD) & ~self::PAD;
+
+        $iExpectWriteSize = $this->getExpectedWriteSize($oChunk);
         $this->aChunks[] = [
             $oChunk->getChunkType(),
             $iExpectWriteSize
@@ -110,12 +111,17 @@ class ChunkList implements IBinaryChunk {
      */
     public function getChunkData() : string {
         $sBody = '';
-        $iChunkOffset = $this->iLocation + self::TYPE_SIZE + $this->getChunkLength();
+        $iChunkOffset = $this->iLocation + $this->getExpectedWriteSize($this);
         foreach ($this->aChunks as $aData) {
             $sBody .= $aData[0];
             $sBody .= pack(IIntLimits::QUAD_BIN_FORMAT, $iChunkOffset);
             $iChunkOffset += $aData[1];
         }
         return $sBody;
+    }
+
+    private function getExpectedWriteSize(IBinaryChunk $oChunk) : int {
+        // 16 byte header plus 8 byte aligned body for each registered chunk
+        return self::ENTRY + ($oChunk->getChunkLength() + self::PAD) & ~self::PAD;
     }
 }
