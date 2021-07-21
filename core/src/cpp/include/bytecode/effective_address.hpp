@@ -306,31 +306,33 @@ enum RegisterIndirectIndexed {
 enum Other {
     INT_IMMEDIATE      = OFS_OTHER + 0,
 
+    // Nybble constants
+
     // Immediate small integer encoded directly, no extension byte.
-    INT_SMALL_0        = OFS_OTHER + 0,
-    INT_SMALL_1        = OFS_OTHER + 1,
-    INT_SMALL_2        = OFS_OTHER + 2,
-    INT_SMALL_3        = OFS_OTHER + 3,
-    INT_SMALL_4        = OFS_OTHER + 4,
-    INT_SMALL_5        = OFS_OTHER + 5,
-    INT_SMALL_6        = OFS_OTHER + 6,
-    INT_SMALL_7        = OFS_OTHER + 7,
-    INT_SMALL_8        = OFS_OTHER + 8,
+    INT_SMALL_0        = 0,
+    INT_SMALL_1        = 1,
+    INT_SMALL_2        = 2,
+    INT_SMALL_3        = 3,
+    INT_SMALL_4        = 4,
+    INT_SMALL_5        = 5,
+    INT_SMALL_6        = 6,
+    INT_SMALL_7        = 7,
+    INT_SMALL_8        = 8,
 
     // Immediate integer value encoded into extension bytes.
-    INT_IMM_BYTE       = OFS_OTHER +  9,
-    INT_IMM_WORD       = OFS_OTHER + 10,
-    INT_IMM_LONG       = OFS_OTHER + 11,
-    INT_IMM_QUAD       = OFS_OTHER + 12,
+    INT_IMM_BYTE       = 9,
+    INT_IMM_WORD       = 10,
+    INT_IMM_LONG       = 11,
+    INT_IMM_QUAD       = 12,
 
     // Immediate floating point value encoded into extension bytes.
-    FLT_IMMEDIATE      = OFS_OTHER + 13,
+    FLT_IMMEDIATE      = 13,
 
-    FLT_IMM_SINGLE     = OFS_OTHER + 13,
-    FLT_IMM_DOUBLE     = OFS_OTHER + 14,
+    FLT_IMM_SINGLE     = 13,
+    FLT_IMM_DOUBLE     = 14,
 
     // Program counter indirect with displacement
-    PC_IND_DSP         = OFS_OTHER + 15,
+    PC_IND_DSP         = 15,
 
     SAME_AS_DEST       = OFS_OTHER + 16
 };
