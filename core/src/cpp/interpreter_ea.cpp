@@ -19,6 +19,9 @@
 namespace MC64K {
 namespace Machine {
 
+int64 aSmall[9] = {
+    0, 1, 2, 3, 4, 5, 6, 7, 8
+};
 
 /**
  * decodeEffectiveAddress()
@@ -116,7 +119,19 @@ void* Interpreter::decodeEffectiveAddress() {
             return 0;
 
         case EffectiveAddress::OFS_OTHER: {
+            if (uEALower <= EffectiveAddress::Other::INT_SMALL_8) {
+                return &aSmall[uEALower];
+            }
+
             switch (uEALower) {
+                case EffectiveAddress::Other::INT_IMM_BYTE:
+                case EffectiveAddress::Other::INT_IMM_WORD:
+                case EffectiveAddress::Other::INT_IMM_LONG:
+                case EffectiveAddress::Other::INT_IMM_QUAD:
+                case EffectiveAddress::Other::FLT_IMM_SINGLE:
+                case EffectiveAddress::Other::FLT_IMM_DOUBLE:
+                case EffectiveAddress::Other::PC_IND_DSP:
+
                 default:
                     // TODO
                     break;

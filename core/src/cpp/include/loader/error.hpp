@@ -16,17 +16,20 @@
 
 namespace MC64K {
 namespace Loader {
-namespace Error {
 
 /**
  * Exception class for any sort of file IO related loading errors
  */
-class FileIO {
+class Error {
     public:
         const char* sFileName;
         const char* sIssue;
-        FileIO(const char* sFileName, const char *sIssue) : sFileName(sFileName), sIssue(sIssue) {}
+        uint64 uChunkID;
+        Error(const char* sFileName, const char *sIssue, const uint64 uChunkID = 0) :
+            sFileName(sFileName),
+            sIssue(sIssue),
+            uChunkID(uChunkID) {}
 };
 
-}}} // namespace
+}} // namespace
 #endif

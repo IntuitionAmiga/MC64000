@@ -20,6 +20,8 @@
 namespace MC64K {
 namespace Loader {
 
+class Executable;
+
 /**
  * Binary
  */
@@ -30,7 +32,70 @@ class Binary {
     public:
         Binary(const char* sFileName);
         ~Binary();
+
+        const Executable* load();
+
+    private:
+        const uint64 FILE_MAGIC_ID        = 0x583030303436434D; // MC64000X
+        const uint64 CHUNK_LIST_ID        = 0x7473694C6B6E6843; // ChnkList
+        const uint64 CHUNK_BYTE_CODE_ID   = 0x65646F4365747942; // ByteCode
+        const uint64 CHUNK_EXPORT_LIST_ID = 0x646574726F707845; // Exported
+        const uint64 ALIGN_MASK           = 7;
+
+
+        struct ChunkListEntry {
+            uint64 uMagicID;
+            int64  iOffset;
+        };
+
+        ChunkListEntry* pChunkList;
+        uint32          uChunkListLength;
+
+        uint64 alignSize(const uint64 uSize) const {
+            return (uSize + ALIGN_MASK) & ~ALIGN_MASK;
+        }
+
+        void   readChunkHeader(uint64* pHeader, const uint64 uExpectedID);
+        void   loadChunkList();
+        uint8* readChunkData(const uint64 uChunkID);
+        const  ChunkListEntry* findChunk(const uint64 uChunkID);
 };
+
+/**
+ * Executable
+ */
+class Executable {
+    friend const Executable* Binary::load();
+
+    public:
+        struct EntryPoint {
+            const char*  sFunction;
+            const uint8* pByteCode;
+        };
+
+        const  EntryPoint* getEntryPoints() const;
+        uint32 getNumEntryPoints() const;
+
+        ~Executable();
+
+    public:
+        Executable(const uint8* pRawExportData, const uint8* pRawByteCode);
+
+    private:
+        const uint8* pExportData;
+        const uint8* pByteCode;
+        const char*  pNames;
+        EntryPoint*  pEntryPoints;
+        uint32       uNumEntryPoints;
+};
+
+inline uint32 Executable::getNumEntryPoints() const {
+    return uNumEntryPoints;
+}
+
+inline const Executable::EntryPoint* Executable::getEntryPoints() const {
+    return pEntryPoints;
+}
 
 }} // namespace
 #endif

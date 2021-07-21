@@ -17,11 +17,17 @@
     @enable log_label_add
     @stacksize 128
 main:
-    not.l d0, d0
+    move.q #1, d0
+    lsl.q  #8, d0
+    lsl.q  #8, d0
+    lsl.q  #8, d0
+    lsl.q  #4, d0
+.loop:
     bsr myfunc
+    dbnz d0, .loop
     rts
 
 myfunc:
-    add.l d0, d0
+    add.l d0, d1
     rts
 
