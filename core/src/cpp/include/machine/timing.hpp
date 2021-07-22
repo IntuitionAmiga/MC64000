@@ -1,4 +1,5 @@
-<?php
+#ifndef __MC64K_MACHINE_TIMING_HPP__
+#   define __MC64K_MACHINE_TIMING_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -13,32 +14,25 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-declare(strict_types = 1);
+#include "mc64k.hpp"
+#include <time.h>
 
-namespace ABadCafe\MC64K\Utils;
-
+namespace MC64K {
+namespace Machine {
 /**
- * Basic Log Facility
+ * Nanosecond measurement
  */
-class Log {
+class Nanoseconds {
+    public:
+        typedef uint64 Value;
 
-    private static int $iLine  = 0;
+        static Value mark() {
+            timespec oCurrent;
+            clock_gettime(CLOCK_MONOTONIC, &oCurrent);
+            Value  uMark = 1000000000UL * oCurrent.tv_sec ;
+            return uMark + oCurrent.tv_nsec;
+        }
+};
 
-    /**
-     * @param string $sFormat
-     */
-    public static function printf(string $sFormat, ...$aVarArgs) : void {
-        fprintf(
-            STDERR, ('#%d ' . $sFormat . "\n"), self::$iLine++, ...$aVarArgs
-        );
-    }
-
-    /**
-     * @param string $sMessage
-     */
-    public static function write(string $sMessage) : void {
-        fprintf(
-            STDERR, "#%d %s\n", self::$iLine++, $sMessage
-        );
-    }
-}
+}} // namespace
+#endif

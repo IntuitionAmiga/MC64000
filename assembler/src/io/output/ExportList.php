@@ -51,12 +51,13 @@ class ExportList implements IBinaryChunk {
      */
     public function __construct(State\LabelLocation $oLabelLocation) {
         $aExports = $oLabelLocation->resolveExports();
+
         $this->sBinary =
             // Label Count
             pack('V', count($aExports)) .
 
             // Offset table
-            pack('C*', ...array_column($aExports, 'iLabelPosition')) .
+            pack('V*', ...array_column($aExports, 'iLabelPosition')) .
 
             // Label lengths
             pack('C*', ...array_map(

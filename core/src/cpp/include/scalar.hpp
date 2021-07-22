@@ -1,4 +1,5 @@
-<?php
+#ifndef __MC64K_SCALAR_HPP__
+    #define __MC64K_SCALAR_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -13,32 +14,25 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-declare(strict_types = 1);
-
-namespace ABadCafe\MC64K\Utils;
-
 /**
- * Basic Log Facility
+ * Basic scalar type definitions
  */
-class Log {
+typedef unsigned long int  uint64;
+typedef signed long int    int64;
+typedef unsigned int       uint32;
+typedef signed int         int32;
+typedef unsigned short int uint16;
+typedef signed short int   int16;
+typedef unsigned char      uint8;
+typedef signed char        int8;
+typedef double             float64;
+typedef float              float32;
 
-    private static int $iLine  = 0;
+#define PFS16 "hd"
+#define PFU16 "hu"
+#define PFS32 "d"
+#define PFU32 "u"
+#define PFS64 "ld"
+#define PFU64 "lu"
 
-    /**
-     * @param string $sFormat
-     */
-    public static function printf(string $sFormat, ...$aVarArgs) : void {
-        fprintf(
-            STDERR, ('#%d ' . $sFormat . "\n"), self::$iLine++, ...$aVarArgs
-        );
-    }
-
-    /**
-     * @param string $sMessage
-     */
-    public static function write(string $sMessage) : void {
-        fprintf(
-            STDERR, "#%d %s\n", self::$iLine++, $sMessage
-        );
-    }
-}
+#endif

@@ -84,7 +84,7 @@ class BranchDisplacementOnly implements Instruction\IOperandSetParser {
             $this->checkShortBranchDisplacement();
             $sBytecode = $sBytecode[0];
         } else {
-            $this->checkBranchDisplacement($sBytecode);
+            $this->checkBranchDisplacement($sBytecode, false);
         }
 
         return $sBytecode;

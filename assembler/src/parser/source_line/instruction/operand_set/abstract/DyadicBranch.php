@@ -72,14 +72,16 @@ abstract class DyadicBranch extends Dyadic {
             strlen($sDstBytecode . $sSrcBytecode)
         );
 
+        $bOperandSideEffects = $this->oDstParser->hasSideEffects() || $this->oSrcParser->hasSideEffects();
+
         $sBranchTarget = $aOperands[self::OPERAND_TARGET];
         $sDisplacement = $this->parseBranchDisplacement(
             $sBranchTarget,
-            $this->oDstParser->hasSideEffects() || $this->oSrcParser->hasSideEffects()
+            $bOperandSideEffects
         );
 
         $sBytecode = $sDstBytecode . $sSrcBytecode . $sDisplacement;
-        $this->checkBranchDisplacement($sBytecode);
+        $this->checkBranchDisplacement($sBytecode, $bOperandSideEffects);
 
         // Check for foldable immediate values
         if ($this->oDstParser->wasImmediate() && $this->oSrcParser->wasImmediate()) {

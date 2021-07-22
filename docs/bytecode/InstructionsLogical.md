@@ -14,7 +14,7 @@ ___
 
 ### AND
 
-Bitwise AND
+Bitwise AND.
 
         <ea(s)> & <ea(d)> -> <ea(d)>
 
@@ -33,7 +33,7 @@ ___
 
 ### OR
 
-Bitwise OR
+Bitwise OR.
 
         <ea(s)> | <ea(d)> -> <ea(d)>
 
@@ -52,7 +52,7 @@ ___
 
 ### EOR
 
-Bitwise Exclusive OR
+Bitwise Exclusive OR.
 
         <ea(s)> ^ <ea(d)> -> <ea(d)>
 
@@ -69,7 +69,7 @@ ___
 
 ### NOT
 
-Bitwise Complement
+Bitwise Complement.
 
         ~<ea(s)> -> <ea(d)>
 
@@ -88,7 +88,7 @@ ___
 
 ### LSL
 
-Logical Shift Left
+Logical Shift Left.
 
         <ea(d)> << <ea(s)> -> <ea(d)>
 
@@ -109,7 +109,7 @@ ___
 
 ### LSR
 
-Logical Shift Right
+Logical Shift Right.
 
         <ea(d)> >> <ea(s)> -> <ea(d)>
 
@@ -130,7 +130,7 @@ ___
 
 ### ROL
 
-Rotate Left
+Rotate Left.
 
         <ea(d)> <<@ <ea(s)> -> <ea(d)>
 
@@ -151,7 +151,7 @@ ___
 
 ### ROR
 
-Rotate Right
+Rotate Right.
 
         <ea(d)> @>> <ea(s)> -> <ea(d)>
 
@@ -172,7 +172,7 @@ ___
 
 ### BCLR
 
-Clear a bit in the destination
+Clear a bit in the destination.
 
         0 -> <ea(d)>[ Bit:<ea(s)> ]
 
@@ -193,7 +193,7 @@ ___
 
 ### BSET
 
-Set a bit in the destination
+Set a bit in the destination.
 
         1 -> <ea(d)>[ Bit:<ea(s)> ]
 
@@ -216,7 +216,7 @@ ___
 
 Reserved
 
-Clear Bitfield
+Clear Bitfield.
 
         0 -> r<D>[ Bitfield ]
 
@@ -232,7 +232,7 @@ ___
 
 Reserved
 
-Set Bitfield
+Set Bitfield.
 
         1 -> r<D>[ Bitfield ]
 
@@ -248,7 +248,7 @@ ___
 
 Reserved
 
-Extract Bitfield as Signed
+Extract Bitfield as Signed.
 
 General syntax:
 
@@ -262,7 +262,7 @@ ___
 
 ### BFEXTU
 
-Extract Bitfield as Unsigned
+Extract Bitfield as Unsigned.
 
 General syntax:
 
@@ -276,7 +276,7 @@ ___
 
 Reserved
 
-Insert Bitfield
+Insert Bitfield.
 
 General syntax:
 
@@ -290,7 +290,7 @@ ___
 
 Reserved
 
-Find First One in Bitfield
+Find First One in Bitfield.
 
 General syntax:
 
@@ -304,7 +304,7 @@ ___
 
 Reserved
 
-Count number of set bits
+Count number of set bits.
 
         pop_count(<ea(s)>) -> <ea(d)>
 

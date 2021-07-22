@@ -77,19 +77,17 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
         $this->addOperandSetParser(new OperandSet\CustomDyadic(
             [
                 IDataMove::SAVEM,
-                IDataMove::FSAVEM,
             ],
-            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::WORD)),
+            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::LONG)),
             new EffectiveAddress\GPRIndirectUpdating()
         ));
 
         $this->addOperandSetParser(new OperandSet\CustomDyadic(
             [
                 IDataMove::LOADM,
-                IDataMove::FLOADM,
             ],
             new EffectiveAddress\GPRIndirectUpdating(),
-            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::WORD))
+            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::LONG))
         ));
 
         $this->addOperandSetParser(new OperandSet\CustomDyadic(
@@ -105,12 +103,13 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
 
         $this->addOperandSetParser(new OperandSet\CustomMonadicBranch(
             [IControl::DBNZ],
-            new EffectiveAddress\AllIntegerWriteable()
+            new EffectiveAddress\AllIntegerWriteable(),
+            true
         ));
 
         $this->addOperandSetParser(new OperandSet\CustomMonadic(
             [IControl::HCF],
-            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::LONG)),
+            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::BYTE)),
             [IControl::HCF => chr(0xFF)]
         ));
 
@@ -129,6 +128,7 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
             new EffectiveAddress\GPRDirect(),
             new EffectiveAddress\GPRDirect()
         ));
+
     }
 
     /**

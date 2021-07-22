@@ -97,8 +97,18 @@ class Assembler {
             $this->oProject->getBaseDirectoryPath() . $this->oProject->getOutputBinaryPath()
         );
         $oState = State\Coordinator::get();
-        $oWriter->writeChunk($oState->getOutput());
-        $oWriter->writeChunk(new IO\Output\ExportList($oState->getLabelLocation()));
+
+        $oCodeChunk  = $oState->getOutput();
+        $oLabelChunk = new IO\Output\ExportList($oState->getLabelLocation());
+        $oListChunk  = new IO\Output\ChunkList();
+        $oListChunk
+            ->registerChunk($oCodeChunk)
+            ->registerChunk($oLabelChunk);
+        $oWriter
+            ->writeChunk($oListChunk)
+            ->writeChunk($oCodeChunk)
+            ->writeChunk($oLabelChunk)
+            ->complete();
         return $this;
     }
 
@@ -113,7 +123,14 @@ class Assembler {
             ->setCurrentFile($oSource)
             ->getOutput();
         while ( ($sSourceLine = $oSource->readLine()) ) {
-            $oOutput->appendStatement($this->oParser->parse($sSourceLine));
+            try {
+                $oOutput->appendStatement($this->oParser->parse($sSourceLine));
+            } catch (\Throwable $oError) {
+                throw new Parser\SourceError(
+                    $oSource,
+                    $oError
+                );
+            }
         }
     }
 }

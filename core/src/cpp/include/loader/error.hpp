@@ -1,4 +1,5 @@
-<?php
+#ifndef __MC64K_LOADER_ERROR_HPP__
+#   define __MC64K_LOADER_ERROR_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -13,32 +14,22 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-declare(strict_types = 1);
-
-namespace ABadCafe\MC64K\Utils;
+namespace MC64K {
+namespace Loader {
 
 /**
- * Basic Log Facility
+ * Exception class for any sort of file IO related loading errors
  */
-class Log {
+class Error {
+    public:
+        const char* sFileName;
+        const char* sIssue;
+        uint64 uChunkID;
+        Error(const char* sFileName, const char *sIssue, const uint64 uChunkID = 0) :
+            sFileName(sFileName),
+            sIssue(sIssue),
+            uChunkID(uChunkID) {}
+};
 
-    private static int $iLine  = 0;
-
-    /**
-     * @param string $sFormat
-     */
-    public static function printf(string $sFormat, ...$aVarArgs) : void {
-        fprintf(
-            STDERR, ('#%d ' . $sFormat . "\n"), self::$iLine++, ...$aVarArgs
-        );
-    }
-
-    /**
-     * @param string $sMessage
-     */
-    public static function write(string $sMessage) : void {
-        fprintf(
-            STDERR, "#%d %s\n", self::$iLine++, $sMessage
-        );
-    }
-}
+}} // namespace
+#endif

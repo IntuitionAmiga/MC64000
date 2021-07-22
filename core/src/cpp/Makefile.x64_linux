@@ -1,0 +1,13 @@
+# Project: MC64000
+
+# Target
+BIN      = bin/interpreter_x64
+
+# Compiler settings
+CXXFLAGS = -Wall -W -Werror -Ofast -march=native -mavx -fPIC -fexpensive-optimizations -Iinclude
+
+# Makefile settings
+ARCH     = x64_linux
+MEXT     = $(ARCH)
+
+include mc64k.make

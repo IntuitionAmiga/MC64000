@@ -21,12 +21,29 @@ use ABadCafe\MC64K\Defs\IIntLimits;
 /**
  * ChunkList
  *
- * List of chunks to be included
+ * List of chunks to be included.
+ *
+ *
+ * Binary Format
+ *
+ * The standard chunk header of magic + data size
+ * N pairs of {uint64 offset, char[8] magic} pairs
+ * Data size must be N * 16
+ *
+ * | Magic (8 bytes)           | +8
+ * | Chunk Data Size (8 bytes) | +16
+ * | Chunk #0 Offset (8 bytes) | +24
+ * | Chunk #0 Magic  (8 bytes) | +32
+ * | Chunk #1 Offset (8 bytes) | +40
+ * | Chunk #1 Magic  (8 bytes) | +48
+ * |          ....             | ...
+ * | Chunk #N Magic  (8 bytes) |
+ *
  */
 class ChunkList implements IBinaryChunk {
 
     const
-        TYPE  = 'CHNKLIST',
+        TYPE  = 'ChnkList',
         PAD   = self::ALIGNMENT - 1,
         ENTRY = 16
     ;
@@ -62,7 +79,8 @@ class ChunkList implements IBinaryChunk {
         if (self::TYPE_SIZE !== strlen($sChunkType)) {
             throw new \Exception('Invalid Chunk Type ID');
         }
-        $iExpectWriteSize = self::TYPE_SIZE + ($oChunk->getChunkLength() + self::PAD) & ~self::PAD;
+
+        $iExpectWriteSize = $this->getExpectedWriteSize($oChunk);
         $this->aChunks[] = [
             $oChunk->getChunkType(),
             $iExpectWriteSize
@@ -93,12 +111,17 @@ class ChunkList implements IBinaryChunk {
      */
     public function getChunkData() : string {
         $sBody = '';
-        $iChunkOffset = $this->iLocation + self::TYPE_SIZE + $this->getChunkLength();
+        $iChunkOffset = $this->iLocation + $this->getExpectedWriteSize($this);
         foreach ($this->aChunks as $aData) {
             $sBody .= $aData[0];
             $sBody .= pack(IIntLimits::QUAD_BIN_FORMAT, $iChunkOffset);
             $iChunkOffset += $aData[1];
         }
         return $sBody;
+    }
+
+    private function getExpectedWriteSize(IBinaryChunk $oChunk) : int {
+        // 16 byte header plus 8 byte aligned body for each registered chunk
+        return self::ENTRY + ($oChunk->getChunkLength() + self::PAD) & ~self::PAD;
     }
 }

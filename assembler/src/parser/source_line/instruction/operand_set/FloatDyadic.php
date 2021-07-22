@@ -33,6 +33,8 @@ class FloatDyadic extends Dyadic {
     const OPCODES = [
         IDataMove::FMOVES_D,
         IDataMove::FMOVED_S,
+        IDataMove::FMOVE_S,
+        IDataMove::FMOVE_D,
         IArithmetic::FADD_S,
         IArithmetic::FADD_D,
         IArithmetic::FSUB_S,
