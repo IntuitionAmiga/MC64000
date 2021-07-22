@@ -142,9 +142,10 @@ void Interpreter::run() {
                 break;
 
             case Opcode::RTS:
-                popProgramCounter();
                 if (0 == --iCallDepth) {
                     eStatus = COMPLETED;
+                } else {
+                    popProgramCounter();
                 }
                 break;
 

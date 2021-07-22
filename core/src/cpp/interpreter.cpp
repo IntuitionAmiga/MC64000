@@ -74,10 +74,13 @@ void Interpreter::setProgramCounter(const uint8* pNewProgramCounter) {
 void Interpreter::dumpState(const int iFlags) {
     std::printf(
         "Machine State\n"
-        "\tProgram Counter: %p\n"
+        "\tProgram Counter: %p [... 0x%02X > 0x%02X < 0x%02X ...]\n"
         "\tCall Depth:      %d\n"
         "\tStatus:          %d [%s]\n",
         pProgramCounter,
+        (uint32) *(pProgramCounter - 1),
+        (uint32) *(pProgramCounter),
+        (uint32) *(pProgramCounter + 1),
         iCallDepth,
         eStatus,
         aStatusNames[eStatus]

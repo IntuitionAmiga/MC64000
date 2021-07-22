@@ -47,7 +47,7 @@ int main(int iArgN, const char** aArgV) {
         const int iDumpState = Interpreter::STATE_FPR|Interpreter::STATE_GPR|Interpreter::STATE_TMP;
         uint8 aStack[32] = { 0 };
 
-        Interpreter::setHostFunction(nativeTest, 0x1);
+        Interpreter::setHostFunction(nativeTest, 0x69);
         Interpreter::gpr(15).pUByte = aStack + sizeof(aStack) - 8;
         Interpreter::setProgramCounter(aEntryPoints[0].pByteCode);
         Interpreter::dumpState(iDumpState);

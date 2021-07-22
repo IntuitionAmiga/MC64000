@@ -54,8 +54,8 @@
 
 #define pushProgramCounter() \
     aGPR[GPRegister::SP].pUByte -= 8; \
-    aGPR[GPRegister::SP].pUByte = (uint8*)pProgramCounter;
+    *(aGPR[GPRegister::SP].pUQuad) = (uint64)pProgramCounter;
 
 #define popProgramCounter() \
-    pProgramCounter = (const uint8*)aGPR[GPRegister::SP].pUByte; \
+    pProgramCounter = (const uint8*)(*(aGPR[GPRegister::SP].pUQuad)); \
     aGPR[GPRegister::SP].pUByte += 8;
