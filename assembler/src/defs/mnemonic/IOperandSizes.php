@@ -153,8 +153,9 @@ interface IOperandSizes {
         IDataMove::FMOVED_L => [8, 4],
         IDataMove::FMOVED_Q => [8, 8],
         IDataMove::FMOVED_S => [8, 4],
-//        'fsavem'   => IDataMove::FSAVEM,
-//        'floadm'   => IDataMove::FLOADM,
+        IDataMove::FMOVE_S  => [4, 4],
+        IDataMove::FMOVE_D  => [8, 8],
+
         IDataMove::CLR_B => [1, 1],
         IDataMove::CLR_W => [2, 2],
         IDataMove::CLR_L => [4, 4],

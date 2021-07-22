@@ -91,7 +91,26 @@ void Interpreter::run() {
         ++uInstructionCount;
         switch (*pProgramCounter++) {
             // Control
-            case Opcode::HCF: todo();
+            case Opcode::HCF: {
+                // This opcode expects 0xFF followed by a byte indicating which function to call.
+                // If the second byte is not 0xFF we assume we aren't in a valid bytecode stream
+                // any more.
+                uint8 uNext = *pProgramCounter++;
+                if (uNext != 0xFF) {
+                    eStatus = CAUGHT_FIRE;
+                } else {
+                    // Get the function ID and call it. The function is expected to return a valid
+                    // status code we can set.
+                    uNext = *pProgramCounter++;
+                    if (aHostAPI[uNext]) {
+                        eStatus = aHostAPI[uNext]();
+                    } else {
+                        eStatus = UNKNOWN_HOST_CALL;
+                    }
+                }
+                break;
+            }
+
             case Opcode::BRA_B: branchByte(); break;
             case Opcode::BRA:   branchLong(); break;
 
@@ -251,8 +270,8 @@ void Interpreter::run() {
             case Opcode::FMOVED_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asDouble(pSrcEA); break;
 
             // FPR save/restore
-            case Opcode::FSAVEM:
-            case Opcode::FLOADM: todo();
+            case Opcode::FMOVE_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asSingle(pSrcEA);  break;
+            case Opcode::FMOVE_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = (float64)asDouble(pSrcEA);  break;
 
             // DataMove - clr
             case Opcode::CLR_B: monadic(SIZE_BYTE); asUByte(pDstEA) = 0; break;

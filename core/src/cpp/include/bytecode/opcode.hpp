@@ -149,8 +149,8 @@ enum DataMove {
     FMOVED_Q = OFS_DATA_MOVE + 18,
 
     FMOVED_S = OFS_DATA_MOVE + 19, // 0x60
-    FSAVEM   = OFS_DATA_MOVE + 20,
-    FLOADM   = OFS_DATA_MOVE + 21,
+    FMOVE_S  = OFS_DATA_MOVE + 20,
+    FMOVE_D  = OFS_DATA_MOVE + 21,
     CLR_B    = OFS_DATA_MOVE + 22,
     CLR_W    = OFS_DATA_MOVE + 23,
     CLR_L    = OFS_DATA_MOVE + 24,

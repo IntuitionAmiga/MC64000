@@ -15,7 +15,7 @@ ___
 
 ### MOVE
 
-Move data from source to destination
+Move data from source to destination.
 
         <ea(s)> -> <ea(d)>
 
@@ -34,7 +34,7 @@ ___
 
 ### SAVEM
 
-Save multiple registers
+Save multiple registers.
 
         register list -> <ea>
 
@@ -43,18 +43,21 @@ General syntax:
 
         savem <#<R>|register list>, <ea>
 
-* Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding GPR is saved.
+* Register list is 32-bit mask of saved registers.
+* Bits 0:15 refer to the General Purpose Register set.
+* Bits 16:31 refer to the Floating Point Register set.
+* For each bit position, if the bit is set, the corresponding register is saved.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
-| Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
-| - | - | - | - | - | - |
-| `savem #<R>, <ea>` | 0x51 | 0x*RR* | 0x*RR* | 0x*EA* | ... |
+| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 | ... |
+| - | - | - | - | - | - | - | - |
+| `savem #<R>, <ea>` | 0x51 | 0x*RR* | 0x*RR* | 0x*RR* | 0x*RR* | 0x*EA* | ... |
 
 ___
 
 ### LOADM
 
-Load multiple registers
+Load multiple registers.
 
         <ea> -> register list
 
@@ -62,18 +65,21 @@ General syntax:
 
         loadm <ea>, <#<R>|register list>
 
-* Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding GPR is loaded.
+* Register list is 32-bit mask of saved registers.
+* Bits 0:15 refer to the General Purpose Register set.
+* Bits 16:31 refer to the Floating Point Register set.
+* For each bit position, if the bit is set, the corresponding register is loaded.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
-| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | ... |
-| - | - | - | - | - | - |
-| `loadm <ea>, #<R>` | 0x52 | 0x*RR* | 0x*RR* | 0x*EA* | ... |
+| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 | ... |
+| - | - | - | - | - | - | - | - |
+| `loadm <ea>, #<R>` | 0x52 | 0x*RR* | 0x*RR* | 0x*RR* | 0x*RR* | 0x*EA* | ... |
 
 ___
 
 ### FMOVEB
 
-Convert signed byte to floating point
+Convert signed byte to floating point.
 
         <ea(s)> -> <ea(d)>
 
@@ -93,7 +99,7 @@ ___
 
 ### FMOVEW
 
-Convert signed word to floating point
+Convert signed word to floating point.
 
         <ea(s)> -> <ea(d)>
 
@@ -113,7 +119,7 @@ ___
 
 ### FMOVEL
 
-Convert signed long to floating point
+Convert signed long to floating point.
 
         <ea(s)> -> <ea(d)>
 
@@ -134,7 +140,7 @@ ___
 
 ### FMOVEQ
 
-Convert signed quad to floating point
+Convert signed quad to floating point.
 
         <ea(s)> -> <ea(d)>
 
@@ -155,7 +161,7 @@ ___
 
 ### FMOVES
 
-Convert a single precision to other format
+Convert a single precision to other format.
 
         <ea(s)> -> <ea(d)>
 
@@ -177,7 +183,7 @@ ___
 
 ### FMOVED
 
-Convert a double precision to other format
+Convert a double precision to other format.
 
         <ea(s)> -> <ea(d)>
 
@@ -197,47 +203,29 @@ General syntax:
 
 ___
 
-### FSAVEM
+### FMOVE
 
-Save multiple floating point registers
+Floating point data move
 
-        register list -> <ea>
-
-General syntax:
-
-        fsavem <#<R>|register list>, <ea>
-
-* Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding FPR is saved.
-* Only register indirect pre/post inc/decrement Effective Address modes allowed.
-
-| Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
-| - | - | - | - | - | - |
-| `fsavem #<R>, <ea>` | 0x61 | 0x*EA* | ... | 0x*RR* | 0x*RR* |
-
-___
-
-### FLOADM
-
-Load multiple floating point registers
-
-        <ea> -> register list
+        <ea(s)> -> <ea(d)>
 
 General syntax:
 
-        floadm <ea>, <#<R>|register list>
+        fmove.<s|d> <ea(s)>, <ea(d)>
 
-* Register list is 16-bit mask of saved registers. For each bit position, if the bit is set, the corresponding FPR is loaded.
-* Only register indirect pre/post inc/decrement Effective Address modes allowed.
+* Performs a floating point data move.
+* Source operand is interpreted as single or double precision and moved to the destination as such.
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
 | - | - | - | - | - | - |
-| `floadm <ea>, #<R>` | 0x62 | 0x*RR* | 0x*RR* | 0x*EA* | ... |
+| `fmove.s <ea(s)>, <ea(d)>` | 0x61 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmove.d <ea(s)>, <ea(d)>` | 0x62 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
 ### CLR
 
-Clear a location
+Clear a location.
 
         0 -> <ea>
 
@@ -257,7 +245,7 @@ ___
 
 ### EXG
 
-Exchange GPR
+Exchange GPR.
 
         r<S> <-> r<D>
 
@@ -275,7 +263,7 @@ ___
 
 ### FEXG
 
-Exchange FPR
+Exchange FPR.
 
         fp<S> <-> fp<D>
 
@@ -291,7 +279,7 @@ ___
 
 ### SWAP
 
-Swap register fragments
+Swap register fragments.
 
         r<N>[31:16] <-> r<N>[15:0]
         r<N>[31:24, 23:16, 15:8, 7:0] <-> r<N>[7:0, 15:8, 23:16, 31:24]
@@ -315,7 +303,7 @@ ___
 
 ### LINK
 
-Link and Allocate
+Link and Allocate.
 
         sp - 8 -> sp; r<N> -> (sp)
         sp -> r<N>; sp + d -> sp
@@ -351,7 +339,7 @@ ___
 
 ### LEA
 
-Load Effective Address
+Load Effective Address.
 
         '<ea(s)> -> <ea(d)>'
 
@@ -370,7 +358,7 @@ ___
 
 ### PEA
 
-Push Effective Address
+Push Effective Address.
 
         sp - 8 -> sp; <ea> -> (sp)
 

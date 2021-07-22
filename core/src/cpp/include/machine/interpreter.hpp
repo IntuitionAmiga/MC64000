@@ -28,12 +28,15 @@ namespace Machine {
 class Interpreter {
 
     public:
+
         typedef enum {
             UNINITIALISED = 0,
             INITIALISED,
             RUNNING,
             COMPLETED,
-            UNIMPLEMENTED_OPCODE
+            CAUGHT_FIRE,
+            UNIMPLEMENTED_OPCODE,
+            UNKNOWN_HOST_CALL,
         } Status;
 
         enum DumpFlags {
@@ -42,13 +45,20 @@ class Interpreter {
             STATE_TMP = 4
         };
 
+
+        typedef Status (*HostCall)();
+
+        static void        setHostFunction(HostCall cFunction, uint8 uOffset);
+
         static void        dumpState(const int iFlags);
         static GPRegister& gpr(const unsigned int uReg);
         static FPRegister& fpr(const unsigned int uReg);
         static void        setProgramCounter(const uint8* pNewProgramCounter);
         static void        run();
 
+
     private:
+        static HostCall     aHostAPI[256];
         static GPRegister   aGPR[GPRegister::MAX];
         static FPRegister   aFPR[FPRegister::MAX];
         static const uint8* pProgramCounter;

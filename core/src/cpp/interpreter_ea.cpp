@@ -19,9 +19,17 @@
 namespace MC64K {
 namespace Machine {
 
-int64 aSmall[9] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8
-};
+namespace {
+    /**
+     *
+     */
+    union {
+        float64 fDouble;
+        float32 fSingle;
+        int64   iQuad;
+        uint8   uBytes[8];
+    } oImmediate;
+}
 
 /**
  * decodeEffectiveAddress()
@@ -120,16 +128,44 @@ void* Interpreter::decodeEffectiveAddress() {
 
         case EffectiveAddress::OFS_OTHER: {
             if (uEALower <= EffectiveAddress::Other::INT_SMALL_8) {
-                return &aSmall[uEALower];
+                oImmediate.iQuad = uEALower;
+                return &oImmediate.iQuad;
             }
 
             switch (uEALower) {
+                // For integer immediates, we always sign extend to 64-bits as the operation mayb be bigger
+                // than the immediate size.
                 case EffectiveAddress::Other::INT_IMM_BYTE:
+                    oImmediate.iQuad = (int8)*pProgramCounter++;
+                    return &oImmediate.iQuad;
+
                 case EffectiveAddress::Other::INT_IMM_WORD:
+                    oImmediate.iQuad  = (int8)pProgramCounter[1];
+                    oImmediate.uBytes[0] = *pProgramCounter++;
+                    oImmediate.uBytes[1] = *pProgramCounter++;
+                    return &oImmediate.iQuad;
+
                 case EffectiveAddress::Other::INT_IMM_LONG:
-                case EffectiveAddress::Other::INT_IMM_QUAD:
                 case EffectiveAddress::Other::FLT_IMM_SINGLE:
+                    oImmediate.iQuad  = (int8)pProgramCounter[3];
+                    oImmediate.uBytes[0] = *pProgramCounter++;
+                    oImmediate.uBytes[1] = *pProgramCounter++;
+                    oImmediate.uBytes[2] = *pProgramCounter++;
+                    oImmediate.uBytes[3] = *pProgramCounter++;
+                    return &oImmediate.iQuad;
+
+                case EffectiveAddress::Other::INT_IMM_QUAD:
                 case EffectiveAddress::Other::FLT_IMM_DOUBLE:
+                    oImmediate.uBytes[0] = *pProgramCounter++;
+                    oImmediate.uBytes[1] = *pProgramCounter++;
+                    oImmediate.uBytes[2] = *pProgramCounter++;
+                    oImmediate.uBytes[3] = *pProgramCounter++;
+                    oImmediate.uBytes[4] = *pProgramCounter++;
+                    oImmediate.uBytes[5] = *pProgramCounter++;
+                    oImmediate.uBytes[6] = *pProgramCounter++;
+                    oImmediate.uBytes[7] = *pProgramCounter++;
+                    return &oImmediate.iQuad;
+
                 case EffectiveAddress::Other::PC_IND_DSP:
 
                 default:

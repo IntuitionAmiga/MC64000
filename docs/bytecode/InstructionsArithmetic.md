@@ -15,7 +15,7 @@ ___
 
 ### EXTB
 
-Sign Extend Byte
+Sign Extend Byte.
 
         <ea(s)> -> <ea(d)>
 
@@ -33,7 +33,7 @@ ___
 
 ### EXTW
 
-Sign Extend Word
+Sign Extend Word.
 
         <ea(s)> -> <ea(d)>
 
@@ -50,7 +50,7 @@ ___
 
 ### EXTL
 
-Sign Extend Long
+Sign Extend Long.
 
         <ea(s)> -> <ea(d)>
 
@@ -66,7 +66,7 @@ ___
 
 ### ASL
 
-Arithmetic Shift Left
+Arithmetic Shift Left.
 
         <ea(d)> <<@ <ea(s)> -> <ea(d)>
 
@@ -87,7 +87,7 @@ ___
 
 ### ASR
 
-Arithmetic Shift Right
+Arithmetic Shift Right.
 
         <ea(d)> @>> <ea(s)> -> <ea(d)>
 
@@ -108,7 +108,7 @@ ___
 
 ### ADD
 
-Add source to destination
+Add source to destination.
 
         <ea(d)> + <ea(s)> -> <ea(d)>
 
@@ -130,7 +130,7 @@ ___
 
 ### SUB
 
-Subtract source from destination
+Subtract source from destination.
 
         <ea(d)> - <ea(s)> -> <ea(d)>
 
@@ -152,7 +152,7 @@ ___
 
 ### NEG
 
-Negate Source to Destination
+Negate Source to Destination.
 
          - <ea(s)> -> <ea(d)>
 
@@ -174,115 +174,115 @@ ___
 
 ### MULS
 
-Integer Signed Multiply
+Integer Signed Multiply.
 
 ___
 
 ### MULU
 
-Integer Unsigned Multiply
+Integer Unsigned Multiply.
 
 ___
 
 ### FMUL
 
-Floating Point Multiply
+Floating Point Multiply.
 
 ___
 
 ### DIVS
 
-Integer Signed Divide
+Integer Signed Divide.
 
 ___
 
 ### DIVU
 
-Integer Unsigned Divide
+Integer Unsigned Divide.
 
 ___
 
 ### FDIV
 
-Floating Point Divide
+Floating Point Divide.
 
 ___
 
 ### FMOD
 
-Floating Point Modulus
+Floating Point Modulus.
 
 ___
 
 ### FABS
 
-Floating Point Absolute
+Floating Point Absolute.
 
 ___
 
 ### FSQRT
 
-Floating Point Square Root
+Floating Point Square Root.
 
 ___
 
 ### FACOS
 
-Floating Point Arccosine
+Floating Point Arccosine.
 
 ___
 
 ### FASIN
 
-Floating Point Arcsine
+Floating Point Arcsine.
 
 ___
 
 ### FATAN
 
-Floating Point Arctangent
+Floating Point Arctangent.
 
 ___
 
 ### FCOS
 
-Floating Point Cosine
+Floating Point Cosine.
 
 ___
 
 ### FSIN
 
-Floating Point Sine
+Floating Point Sine.
 
 ___
 
 ### FSINCOS
 
-Floating Point Sine and Cosine
+Floating Point Sine and Cosine.
 
 ___
 
 ### FTAN
 
-Floating Point Tangent
+Floating Point Tangent.
 
 ___
 
 ### FETOX
 
-Floating Point e to x
+Floating Point e to x.
 
 ___
 
 ### FLOGN
 
-Floating Point Natural Logarithm
+Floating Point Natural Logarithm.
 
 ___
 
 ### FLOG2
 
-Floating Point Base-2 Logarithm
+Floating Point Base-2 Logarithm.
 
 ___
 
@@ -294,7 +294,7 @@ ___
 
 ### FGETEXP
 
-Get Floating Point Exponent
+Get Floating Point Exponent.
 
 ___
 

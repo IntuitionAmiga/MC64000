@@ -6,10 +6,17 @@
 #include "bytecode/effective_address.hpp"
 #include "loader/binary.hpp"
 
+using namespace MC64K::Loader;
+using namespace MC64K::Machine;
+using namespace MC64K::ByteCode;
+
+Interpreter::Status nativeTest() {
+    std::puts("Native Call");
+    return Interpreter::RUNNING;
+}
+
 int main(int iArgN, const char** aArgV) {
-    using namespace MC64K::Loader;
-    using namespace MC64K::Machine;
-    using namespace MC64K::ByteCode;
+
 
     if (iArgN < 2) {
         std::puts("Missing required parameter");
@@ -37,9 +44,10 @@ int main(int iArgN, const char** aArgV) {
             );
         }
 
-        const int iDumpState = Interpreter::STATE_GPR|Interpreter::STATE_TMP;
+        const int iDumpState = Interpreter::STATE_FPR|Interpreter::STATE_GPR|Interpreter::STATE_TMP;
         uint8 aStack[32] = { 0 };
 
+        Interpreter::setHostFunction(nativeTest, 0x1);
         Interpreter::gpr(15).pUByte = aStack + sizeof(aStack) - 8;
         Interpreter::setProgramCounter(aEntryPoints[0].pByteCode);
         Interpreter::dumpState(iDumpState);

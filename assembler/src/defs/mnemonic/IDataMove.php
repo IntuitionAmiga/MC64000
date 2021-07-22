@@ -46,8 +46,8 @@ interface IDataMove extends IByteCodeGroups {
         FMOVED_Q = self::OFS_DATA_MOVE + 18,
 
         FMOVED_S = self::OFS_DATA_MOVE + 19, // 0x60
-        FSAVEM   = self::OFS_DATA_MOVE + 20,
-        FLOADM   = self::OFS_DATA_MOVE + 21,
+        FMOVE_S  = self::OFS_DATA_MOVE + 20,
+        FMOVE_D  = self::OFS_DATA_MOVE + 21,
         CLR_B    = self::OFS_DATA_MOVE + 22,
         CLR_W    = self::OFS_DATA_MOVE + 23,
         CLR_L    = self::OFS_DATA_MOVE + 24,

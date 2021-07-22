@@ -35,7 +35,7 @@ ___
 
 ### BRA
 
-Branch
+Branch.
 
         pc + d -> pc
 
@@ -59,7 +59,7 @@ ___
 
 ### BSR
 
-Branch to Subroutine
+Branch to Subroutine.
 
         sp - 8 -> sp; pc -> (sp); pc + d -> pc
 
@@ -83,7 +83,7 @@ ___
 
 ### JMP
 
-Jump
+Jump.
 
         <ea> -> pc
 
@@ -101,7 +101,7 @@ ___
 
 ### JSR
 
-Jump to Subroutine
+Jump to Subroutine.
 
         sp - 8 -> sp; pc -> (sp); <ea> -> sp
 
@@ -119,7 +119,7 @@ ___
 
 ### RTS
 
-Return from Subroutine
+Return from Subroutine.
 
         (sp) -> pc; sp + 8 -> sp
 
@@ -135,7 +135,7 @@ ___
 
 ### BIZ
 
-Branch if operand is zero
+Branch if operand is zero.
 
         if (<ea> == 0) then pc + d -> pc
 
@@ -162,7 +162,7 @@ ___
 
 ### BNZ
 
-Branch if operand is not zero
+Branch if operand is not zero.
 
         if (<ea> != 0) then pc + d -> pc
 
@@ -189,7 +189,7 @@ ___
 
 ### BMI
 
-Branch if operand is minus
+Branch if operand is minus.
 
         if (<ea> < 0) then pc + d -> pc
 
@@ -216,7 +216,7 @@ ___
 
 ### BPL
 
-Branch if operand is plus
+Branch if operand is plus.
 
         if (<ea> > 0) then pc + d -> pc
 
@@ -243,7 +243,7 @@ ___
 
 ### BLT
 
-Branch if source operand is less than destination operand
+Branch if source operand is less than destination operand.
 
         if (<ea(s)> < <ea(d)>) then pc + d -> pc
 
@@ -270,7 +270,7 @@ ___
 
 ### BLE
 
-Branch if source operand is less than or equal to destination operand
+Branch if source operand is less than or equal to destination operand.
 
         if (<ea(s)> <= <ea(d)>) then pc + d -> pc
 
@@ -297,7 +297,7 @@ ___
 
 ### BEQ
 
-Branch if source operand is equal to destination operand
+Branch if source operand is equal to destination operand.
 
         if (<ea(s)> == <ea(d)>) then pc + d -> pc
 
@@ -324,7 +324,7 @@ ___
 
 ### BGE
 
-Branch if source operand is equal to or greater than destination operand
+Branch if source operand is equal to or greater than destination operand.
 
         if (<ea(s)> >= <ea(d)>) then pc + d -> pc
 
@@ -351,7 +351,7 @@ ___
 
 ### BGT
 
-Branch if source operand is greater than destination operand
+Branch if source operand is greater than destination operand.
 
         if (<ea(s)> > <ea(d)>) then pc + d -> pc
 
@@ -378,7 +378,7 @@ ___
 
 ### BNE
 
-Branch if source operand is not equal to destination operand
+Branch if source operand is not equal to destination operand.
 
         if (<ea(s)> != <ea(d)>) then pc + d -> pc
 
@@ -405,7 +405,7 @@ ___
 
 ### BBS
 
-Branch if bit is set
+Branch if bit is set.
 
         if ( ((1 << <ea(s)>) & <ea(d)>) != 0 ) then pc + d -> pc
 
@@ -431,7 +431,7 @@ ___
 
 ### BBC
 
-Branch if bit is clear
+Branch if bit is clear.
 
         if ( ((1 << <ea(s)>) & <ea(d)>) == 0 ) then pc + d -> pc
 
@@ -457,7 +457,7 @@ ___
 
 ### DBNZ
 
-Decrement counter and branch if not zero
+Decrement counter and branch if not zero.
 
         <ea> - 1 -> <ea>; if (<ea> == 0) then pc + d -> pc
 

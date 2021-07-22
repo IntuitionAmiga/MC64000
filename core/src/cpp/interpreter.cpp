@@ -28,13 +28,24 @@ int          Interpreter::iCallDepth            = 0;
 Interpreter::OperationSize Interpreter::eOperationSize = Interpreter::SIZE_BYTE;
 Interpreter::Status        Interpreter::eStatus        = Interpreter::UNINITIALISED;
 
+Interpreter::HostCall Interpreter::aHostAPI[256] = { 0 };
+
 const char* aStatusNames[] = {
     "Uninitialised",
     "Initialised",
     "Running",
     "Completed",
+    "Caught Fire",
     "Unimplemented Opcode",
+    "Unimplemented Host Call",
 };
+
+/**
+ * Set a host function
+ */
+void Interpreter::setHostFunction(Interpreter::HostCall cFunction, uint8 uOffset) {
+    aHostAPI[uOffset] = cFunction;
+}
 
 /**
  * Get a general purpose register

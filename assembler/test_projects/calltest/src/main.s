@@ -13,21 +13,24 @@
 ; My first project - main.s
 
     @export main
-    @export myfunc
-    @enable log_label_add
+    @export my_exported_func
+    @define my_native_func #0x1
     @stacksize 128
+
 main:
-    move.q #1, d0
-    lsl.q  #8, d0
-    lsl.q  #8, d0
-    lsl.q  #8, d0
-    lsl.q  #4, d0
-.loop:
-    bsr myfunc
-    dbnz d0, .loop
+    move.q #1, r0
+    bsr my_exported_func
+    move.q #2, r1
     rts
 
-myfunc:
-    add.l d0, d1
+my_exported_func:
+    move.q #3, r2
+    bsr my_hidden_func
+    move.q #4, r3
     rts
 
+my_hidden_func:
+    move.q #5, r4
+    hcf my_native_func
+    move.q #6, r5
+    rts
