@@ -17,7 +17,6 @@ Interpreter::Status nativeTest() {
 
 int main(int iArgN, const char** aArgV) {
 
-
     if (iArgN < 2) {
         std::puts("Missing required parameter");
         std::exit(EXIT_FAILURE);

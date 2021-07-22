@@ -16,6 +16,7 @@
 #include "bytecode/opcode.hpp"
 #include "gnarly.hpp"
 #include <cstdio>
+#include <cmath>
 
 namespace MC64K {
 namespace Machine {
@@ -271,18 +272,38 @@ void Interpreter::run() {
             case Opcode::FMOVED_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asDouble(pSrcEA); break;
 
             // FPR save/restore
-            case Opcode::FMOVE_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asSingle(pSrcEA);  break;
-            case Opcode::FMOVE_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = (float64)asDouble(pSrcEA);  break;
+            case Opcode::FMOVE_S:  dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asSingle(pSrcEA);  break;
+            case Opcode::FMOVE_D:  dyadic(SIZE_QUAD); asDouble(pDstEA) = (float64)asDouble(pSrcEA);  break;
 
             // DataMove - clr
-            case Opcode::CLR_B: monadic(SIZE_BYTE); asUByte(pDstEA) = 0; break;
-            case Opcode::CLR_W: monadic(SIZE_WORD); asUWord(pDstEA) = 0; break;
-            case Opcode::CLR_L: monadic(SIZE_LONG); asULong(pDstEA) = 0; break;
-            case Opcode::CLR_Q: monadic(SIZE_QUAD); asUQuad(pDstEA) = 0; break;
+            case Opcode::CLR_B:    monadic(SIZE_BYTE); asUByte(pDstEA) = 0; break;
+            case Opcode::CLR_W:    monadic(SIZE_WORD); asUWord(pDstEA) = 0; break;
+            case Opcode::CLR_L:    monadic(SIZE_LONG); asULong(pDstEA) = 0; break;
+            case Opcode::CLR_Q:    monadic(SIZE_QUAD); asUQuad(pDstEA) = 0; break;
 
-            case Opcode::EXG:
-            case Opcode::FEXG:
-            case Opcode::SWAP:
+            case Opcode::EXG: {
+                dyadic(SIZE_QUAD);
+                int64 iTemp    = asQuad(pSrcEA);
+                asQuad(pSrcEA) = asQuad(pDstEA);
+                asQuad(pDstEA) = iTemp;
+                break;
+            }
+
+            case Opcode::FEXG: {
+                dyadic(SIZE_QUAD);
+                float64 fTemp    = asDouble(pSrcEA);
+                asDouble(pSrcEA) = asDouble(pDstEA);
+                asDouble(pDstEA) = fTemp;
+                break;
+            }
+
+            case Opcode::SWAP: {
+                dyadic(SIZE_LONG);
+                uint32 uTemp    = (uint32)asLong(pSrcEA);
+                asULong(pDstEA) = uTemp >> 16 | uTemp << 16;
+                break;
+            }
+
             case Opcode::SWAP_L: dyadic(SIZE_LONG); asULong(pDstEA) = __builtin_bswap32(asULong(pSrcEA)); break;
             case Opcode::SWAP_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA) = __builtin_bswap64(asUQuad(pSrcEA)); break;
             case Opcode::LINK:
@@ -331,6 +352,8 @@ void Interpreter::run() {
             case Opcode::BSET_W: dyadic(SIZE_WORD); asUWord(pDstEA) |=  (1 << (asUByte(pSrcEA) & 15)); break;
             case Opcode::BSET_L: dyadic(SIZE_LONG); asULong(pDstEA) |=  (1 << (asUByte(pSrcEA) & 31)); break;
             case Opcode::BSET_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA) |=  (1 << (asUByte(pSrcEA) & 63)); break;
+
+
             case Opcode::BFCLR:
             case Opcode::BFSET:
             case Opcode::BFINS:
@@ -395,32 +418,32 @@ void Interpreter::run() {
             case Opcode::FDIV_D: dyadic(SIZE_QUAD); asDouble(pDstEA) /=   asDouble(pSrcEA);      break;
             case Opcode::FMOD_S:
             case Opcode::FMOD_D:
-            case Opcode::FABS_S:
-            case Opcode::FABS_D:
-            case Opcode::FSQRT_S:
-            case Opcode::FSQRT_D:
-            case Opcode::FACOS_S:
-            case Opcode::FACOS_D:
-            case Opcode::FASIN_S:
-            case Opcode::FASIN_D:
-            case Opcode::FATAN_S:
-            case Opcode::FATAN_D:
-            case Opcode::FCOS_S:
-            case Opcode::FCOS_D:
-            case Opcode::FSIN_S:
-            case Opcode::FSIN_D:
+            case Opcode::FABS_S:    dyadic(SIZE_LONG); asSingle(pDstEA) = std::fabs(asSingle(pSrcEA)); break;
+            case Opcode::FABS_D:    dyadic(SIZE_QUAD); asDouble(pDstEA) = std::fabs(asDouble(pSrcEA)); break;
+            case Opcode::FSQRT_S:   dyadic(SIZE_LONG); asSingle(pDstEA) = std::sqrt(asSingle(pSrcEA)); break;
+            case Opcode::FSQRT_D:   dyadic(SIZE_QUAD); asDouble(pDstEA) = std::sqrt(asDouble(pSrcEA)); break;
+            case Opcode::FACOS_S:   dyadic(SIZE_LONG); asSingle(pDstEA) = std::acos(asSingle(pSrcEA)); break;
+            case Opcode::FACOS_D:   dyadic(SIZE_QUAD); asDouble(pDstEA) = std::acos(asDouble(pSrcEA)); break;
+            case Opcode::FASIN_S:   dyadic(SIZE_LONG); asSingle(pDstEA) = std::asin(asSingle(pSrcEA)); break;
+            case Opcode::FASIN_D:   dyadic(SIZE_QUAD); asDouble(pDstEA) = std::asin(asDouble(pSrcEA)); break;
+            case Opcode::FATAN_S:   dyadic(SIZE_LONG); asSingle(pDstEA) = std::atan(asSingle(pSrcEA)); break;
+            case Opcode::FATAN_D:   dyadic(SIZE_QUAD); asDouble(pDstEA) = std::atan(asDouble(pSrcEA)); break;
+            case Opcode::FCOS_S:    dyadic(SIZE_LONG); asSingle(pDstEA) = std::cos(asSingle(pSrcEA));  break;
+            case Opcode::FCOS_D:    dyadic(SIZE_QUAD); asDouble(pDstEA) = std::cos(asDouble(pSrcEA));  break;
+            case Opcode::FSIN_S:    dyadic(SIZE_LONG); asSingle(pDstEA) = std::sin(asSingle(pSrcEA));  break;
+            case Opcode::FSIN_D:    dyadic(SIZE_QUAD); asDouble(pDstEA) = std::sin(asDouble(pSrcEA));  break;
             case Opcode::FSINCOS_S:
             case Opcode::FSINCOS_D:
-            case Opcode::FTAN_S:
-            case Opcode::FTAN_D:
-            case Opcode::FETOX_S:
-            case Opcode::FETOX_D:
-            case Opcode::FLOGN_S:
-            case Opcode::FLOGN_D:
-            case Opcode::FLOG2_S:
-            case Opcode::FLOG2_D:
-            case Opcode::FTWOTOX_S:
-            case Opcode::FTWOTOX_D:
+            case Opcode::FTAN_S:    dyadic(SIZE_LONG); asSingle(pDstEA) = std::tan(asSingle(pSrcEA));  break;
+            case Opcode::FTAN_D:    dyadic(SIZE_QUAD); asDouble(pDstEA) = std::tan(asDouble(pSrcEA));  break;
+            case Opcode::FETOX_S:   dyadic(SIZE_LONG); asSingle(pDstEA) = std::exp(asSingle(pSrcEA));  break;
+            case Opcode::FETOX_D:   dyadic(SIZE_QUAD); asDouble(pDstEA) = std::exp(asDouble(pSrcEA));  break;
+            case Opcode::FLOGN_S:   dyadic(SIZE_LONG); asSingle(pDstEA) = std::log(asSingle(pSrcEA));  break;
+            case Opcode::FLOGN_D:   dyadic(SIZE_QUAD); asDouble(pDstEA) = std::log(asDouble(pSrcEA));  break;
+            case Opcode::FLOG2_S:   dyadic(SIZE_LONG); asSingle(pDstEA) = std::log2(asSingle(pSrcEA)); break;
+            case Opcode::FLOG2_D:   dyadic(SIZE_QUAD); asDouble(pDstEA) = std::log2(asDouble(pSrcEA)); break;
+            case Opcode::FTWOTOX_S: dyadic(SIZE_LONG); asSingle(pDstEA) = std::exp2(asSingle(pSrcEA)); break;
+            case Opcode::FTWOTOX_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = std::exp2(asDouble(pSrcEA)); break;
             case Opcode::FGETEXP_S:
             case Opcode::FGETEXP_D:
             case Opcode::FGETMAN_S:
