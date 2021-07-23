@@ -22,7 +22,7 @@ main:
     bsr my_exported_func
     move.q #2, r1
     savem #0x3F, -(sp)
-    loadm (sp)+, #0x3F00
+    loadm (sp)+, #0x3F0000
     rts
 
 my_exported_func:

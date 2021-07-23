@@ -120,10 +120,12 @@ void* Interpreter::decodeEffectiveAddress() {
 
         // Program Counter Indirect with scaled index
         case EffectiveAddress::OFS_PC_IND_IDX:
+            eStatus = UNIMPLEMENTED_EAMODE;
             return 0;
 
         // Program Counter Indirect with 8-bit scaled index and displacement
         case EffectiveAddress::OFS_PC_IND_IDX_DSP:
+            eStatus = UNIMPLEMENTED_EAMODE;
             return 0;
 
         case EffectiveAddress::OFS_OTHER: {
@@ -170,6 +172,7 @@ void* Interpreter::decodeEffectiveAddress() {
 
                 default:
                     // TODO
+                    eStatus = UNIMPLEMENTED_EAMODE;
                     break;
             }
             break;
@@ -197,6 +200,58 @@ void Interpreter::saveRegisters(uint32 uMask, uint8 uEAMode) {
     uint64* pStack = aGPR[uEAMode & 0xF].pUQuad;
 
     switch (uEAMode & 0xF0) {
+
+        case EffectiveAddress::OFS_GPR_IND_POST_INC:
+            if ( (uHalfMask = (uMask & 0xFFFF)) ) {
+                for (int i = 15; i >= 0; --i) {
+                    if (uHalfMask & (1 << i)) {
+                        *(pStack++) = aGPR[i].uQuad;
+                    }
+                }
+            }
+            if ( (uHalfMask = (uMask >> 16)) ) {
+                for (int i = 15; i >= 0; --i) {
+                    if (uHalfMask & (1 << i)) {
+                        *(pStack++) = aFPR[i].uBinary;
+                    }
+                }
+            }
+            break;
+
+        case EffectiveAddress::OFS_GPR_IND_POST_DEC:
+            if ( (uHalfMask = (uMask & 0xFFFF)) ) {
+                for (int i = 15; i >= 0; --i) {
+                    if (uHalfMask & (1 << i)) {
+                        *(pStack--) = aGPR[i].uQuad;
+                    }
+                }
+            }
+            if ( (uHalfMask = (uMask >> 16)) ) {
+                for (int i = 15; i >= 0; --i) {
+                    if (uHalfMask & (1 << i)) {
+                        *(pStack--) = aFPR[i].uBinary;
+                    }
+                }
+            }
+            break;
+
+        case EffectiveAddress::OFS_GPR_IND_PRE_INC:
+            if ( (uHalfMask = (uMask & 0xFFFF)) ) {
+                for (int i = 15; i >= 0; --i) {
+                    if (uHalfMask & (1 << i)) {
+                        *(++pStack) = aGPR[i].uQuad;
+                    }
+                }
+            }
+            if ( (uHalfMask = (uMask >> 16)) ) {
+                for (int i = 15; i >= 0; --i) {
+                    if (uHalfMask & (1 << i)) {
+                        *(++pStack) = aFPR[i].uBinary;
+                    }
+                }
+            }
+            break;
+
         case EffectiveAddress::OFS_GPR_IND_PRE_DEC:
             if ( (uHalfMask = (uMask & 0xFFFF)) ) {
                 for (int i = 15; i >= 0; --i) {
@@ -213,6 +268,7 @@ void Interpreter::saveRegisters(uint32 uMask, uint8 uEAMode) {
                 }
             }
             break;
+
         default:
             eStatus = UNIMPLEMENTED_EAMODE;
             return;
@@ -235,7 +291,7 @@ void Interpreter::restoreRegisters(uint32 uMask, uint8 uEAMode) {
     switch (uEAMode & 0xF0) {
         case EffectiveAddress::OFS_GPR_IND_POST_INC:
             if ( (uHalfMask = (uMask >> 16)) ) {
-                for (int i = 0; i < 0; ++i) {
+                for (int i = 0; i < 16; ++i) {
                     if (uHalfMask & (1 << i)) {
                         aFPR[i].uBinary = *pStack++;
                     }
@@ -249,6 +305,58 @@ void Interpreter::restoreRegisters(uint32 uMask, uint8 uEAMode) {
                 }
             }
             break;
+
+        case EffectiveAddress::OFS_GPR_IND_POST_DEC:
+            if ( (uHalfMask = (uMask >> 16)) ) {
+                for (int i = 0; i < 16; ++i) {
+                    if (uHalfMask & (1 << i)) {
+                        aFPR[i].uBinary = *pStack--;
+                    }
+                }
+            }
+            if ( (uHalfMask = (uMask & 0xFFFF)) ) {
+                for (int i = 0; i < 16; ++i) {
+                    if (uHalfMask & (1 << i)) {
+                        aGPR[i].uQuad = *pStack--;
+                    }
+                }
+            }
+            break;
+
+        case EffectiveAddress::OFS_GPR_IND_PRE_INC:
+            if ( (uHalfMask = (uMask >> 16)) ) {
+                for (int i = 0; i < 16; ++i) {
+                    if (uHalfMask & (1 << i)) {
+                        aFPR[i].uBinary = *(++pStack);
+                    }
+                }
+            }
+            if ( (uHalfMask = (uMask & 0xFFFF)) ) {
+                for (int i = 0; i < 16; ++i) {
+                    if (uHalfMask & (1 << i)) {
+                        aGPR[i].uQuad = *(++pStack);
+                    }
+                }
+            }
+            break;
+
+        case EffectiveAddress::OFS_GPR_IND_PRE_DEC:
+            if ( (uHalfMask = (uMask >> 16)) ) {
+                for (int i = 0; i < 16; ++i) {
+                    if (uHalfMask & (1 << i)) {
+                        aFPR[i].uBinary = *(--pStack);
+                    }
+                }
+            }
+            if ( (uHalfMask = (uMask & 0xFFFF)) ) {
+                for (int i = 0; i < 16; ++i) {
+                    if (uHalfMask & (1 << i)) {
+                        aGPR[i].uQuad = *(--pStack);
+                    }
+                }
+            }
+            break;
+
         default:
             eStatus = UNIMPLEMENTED_EAMODE;
             return;
