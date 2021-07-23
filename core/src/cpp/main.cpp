@@ -44,20 +44,26 @@ int main(int iArgN, const char** aArgV) {
         }
 
         const int iDumpState = Interpreter::STATE_FPR|Interpreter::STATE_GPR|Interpreter::STATE_TMP;
-        uint8 aStack[32] = { 0 };
 
+        Interpreter::allocateStack(256);
         Interpreter::setHostFunction(nativeTest, 0x69);
-        Interpreter::gpr(15).pUByte = aStack + sizeof(aStack) - 8;
         Interpreter::setProgramCounter(aEntryPoints[0].pByteCode);
         Interpreter::dumpState(iDumpState);
         Interpreter::run();
-        Interpreter::dumpState(iDumpState);
+        Interpreter::dumpState(iDumpState|Interpreter::STATE_STACK);
+        Interpreter::freeStack();
 
         delete pExecutable;
-    } catch (Error& oError) {
+    } catch (MC64K::Loader::Error& oError) {
         std::printf(
             "Unable to load binary file \"%s\", %s.\n",
             oError.sFileName,
+            oError.sIssue
+        );
+        std::exit(EXIT_FAILURE);
+    } catch (MC64K::Machine::Error& oError) {
+        std::printf(
+            "Machine error: %s.\n",
             oError.sIssue
         );
         std::exit(EXIT_FAILURE);

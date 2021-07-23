@@ -61,6 +61,7 @@ class GPRIndirectUpdating extends GPRIndirect {
                 if (!isset(Register\INames::GPR_MAP[$sRegister])) {
                     throw new \OutOfBoundsException($sRegister . ' is not a recognised GPR name');
                 }
+
                 return chr($iOffset + Register\INames::GPR_MAP[$sRegister]);
             }
         }

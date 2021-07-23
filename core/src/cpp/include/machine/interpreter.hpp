@@ -16,6 +16,7 @@
 
 #include "scalar.hpp"
 #include "register.hpp"
+#include "error.hpp"
 
 namespace MC64K {
 namespace Machine {
@@ -36,26 +37,28 @@ class Interpreter {
             COMPLETED,
             CAUGHT_FIRE,
             UNIMPLEMENTED_OPCODE,
+            UNIMPLEMENTED_EAMODE,
             UNKNOWN_HOST_CALL,
         } Status;
 
         enum DumpFlags {
-            STATE_GPR = 1,
-            STATE_FPR = 2,
-            STATE_TMP = 4
+            STATE_GPR   = 1,
+            STATE_FPR   = 2,
+            STATE_TMP   = 4,
+            STATE_STACK = 8
         };
-
 
         typedef Status (*HostCall)();
 
-        static void        setHostFunction(HostCall cFunction, uint8 uOffset);
+        static void         setHostFunction(HostCall cFunction, uint8 uOffset);
+        static void         allocateStack(uint32 uStackSize);
+        static void         freeStack();
+        static void         setProgramCounter(const uint8* pNewProgramCounter);
+        static void         run();
 
-        static void        dumpState(const int iFlags);
-        static GPRegister& gpr(const unsigned int uReg);
-        static FPRegister& fpr(const unsigned int uReg);
-        static void        setProgramCounter(const uint8* pNewProgramCounter);
-        static void        run();
-
+        static GPRegister&  gpr(const unsigned int uReg);
+        static FPRegister&  fpr(const unsigned int uReg);
+        static void         dumpState(const int iFlags);
 
     private:
         static HostCall     aHostAPI[256];
@@ -67,6 +70,9 @@ class Interpreter {
         static void*        pTmpEA;
         static int          iCallDepth;
 
+        static uint8*       pStackTop;
+        static uint8*       pStackBase;
+
         static enum  OperationSize {
             SIZE_BYTE = 1,
             SIZE_WORD = 2,
@@ -77,6 +83,8 @@ class Interpreter {
         static Status eStatus;
 
         static void* decodeEffectiveAddress();
+        static void  saveRegisters(uint32 uMask, uint8 uEAMode);
+        static void  restoreRegisters(uint32 uMask, uint8 uEAMode);
 };
 
 }} // namespace

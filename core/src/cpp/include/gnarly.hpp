@@ -16,8 +16,9 @@
  */
 #define initDisplacement() \
     union { \
-        int32 iDisplacement; \
-        uint8 uBytes[4]; \
+        uint32 uMask; \
+        int32  iDisplacement; \
+        uint8  uBytes[4]; \
     };
 
 #define readDisplacement() \
@@ -25,6 +26,9 @@
     uBytes[1] = *pProgramCounter++; \
     uBytes[2] = *pProgramCounter++; \
     uBytes[3] = *pProgramCounter++;
+
+#define readMask() readDisplacement()
+
 
 #define branchByte()  { int8 iShortDisplacement = (int8)*pProgramCounter++; pProgramCounter += iShortDisplacement; }
 #define branchLong()  { readDisplacement(); pProgramCounter += iDisplacement; }
