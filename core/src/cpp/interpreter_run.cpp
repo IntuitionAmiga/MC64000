@@ -252,9 +252,18 @@ void Interpreter::run() {
             case Opcode::MOVE_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA) = asUQuad(pSrcEA); break;
 
             // GPR save/restore
-            case Opcode::SAVEM: todo();
-            case Opcode::LOADM: todo();
-
+            case Opcode::SAVEM: {
+                uint8 uEAMode = *pProgramCounter++;
+                readMask();
+                saveRegisters(uMask, uEAMode);
+                break;
+            }
+            case Opcode::LOADM: {
+                readMask();
+                uint8 uEAMode = *pProgramCounter++;
+                restoreRegisters(uMask, uEAMode);
+                break;
+            }
             // Integer/Float interconversion
             case Opcode::FMOVEB_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asByte(pSrcEA);   break;
             case Opcode::FMOVEB_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = (float64)asByte(pSrcEA);   break;

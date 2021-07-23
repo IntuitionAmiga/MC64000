@@ -21,6 +21,8 @@ main:
     move.q #1, r0
     bsr my_exported_func
     move.q #2, r1
+    savem #0x3F, -(sp)
+    loadm (sp)+, #0x3F00
     rts
 
 my_exported_func:

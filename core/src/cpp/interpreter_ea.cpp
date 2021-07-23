@@ -185,4 +185,77 @@ void* Interpreter::decodeEffectiveAddress() {
     return 0;
 }
 
+/**
+ * Save the registers indicated by the mask to the effective address
+ *
+ */
+void Interpreter::saveRegisters(uint32 uMask, uint8 uEAMode) {
+
+    using namespace MC64K::ByteCode;
+
+    uint32  uHalfMask;
+    uint64* pStack = aGPR[uEAMode & 0xF].pUQuad;
+
+    switch (uEAMode & 0xF0) {
+        case EffectiveAddress::OFS_GPR_IND_PRE_DEC:
+            if ( (uHalfMask = (uMask & 0xFFFF)) ) {
+                for (int i = 15; i >= 0; --i) {
+                    if (uHalfMask & (1 << i)) {
+                        *(--pStack) = aGPR[i].uQuad;
+                    }
+                }
+            }
+            if ( (uHalfMask = (uMask >> 16)) ) {
+                for (int i = 15; i >= 0; --i) {
+                    if (uHalfMask & (1 << i)) {
+                        *(--pStack) = aFPR[i].uBinary;
+                    }
+                }
+            }
+            break;
+        default:
+            eStatus = UNIMPLEMENTED_EAMODE;
+            return;
+            break;
+    }
+    aGPR[uEAMode & 0xF].pUQuad = pStack;
+}
+
+/**
+ * Restore the registers indicated by the mask to the effective address
+ *
+ */
+void Interpreter::restoreRegisters(uint32 uMask, uint8 uEAMode) {
+
+    using namespace MC64K::ByteCode;
+
+    uint32  uHalfMask;
+    uint64* pStack = aGPR[uEAMode & 0xF].pUQuad;
+
+    switch (uEAMode & 0xF0) {
+        case EffectiveAddress::OFS_GPR_IND_POST_INC:
+            if ( (uHalfMask = (uMask >> 16)) ) {
+                for (int i = 0; i < 0; ++i) {
+                    if (uHalfMask & (1 << i)) {
+                        aFPR[i].uBinary = *pStack++;
+                    }
+                }
+            }
+            if ( (uHalfMask = (uMask & 0xFFFF)) ) {
+                for (int i = 0; i < 16; ++i) {
+                    if (uHalfMask & (1 << i)) {
+                        aGPR[i].uQuad = *pStack++;
+                    }
+                }
+            }
+            break;
+        default:
+            eStatus = UNIMPLEMENTED_EAMODE;
+            return;
+            break;
+    }
+    aGPR[uEAMode & 0xF].pUQuad = pStack;
+}
+
+
 }} // namespace

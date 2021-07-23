@@ -12,6 +12,8 @@
  */
 
 #include <cstdio>
+#include <cstdlib>
+#include "machine/error.hpp"
 #include "machine/interpreter.hpp"
 
 namespace MC64K {
@@ -23,12 +25,13 @@ const uint8* Interpreter::pProgramCounter       = 0;
 void*        Interpreter::pDstEA                = 0;
 void*        Interpreter::pSrcEA                = 0;
 void*        Interpreter::pTmpEA                = 0;
+uint8*       Interpreter::pStackTop             = 0;
+uint8*       Interpreter::pStackBase            = 0;
 int          Interpreter::iCallDepth            = 0;
 
 Interpreter::OperationSize Interpreter::eOperationSize = Interpreter::SIZE_BYTE;
 Interpreter::Status        Interpreter::eStatus        = Interpreter::UNINITIALISED;
-
-Interpreter::HostCall Interpreter::aHostAPI[256] = { 0 };
+Interpreter::HostCall      Interpreter::aHostAPI[256] = { 0 };
 
 const char* aStatusNames[] = {
     "Uninitialised",
@@ -37,6 +40,7 @@ const char* aStatusNames[] = {
     "Completed",
     "Caught Fire",
     "Unimplemented Opcode",
+    "Unimplemented Effective Address",
     "Unimplemented Host Call",
 };
 
@@ -45,6 +49,22 @@ const char* aStatusNames[] = {
  */
 void Interpreter::setHostFunction(Interpreter::HostCall cFunction, uint8 uOffset) {
     aHostAPI[uOffset] = cFunction;
+}
+
+void Interpreter::allocateStack(uint32 uSize) {
+    uSize += 31;
+    uSize &= ~31;
+    pStackBase = (uint8*)std::calloc(uSize, 1);
+    if (!pStackBase) {
+        throw Error("Failed to allocate stack");
+    }
+    pStackTop = pStackBase + uSize;
+    aGPR[GPRegister::SP].pUByte = pStackTop;
+}
+
+void Interpreter::freeStack() {
+    std::free(pStackBase);
+    pStackTop = pStackBase = 0;
 }
 
 /**
@@ -67,6 +87,7 @@ FPRegister& Interpreter::fpr(const unsigned int uReg) {
 void Interpreter::setProgramCounter(const uint8* pNewProgramCounter) {
     pProgramCounter = pNewProgramCounter;
 }
+
 
 /**
  * Debugging
@@ -120,7 +141,18 @@ void Interpreter::dumpState(const int iFlags) {
             );
         }
     }
-
+    if (iFlags & STATE_STACK) {
+        std::printf("Stack\n");
+        if (pStackTop && pStackBase) {
+            uint64* p = (uint64*)pStackTop;
+            while (--p > (uint64*)pStackBase) {
+                std::printf(
+                    "\t%p : 0x%016lX\n",
+                    p, *p
+                );
+            }
+        }
+    }
 }
 
 }} // namespace
