@@ -49,9 +49,9 @@ General syntax:
 * For each bit position, if the bit is set, the corresponding register is saved.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
-| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 | ... |
-| - | - | - | - | - | - | - | - |
-| `savem #<R>, <ea>` | 0x51 | 0x*RR* | 0x*RR* | 0x*RR* | 0x*RR* | 0x*EA* | ... |
+| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 |
+| - | - | - | - | - | - | - |
+| `savem #<R>, <ea>` | 0x51 | 0x*EA* | 0x*RR* | 0x*RR* | 0x*RR* | 0x*RR* |
 
 ___
 
@@ -71,9 +71,9 @@ General syntax:
 * For each bit position, if the bit is set, the corresponding register is loaded.
 * Only register indirect pre/post inc/decrement Effective Address modes allowed.
 
-| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 | ... |
-| - | - | - | - | - | - | - | - |
-| `loadm <ea>, #<R>` | 0x52 | 0x*RR* | 0x*RR* | 0x*RR* | 0x*RR* | 0x*EA* | ... |
+| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 |
+| - | - | - | - | - | - | - |
+| `loadm <ea>, #<R>` | 0x52 | 0x*RR* | 0x*RR* | 0x*RR* | 0x*RR* | 0x*EA* |
 
 ___
 
