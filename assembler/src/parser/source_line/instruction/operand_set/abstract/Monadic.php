@@ -18,6 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
+use ABadCafe\MC64K\Parser\Defs;
 
 /**
  * Monadic
@@ -38,7 +39,8 @@ abstract class Monadic implements Instruction\IOperandSetParser {
      */
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
-
+        $oState = State\Coordinator::get()
+            ->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE);
         $iSrcIndex    = $this->getSourceOperandIndex();
         $sSrcBytecode = $this->oSrcParser
             ->setOperationSize($aSizes[$iSrcIndex] ?? self::DEFAULT_SIZE)
@@ -47,7 +49,7 @@ abstract class Monadic implements Instruction\IOperandSetParser {
             throw new \UnexpectedValueException(
                 $aOperands[$iSrcIndex] . ' not a valid operand');
         }
-
+        $oState->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE + strlen($sSrcBytecode));
         return $sSrcBytecode;
     }
 

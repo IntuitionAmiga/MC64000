@@ -58,12 +58,12 @@ class CustomMonadicBranch extends CustomMonadic {
             );
         }
 
-        $oState = State\Coordinator::get();
-        $oState->setCurrentStatementLength(
-            Defs\IOpcodeLimits::SIZE +
-            Defs\IBranchLimits::DISPLACEMENT_SIZE +
-            strlen($sSrcBytecode)
-        );
+        $oState = State\Coordinator::get()
+            ->setCurrentStatementLength(
+                Defs\IOpcodeLimits::SIZE +
+                Defs\IBranchLimits::DISPLACEMENT_SIZE +
+                strlen($sSrcBytecode)
+            );
 
         $sDisplacement = $this->parseBranchDisplacement(
             $aOperands[self::OPERAND_TARGET],

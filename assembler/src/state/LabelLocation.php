@@ -38,16 +38,54 @@ class LabelLocation {
     private array  $aLocalLabels      = [];
     private array  $aUnresolvedLabels = [];
     private array  $aExportedLabels   = [];
+    private array  $aImportedLabels   = [];
 
     /**
      * Register a label for export. This will be sanity checked in the second pass.
      *
-     * @param string $sLabel
+     * Silently accepts multiple references for the same export but will throw an exception if
+     * trying to mark for export any label already marked for import.
+     *
+     * @param  string $sLabel
+     * @return self
+     * @throws \Exception
      */
     public function registerExport(string $sLabel) : self {
+        $this->assertLabel($sLabel);
+        if (isset($this->aImportedLabels[$sLabel])) {
+            throw new \Exception("Label " . $sLabel . " is already registered as an import");
+        }
         $this->aExportedLabels[$sLabel] = $sLabel;
         return $this;
     }
+
+    /**
+     * Register a label for import. This will be sanity checked in the second pass.
+     *
+     * Silently accepts multiple references for the same import but will throw an exception if
+     * trying to mark for import any label already marked for export.
+     *
+     * @param  string $sLabel
+     * @return self
+     * @throws \Exception
+     */
+    public function registerImport(string $sLabel) : self {
+        $this->assertLabel($sLabel);
+        if (isset($this->aExportedLabels[$sLabel])) {
+            throw new \Exception("Label " . $sLabel . " is already registered as an export");
+        }
+        if (!isset($this->aImportedLabels[$sLabel])) {
+            $this->aImportedLabels[$sLabel] = 0;
+            if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_IMPORT)) {
+                Log::printf(
+                    "Added imported label '%s'",
+                    $sLabel
+                );
+            }
+        }
+        return $this;
+    }
+
 
     /**
      * Add a global label to the registry. A global label can be declared only once.
@@ -59,6 +97,7 @@ class LabelLocation {
      * @throws \Exception
      */
     public function addGlobal(IO\ISourceFile $oFile, string $sLabel, int $iOffset) : self {
+        $this->assertLabel($sLabel);
         if (isset($this->aGlobalLabels[$sLabel])) {
             throw new \Exception(
                 'Duplicate global: '    . $sLabel .
@@ -94,6 +133,7 @@ class LabelLocation {
      * @throws \Exception
      */
     public function addLocal(IO\ISourceFile $oFile, string $sLabel, int $iOffset) : self {
+        $this->assertLabel($sLabel);
         $sCurrentFile = $oFile->getFilename();
         if (isset($this->aLocalLabels[$sCurrentFile][$sLabel])) {
             throw new \Exception(
@@ -125,6 +165,10 @@ class LabelLocation {
      */
     public function getGlobals() : array {
         return $this->aGlobalLabels;
+    }
+
+    public function isGlobalResolved(string $sLabel) : bool {
+        return isset($this->aGlobalLabels[$sLabel]);
     }
 
     /**
@@ -161,7 +205,7 @@ class LabelLocation {
                 Log::printf(
                     "Resolved label '%s' to bytecode position %d",
                     $sLabel,
-                    $this->aGlobalLabels[$sLabel][self::I_POSN]
+                    $this->aGlobalLabels[$sLabel][self::I_OFST]
                 );
             }
             return $this->aGlobalLabels[$sLabel][self::I_OFST];
@@ -178,6 +222,7 @@ class LabelLocation {
      * @return self
      */
     public function addUnresolved(IO\ISourceFile $oFile, string $sLabel, int $iLocation) : self {
+        $this->assertLabel($sLabel);
         $sCurrentFilename   = $oFile->getFilename();
         $iCurrentLineNumber = $oFile->getLineNumber();
         if (isset($this->aUnresolvedLabels[$sCurrentFilename][$sLabel][$iCurrentLineNumber])) {
@@ -260,5 +305,15 @@ class LabelLocation {
             ];
         }
         return $aResult;
+    }
+
+    public function getImports() : array {
+        return $this->aImportedLabels;
+    }
+
+    private function assertLabel(string $sLabel) {
+        if (strlen($sLabel) > Defs\ILabel::MAX_LENGTH) {
+            throw new \LengthException();
+        }
     }
 }

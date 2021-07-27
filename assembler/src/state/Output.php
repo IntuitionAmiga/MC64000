@@ -110,6 +110,16 @@ class Output implements IO\Output\IBinaryChunk {
     }
 
     /**
+     * Modifies the current internal statement length. Returns the modified value.
+     *
+     * @param  int $iDelta
+     * @return int
+     */
+    public function adjustCurrentStatementLength(int $iDelta) : int {
+        return $this->iCurrentStatementLength += $iDelta;
+    }
+
+    /**
      * Sets the current internal statement length, used to track the size of the bytecode of the operation so far.
      *
      * @param  int $iStatementLength

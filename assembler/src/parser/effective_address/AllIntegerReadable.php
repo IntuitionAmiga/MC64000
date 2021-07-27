@@ -39,7 +39,8 @@ class AllIntegerReadable extends Composite {
             new GPRIndirectIndexedDisplacement(),
             new PCIndirectDisplacement(),
             new PCIndirectIndexed(),
-            new PCIndirectIndexedDisplacement()
+            new PCIndirectIndexedDisplacement(),
+            new GlobalReference()
         ];
     }
 

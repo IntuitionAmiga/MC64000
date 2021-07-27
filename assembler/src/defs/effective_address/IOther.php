@@ -52,7 +52,10 @@ interface IOther extends IByteCodeGroups {
         // Program counter indirect with displacement
         PC_IND_DSP         = self::OFS_OTHER + 15,
 
-        SAME_AS_DEST       = self::OFS_OTHER + 16
+        SAME_AS_DEST       = self::OFS_OTHER + 16,
+
+        // Reference to an imported symbol index position (32 bit)
+        IMPORT_INDEX       = self::OFS_OTHER + 17
 
     ;
 }
