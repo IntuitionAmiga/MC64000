@@ -33,6 +33,7 @@ main:
     rts
 
 test_global:
+    lea main, r3
     rts
 
 do_something:
