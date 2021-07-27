@@ -18,6 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs;
+use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 
 /**
@@ -60,7 +61,8 @@ abstract class Dyadic extends Monadic {
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
         $this->sSrcBytecode = null;
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
-
+        $oState = State\Coordinator::get()
+            ->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE);
         $iDstIndex          = $this->getDestinationOperandIndex();
         $this->sDstBytecode = $this->oDstParser
             ->setOperationSize($aSizes[$iDstIndex] ?? self::DEFAULT_SIZE)
@@ -70,6 +72,8 @@ abstract class Dyadic extends Monadic {
                 $aOperands[$iDstIndex] . ' not a valid destination operand'
             );
         }
+
+        $oState->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE + strlen($this->sDstBytecode));
 
         $iSrcIndex    = $this->getSourceOperandIndex();
         $sSrcBytecode = $this->oSrcParser
@@ -82,6 +86,8 @@ abstract class Dyadic extends Monadic {
         }
 
         $this->sSrcBytecode = $this->optimiseSourceOperandBytecode($sSrcBytecode, $this->sDstBytecode);
+
+        $oState->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE + strlen($this->sDstBytecode) + strlen($this->sSrcBytecode));
 
         return $this->sDstBytecode . $this->sSrcBytecode;
     }

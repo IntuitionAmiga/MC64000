@@ -147,6 +147,14 @@ class Coordinator {
     }
 
     /**
+     * Simple trampoline
+     */
+    public function adjustCurrentStatementLength(int $iDelta) : self {
+        $this->oOutput->adjustCurrentStatementLength($iDelta);
+        return $this;
+    }
+
+    /**
      * Add a global label to the registry. A global label can be declared only once.
      *
      * @param  string $sLabel
@@ -224,4 +232,5 @@ class Coordinator {
         );
         return $this;
     }
+
 }

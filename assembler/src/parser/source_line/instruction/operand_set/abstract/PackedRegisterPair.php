@@ -32,6 +32,8 @@ abstract class PackedRegisterPair extends Dyadic {
      */
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
+        $oState = State\Coordinator::get()
+            ->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE);
         $iDstIndex    = $this->getDestinationOperandIndex();
         $sDstBytecode = $this->oDstParser
             ->setOperationSize($aSizes[$iDstIndex] ?? self::DEFAULT_SIZE)

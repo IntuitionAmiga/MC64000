@@ -169,7 +169,8 @@ void* Interpreter::decodeEffectiveAddress() {
                     return &oImmediate.iQuad;
 
                 case EffectiveAddress::Other::PC_IND_DSP:
-
+                    readDisplacement();
+                    return (uint8*)pProgramCounter + iDisplacement;
                 default:
                     // TODO
                     eStatus = UNIMPLEMENTED_EAMODE;

@@ -36,6 +36,7 @@ class AllIntegerWriteable extends Composite {
             new GPRIndirectDisplacement(),
             new GPRIndirectIndexed(),
             new GPRIndirectIndexedDisplacement(),
+            new GlobalReference()
         ];
     }
 }
