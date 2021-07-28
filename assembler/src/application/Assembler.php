@@ -79,10 +79,15 @@ class Assembler {
     public function secondPass() : self {
         $oState = State\Coordinator::get();
         $oSecondPass = new Process\SecondPass();
-        $oSecondPass->resolveForwardsBranchReferences(
-            $oState->getLabelLocation(),
-            $oState->getOutput()
-        );
+        $oSecondPass
+            ->resolveForwardsBranchReferences(
+                $oState->getLabelLocation(),
+                $oState->getOutput()
+            )
+            ->enumerateImportReferences(
+                $oState->getLabelLocation(),
+                $oState->getOutput()
+            );
         return $this;
     }
 

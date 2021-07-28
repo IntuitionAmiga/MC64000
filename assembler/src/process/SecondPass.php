@@ -35,7 +35,7 @@ class SecondPass {
      * @param  State\Output $oOutput
      * @throws \Exception
      */
-    public function resolveForwardsBranchReferences(State\LabelLocation $oLabelLocation, State\Output $oOutput) : void {
+    public function resolveForwardsBranchReferences(State\LabelLocation $oLabelLocation, State\Output $oOutput) : self {
         $aBranchTargets = $oLabelLocation->resolveBranchTargetList();
 
         $bLogResolution = State\Coordinator::get()
@@ -62,5 +62,47 @@ class SecondPass {
                 $iReferenceOffset
             );
         }
+        return $this;
     }
+
+    public function enumerateImportReferences(State\LabelLocation $oLabelLocation, State\Output $oOutput) : self {
+        $aImportReferences = $oLabelLocation->getImports();
+        $iImportID = 0;
+
+        $bLogResolution = State\Coordinator::get()
+            ->getOptions()
+            ->isEnabled(Defs\Project\IOptions::LOG_LABEL_RESOLVE);
+
+        $bLogResolution &&
+        Log::printf("There are %d imported symbols to enumerate...", count($aImportReferences));
+
+        foreach ($aImportReferences as $sLabel => $aReferences) {
+            if (empty($aReferences)) {
+                $bLogResolution &&
+                Log::printf("\tImported label '%s' is unused, enumeration skipped", $sLabel);
+                continue;
+            }
+
+            $iEnumeration = $iImportID++;
+
+            $bLogResolution &&
+            Log::printf("\tEnumerated label '%s' as #%d", $sLabel, $iEnumeration);
+
+            foreach ($aReferences as $oReference) {
+                $bLogResolution &&
+                Log::printf(
+                    "\t\tReference (%s@%d) at offset %d",
+                    $oReference->sFilename,
+                    $oReference->iLineNumber,
+                    $oReference->iLocation
+                );
+                $oOutput->patch(
+                    pack(Defs\IIntLimits::LONG_BIN_FORMAT, $iEnumeration),
+                    $oReference->iLocation
+                );
+            }
+        }
+        return $this;
+    }
+
 }

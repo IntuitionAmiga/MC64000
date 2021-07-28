@@ -14,7 +14,10 @@
 
     @export main
     @export do_something
-    ;@import my_external_reference
+    @import my_unusued_reference
+    @import my_external_reference
+    @import my_other_external_reference
+
 main:
     move.q #1, r0
     bsr danger
@@ -43,8 +46,12 @@ test_global:
 
 do_something:
     lea main, r3
+    move.q my_external_reference, r9
     rts
 
 danger:
     add.q r0, r0
+    move.q r0, my_external_reference
+    move.q r1, my_other_external_reference
     rts
+

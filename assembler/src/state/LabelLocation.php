@@ -75,7 +75,7 @@ class LabelLocation {
             throw new \Exception("Label " . $sLabel . " is already registered as an export");
         }
         if (!isset($this->aImportedLabels[$sLabel])) {
-            $this->aImportedLabels[$sLabel] = 0;
+            $this->aImportedLabels[$sLabel] = [];
             if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_IMPORT)) {
                 Log::printf(
                     "Added imported label '%s'",
@@ -239,6 +239,30 @@ class LabelLocation {
         return $this;
     }
 
+    public function addImportReference(IO\ISourceFile $oFile, string $sLabel, int $iLocation) : self {
+        $this->assertLabel($sLabel);
+
+        if (!isset($this->aImportedLabels[$sLabel])) {
+            throw new \Exception("Reference to undeclared imported label");
+        }
+
+        $sCurrentFilename   = $oFile->getFilename();
+        $iCurrentLineNumber = $oFile->getLineNumber();
+        if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_ADD)) {
+            Log::printf(
+                "Recorded reference to imported label '%s' at bytecode position %d",
+                $sLabel,
+                $iLocation
+            );
+        }
+        $this->aImportedLabels[$sLabel][] = (object)[
+            'sFilename'   => $sCurrentFilename,
+            'iLineNumber' => $iCurrentLineNumber,
+            'iLocation'   => $iLocation
+        ];
+        return $this;
+    }
+
     /**
      * Resolves any branch targets that were unresolved at the time of generation during the first pass.
      *
@@ -305,6 +329,10 @@ class LabelLocation {
             ];
         }
         return $aResult;
+    }
+
+    public function isDefinedImport(string $sLabel) : bool {
+        return isset($this->aImportedLabels[$sLabel]);
     }
 
     public function getImports() : array {
