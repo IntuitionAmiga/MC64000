@@ -16,10 +16,15 @@
     @export do_something
     ;@import my_external_reference
 main:
+    move.q #1, r0
+    bsr danger
+
+    ; self modifying code! Change danger to a simple noop
+    move.b #7, danger
+    bsr danger
+
     lea test_global, r5 ; 7 bytes: [command] [dst ea] [src ea] [disp 0] [disp 1] [disp 2] [disp 3]
-
     move.b test_global, r4
-
     ; insert a list of 10 one byte instructions. The reference to the test label should be 10 bytes after the PC
     rts
     rts
@@ -38,4 +43,8 @@ test_global:
 
 do_something:
     lea main, r3
+    rts
+
+danger:
+    add.q r0, r0
     rts
