@@ -34,11 +34,12 @@ class LabelLocation {
         I_OFST = 0
     ;
 
-    private array  $aGlobalLabels     = [];
-    private array  $aLocalLabels      = [];
-    private array  $aUnresolvedLabels = [];
-    private array  $aExportedLabels   = [];
-    private array  $aImportedLabels   = [];
+    private array $aGlobalLabels     = [];
+    private array $aLocalLabels      = [];
+    private array $aUnresolvedLabels = [];
+    private array $aExportedLabels   = [];
+    private array $aImportedLabels   = [];
+    private array $aEumeratedImports = [];
 
     /**
      * Register a label for export. This will be sanity checked in the second pass.
@@ -161,12 +162,18 @@ class LabelLocation {
     /**
      * Returns the global symbol table.
      *
-     * @return array
+     * @return array [string => [string, string, int]]
      */
     public function getGlobals() : array {
         return $this->aGlobalLabels;
     }
 
+    /**
+     * Returns whether or not a given global label name is currently resolved.
+     *
+     * @param  string
+     * @return bool
+     */
     public function isGlobalResolved(string $sLabel) : bool {
         return isset($this->aGlobalLabels[$sLabel]);
     }
@@ -194,7 +201,7 @@ class LabelLocation {
     }
 
     /**
-     * Obtains the offset for a globally declared label (if known)
+     * Obtains the offset for a globally declared label (if known).
      *
      * @param  string $sLabel
      * @return int|null
@@ -239,6 +246,16 @@ class LabelLocation {
         return $this;
     }
 
+    /**
+     * Add a reference to a declared import. This will throw an exception if the supplied label is not
+     * a declared import.
+     *
+     * @param  IO\ISourceFile $oFile
+     * @param  string         $sLabel
+     * @param  int            $iLocation
+     * @return self
+     * @throws \Exception
+     */
     public function addImportReference(IO\ISourceFile $oFile, string $sLabel, int $iLocation) : self {
         $this->assertLabel($sLabel);
 
@@ -268,7 +285,7 @@ class LabelLocation {
      *
      * Throws if an unresolved refrence cannot be resolved.
      *
-     * @return object[]
+     * @return object[] {int, string, string, int}[]
      * @throws \Exception
      */
     public function resolveBranchTargetList() : array {
@@ -312,7 +329,7 @@ class LabelLocation {
     /**
      * Returns the set of exported labels.
      *
-     * @return object[]
+     * @return object[] {string, int, string}[]
      */
     public function resolveExports() : array {
         $aResult = [];
@@ -331,14 +348,51 @@ class LabelLocation {
         return $aResult;
     }
 
+    /**
+     * Set the array of imports that were enumerated in the second pass.
+     *
+     * @param  array $aImports
+     * @return self
+     */
+    public function setEnumeratedImports(array $aImports) : self {
+        $this->aEnumeratedImports = $aImports;
+        return $this;
+    }
+
+    /**
+     * Get the array of imports that were enumerated in the second pass.
+     *
+     * @return array
+     */
+    public function getEnumeratedImports() : array {
+        return $this->aEnumeratedImports;
+    }
+
+    /**
+     * Returns whether or not a given label is declared as an import.
+     *
+     * @param  string $sLabel
+     * @return bool
+     */
     public function isDefinedImport(string $sLabel) : bool {
         return isset($this->aImportedLabels[$sLabel]);
     }
 
+    /**
+     * Returns the (pre-enumerated) set of imports.
+     *
+     * @return array
+     */
     public function getImports() : array {
         return $this->aImportedLabels;
     }
 
+    /**
+     * Asserts if a label is valid. For now this is just a length check.
+     *
+     * @param   string $sLabel
+     * @@throws \LengthException
+     */
     private function assertLabel(string $sLabel) {
         if (strlen($sLabel) > Defs\ILabel::MAX_LENGTH) {
             throw new \LengthException();

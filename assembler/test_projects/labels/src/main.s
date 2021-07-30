@@ -51,7 +51,5 @@ do_something:
 
 danger:
     add.q r0, r0
-    move.q r0, my_external_reference
-    move.q r1, my_other_external_reference
     rts
 

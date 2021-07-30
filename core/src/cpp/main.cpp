@@ -27,32 +27,60 @@ int main(int iArgN, const char** aArgV) {
         Binary oMC64KBinary(sExecutableName);
         const Executable* pExecutable = oMC64KBinary.load();
 
+        const Executable::Symbol* aExports = 0;
+
         std::printf(
             "Executable %s loaded at %p\n",
             sExecutableName,
             pExecutable
         );
 
-        const Executable::EntryPoint* aEntryPoints = pExecutable->getEntryPoints();
-        for (unsigned u = 0; u < pExecutable->getNumEntryPoints(); ++u) {
+        uint32 uSymbolCount = 0;
+
+        if ( (uSymbolCount = pExecutable->getNumExportedSymbols()) ) {
             std::printf(
-                "\t%2u %p %s\n",
-                u,
-                aEntryPoints[u].pByteCode,
-                aEntryPoints[u].sFunction
+                "Executable defines %u exported symbols:\n",
+                uSymbolCount
             );
+
+            aExports = pExecutable->getExportedSymbols();
+            for (unsigned u = 0; u < uSymbolCount; ++u) {
+                std::printf(
+                    "\t%2u %p %s\n",
+                    u,
+                    aExports[u].pRawData,
+                    aExports[u].sIdentifier
+                );
+            }
         }
 
-        const int iDumpState = Interpreter::STATE_FPR|Interpreter::STATE_GPR|Interpreter::STATE_TMP;
+        if ( (uSymbolCount = pExecutable->getNumImportedSymbols()) ) {
+            std::printf(
+                "Executable expects %u imported symbols:\n",
+                uSymbolCount
+            );
 
-        Interpreter::allocateStack(256);
-        Interpreter::setHostFunction(nativeTest, 0x69);
-        Interpreter::setProgramCounter(aEntryPoints[0].pByteCode);
-        Interpreter::dumpState(iDumpState);
-        Interpreter::run();
-        Interpreter::dumpState(iDumpState|Interpreter::STATE_STACK);
-        Interpreter::freeStack();
+            const Executable::Symbol* aImports = pExecutable->getImportedSymbols();
+            for (unsigned u = 0; u < uSymbolCount; ++u) {
+                std::printf(
+                    "\t%2u %p %s\n",
+                    u,
+                    aImports[u].pRawData,
+                    aImports[u].sIdentifier
+                );
+            }
+        }
 
+        if (aExports) {
+            const int iDumpState = Interpreter::STATE_FPR|Interpreter::STATE_GPR|Interpreter::STATE_TMP;
+            Interpreter::allocateStack(256);
+            Interpreter::setHostFunction(nativeTest, 0x69);
+            Interpreter::setProgramCounter(aExports[0].pByteCode);
+            Interpreter::dumpState(iDumpState);
+            Interpreter::run();
+            Interpreter::dumpState(iDumpState|Interpreter::STATE_STACK);
+            Interpreter::freeStack();
+        }
         delete pExecutable;
     } catch (MC64K::Loader::Error& oError) {
         std::printf(

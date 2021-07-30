@@ -118,17 +118,20 @@ const Executable* Binary::load() {
     loadChunkList();
     uint8*      pByteCode   = 0;
     uint8*      pExportList = 0;
+    uint8*      pImportList = 0;
     Executable* pExecutable = 0;
 
     if (
         (pByteCode   = readChunkData(CHUNK_BYTE_CODE_ID)) &&
         (pExportList = readChunkData(CHUNK_EXPORT_LIST_ID)) &&
-        (pExecutable = new (std::nothrow) Executable(pExportList, pByteCode))
+        (pImportList = readChunkData(CHUNK_IMPORT_LIST_ID)) &&
+        (pExecutable = new (std::nothrow) Executable(pExportList, pImportList, pByteCode))
     ) {
         return pExecutable;
     }
 
     std::free(pByteCode);
+    std::free(pImportList);
     std::free(pExportList);
     throw Error(sFileName, "unable to load binary");
 }
@@ -138,23 +141,42 @@ const Executable* Binary::load() {
  *
  * Private, sanity checks performed before getting here.
  */
-Executable::Executable(const uint8* pRawExportData, const uint8* pRawByteCode) :
+Executable::Executable(const uint8* pRawExportData, const uint8* pRawImportData, const uint8* pRawByteCode) :
     pExportData(pRawExportData),
+    pImportData(pRawImportData),
     pByteCode(pRawByteCode),
-    pEntryPoints(0),
-    uNumEntryPoints(0)
+    pExportedSymbols(0),
+    pImportedSymbols(0),
+    uNumExportedSymbols(0),
+    uNumImportedSymbols(0)
 {
-    uNumEntryPoints = *(uint32*)pExportData;
-    pEntryPoints    = (EntryPoint*)std::malloc(uNumEntryPoints * sizeof(EntryPoint));
+    if (
+        (uNumExportedSymbols = *(uint32*)pExportData) &&
+        (pExportedSymbols    = (Symbol*)std::malloc(uNumExportedSymbols * sizeof(Symbol)))
+    ) {
+        const uint32* pOffsets = (uint32*)(pExportData + 4);
+        const char*   pName    = ((const char*)pExportData) + 4 + uNumExportedSymbols * sizeof(uint32);
+        for (unsigned u = 0; u < uNumExportedSymbols; ++u) {
+            pExportedSymbols[u].sIdentifier = pName;
+            pExportedSymbols[u].pByteCode   = pRawByteCode + pOffsets[u];
 
-    const uint32* pOffsets = (uint32*)(pExportData + 4);
-    const uint8*  pLengths = pExportData + 4 + uNumEntryPoints * sizeof(uint32);
-    const char*   pName    = (const char*)(pLengths + uNumEntryPoints);
+            // Advance to the next name
+            while (*pName++);
+        }
+    }
 
-    for (unsigned u = 0; u < uNumEntryPoints; ++u) {
-        pEntryPoints[u].sFunction = pName;
-        pEntryPoints[u].pByteCode = pRawByteCode + pOffsets[u];
-        pName += pLengths[u] + 1; // 1 extra for null terminator
+    if (
+        (uNumImportedSymbols = *(uint32*)pImportData) &&
+        (pImportedSymbols    = (Symbol*)std::malloc(uNumImportedSymbols * sizeof(Symbol)))
+    ) {
+        const char*   pName   = ((const char*)pImportData) + 4;
+        for (unsigned u = 0; u < uNumImportedSymbols; ++u) {
+            pImportedSymbols[u].sIdentifier = pName;
+            pImportedSymbols[u].pRawData    = 0;
+
+            // Advance to the next name
+            while (*pName++);
+        }
     }
 }
 
@@ -162,14 +184,10 @@ Executable::Executable(const uint8* pRawExportData, const uint8* pRawByteCode) :
  * Executable destructor
  */
 Executable::~Executable() {
-    if (pExportData) {
-        std::free((void*)pExportData);
-    }
-    if (pByteCode) {
-        std::free((void*)pByteCode);
-    }
-    if (pEntryPoints) {
-        std::free(pEntryPoints);
-    }
+    std::free((void*)pExportedSymbols);
+    std::free((void*)pImportedSymbols);
+    std::free((void*)pImportData);
+    std::free((void*)pExportData);
+    std::free((void*)pByteCode);
 }
 

@@ -40,8 +40,8 @@ class Binary {
         const uint64 CHUNK_LIST_ID        = 0x7473694C6B6E6843; // ChnkList
         const uint64 CHUNK_BYTE_CODE_ID   = 0x65646F4365747942; // ByteCode
         const uint64 CHUNK_EXPORT_LIST_ID = 0x646574726F707845; // Exported
+        const uint64 CHUNK_IMPORT_LIST_ID = 0x646574726F706D49; // Imported
         const uint64 ALIGN_MASK           = 7;
-
 
         struct ChunkListEntry {
             uint64 uMagicID;
@@ -68,34 +68,67 @@ class Executable {
     friend const Executable* Binary::load();
 
     public:
-        struct EntryPoint {
-            const char*  sFunction;
-            const uint8* pByteCode;
+        struct Symbol {
+            const char* sIdentifier;
+            union {
+                const uint8* pByteCode;
+                void*        pRawData;
+            };
         };
-
-        const  EntryPoint* getEntryPoints() const;
-        uint32 getNumEntryPoints() const;
-
-        ~Executable();
-
-    public:
-        Executable(const uint8* pRawExportData, const uint8* pRawByteCode);
 
     private:
         const uint8* pExportData;
+        const uint8* pImportData;
         const uint8* pByteCode;
-        const char*  pNames;
-        EntryPoint*  pEntryPoints;
-        uint32       uNumEntryPoints;
+        Symbol*      pExportedSymbols;
+        Symbol*      pImportedSymbols;
+        uint32       uNumExportedSymbols;
+        uint32       uNumImportedSymbols;
+
+    public:
+
+        /**
+         * Get the number of symbols exported by this binary.
+         */
+        uint32 getNumExportedSymbols() const {
+            return uNumExportedSymbols;
+        }
+
+        /**
+         * Get the symbols exported by this binary. They are assumed immutable from the host side.
+         */
+        const Symbol* getExportedSymbols() const {
+            return pExportedSymbols;
+        }
+
+        /**
+         * Get the number of symbols imported by this binary.
+         */
+        uint32 getNumImportedSymbols() const {
+            return uNumImportedSymbols;
+        }
+
+        /**
+         * Get the symbols imported by this binary. The host is expected to match the identifiers with
+         * appropriate runtime addresses for the expected data.
+         */
+        Symbol* getImportedSymbols() const {
+            return pImportedSymbols;
+        }
+
+        ~Executable();
+
+    private:
+        /**
+         * Constructable only by the binary loader
+         */
+        Executable(
+            const uint8* pRawExportData,
+            const uint8* pRawImportData,
+            const uint8* pRawByteCode
+        );
+
 };
-
-inline uint32 Executable::getNumEntryPoints() const {
-    return uNumEntryPoints;
-}
-
-inline const Executable::EntryPoint* Executable::getEntryPoints() const {
-    return pEntryPoints;
-}
 
 }} // namespace
 #endif

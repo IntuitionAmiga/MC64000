@@ -27,12 +27,7 @@ use ABadCafe\MC64K\State;
  *
  * The raw chunk body data format is:
  *     Number of labels uint32
- *     Label lengths    uint8[Number of Labels]
  *     Label names      char[]
- *
- * Labels are between 2-256 characters (including a null terminator) so the lengths array contains
- * values 1-255. The label names section is stored as a string blob, including null terminators to
- * allow the data to be safely loaded in a C runtime.
  */
 class ImportList implements IBinaryChunk {
 
@@ -40,7 +35,7 @@ class ImportList implements IBinaryChunk {
         TYPE  = 'Imported'
     ;
 
-    private string $sBinary;
+    private string $sBinary = '';
 
     /**
      * Constructor. Builds the binary represntation for the export list.
@@ -48,30 +43,13 @@ class ImportList implements IBinaryChunk {
      * @param State\LabelLocation $oLabelLocation
      */
     public function __construct(State\LabelLocation $oLabelLocation) {
-        $aExports = $oLabelLocation->resolveExports();
-
+        $aImports      = $oLabelLocation->getEnumeratedImports();
         $this->sBinary =
-            // Label Count
-            pack('V', count($aExports)) .
+            // Label count
+            pack('V', count($aImports)) .
 
-            // Offset table
-            pack('V*', ...array_column($aExports, 'iLabelPosition')) .
-
-            // Label lengths
-            pack('C*', ...array_map(
-                function (object $oSymbol) {
-                    return strlen($oSymbol->sLabel);
-                },
-                $aExports
-            )) .
-
-            // Label names
-            implode('', array_map(
-                function (object $oSymbol) {
-                    return $oSymbol->sLabel . "\0";
-                },
-                $aExports
-            ));
+            // Strings blob
+            implode("\0", $aImports) . "\0";
     }
 
     /**

@@ -76,6 +76,8 @@ class SecondPass {
         $bLogResolution &&
         Log::printf("There are %d imported symbols to enumerate...", count($aImportReferences));
 
+        $aEnumeratedImports = [];
+
         foreach ($aImportReferences as $sLabel => $aReferences) {
             if (empty($aReferences)) {
                 $bLogResolution &&
@@ -87,6 +89,8 @@ class SecondPass {
 
             $bLogResolution &&
             Log::printf("\tEnumerated label '%s' as #%d", $sLabel, $iEnumeration);
+
+            $aEnumeratedImports[$iEnumeration] = $sLabel;
 
             foreach ($aReferences as $oReference) {
                 $bLogResolution &&
@@ -102,6 +106,7 @@ class SecondPass {
                 );
             }
         }
+        $oLabelLocation->setEnumeratedImports($aEnumeratedImports);
         return $this;
     }
 

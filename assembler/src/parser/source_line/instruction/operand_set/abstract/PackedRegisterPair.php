@@ -19,7 +19,7 @@ namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
-
+use ABadCafe\MC64K\State;
 
 /**
  * PackedRegisterPair
