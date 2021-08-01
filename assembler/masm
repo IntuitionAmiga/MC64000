@@ -30,6 +30,11 @@ if ((int)$_SERVER['argc'] < 2) {
 // Only handle the exceptions we expect, as anything else is a software defect in this code to fix.
 try {
     $sProjectFile = $_SERVER['argv'][1];
+
+    if (is_dir($sProjectFile)) {
+        $sProjectFile = rtrim($sProjectFile, '/') . '/proj.json';
+    }
+
     $oAssembler   = new Application\Assembler();
     $oAssembler
         ->loadProject($sProjectFile)
