@@ -12,12 +12,12 @@
 ;
 ; My first project - main.s
 
-    @export main
-    @export do_something
-    @import my_unusued_reference
-    @import my_external_reference
+
+    @import my_unusued_reference rw
+    @import my_external_reference x
     @import my_other_external_reference
 
+    @export main x
 main:
     move.q #1, r0
     bsr danger
@@ -44,11 +44,13 @@ test_global:
     lea main, r3
     rts
 
+    @export do_something x
 do_something:
     lea main, r3
     move.q my_external_reference, r9
     rts
 
+    @export danger rwx
 danger:
     add.q r0, r0
     rts

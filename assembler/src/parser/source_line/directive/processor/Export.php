@@ -25,14 +25,16 @@ use ABadCafe\MC64K\Defs;
  *
  * Specifies a global label that should be exported. Exported labels go into a
  * chunk in the output file that indicate their location within the code segment.
+ *
  */
 class Export implements Directive\IProcessor {
 
     const
-        EXTRACT_MATCH = '/^\s+@export\s+(' . Defs\IIdentifier::BASIC_MATCH . ')/',
+        EXTRACT_MATCH = '/^\s+@export\s+(' . Defs\ILabel::BASIC_MATCH . ')' . Defs\ILabel::IE_SUFFIX_MATCH . '/',
         KEYWORDS      = [
             'export'
-        ]
+        ],
+        IE_DEFAULT    = Defs\ILabel::IE_CALL
     ;
 
     /**
@@ -50,7 +52,7 @@ class Export implements Directive\IProcessor {
         if (!empty($aMatches[1])) {
             State\Coordinator::get()
                 ->getLabelLocation()
-                ->registerExport($aMatches[1]);
+                ->registerExport($aMatches[1], $aMatches[2] ?? self::IE_DEFAULT);
         }
     }
 }

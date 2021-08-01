@@ -24,6 +24,17 @@ namespace ABadCafe\MC64K\Defs;
  */
 interface ILabel extends IIdentifier {
     const
+        // Label is defined as readable
+        IE_READ           = 'r',
+
+        // Label is defined as writable
+        IE_WRITE          = 'w',
+
+        // Label is defined as callable
+        IE_CALL           = 'x',
+
+        // Match for label IO qualification. Expects any of rwx after space
+        IE_SUFFIX_MATCH   = '(?:\s+([' . self::IE_READ . self::IE_WRITE . self::IE_CALL . ']+)){0,1}',
         SUFFIX_CHAR       = ':',
         LOCAL_PREFIX_CHAR = '.',
         LOCAL_MATCH       = '/^\.' . self::BASIC_MATCH . '\:/',

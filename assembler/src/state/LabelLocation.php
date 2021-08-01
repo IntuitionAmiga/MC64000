@@ -31,7 +31,11 @@ class LabelLocation {
         I_NAME = 3,
         I_FILE = 2,
         I_LINE = 1,
-        I_OFST = 0
+        I_OFST = 0,
+
+        IE_READ  = 1,
+        IE_WRITE = 2,
+        IE_CALL  = 4
     ;
 
     private array $aGlobalLabels     = [];
@@ -41,6 +45,8 @@ class LabelLocation {
     private array $aImportedLabels   = [];
     private array $aEumeratedImports = [];
 
+    private array $aLabelIEQualification = [];
+
     /**
      * Register a label for export. This will be sanity checked in the second pass.
      *
@@ -48,15 +54,17 @@ class LabelLocation {
      * trying to mark for export any label already marked for import.
      *
      * @param  string $sLabel
+     * @param  string $sIEQualification - Import / Export qualification: any of r|w|x
      * @return self
      * @throws \Exception
      */
-    public function registerExport(string $sLabel) : self {
+    public function registerExport(string $sLabel, string $sIEQualification) : self {
         $this->assertLabel($sLabel);
         if (isset($this->aImportedLabels[$sLabel])) {
             throw new \Exception("Label " . $sLabel . " is already registered as an import");
         }
         $this->aExportedLabels[$sLabel] = $sLabel;
+        $this->addIEQualification($sLabel, $this->parseIEQualification($sIEQualification));
         return $this;
     }
 
@@ -67,10 +75,11 @@ class LabelLocation {
      * trying to mark for import any label already marked for export.
      *
      * @param  string $sLabel
+     * @param  string $sIEQualification - Import / Export qualification: any of r|w|x
      * @return self
      * @throws \Exception
      */
-    public function registerImport(string $sLabel) : self {
+    public function registerImport(string $sLabel, string $sIEQualification) : self {
         $this->assertLabel($sLabel);
         if (isset($this->aExportedLabels[$sLabel])) {
             throw new \Exception("Label " . $sLabel . " is already registered as an export");
@@ -84,6 +93,7 @@ class LabelLocation {
                 );
             }
         }
+        $this->addIEQualification($sLabel, $this->parseIEQualification($sIEQualification));
         return $this;
     }
 
@@ -388,6 +398,19 @@ class LabelLocation {
     }
 
     /**
+     * Returns the set of Import/Export qualification flags for all the encountered global labels.
+     * This does not differentiate between import and export as the same identifier name cannot be used
+     * for both simultaneously.
+     *
+     * The return format is a label-keyed array of integers containing a bit set for each of the r/w/x behaviours.
+     *
+     * @return int[] - keyed by label.
+     */
+    public function getImportExportQualifications() : array {
+        return $this->aLabelIEQualification;
+    }
+
+    /**
      * Asserts if a label is valid. For now this is just a length check.
      *
      * @param   string $sLabel
@@ -396,6 +419,23 @@ class LabelLocation {
     private function assertLabel(string $sLabel) {
         if (strlen($sLabel) > Defs\ILabel::MAX_LENGTH) {
             throw new \LengthException();
+        }
+    }
+
+    private function parseIEQualification(string $sIEQualification) : int {
+        $aFlags = array_flip(str_split($sIEQualification, 1));
+        return
+            (isset($aFlags[Defs\ILabel::IE_READ])  ? self::IE_READ  : 0) |
+            (isset($aFlags[Defs\ILabel::IE_WRITE]) ? self::IE_WRITE : 0) |
+            (isset($aFlags[Defs\ILabel::IE_CALL])  ? self::IE_CALL  : 0)
+        ;
+    }
+
+    private function addIEQualification(string $sLabel, int $iIEQualification) {
+        if (isset($this->aLabelIEQualification[$sLabel])) {
+            $this->aLabelIEQualification[$sLabel] |= $iIEQualification;
+        } else {
+            $this->aLabelIEQualification[$sLabel] = $iIEQualification;
         }
     }
 }
