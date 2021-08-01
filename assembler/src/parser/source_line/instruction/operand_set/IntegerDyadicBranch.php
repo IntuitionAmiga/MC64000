@@ -22,7 +22,6 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\UnhandledCodeFoldException;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 
-
 /**
  * IntegerDyadicBranch
  *

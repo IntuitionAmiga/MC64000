@@ -12,14 +12,22 @@
 ;
 ; My first project - main.s
 
-    @export main
-    @export do_something
-    ;@import my_external_reference
+
+    @import my_unusued_reference rw
+    @import my_external_reference x
+    @import my_other_external_reference
+
+    @export main x
 main:
+    move.q #1, r0
+    bsr danger
+
+    ; self modifying code! Change danger to a simple noop
+    move.b #7, danger
+    bsr danger
+
     lea test_global, r5 ; 7 bytes: [command] [dst ea] [src ea] [disp 0] [disp 1] [disp 2] [disp 3]
-
     move.b test_global, r4
-
     ; insert a list of 10 one byte instructions. The reference to the test label should be 10 bytes after the PC
     rts
     rts
@@ -36,6 +44,14 @@ test_global:
     lea main, r3
     rts
 
+    @export do_something x
 do_something:
     lea main, r3
+    move.q my_external_reference, r9
     rts
+
+    @export danger rwx
+danger:
+    add.q r0, r0
+    rts
+

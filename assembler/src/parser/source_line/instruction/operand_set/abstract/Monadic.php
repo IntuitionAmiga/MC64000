@@ -18,7 +18,8 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
-use ABadCafe\MC64K\Parser\Defs;
+use ABadCafe\MC64K\Defs;
+use ABadCafe\MC64K\State;
 
 /**
  * Monadic

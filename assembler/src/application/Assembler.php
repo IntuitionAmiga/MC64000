@@ -79,10 +79,15 @@ class Assembler {
     public function secondPass() : self {
         $oState = State\Coordinator::get();
         $oSecondPass = new Process\SecondPass();
-        $oSecondPass->resolveForwardsBranchReferences(
-            $oState->getLabelLocation(),
-            $oState->getOutput()
-        );
+        $oSecondPass
+            ->resolveForwardsBranchReferences(
+                $oState->getLabelLocation(),
+                $oState->getOutput()
+            )
+            ->enumerateImportReferences(
+                $oState->getLabelLocation(),
+                $oState->getOutput()
+            );
         return $this;
     }
 
@@ -98,16 +103,19 @@ class Assembler {
         );
         $oState = State\Coordinator::get();
 
-        $oCodeChunk  = $oState->getOutput();
-        $oLabelChunk = new IO\Output\ExportList($oState->getLabelLocation());
-        $oListChunk  = new IO\Output\ChunkList();
+        $oCodeChunk   = $oState->getOutput();
+        $oExportChunk = new IO\Output\ExportList($oState->getLabelLocation());
+        $oImportChunk = new IO\Output\ImportList($oState->getLabelLocation());
+        $oListChunk   = new IO\Output\ChunkList();
         $oListChunk
             ->registerChunk($oCodeChunk)
-            ->registerChunk($oLabelChunk);
+            ->registerChunk($oExportChunk)
+            ->registerChunk($oImportChunk);
         $oWriter
             ->writeChunk($oListChunk)
             ->writeChunk($oCodeChunk)
-            ->writeChunk($oLabelChunk)
+            ->writeChunk($oExportChunk)
+            ->writeChunk($oImportChunk)
             ->complete();
         return $this;
     }

@@ -28,10 +28,11 @@ use ABadCafe\MC64K\Defs;
 class Import implements Directive\IProcessor {
 
     const
-        EXTRACT_MATCH = '/^\s+@import\s+(' . Defs\IIdentifier::BASIC_MATCH . ')/',
+        EXTRACT_MATCH = '/^\s+@import\s+(' . Defs\ILabel::BASIC_MATCH .  ')' . Defs\ILabel::IE_SUFFIX_MATCH . '/',
         KEYWORDS      = [
             'import'
-        ]
+        ],
+        IE_DEFAULT    = Defs\ILabel::IE_READ . Defs\ILabel::IE_WRITE
     ;
 
     /**
@@ -49,7 +50,7 @@ class Import implements Directive\IProcessor {
         if (!empty($aMatches[1])) {
             State\Coordinator::get()
                 ->getLabelLocation()
-                ->registerImport($aMatches[1]);
+                ->registerImport($aMatches[1], $aMatches[2] ?? self::IE_DEFAULT);
         }
     }
 }

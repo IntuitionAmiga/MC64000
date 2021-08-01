@@ -21,7 +21,6 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\UnhandledCodeFoldException;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
-use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 
 /**

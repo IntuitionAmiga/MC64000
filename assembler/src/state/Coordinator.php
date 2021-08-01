@@ -103,7 +103,7 @@ class Coordinator {
     }
 
     /**
-     * Set the file to work on.
+     * Set the sourcecode file to work on.
      *
      * @param  IO\ISourceFile $oFile
      * @return self
@@ -118,6 +118,8 @@ class Coordinator {
     }
 
     /**
+     * Return the current source file handle
+     *
      * @return IO\ISourceFile
      */
     public function getCurrentFile() : IO\ISourceFile {
@@ -125,6 +127,8 @@ class Coordinator {
     }
 
     /**
+     * Get the bytecode output buffer
+     *
      * @return Output
      */
     public function getOutput() : Output {
@@ -132,6 +136,8 @@ class Coordinator {
     }
 
     /**
+     * Get the Label Location tracker
+     *
      * @return LabelLocation
      */
     public function getLabelLocation() : LabelLocation {
@@ -139,7 +145,10 @@ class Coordinator {
     }
 
     /**
-     * Simple trampoline
+     * Set the length of the current statement output.
+     *
+     * @param  int $iLength
+     * @return self
      */
     public function setCurrentStatementLength(int $iLength) : self {
         $this->oOutput->setCurrentStatementLength($iLength);
@@ -147,7 +156,10 @@ class Coordinator {
     }
 
     /**
-     * Simple trampoline
+     * Set the length of the current statement output.
+     *
+     * @param  int $iDelta
+     * @return self
      */
     public function adjustCurrentStatementLength(int $iDelta) : self {
         $this->oOutput->adjustCurrentStatementLength($iDelta);
@@ -187,6 +199,8 @@ class Coordinator {
     }
 
     /**
+     * Get the PC relative branch displacement for a given label.
+     *
      * @param  string $sLabel
      * @return int
      */
@@ -210,6 +224,8 @@ class Coordinator {
     }
 
     /**
+     * Get the bytecode position for a given label.
+     *
      * @param  string $sLabel
      * @return int|null
      */
@@ -220,6 +236,8 @@ class Coordinator {
     }
 
     /**
+     * Record a reference to a label that hasnt yet been resolved.
+     *
      * @param  string $sLabel
      * @return self
      */
@@ -233,4 +251,29 @@ class Coordinator {
         return $this;
     }
 
+    /**
+     * Determine whether or not a given label is defined as an import or not.
+     *
+     * @param  string $sLabel
+     * @return bool
+     */
+    public function isDefinedImport(string $sLabel) : bool {
+        return $this->oLabelLocation->isDefinedImport($sLabel);
+    }
+
+    /**
+     * Record a reference to a given import.
+     *
+     * @param  string $sLabel
+     * @return self
+     */
+    public function addImportReference(string $sLabel) : self {
+        $iLocation = $this->oOutput->getCurrentOffset() - Defs\IBranchLimits::DISPLACEMENT_SIZE;
+        $this->oLabelLocation->addImportReference(
+            $this->oCurrentFile,
+            $sLabel,
+            $iLocation
+        );
+        return $this;
+    }
 }

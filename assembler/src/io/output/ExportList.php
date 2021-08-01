@@ -29,12 +29,12 @@ use ABadCafe\MC64K\State;
  * The raw chunk body data format is:
  *     Number of labels uint32
  *     Offset table     uint32[Number of Labels]
- *     Label lengths    uint8[Number of Labels]
  *     Label names      char[]
  *
- * Labels are between 2-256 characters (including a null terminator) so the lengths array contains
- * values 1-255. The label names section is stored as a string blob, including null terminators to
- * allow the data to be safely loaded in a C runtime.
+ * Labels are between 2-256 characters (including a null terminator) and the label names section is
+ * stored as a string blob, including null terminators to allow the data to be safely loaded in a C
+ * runtime. Knowing how many labels there are, the runtime just needs to scan through the blob and
+ * each time it encounters a null terminator, record the start of the string preceding it.
  */
 class ExportList implements IBinaryChunk {
 
@@ -59,21 +59,9 @@ class ExportList implements IBinaryChunk {
             // Offset table
             pack('V*', ...array_column($aExports, 'iLabelPosition')) .
 
-            // Label lengths
-            pack('C*', ...array_map(
-                function (object $oSymbol) {
-                    return strlen($oSymbol->sLabel);
-                },
-                $aExports
-            )) .
-
-            // Label names
-            implode('', array_map(
-                function (object $oSymbol) {
-                    return $oSymbol->sLabel . "\0";
-                },
-                $aExports
-            ));
+            // Strings blob. Null terminated strings that are to be rescanned on loading.
+            implode("\0", array_column($aExports, 'sLabel')) . "\0"
+        ;
     }
 
     /**
