@@ -51,7 +51,14 @@ class ExportList implements IBinaryChunk {
      */
     public function __construct(State\LabelLocation $oLabelLocation) {
         $aExports = $oLabelLocation->resolveExports();
-
+        $aLabels  = array_column($aExports, 'sLabel');
+        $aIEQualifications = $oLabelLocation->getImportExportQualifications();
+        foreach ($aLabels as $i => $sLabel) {
+            if (!isset($aIEQualifications[$sLabel])) {
+                throw new \Exception("Could not find Import/Export access for label " . $sLabel);
+            }
+            $aLabels[$i] = $sLabel . chr($aIEQualifications[$sLabel]);
+        }
         $this->sBinary =
             // Label Count
             pack('V', count($aExports)) .
@@ -60,7 +67,7 @@ class ExportList implements IBinaryChunk {
             pack('V*', ...array_column($aExports, 'iLabelPosition')) .
 
             // Strings blob. Null terminated strings that are to be rescanned on loading.
-            implode("\0", array_column($aExports, 'sLabel')) . "\0"
+            implode("", $aLabels)
         ;
     }
 

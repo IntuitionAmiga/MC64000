@@ -43,13 +43,21 @@ class ImportList implements IBinaryChunk {
      * @param State\LabelLocation $oLabelLocation
      */
     public function __construct(State\LabelLocation $oLabelLocation) {
-        $aImports      = $oLabelLocation->getEnumeratedImports();
+        $aImports          = $oLabelLocation->getEnumeratedImports();
+        $aIEQualifications = $oLabelLocation->getImportExportQualifications();
+        foreach ($aImports as $i => $sLabel) {
+            if (!isset($aIEQualifications[$sLabel])) {
+                throw new \Exception("Could not find Import/Export access for label " . $sLabel);
+            }
+            $aImports[$i] = $sLabel . chr($aIEQualifications[$sLabel]);
+        }
+
         $this->sBinary =
             // Label count
             pack('V', count($aImports)) .
 
             // Strings blob
-            implode("\0", $aImports) . "\0";
+            implode("", $aImports);
     }
 
     /**

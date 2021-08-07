@@ -152,30 +152,48 @@ Executable::Executable(const uint8* pRawExportData, const uint8* pRawImportData,
 {
     if (
         (uNumExportedSymbols = *(uint32*)pExportData) &&
-        (pExportedSymbols    = (Symbol*)std::malloc(uNumExportedSymbols * sizeof(Symbol)))
+        (pExportedSymbols    = (LinkSymbol*)std::malloc(uNumExportedSymbols * sizeof(LinkSymbol)))
     ) {
         const uint32* pOffsets = (uint32*)(pExportData + 4);
-        const char*   pName    = ((const char*)pExportData) + 4 + uNumExportedSymbols * sizeof(uint32);
+        char*  pName   = ((char*)pExportData) + 4 + uNumExportedSymbols * sizeof(uint32);
         for (unsigned u = 0; u < uNumExportedSymbols; ++u) {
             pExportedSymbols[u].sIdentifier = pName;
             pExportedSymbols[u].pByteCode   = pRawByteCode + pOffsets[u];
 
+            uint8 uByte;
+
             // Advance to the next name
-            while (*pName++);
+            // Advance to the next name
+            while ((uByte = *pName) > 7) {
+                ++pName;
+            }
+            pExportedSymbols[u].uFlags = uByte;
+
+            // Null terminate
+            *pName++ = 0;
         }
     }
 
     if (
         (uNumImportedSymbols = *(uint32*)pImportData) &&
-        (pImportedSymbols    = (Symbol*)std::malloc(uNumImportedSymbols * sizeof(Symbol)))
+        (pImportedSymbols    = (LinkSymbol*)std::malloc(uNumImportedSymbols * sizeof(LinkSymbol)))
     ) {
-        const char*   pName   = ((const char*)pImportData) + 4;
+        char*  pName   = ((char*)pImportData) + 4;
         for (unsigned u = 0; u < uNumImportedSymbols; ++u) {
             pImportedSymbols[u].sIdentifier = pName;
             pImportedSymbols[u].pRawData    = 0;
 
+            uint8 uByte;
+
             // Advance to the next name
-            while (*pName++);
+            // Advance to the next name
+            while ((uByte = *pName) > 7) {
+                ++pName;
+            }
+            pImportedSymbols[u].uFlags = uByte;
+
+            // Null terminate
+            *pName++ = 0;
         }
     }
 }

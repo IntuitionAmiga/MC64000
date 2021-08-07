@@ -20,15 +20,53 @@
 namespace MC64K {
 namespace Loader {
 
+/**
+ * LinkSymbol
+ *
+ * Used to resolve exported and imported symbols
+ */
+struct LinkSymbol {
+
+    /**
+     * Flag definitions
+     */
+    enum {
+        READ    = 1,
+        WRITE   = 2,
+        EXECUTE = 4
+    };
+
+    /**
+     * Name
+     */
+    const char* sIdentifier;
+
+    /**
+     * Location
+     */
+    union {
+        void*        pRawData;
+        const uint8* pByteCode;
+    };
+
+    /**
+     * Other properties
+     */
+    uint64 uFlags;
+};
+
 class Executable;
 
 /**
  * Binary
+ *
+ * Handles loading of assembled binary object code
  */
 class Binary {
     private:
         const char* sFileName;
         std::FILE*  pFileHandle;
+
     public:
         Binary(const char* sFileName);
         ~Binary();
@@ -67,21 +105,12 @@ class Binary {
 class Executable {
     friend const Executable* Binary::load();
 
-    public:
-        struct Symbol {
-            const char* sIdentifier;
-            union {
-                const uint8* pByteCode;
-                void*        pRawData;
-            };
-        };
-
     private:
         const uint8* pExportData;
         const uint8* pImportData;
         const uint8* pByteCode;
-        Symbol*      pExportedSymbols;
-        Symbol*      pImportedSymbols;
+        LinkSymbol*  pExportedSymbols;
+        LinkSymbol*  pImportedSymbols;
         uint32       uNumExportedSymbols;
         uint32       uNumImportedSymbols;
 
@@ -97,7 +126,7 @@ class Executable {
         /**
          * Get the symbols exported by this binary. They are assumed immutable from the host side.
          */
-        const Symbol* getExportedSymbols() const {
+        const LinkSymbol* getExportedSymbols() const {
             return pExportedSymbols;
         }
 
@@ -112,9 +141,10 @@ class Executable {
          * Get the symbols imported by this binary. The host is expected to match the identifiers with
          * appropriate runtime addresses for the expected data.
          */
-        Symbol* getImportedSymbols() const {
+        LinkSymbol* getImportedSymbols() const {
             return pImportedSymbols;
         }
+
 
         ~Executable();
 

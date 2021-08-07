@@ -37,7 +37,8 @@ interface IOptions {
         LOG_LABEL_ADD     = 'log_label_add',
         LOG_LABEL_REF     = 'log_label_ref',
         LOG_LABEL_RESOLVE = 'log_label_resolve',
-        LOG_LABEL_IMPORT  = 'log_label_import'
+        LOG_LABEL_IMPORT  = 'log_label_import',
+        LOG_LABEL_IEMODE  = 'log_label_iemode'
     ;
 
     const TYPE_MAP = [
@@ -45,6 +46,7 @@ interface IOptions {
         self::LOG_LABEL_ADD     => self::TYPE_BOOL,
         self::LOG_LABEL_REF     => self::TYPE_BOOL,
         self::LOG_LABEL_RESOLVE => self::TYPE_BOOL,
-        self::LOG_LABEL_IMPORT  => self::TYPE_BOOL
+        self::LOG_LABEL_IMPORT  => self::TYPE_BOOL,
+        self::LOG_LABEL_IEMODE  => self::TYPE_BOOL,
     ];
 }

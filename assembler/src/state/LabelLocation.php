@@ -47,6 +47,17 @@ class LabelLocation {
 
     private array $aLabelIEQualification = [];
 
+    const IE_MODES = [
+        '---',
+        'r--',
+        '-w-',
+        'rw-',
+        '--x',
+        'r-x',
+        '-wx',
+        'rwx'
+    ];
+
     /**
      * Register a label for export. This will be sanity checked in the second pass.
      *
@@ -433,7 +444,21 @@ class LabelLocation {
 
     private function addIEQualification(string $sLabel, int $iIEQualification) {
         if (isset($this->aLabelIEQualification[$sLabel])) {
-            $this->aLabelIEQualification[$sLabel] |= $iIEQualification;
+            $iOldIEQualification = $this->aLabelIEQualification[$sLabel];
+            $iNewIEQualification = $iOldIEQualification | $iIEQualification;
+            if ($iNewIEQualification !== $iOldIEQualification) {
+
+                if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_IEMODE)) {
+                    Log::printf(
+                        "Change of access scope on label '%s' from %s to %s",
+                        $sLabel,
+                        self::IE_MODES[$iOldIEQualification],
+                        self::IE_MODES[$iNewIEQualification]
+                    );
+                }
+
+                $this->aLabelIEQualification[$sLabel] = $iNewIEQualification;
+            }
         } else {
             $this->aLabelIEQualification[$sLabel] = $iIEQualification;
         }
