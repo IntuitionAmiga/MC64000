@@ -9,6 +9,11 @@
         "log_label_resolve": true,
         "log_label_import": true
     },
+    "host": {
+        "name": "Standard Test Host",
+        "min_version": "0.0.0",
+        "max_version": "0.0.0"
+    },
     "sources": [
         "src/main.s"
     ],

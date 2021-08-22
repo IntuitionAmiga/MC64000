@@ -39,9 +39,9 @@ class Definition {
      */
     private array $aSourceFiles;
 
-    private State\Options       $oOptions;
-    private State\DefinitionSet $oDefinitionSet;
-
+    private State\Options           $oOptions;
+    private State\DefinitionSet     $oDefinitionSet;
+    private State\HostSpecification $oHostSpecification;
 
     /**
      * Constructor - must be given a valid project file definition.
@@ -76,6 +76,15 @@ class Definition {
     }
 
     /**
+     * Return the host specification.
+     *
+     * @return State\HostSpecification
+     */
+    public function getHostSpecification() : State\HostSpecification {
+        return $this->oHostSpecifcation;
+    }
+
+    /**
      * Return the definition set (could be empty)
      *
      * @return State\DefinitionSet
@@ -106,6 +115,87 @@ class Definition {
      */
     public function load(string $sProjectFile) : self {
         Log::printf("Attempting to open project file %s...", $sProjectFile);
+
+        $oProjectData = $this->loadDefinition($sProjectFile);
+
+        $this->processHostProperties($oProjectData);
+        $this->processSources($oProjectData);
+        $this->processOptions($oProjectData);
+        $this->processDefines($oProjectData);
+
+        Log::printf(
+            "Project file %s loaded successfully:\n\tName:   %s\n\tInfo:   %s\n\tOutput: %s\n\tFiles:  %d",
+            $sProjectFile,
+            $this->sName,
+            $this->sDescription,
+            $this->sOutputBinary,
+            count($this->aSourceFiles)
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param object $oProjectData
+     */
+    private function processHostProperties(object $oProjectData) {
+        $this->oHostSpecification = new State\HostSpecification(
+            (string)$oProjectData->host->name,
+            (string)$oProjectData->host->min_version,
+            (string)$oProjectData->host->max_version
+        );
+    }
+
+    /**
+     * @param object $oProjectData
+     */
+    private function processSources(object $oProjectData) {
+        $this->aSourceFiles = array_map(
+            function(string $sSourcePath) {
+                $sSourcePath = $this->sBaseDirectory . $sSourcePath;
+                if (
+                    !file_exists($sSourcePath) ||
+                    !is_readable($sSourcePath)
+                ) {
+                    throw new \Exception("Invalid source path '" . $sSourcePath . "'");
+                }
+                return $sSourcePath;
+            },
+            $oProjectData->sources
+        );
+    }
+
+    /**
+     * @param object $oProjectData
+     */
+    private function processOptions(object $oProjectData) {
+        if (!empty($oProjectData->options) && (
+            is_object($oProjectData->options) ||
+            is_array($oProjectData->options)
+        )) {
+            $this->oOptions->import((array)$oProjectData->options);
+        }
+    }
+
+    /**
+     * @param object $oProjectData
+     */
+    private function processDefines(object $oProjectData) {
+        if (!empty($oProjectData->defines) && (
+            is_object($oProjectData->defines) ||
+            is_array($oProjectData->defines)
+        )) {
+            foreach ((array)$oProjectData->defines as $sDefine => $sValue) {
+                $this->oDefinitionSet->add($sDefine, (string)$sValue);
+            }
+        }
+    }
+
+    /**
+     * @param  string $oProjectFile
+     * @return object
+     */
+    private function loadDefinition(string $sProjectFile) : object {
         if (
             empty($sProjectFile) ||
             !file_exists($sProjectFile) ||
@@ -119,55 +209,15 @@ class Definition {
             empty($oProjectData->name) ||
             empty($oProjectData->output) ||
             empty($oProjectData->sources) ||
+            empty($oProjectData->host) ||
             !is_countable($oProjectData->sources)
         ) {
-            throw new \Exception("Invalid project file '" . $sProjectFile . "'");
+            throw new \Exception("Invalid structure in project file '" . $sProjectFile . "'");
         }
-
-        $sBaseDirectory       = realpath(dirname($sProjectFile)) . '/';
-        $this->aSourceFiles   = array_map(
-            function(string $sSourcePath) use ($sBaseDirectory) {
-                $sSourcePath = $sBaseDirectory . $sSourcePath;
-                if (
-                    !file_exists($sSourcePath) ||
-                    !is_readable($sSourcePath)
-                ) {
-                    throw new \Exception("Invalid source path '" . $sSourcePath . "'");
-                }
-                return $sSourcePath;
-            },
-            $oProjectData->sources
-        );
-        $this->sBaseDirectory = $sBaseDirectory;
+        $this->sBaseDirectory = realpath(dirname($sProjectFile)) . '/';
         $this->sName          = (string)$oProjectData->name;
         $this->sDescription   = (string)($oProjectData->description ?? '');
         $this->sOutputBinary  = (string)$oProjectData->output;
-
-        if (!empty($oProjectData->options) && (
-            is_object($oProjectData->options) ||
-            is_array($oProjectData->options)
-        )) {
-            $this->oOptions->import((array)$oProjectData->options);
-        }
-
-        if (!empty($oProjectData->defines) && (
-            is_object($oProjectData->defines) ||
-            is_array($oProjectData->defines)
-        )) {
-            foreach ((array)$oProjectData->defines as $sDefine => $sValue) {
-                $this->oDefinitionSet->add($sDefine, (string)$sValue);
-            }
-        }
-
-        Log::printf(
-            "Project file %s loaded successfully:\n\tName:   %s\n\tInfo:   %s\n\tOutput: %s\n\tFiles:  %d",
-            $sProjectFile,
-            $this->sName,
-            $this->sDescription,
-            $this->sOutputBinary,
-            count($this->aSourceFiles)
-        );
-
-        return $this;
+        return $oProjectData;
     }
 }

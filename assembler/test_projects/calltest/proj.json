@@ -8,6 +8,11 @@
         "log_label_ref": false,
         "log_label_resolve": false
     },
+    "host": {
+        "name": "Standard Test Host",
+        "min_version": "1.1.1",
+        "max_version": "2.3.5"
+    },
     "sources": [
         "src/main.s"
     ],

@@ -90,6 +90,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\State\\Options' => '/state/Options.php',
   'ABadCafe\\MC64K\\State\\Coordinator' => '/state/Coordinator.php',
   'ABadCafe\\MC64K\\State\\DefinitionSet' => '/state/DefinitionSet.php',
+  'ABadCafe\\MC64K\\State\\HostSpecification' => '/state/HostSecification.php',
   'ABadCafe\\MC64K\\Application\\Assembler' => '/application/Assembler.php',
   'ABadCafe\\MC64K\\Defs\\IOpcodeLimits' => '/defs/IOpcodeLimits.php',
   'ABadCafe\\MC64K\\Defs\\IBranchLimits' => '/defs/IBranchLimits.php',
