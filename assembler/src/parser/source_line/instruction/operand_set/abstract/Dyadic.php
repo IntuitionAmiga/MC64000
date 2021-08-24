@@ -21,6 +21,8 @@ use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 
+use function \array_combine, \strlen, \ord, \chr;
+
 /**
  * Dyadic
  *

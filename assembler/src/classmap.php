@@ -79,6 +79,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\IO\\Output\\Binary' => '/io/output/Binary.php',
   'ABadCafe\\MC64K\\IO\\Output\\ChunkList' => '/io/output/ChunkList.php',
   'ABadCafe\\MC64K\\IO\\Output\\ImportList' => '/io/output/ImportList.php',
+  'ABadCafe\\MC64K\\IO\\Output\\HostSpecification' => '/io/output/HostSpecification.php',
   'ABadCafe\\MC64K\\IO\\Output\\IBinaryChunk' => '/io/output/IBinaryChunk.php',
   'ABadCafe\\MC64K\\Process\\SecondPass' => '/process/SecondPass.php',
   'ABadCafe\\MC64K\\Utils\\Binary' => '/utils/Binary.php',

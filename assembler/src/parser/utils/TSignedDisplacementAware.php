@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Parser\Utils;
 use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\IIntLimits;
 
+use function \substr, \strlen;
+
 /**
  * TSignedDisplacementAware
  *

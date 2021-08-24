@@ -19,6 +19,9 @@ namespace ABadCafe\MC64K\IO\Output;
 use ABadCafe\MC64K\Defs\IIntLimits;
 use ABadCafe\MC64K\State;
 
+use function \array_column, \implode;
+use function \count, \strlen, \pack, \chr;
+
 /**
  * ExportList
  *
@@ -67,7 +70,7 @@ class ExportList implements IBinaryChunk {
             pack('V*', ...array_column($aExports, 'iLabelPosition')) .
 
             // Strings blob. Null terminated strings that are to be rescanned on loading.
-            implode("", $aLabels)
+            implode('', $aLabels)
         ;
     }
 

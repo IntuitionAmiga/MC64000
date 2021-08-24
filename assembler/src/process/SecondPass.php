@@ -20,6 +20,8 @@ use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Utils\Log;
 
+use function \count, \pack;
+
 /**
  * SecondPass
  *

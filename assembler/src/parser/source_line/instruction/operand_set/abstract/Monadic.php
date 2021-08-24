@@ -21,6 +21,8 @@ use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\State;
 
+use function \strlen, \count, \get_class;
+
 /**
  * Monadic
  *

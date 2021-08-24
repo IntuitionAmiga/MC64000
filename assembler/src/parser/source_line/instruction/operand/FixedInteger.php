@@ -20,6 +20,8 @@ use ABadCafe\MC64K;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Parser;
 
+use function \preg_match, \substr, \pack, \strlen, \str_pad;
+
 /**
  * FixedInteger
  *

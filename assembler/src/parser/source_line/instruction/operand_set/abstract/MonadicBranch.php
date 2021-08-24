@@ -24,6 +24,8 @@ use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Defs;
 
+use function \strlen;
+
 /**
  * MonadicBranch
  *

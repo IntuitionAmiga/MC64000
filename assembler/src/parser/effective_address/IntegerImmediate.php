@@ -20,6 +20,8 @@ use ABadCafe\MC64K\Defs\EffectiveAddress;
 use ABadCafe\MC64K\Defs\IIntLimits;
 use ABadCafe\MC64K\Parser;
 
+use function \preg_match, \substr, \chr, \pack, \strlen, \str_pad, \unpack;
+
 /**
  * IntegerImmediate
  *

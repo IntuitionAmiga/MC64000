@@ -20,6 +20,8 @@ use ABadCafe\MC64K\IO;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Defs;
 
+use function \strlen, \substr_replace;
+
 /**
  * Output
  *

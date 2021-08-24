@@ -20,6 +20,8 @@ use ABadCafe\MC64K\Parser\SourceLine\Directive;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 
+use function \preg_match, \rtrim;
+
 /**
  * Import
  *

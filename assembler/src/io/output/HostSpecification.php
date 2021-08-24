@@ -19,22 +19,15 @@ namespace ABadCafe\MC64K\IO\Output;
 use ABadCafe\MC64K\Defs\IIntLimits;
 use ABadCafe\MC64K\State;
 
-use function \implode, \count, \strlen, \pack, \chr;
+use function \strlen;
 
 /**
- * ImportList
- *
- * Chunk that contains the imported global labels. Imported labels are enumerated incrementally
- * as encountered in the source code.
- *
- * The raw chunk body data format is:
- *     Number of labels uint32
- *     Label names      char[]
+ * HostSpecification
  */
-class ImportList implements IBinaryChunk {
+class HostSpecification implements IBinaryChunk {
 
     const
-        TYPE  = 'Imported'
+        TYPE  = 'HostReqs'
     ;
 
     private string $sBinary = '';
@@ -42,24 +35,10 @@ class ImportList implements IBinaryChunk {
     /**
      * Constructor. Builds the binary represntation for the export list.
      *
-     * @param State\LabelLocation $oLabelLocation
+     * @param State\HostSpecification $oHostSpecification
      */
-    public function __construct(State\LabelLocation $oLabelLocation) {
-        $aImports          = $oLabelLocation->getEnumeratedImports();
-        $aIEQualifications = $oLabelLocation->getImportExportQualifications();
-        foreach ($aImports as $i => $sLabel) {
-            if (!isset($aIEQualifications[$sLabel])) {
-                throw new \Exception("Could not find Import/Export access for label " . $sLabel);
-            }
-            $aImports[$i] = $sLabel . chr($aIEQualifications[$sLabel]);
-        }
+    public function __construct(State\HostSpecification $oHostSpecification) {
 
-        $this->sBinary =
-            // Label count
-            pack('V', count($aImports)) .
-
-            // Strings blob
-            implode('', $aImports);
     }
 
     /**

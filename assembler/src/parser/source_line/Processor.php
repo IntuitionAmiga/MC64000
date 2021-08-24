@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Parser\SourceLine;
 
 use ABadCafe\MC64K\State;
 
+use function \preg_replace, \rtrim;
+
 /**
  * Processor
  *

@@ -18,6 +18,8 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\IO\Output;
 use ABadCafe\MC64K\Defs\IIntLimits;
 
+use function \count, \strlen, \pack;
+
 /**
  * ChunkList
  *

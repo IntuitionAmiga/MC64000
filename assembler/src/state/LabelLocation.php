@@ -20,6 +20,8 @@ use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\IO;
 
+use function \sprintf, \strlen, \array_flip, \str_split;
+
 /**
  * LabelLocation
  *

@@ -28,6 +28,8 @@ use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Utils\Binary;
 use ABadCafe\MC64K\State;
 
+use function \chr, \array_flip, \explode, \get_class, \end, \ksort;
+
 /**
  * Statement
  *

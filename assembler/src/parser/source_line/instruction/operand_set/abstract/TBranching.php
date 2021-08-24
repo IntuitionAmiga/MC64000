@@ -23,6 +23,8 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Defs\IBranchLimits;
 use ABadCafe\MC64K\Parser;
 
+use function \chr, \strlen, \pack;
+
 /**
  * TBranching
  *

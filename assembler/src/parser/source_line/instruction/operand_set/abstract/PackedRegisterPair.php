@@ -21,6 +21,8 @@ use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\State;
 
+use function \ord, \chr;
+
 /**
  * PackedRegisterPair
  *

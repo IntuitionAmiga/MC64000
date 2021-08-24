@@ -23,6 +23,8 @@ use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Defs;
 
+use function \array_keys;
+
 /**
  * FloatDyadicBranch
  *

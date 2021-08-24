@@ -22,6 +22,8 @@ use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\Defs\Mnemonic\ILogical;
 use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
 
+use function \array_keys;
+
 /**
  * IntegerDyadic
  *

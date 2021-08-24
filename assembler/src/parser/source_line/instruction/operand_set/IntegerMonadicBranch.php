@@ -22,6 +22,8 @@ use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 
+use function \array_keys;
+
 /**
  * IntegerMonadicBranch
  *

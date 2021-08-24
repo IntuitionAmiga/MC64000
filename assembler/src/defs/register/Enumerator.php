@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Defs\Register;
 
 use \OutOfBoundsException;
 
+use function \strtolower;
+
 /**
  * Enumerator
  *

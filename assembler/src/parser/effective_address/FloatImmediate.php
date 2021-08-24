@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\EffectiveAddress;
 use ABadCafe\MC64K\Parser;
 
+use function \preg_match, \doubleval, \is_nan, \abs, \chr, \pack;
+
 /**
  * FloatImmediate
  *

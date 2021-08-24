@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 
+use function \array_filter, \count;
+
 /**
  * None
  *

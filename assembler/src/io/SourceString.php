@@ -17,6 +17,8 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\IO;
 
+use function \explode, \count;
+
 /**
  * SourceString
  *

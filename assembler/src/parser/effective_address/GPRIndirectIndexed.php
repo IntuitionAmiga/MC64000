@@ -20,6 +20,8 @@ use ABadCafe\MC64K\Defs\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Register;
 use ABadCafe\MC64K\Parser;
 
+use function \preg_match, \chr;
+
 /**
  * GPRIndirectIndexed
  *

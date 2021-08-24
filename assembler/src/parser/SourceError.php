@@ -18,13 +18,18 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\IO;
 
+use function \sprintf;
+
+/**
+ * SourceError
+ */
 class SourceError extends \Exception {
 
     /**
      * Repackage parsing exceptions
      *
      * @param IO\SourceFile $oSource
-     * @param \Throwable    $pError
+     * @param \Throwable    $oError
      */
     public function __construct(IO\SourceFile $oSource, \Throwable $oError) {
         $iLine = $oSource->getLineNumber();

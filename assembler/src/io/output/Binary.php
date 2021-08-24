@@ -19,6 +19,9 @@ namespace ABadCafe\MC64K\IO\Output;
 use ABadCafe\MC64K\Defs\IIntLimits;
 use ABadCafe\MC64K\Utils\Log;
 
+use function \dirname, \is_writeable, \fopen, \fseek, \fwrite, \fclose;
+use function \strlen, \pack;
+
 /**
  * Binary
  *

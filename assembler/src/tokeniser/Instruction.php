@@ -17,6 +17,8 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Tokeniser;
 
+use function \str_replace, \array_keys, \array_values, \trim, \preg_match, \preg_replace_callback, \array_map, \explode;
+
 /**
  * Basic instruction tokeniser
  */

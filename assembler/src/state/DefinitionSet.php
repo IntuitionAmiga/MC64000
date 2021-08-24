@@ -17,6 +17,8 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\State;
 
+use function \strlen, \uasort, \str_replace, \array_keys, \array_values;
+
 /**
  * DefinitionSet
  */
