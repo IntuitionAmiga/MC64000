@@ -20,6 +20,7 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\State;
+use ABadCafe\MC64K\Defs;
 
 use function \ord, \chr;
 

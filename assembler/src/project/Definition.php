@@ -42,9 +42,9 @@ class Definition {
      */
     private array $aSourceFiles;
 
-    private State\Options           $oOptions;
-    private State\DefinitionSet     $oDefinitionSet;
-    private State\HostSpecification $oHostSpecification;
+    private State\Options       $oOptions;
+    private State\DefinitionSet $oDefinitionSet;
+    private State\Target        $oTarget;
 
     /**
      * Constructor - must be given a valid project file definition.
@@ -79,12 +79,12 @@ class Definition {
     }
 
     /**
-     * Return the host specification.
+     * Return the target definition
      *
-     * @return State\HostSpecification
+     * @return State\Target
      */
-    public function getHostSpecification() : State\HostSpecification {
-        return $this->oHostSpecifcation;
+    public function getTarget() : State\Target {
+        return $this->oTarget;
     }
 
     /**
@@ -121,7 +121,7 @@ class Definition {
 
         $oProjectData = $this->loadDefinition($sProjectFile);
 
-        $this->processHostProperties($oProjectData);
+        $this->processTarget($oProjectData);
         $this->processSources($oProjectData);
         $this->processOptions($oProjectData);
         $this->processDefines($oProjectData);
@@ -141,12 +141,26 @@ class Definition {
     /**
      * @param object $oProjectData
      */
-    private function processHostProperties(object $oProjectData) {
-        $this->oHostSpecification = new State\HostSpecification(
-            (string)$oProjectData->host->name,
-            (string)$oProjectData->host->min_version,
-            (string)$oProjectData->host->max_version
+    private function processTarget(object $oProjectData) {
+        $this->oTarget = new State\Target(
+            (string)$oProjectData->target->name,
+            (string)$oProjectData->target->version
         );
+        if (isset($oProjectData->target->host)) {
+            if (
+                empty($oProjectData->target->host->name) ||
+                empty($oProjectData->target->host->version)
+            ) {
+                throw new \Exception('Host section must not be empty');
+            }
+            $this->oTarget
+                ->setFlags(State\Target::F_EXECUTABLE)
+                ->getDependencySet()
+                ->add(
+                    (string)$oProjectData->target->host->name,
+                    (string)$oProjectData->target->host->version
+                );
+        }
     }
 
     /**
@@ -209,18 +223,18 @@ class Definition {
         $oProjectData = json_decode(file_get_contents($sProjectFile));
         if (
             !($oProjectData instanceof \stdClass) ||
-            empty($oProjectData->name) ||
-            empty($oProjectData->output) ||
+            empty($oProjectData->target->name) ||
+            empty($oProjectData->target->version) ||
+            empty($oProjectData->target->output) ||
             empty($oProjectData->sources) ||
-            empty($oProjectData->host) ||
             !is_countable($oProjectData->sources)
         ) {
             throw new \Exception("Invalid structure in project file '" . $sProjectFile . "'");
         }
         $this->sBaseDirectory = realpath(dirname($sProjectFile)) . '/';
-        $this->sName          = (string)$oProjectData->name;
-        $this->sDescription   = (string)($oProjectData->description ?? '');
-        $this->sOutputBinary  = (string)$oProjectData->output;
+        $this->sName          = (string)$oProjectData->target->name;
+        $this->sDescription   = (string)($oProjectData->target->description ?? '');
+        $this->sOutputBinary  = (string)$oProjectData->target->output;
         return $oProjectData;
     }
 }

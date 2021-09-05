@@ -101,21 +101,25 @@ class Assembler {
         $oWriter = new IO\Output\Binary(
             $this->oProject->getBaseDirectoryPath() . $this->oProject->getOutputBinaryPath()
         );
-        $oState = State\Coordinator::get();
 
-        $oCodeChunk   = $oState->getOutput();
-        $oExportChunk = new IO\Output\ExportList($oState->getLabelLocation());
+        $oState = State\Coordinator::get();
+        $oTargetChunk = new IO\Output\TargetInfo($this->oProject->getTarget());
         $oImportChunk = new IO\Output\ImportList($oState->getLabelLocation());
+        $oExportChunk = new IO\Output\ExportList($oState->getLabelLocation());
+        $oCodeChunk   = $oState->getOutput();
         $oListChunk   = new IO\Output\ChunkList();
         $oListChunk
-            ->registerChunk($oCodeChunk)
+            ->registerChunk($oTargetChunk)
+            ->registerChunk($oImportChunk)
             ->registerChunk($oExportChunk)
-            ->registerChunk($oImportChunk);
+            ->registerChunk($oCodeChunk);
+
         $oWriter
             ->writeChunk($oListChunk)
-            ->writeChunk($oCodeChunk)
-            ->writeChunk($oExportChunk)
+            ->writeChunk($oTargetChunk)
             ->writeChunk($oImportChunk)
+            ->writeChunk($oExportChunk)
+            ->writeChunk($oCodeChunk)
             ->complete();
         return $this;
     }
