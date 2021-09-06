@@ -30,12 +30,12 @@ interface IProcessor {
      *
      * @return string[]
      */
-    public function getMatchingKeywords() : array;
+    public function getMatchingKeywords(): array;
 
     /**
      * Processes the directive
      *
      * @param string $sLine
      */
-    public function process(string $sLine);
+    public function process(string $sLine): void;
 }

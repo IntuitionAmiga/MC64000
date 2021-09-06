@@ -26,8 +26,11 @@ use ABadCafe\MC64K;
 interface IParser extends MC64K\IParser {
 
     /**
-     * Lightweight test that returns true if the implementation
+     * Lightweight test that returns true if the implementor can process the line.
+     *
+     * @param  string $sLine
+     * @return bool
      */
-    public function checkLine(string $sLine) : bool;
+    public function checkLine(string $sLine): bool;
 
 }

@@ -41,28 +41,28 @@ class Output implements IO\Output\IBinaryChunk {
     /**
      * @inheritDoc
      */
-    public function getChunkType() : string {
+    public function getChunkType(): string {
         return self::CHUNK_TYPE;
     }
 
     /**
      * @inheritDoc
      */
-    public function getChunkLength() : int {
+    public function getChunkLength(): int {
         return strlen($this->sBytecode);
     }
 
     /**
      * @inheritDoc
      */
-    public function getChunkData() : string {
+    public function getChunkData(): string {
         return $this->sBytecode;
     }
 
     /**
      * @return string
      */
-    public function getBytecode() : string {
+    public function getBytecode(): string {
         return $this->sBytecode;
     }
 
@@ -74,7 +74,7 @@ class Output implements IO\Output\IBinaryChunk {
      * @param  int    $iOffset
      * @return self
      */
-    public function patch(string $sPatch, int $iOffset) : self {
+    public function patch(string $sPatch, int $iOffset): self {
         $this->sBytecode = substr_replace($this->sBytecode, $sPatch, $iOffset, strlen($sPatch));
         return $this;
     }
@@ -86,7 +86,7 @@ class Output implements IO\Output\IBinaryChunk {
      * @param  string $sBytecode
      * @return self
      */
-    public function appendStatement(string $sBytecode) : self {
+    public function appendStatement(string $sBytecode): self {
         $this->iCurrentStatementPosition += strlen($sBytecode);
         $this->iCurrentStatementLength   = 0;
         $this->sBytecode .= $sBytecode;
@@ -98,7 +98,7 @@ class Output implements IO\Output\IBinaryChunk {
      *
      * @return int
      */
-    public function getCurrentStatementPosition() : int {
+    public function getCurrentStatementPosition(): int {
         return $this->iCurrentStatementPosition;
     }
 
@@ -107,7 +107,7 @@ class Output implements IO\Output\IBinaryChunk {
      *
      * @return int
      */
-    public function getCurrentStatementLength() : int {
+    public function getCurrentStatementLength(): int {
         return $this->iCurrentStatementLength;
     }
 
@@ -117,7 +117,7 @@ class Output implements IO\Output\IBinaryChunk {
      * @param  int $iDelta
      * @return int
      */
-    public function adjustCurrentStatementLength(int $iDelta) : int {
+    public function adjustCurrentStatementLength(int $iDelta): int {
         return $this->iCurrentStatementLength += $iDelta;
     }
 
@@ -127,7 +127,7 @@ class Output implements IO\Output\IBinaryChunk {
      * @param  int $iStatementLength
      * @return self
      */
-    public function setCurrentStatementLength(int $iStatementLength) : self {
+    public function setCurrentStatementLength(int $iStatementLength): self {
         $this->iCurrentStatementLength = $iStatementLength;
         return $this;
     }
@@ -138,7 +138,7 @@ class Output implements IO\Output\IBinaryChunk {
      * @param  int $iPosition
      * @return int
      */
-    public function getDisplacmentForPosition(int $iPosition) : int {
+    public function getDisplacmentForPosition(int $iPosition): int {
         return $iPosition - $this->iCurrentStatementPosition - $this->iCurrentStatementLength;
     }
 
@@ -147,7 +147,7 @@ class Output implements IO\Output\IBinaryChunk {
      *
      * @return int
      */
-    public function getCurrentOffset() : int {
+    public function getCurrentOffset(): int {
         return $this->iCurrentStatementPosition + $this->iCurrentStatementLength;
     }
 }

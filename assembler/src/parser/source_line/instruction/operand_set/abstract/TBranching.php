@@ -42,7 +42,7 @@ trait TBranching {
      * @return string
      * @throws CodeFoldException|UnhandledCodeFoldException
      */
-    protected function parseBranchDisplacement(string $sSource, bool $bOperandSideEffects) : string {
+    protected function parseBranchDisplacement(string $sSource, bool $bOperandSideEffects): string {
         try {
             return $this->oTgtParser->parse($sSource);
         } catch (CodeFoldException $oFold) {
@@ -56,7 +56,7 @@ trait TBranching {
     /**
      * @throws \RangeException|\UnexpectedValueException
      */
-    protected function checkShortBranchDisplacement() : void {
+    protected function checkShortBranchDisplacement(): void {
         $iDisplacement = $this->oTgtParser->getLastDisplacement();
         if (0 === $iDisplacement) {
             throw new \UnexpectedValueException('Short branch cannot be unresolved');
@@ -67,7 +67,7 @@ trait TBranching {
         ) {
             throw new \RangeException('Short branch specified but target ' . $iDisplacement . ' is out of range');
         }
-        $this->checkBranchDisplacement(chr(0));
+        $this->checkBranchDisplacement(chr(0), false);
     }
 
     /**
@@ -79,7 +79,7 @@ trait TBranching {
      * @param string $sInstructionBytecode
      * @throws \UnexpectedValueException
      */
-    protected function checkBranchDisplacement(string $sInstructionBytecode, bool $bOperandSideEffects) : void {
+    protected function checkBranchDisplacement(string $sInstructionBytecode, bool $bOperandSideEffects): void {
         $iDisplacement = $this->oTgtParser->getLastDisplacement();
         if ($iDisplacement < 0) {
             $iInstructionLength = strlen($sInstructionBytecode) + 1;
@@ -107,8 +107,8 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateIsLessThan($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        return $mSrcImmediate < $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    protected function foldImmediateIsLessThan($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
+        return $mSrcImmediate < $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize): '';
     }
 
     /**
@@ -121,8 +121,8 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateIsLessOrEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        return $mSrcImmediate <= $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    protected function foldImmediateIsLessOrEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
+        return $mSrcImmediate <= $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize): '';
     }
 
     /**
@@ -135,8 +135,8 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateIsEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        return $mSrcImmediate == $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    protected function foldImmediateIsEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
+        return $mSrcImmediate == $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize): '';
     }
 
     /**
@@ -149,8 +149,8 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateIsGreaterOrEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        return $mSrcImmediate >= $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    protected function foldImmediateIsGreaterOrEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
+        return $mSrcImmediate >= $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize): '';
     }
 
     /**
@@ -163,8 +163,8 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateIsGreaterThan($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        return $mSrcImmediate > $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    protected function foldImmediateIsGreaterThan($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
+        return $mSrcImmediate > $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize): '';
     }
 
     /**
@@ -177,8 +177,8 @@ trait TBranching {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateIsNotEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        return $mSrcImmediate != $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    protected function foldImmediateIsNotEqual($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
+        return $mSrcImmediate != $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize): '';
     }
 
     /**
@@ -191,7 +191,7 @@ trait TBranching {
      * @return string
      * @throws \UnexpectedValueException
      */
-    private function encodeFixedBranch(int $iDisplacement, int $iOriginalSize) : string {
+    protected function encodeFixedBranch(int $iDisplacement, int $iOriginalSize): string {
         // Negative branches require target adjustment because the fixed encoded branch instruction is almost guaranteed
         // to be shorter than the conditional instruction it will replace.
         if ($iDisplacement < 0) {
@@ -235,7 +235,7 @@ trait TBranching {
      * @param  string $sFormat
      * @return string
      */
-    private function generateFixedBranchBytecode(int $iOpcode, int $iDisplacement, string $sFormat) : string {
+    private function generateFixedBranchBytecode(int $iOpcode, int $iDisplacement, string $sFormat): string {
         return chr($iOpcode) . pack($sFormat, $iDisplacement);
     }
 }

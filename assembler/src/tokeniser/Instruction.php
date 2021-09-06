@@ -38,10 +38,10 @@ class Instruction {
      * The return is a structure containing a string field for the mnemonic and an array for the operands, in lexical order.
      * If the input text could not be tokenised, null is returned.
      *
-     * @param  string sInput
+     * @param  string $sInput
      * @return object|null
      */
-    public function tokenise(string $sInput) : ?object {
+    public function tokenise(string $sInput): ?object {
         if (preg_match(self::MATCH, $sInput, $aMatches)) {
             $sMnemonic = $aMatches[self::MATCHED_MNEMONIC];
 

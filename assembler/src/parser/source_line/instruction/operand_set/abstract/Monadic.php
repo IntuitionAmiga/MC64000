@@ -40,7 +40,7 @@ abstract class Monadic implements Instruction\IOperandSetParser {
     /**
      * @inheritDoc
      */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
         $oState = State\Coordinator::get()
             ->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE);
@@ -61,7 +61,7 @@ abstract class Monadic implements Instruction\IOperandSetParser {
      *
      * @return int
      */
-    protected function getSourceOperandIndex() : int {
+    protected function getSourceOperandIndex(): int {
         return self::DEF_OPERAND_SRC;
     }
 
@@ -70,9 +70,9 @@ abstract class Monadic implements Instruction\IOperandSetParser {
      *
      * @param  string[] $aOperands
      * @param  int      $iMinimumCount
-     * @throws
+     * @throws \LengthException
      */
-    protected function assertMinimumOperandCount(array $aOperands, int $iMinimumCount) : void {
+    protected function assertMinimumOperandCount(array $aOperands, int $iMinimumCount): void {
         $iCount = count($aOperands);
         if ($iMinimumCount > $iCount) {
             throw new \LengthException(

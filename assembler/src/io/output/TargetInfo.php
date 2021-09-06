@@ -43,7 +43,6 @@ use function \count, \strlen, \pack, \chr;
  * each time it encounters a null terminator, record the start of the string preceding it.
  */
 class TargetInfo implements IBinaryChunk {
-
     const
         TYPE  = 'TrgtInfo'
     ;
@@ -53,7 +52,7 @@ class TargetInfo implements IBinaryChunk {
     /**
      * Constructor. Builds the binary represntation for the export list.
      *
-     * @param Target $oTarget
+     * @param State\Target $oTarget
      */
     public function __construct(State\Target $oTarget) {
         $aDependencies = $oTarget->getDependencySet()->getList();
@@ -70,7 +69,7 @@ class TargetInfo implements IBinaryChunk {
      *
      * @return string
      */
-    public function getChunkType() : string {
+    public function getChunkType(): string {
         return self::TYPE;
     }
 
@@ -79,7 +78,7 @@ class TargetInfo implements IBinaryChunk {
      *
      * @return int
      */
-    public function getChunkLength() : int {
+    public function getChunkLength(): int {
         return strlen($this->sBinary);
     }
 
@@ -88,7 +87,7 @@ class TargetInfo implements IBinaryChunk {
      *
      * @return string
      */
-    public function getChunkData() : string {
+    public function getChunkData(): string {
         return $this->sBinary;
     }
 }

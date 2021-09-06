@@ -31,6 +31,9 @@ class Target {
     private int $iFlags = 0;
 
     /**
+     * Constructor. Accepts the build target name and version as parameters and declares them as the first
+     * dependency in the set.
+     *
      * @param string $sName
      * @param string $sVersion
      */
@@ -39,20 +42,42 @@ class Target {
         $this->oDependencySet->add($sName, $sVersion);
     }
 
+    /**
+     * Unconditionally set target flags.
+     *
+     * @param  int $iFlags
+     * @return self (fluent)
+     */
     public function setFlags(int $iFlags): self {
         $this->iFlags |= $iFlags;
         return $this;
     }
 
+    /**
+     * Unconditionally clear target flags.
+     *
+     * @param  int $iFlags
+     * @return self (fluent)
+     */
     public function clearFlags(int $iFlags): self {
         $this->iFlags &= ~$iFlags;
         return $this;
     }
 
+    /**
+     * Obtain the target flags.
+     *
+     * @return int
+     */
     public function getFlags(): int {
         return $this->iFlags;
     }
 
+    /**
+     * Obtain the dependency set.
+     *
+     * @return DependencySet
+     */
     public function getDependencySet(): DependencySet {
         return $this->oDependencySet;
     }

@@ -109,9 +109,6 @@ class PCIndirectIndexedDisplacement implements IParser, EffectiveAddress\IRegist
         // Program counter with 32-bit scaled signed 64-bit index and signed displacement d32(pc, rN.q*2)
         '/^\(\s*' . self::D32 . '\s*,\s*pc\s*,\s*' . self::RDA . '\.q\s*\*\s*4\s*\)$/' => self::PC_IND_IDXQ_4_DSP,
 
-        // Program counter with 32-bit scaled signed 8-bit index and signed displacement d32(pc, rN.b*2)
-        '/^' . self::D32 . '\s*\(\s*pc\s*,\s*' . self::RDA . '\.b\s*\*\s*4\s*\)$/' => self::PC_IND_IDXB_4_DSP,
-
         // Program counter with 64-bit scaled signed 8-bit index and signed displacement d32(pc, rN.b*8)
         '/^' . self::D32 . '\s*\(\s*pc\s*,\s*' . self::RDA . '\.b\s*\*\s*8\s*\)$/' => self::PC_IND_IDXB_8_DSP,
 
@@ -146,14 +143,14 @@ class PCIndirectIndexedDisplacement implements IParser, EffectiveAddress\IRegist
     /**
      * @inheritDoc
      */
-    public function hasSideEffects() : bool {
+    public function hasSideEffects(): bool {
         return false;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         foreach (self::MATCHES as $sMatch => $iOffset) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
                 $iIndex = Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_INDEX_NAME]);

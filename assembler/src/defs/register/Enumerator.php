@@ -33,9 +33,9 @@ class Enumerator implements INames {
      *
      * @param  string $sRegister
      * @return int
-     * @throws OutOfBoundException
+     * @throws OutOfBoundsException
      */
-    public static function getGPRNumber(string $sRegister) : int {
+    public static function getGPRNumber(string $sRegister): int {
         $sRegister = strtolower($sRegister);
         if (!isset(self::GPR_MAP[$sRegister])) {
             throw new OutOfBoundsException($sRegister . ' is not a recognised GPR name');
@@ -48,9 +48,9 @@ class Enumerator implements INames {
      *
      * @param  string $sRegister
      * @return int
-     * @throws OutOfBoundException
+     * @throws OutOfBoundsException
      */
-    public static function getFPRNumber(string $sRegister) : int {
+    public static function getFPRNumber(string $sRegister): int {
         $sRegister = strtolower($sRegister);
         if (!isset(self::FPR_MAP[$sRegister])) {
             throw new OutOfBoundsException($sRegister . ' is not a recognised FPR name');

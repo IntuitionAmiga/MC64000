@@ -54,21 +54,21 @@ class IntegerImmediate implements IParser, EffectiveAddress\IOther {
     /**
      * @return int|null
      */
-    public function getLastParsed() : ?int {
+    public function getLastParsed(): ?int {
         return $this->iLastParsed;
     }
 
     /**
      * @inheritDoc
      */
-    public function hasSideEffects() : bool {
+    public function hasSideEffects(): bool {
         return false;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         $this->iLastParsed = null;
         if (preg_match(self::MATCH, $sSource, $aMatches)) {
             $sImmediate = $aMatches[self::MATCHED_VALUE];
@@ -88,7 +88,7 @@ class IntegerImmediate implements IParser, EffectiveAddress\IOther {
      * @return string bytecode
      * @throws \RangeException
      */
-    private function encodeDecimalIntegerImmediate(int $iImmediate) : string {
+    private function encodeDecimalIntegerImmediate(int $iImmediate): string {
         $this->iLastParsed = $iImmediate;
         if ($iImmediate >= self::MIN_INT_SMALL && $iImmediate <= self::MAX_INT_SMALL) {
             return chr(self::INT_SMALL_0 + $iImmediate);
@@ -110,7 +110,7 @@ class IntegerImmediate implements IParser, EffectiveAddress\IOther {
      * 0x0FF will be encoded as 255, as a word
      * 0xFFFF will be encoded as -1, as a byte
      */
-    private function encodeHexadecimalIntegerImmediate(string $sImmediate) : string {
+    private function encodeHexadecimalIntegerImmediate(string $sImmediate): string {
         $iLength = strlen($sImmediate);
 
         if ($iLength < 1 || $iLength > 16) {
@@ -147,8 +147,8 @@ class IntegerImmediate implements IParser, EffectiveAddress\IOther {
 
         // Gratuitous hack to extract the integer representation that was present because base_convert() returns
         // a numeric string of the unsigned value.
-        $sEncoded = pack(IIntLimits::LONG_BIN_FORMAT . '2', $iLower, $iUpper);
-        $aData    = unpack(IIntLimits::QUAD_BIN_FORMAT, $sEncoded);
+        $sEncoded = (string)pack(IIntLimits::LONG_BIN_FORMAT . '2', $iLower, $iUpper);
+        $aData    = (array)unpack(IIntLimits::QUAD_BIN_FORMAT, $sEncoded);
         $this->iLastParsed = $aData[0];
         return chr(self::INT_IMM_QUAD) . $sEncoded;
     }

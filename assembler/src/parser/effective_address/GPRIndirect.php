@@ -40,14 +40,14 @@ class GPRIndirect implements IParser, EffectiveAddress\IRegisterIndirect {
     /**
      * @inheritDoc
      */
-    public function hasSideEffects() : bool {
+    public function hasSideEffects(): bool {
         return false;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         if (preg_match(self::MATCH, $sSource, $aMatches)) {
             $sRegister = $aMatches[self::MATCHED_NAME];
             if (!isset(Register\INames::GPR_MAP[$sRegister])) {

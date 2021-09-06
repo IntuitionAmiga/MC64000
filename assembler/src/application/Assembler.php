@@ -31,7 +31,6 @@ use ABadCafe\MC64K\Utils\Log;
 class Assembler {
 
     private Project\Definition $oProject;
-
     private Parser\SourceLine\Processor $oParser;
 
     /**
@@ -49,7 +48,7 @@ class Assembler {
      * @param  string $sProjectFile
      * @throws \Exception
      */
-    public function loadProject(string $sProjectFile) : self {
+    public function loadProject(string $sProjectFile): self {
         $this->oProject = new Project\Definition($sProjectFile);
         State\Coordinator::get()
             ->setGlobalOptions($this->oProject->getOptions())
@@ -63,7 +62,7 @@ class Assembler {
      * @return self (fluent)
      * @throws \Exception
      */
-    public function firstPass() : self {
+    public function firstPass(): self {
         foreach ($this->oProject->getSourceList() as $sSourceFile) {
             $this->processSourceFile(new IO\SourceFile($sSourceFile));
         }
@@ -76,7 +75,7 @@ class Assembler {
      * @return self (fluent)
      * @throws \Exception
      */
-    public function secondPass() : self {
+    public function secondPass(): self {
         $oState = State\Coordinator::get();
         $oSecondPass = new Process\SecondPass();
         $oSecondPass
@@ -92,12 +91,12 @@ class Assembler {
     }
 
     /**
-     * Write the compiled output
+     * Write the compiled output.
      *
      * @return self (fluent)
      * @throws \Exception
      */
-    public function writeBinary() : self {
+    public function writeBinary(): self {
         $oWriter = new IO\Output\Binary(
             $this->oProject->getBaseDirectoryPath() . $this->oProject->getOutputBinaryPath()
         );
@@ -107,13 +106,12 @@ class Assembler {
         $oImportChunk = new IO\Output\ImportList($oState->getLabelLocation());
         $oExportChunk = new IO\Output\ExportList($oState->getLabelLocation());
         $oCodeChunk   = $oState->getOutput();
-        $oListChunk   = new IO\Output\ChunkList();
+        $oListChunk   = new IO\Output\Manifest();
         $oListChunk
             ->registerChunk($oTargetChunk)
             ->registerChunk($oImportChunk)
             ->registerChunk($oExportChunk)
             ->registerChunk($oCodeChunk);
-
         $oWriter
             ->writeChunk($oListChunk)
             ->writeChunk($oTargetChunk)
@@ -125,18 +123,21 @@ class Assembler {
     }
 
     /**
-     * Load and parse a single source file
+     * Load and parse a single source file.
      *
      * @param  IO\SourceFile $oSource
      * @throws \Exception
      */
-    private function processSourceFile(IO\SourceFile $oSource) : void {
+    private function processSourceFile(IO\SourceFile $oSource): void {
         $oOutput = State\Coordinator::get()
             ->setCurrentFile($oSource)
             ->getOutput();
         while ( ($sSourceLine = $oSource->readLine()) ) {
             try {
-                $oOutput->appendStatement($this->oParser->parse($sSourceLine));
+                $sParsed = $this->oParser->parse($sSourceLine);
+                if (null !== $sParsed) {
+                    $oOutput->appendStatement($sParsed);
+                }
             } catch (\Throwable $oError) {
                 throw new Parser\SourceError(
                     $oSource,

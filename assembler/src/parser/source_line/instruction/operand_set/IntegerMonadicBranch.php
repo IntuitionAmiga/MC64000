@@ -64,35 +64,35 @@ class IntegerMonadicBranch extends MonadicBranch {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return array_keys(self::OPCODES);
     }
 
     /**
      * Trampoline to TBranching code folders
      */
-    protected function foldIsZero(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsZero(int $iImmediate, int $iDisplacement, int $iOriginalSize): string {
         return $this->foldImmediateIsEqual($iImmediate, 0, $iDisplacement, $iOriginalSize);
     }
 
     /**
      * Trampoline to TBranching code folders
      */
-    protected function foldIsNotZero(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsNotZero(int $iImmediate, int $iDisplacement, int $iOriginalSize): string {
         return $this->foldImmediateIsNotEqual($iImmediate, 0, $iDisplacement, $iOriginalSize);
     }
 
     /**
      * Trampoline to TBranching code folders
      */
-    protected function foldIsMinus(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsMinus(int $iImmediate, int $iDisplacement, int $iOriginalSize): string {
         return $this->foldImmediateIsLessThan($iImmediate, 0, $iDisplacement, $iOriginalSize);
     }
 
     /**
      * Trampoline to TBranching code folders
      */
-    protected function foldIsPlus(int $iImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsPlus(int $iImmediate, int $iDisplacement, int $iOriginalSize): string {
         return $this->foldImmediateIsGreaterOrEqual($iImmediate, 0, $iDisplacement, $iOriginalSize);
     }
 

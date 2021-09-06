@@ -67,7 +67,7 @@ class ImportList implements IBinaryChunk {
      *
      * @return string
      */
-    public function getChunkType() : string {
+    public function getChunkType(): string {
         return self::TYPE;
     }
 
@@ -76,7 +76,7 @@ class ImportList implements IBinaryChunk {
      *
      * @return int
      */
-    public function getChunkLength() : int {
+    public function getChunkLength(): int {
         return strlen($this->sBinary);
     }
 
@@ -85,7 +85,7 @@ class ImportList implements IBinaryChunk {
      *
      * @return string
      */
-    public function getChunkData() : string {
+    public function getChunkData(): string {
         return $this->sBinary;
     }
 }

@@ -56,7 +56,7 @@ class Coordinator {
      *
      * @return self
      */
-    public static function get() : self {
+    public static function get(): self {
         if (null === self::$oInstance) {
             self::$oInstance = new self;
         }
@@ -66,7 +66,7 @@ class Coordinator {
     /**
      * @return Options
      */
-    public function getOptions() : Options {
+    public function getOptions(): Options {
         return $this->oOptions;
     }
 
@@ -76,7 +76,7 @@ class Coordinator {
      *
      * @return DefinitionSet
      */
-    public function getDefinitionSet() : DefinitionSet {
+    public function getDefinitionSet(): DefinitionSet {
         return $this->oDefinitionSet;
     }
 
@@ -86,7 +86,7 @@ class Coordinator {
      * @param  DefinitionSet $oDefinitionSet
      * @return self (fluent)
      */
-    public function setGlobalDefinitionSet(DefinitionSet $oDefinitionSet) : self {
+    public function setGlobalDefinitionSet(DefinitionSet $oDefinitionSet): self {
         $this->oGlobalDefinitionSet = $oDefinitionSet;
         return $this;
     }
@@ -97,7 +97,7 @@ class Coordinator {
      * @param  Options $oOptions
      * @return self
      */
-    public function setGlobalOptions(Options $oOptions) : self {
+    public function setGlobalOptions(Options $oOptions): self {
         $this->oGlobalOptions = $oOptions;
         return $this;
     }
@@ -108,7 +108,7 @@ class Coordinator {
      * @param  IO\ISourceFile $oFile
      * @return self
      */
-    public function setCurrentFile(IO\ISourceFile $oFile) : self {
+    public function setCurrentFile(IO\ISourceFile $oFile): self {
         if ($oFile !== $this->oCurrentFile) {
             $this->oCurrentFile   = $oFile;
             $this->oOptions       = clone $this->oGlobalOptions;
@@ -122,7 +122,7 @@ class Coordinator {
      *
      * @return IO\ISourceFile
      */
-    public function getCurrentFile() : IO\ISourceFile {
+    public function getCurrentFile(): IO\ISourceFile {
         return $this->oCurrentFile;
     }
 
@@ -131,7 +131,7 @@ class Coordinator {
      *
      * @return Output
      */
-    public function getOutput() : Output {
+    public function getOutput(): Output {
         return $this->oOutput;
     }
 
@@ -140,7 +140,7 @@ class Coordinator {
      *
      * @return LabelLocation
      */
-    public function getLabelLocation() : LabelLocation {
+    public function getLabelLocation(): LabelLocation {
         return $this->oLabelLocation;
     }
 
@@ -150,7 +150,7 @@ class Coordinator {
      * @param  int $iLength
      * @return self
      */
-    public function setCurrentStatementLength(int $iLength) : self {
+    public function setCurrentStatementLength(int $iLength): self {
         $this->oOutput->setCurrentStatementLength($iLength);
         return $this;
     }
@@ -161,7 +161,7 @@ class Coordinator {
      * @param  int $iDelta
      * @return self
      */
-    public function adjustCurrentStatementLength(int $iDelta) : self {
+    public function adjustCurrentStatementLength(int $iDelta): self {
         $this->oOutput->adjustCurrentStatementLength($iDelta);
         return $this;
     }
@@ -173,7 +173,7 @@ class Coordinator {
      * @return self
      * @throws Exception
      */
-    public function addGlobalLabel(string $sLabel) : self {
+    public function addGlobalLabel(string $sLabel): self {
         $this->oLabelLocation->addGlobal(
             $this->oCurrentFile,
             $sLabel,
@@ -189,7 +189,7 @@ class Coordinator {
      * @return self
      * @throws Exception
      */
-    public function addLocalLabel(string $sLabel) : self {
+    public function addLocalLabel(string $sLabel): self {
         $this->oLabelLocation->addLocal(
             $this->oCurrentFile,
             $sLabel,
@@ -204,7 +204,7 @@ class Coordinator {
      * @param  string $sLabel
      * @return int
      */
-    public function getBranchDisplacementForLabel(string $sLabel) : int {
+    public function getBranchDisplacementForLabel(string $sLabel): int {
         $iPosition = $this->getPositionForLabel($sLabel);
         if (null !== $iPosition) {
             $iDisplacement = $this->oOutput->getDisplacmentForPosition($iPosition);
@@ -229,7 +229,7 @@ class Coordinator {
      * @param  string $sLabel
      * @return int|null
      */
-    public function getPositionForLabel(string $sLabel) : ?int {
+    public function getPositionForLabel(string $sLabel): ?int {
         return (Defs\ILabel::LOCAL_PREFIX_CHAR === $sLabel[0]) ?
             $this->oLabelLocation->getPositionForLocal($this->oCurrentFile, $sLabel) :
             $this->oLabelLocation->getPositionForGlobal($sLabel);
@@ -241,7 +241,7 @@ class Coordinator {
      * @param  string $sLabel
      * @return self
      */
-    public function addUnresolvedLabel(string $sLabel) : self {
+    public function addUnresolvedLabel(string $sLabel): self {
         $iLocation = $this->oOutput->getCurrentOffset() - Defs\IBranchLimits::DISPLACEMENT_SIZE;
         $this->oLabelLocation->addUnresolved(
             $this->oCurrentFile,
@@ -257,7 +257,7 @@ class Coordinator {
      * @param  string $sLabel
      * @return bool
      */
-    public function isDefinedImport(string $sLabel) : bool {
+    public function isDefinedImport(string $sLabel): bool {
         return $this->oLabelLocation->isDefinedImport($sLabel);
     }
 
@@ -267,7 +267,7 @@ class Coordinator {
      * @param  string $sLabel
      * @return self
      */
-    public function addImportReference(string $sLabel) : self {
+    public function addImportReference(string $sLabel): self {
         $iLocation = $this->oOutput->getCurrentOffset() - Defs\IBranchLimits::DISPLACEMENT_SIZE;
         $this->oLabelLocation->addImportReference(
             $this->oCurrentFile,

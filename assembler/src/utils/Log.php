@@ -27,18 +27,22 @@ class Log {
     private static int $iLine  = 0;
 
     /**
+     * Variadic template string message
+     *
      * @param string $sFormat
      */
-    public static function printf(string $sFormat, ...$aVarArgs) : void {
+    public static function printf(string $sFormat, ...$aVarArgs): void {
         fprintf(
             STDERR, ('#%d ' . $sFormat . "\n"), self::$iLine++, ...$aVarArgs
         );
     }
 
     /**
+     * Simple direct message
+     *
      * @param string $sMessage
      */
-    public static function write(string $sMessage) : void {
+    public static function write(string $sMessage): void {
         fprintf(
             STDERR, "#%d %s\n", self::$iLine++, $sMessage
         );

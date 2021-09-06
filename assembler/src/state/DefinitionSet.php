@@ -42,7 +42,7 @@ class DefinitionSet {
      * @return self   fluent
      * @throws \Exception
      */
-    public function add(string $sDefinition, string $sValue) : self {
+    public function add(string $sDefinition, string $sValue): self {
         if (isset($this->aDefinitions[$sDefinition])) {
             throw new \Exception("Duplicate definition");
         }
@@ -57,7 +57,7 @@ class DefinitionSet {
      * @param  string $sDefinition
      * @return self   fluent
      */
-    public function remove($sDefinition) : self {
+    public function remove($sDefinition): self {
         unset($this->aDefinitions[$sDefinition]);
         return $this;
     }
@@ -68,7 +68,7 @@ class DefinitionSet {
      *
      * @return string[]
      */
-    public function getDefinitions() : array {
+    public function getDefinitions(): array {
         if (false === $this->bolSorted) {
             uasort(
                 $this->aDefinitions,
@@ -92,7 +92,7 @@ class DefinitionSet {
      * @param  string $sInput
      * @return string
      */
-    public function applyTo(string $sInput) : string {
+    public function applyTo(string $sInput): string {
         if (empty($this->aDefinitions)) {
             return $sInput;
         }

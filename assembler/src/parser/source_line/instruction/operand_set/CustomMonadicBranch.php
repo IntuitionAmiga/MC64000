@@ -37,6 +37,13 @@ class CustomMonadicBranch extends CustomMonadic {
         MIN_OPERAND_COUNT = 2
     ;
 
+    /**
+     * Constructor
+     *
+     * @param int[]                    $aOpcodes
+     * @param EffectiveAddress\IParser $oSrcParser
+     * @param bool                     $bAllowBranchToSelf
+     */
     public function __construct(array $aOpcodes, EffectiveAddress\IParser $oSrcParser, bool $bAllowBranchToSelf) {
         parent::__construct($aOpcodes, $oSrcParser);
         $this->bAllowBranchToSelf = $bAllowBranchToSelf;
@@ -46,7 +53,7 @@ class CustomMonadicBranch extends CustomMonadic {
     /**
      * @inheritDoc
      */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
 
         $iSrcIndex     = $this->getSourceOperandIndex();

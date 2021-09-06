@@ -37,7 +37,7 @@ class SecondPass {
      * @param  State\Output $oOutput
      * @throws \Exception
      */
-    public function resolveForwardsBranchReferences(State\LabelLocation $oLabelLocation, State\Output $oOutput) : self {
+    public function resolveForwardsBranchReferences(State\LabelLocation $oLabelLocation, State\Output $oOutput): self {
         $aBranchTargets = $oLabelLocation->resolveBranchTargetList();
 
         $bLogResolution = State\Coordinator::get()
@@ -67,7 +67,14 @@ class SecondPass {
         return $this;
     }
 
-    public function enumerateImportReferences(State\LabelLocation $oLabelLocation, State\Output $oOutput) : self {
+    /**
+     * Runs over all the imported references and enumerates them ready for export.
+     *
+     * @param  State\LabelLocation $oLabelLocation
+     * @param  State\Output        $oOutput
+     * @return self (fluent)
+     */
+    public function enumerateImportReferences(State\LabelLocation $oLabelLocation, State\Output $oOutput): self {
         $aImportReferences = $oLabelLocation->getImports();
         $iImportID = 0;
 
@@ -111,5 +118,4 @@ class SecondPass {
         $oLabelLocation->setEnumeratedImports($aEnumeratedImports);
         return $this;
     }
-
 }

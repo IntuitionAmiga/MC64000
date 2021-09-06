@@ -29,7 +29,7 @@ class Binary {
      * @param  string $sBinary
      * @return string
      */
-    public static function format(string $sBinary) : string {
+    public static function format(string $sBinary): string {
         return implode(' ', str_split(bin2hex($sBinary), 2));
     }
 }

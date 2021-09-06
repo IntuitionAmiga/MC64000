@@ -42,14 +42,14 @@ class GPRDirect implements IParser, EffectiveAddress\IRegisterDirect {
     /**
      * @inheritDoc
      */
-    public function hasSideEffects() : bool {
+    public function hasSideEffects(): bool {
         return false;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         if (preg_match(static::MATCH, $sSource, $aMatches)) {
             return chr(self::OFS_GPR_DIR + Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_NAME]));
         }

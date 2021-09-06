@@ -60,21 +60,21 @@ class Definition {
     /**
      * @return string
      */
-    public function getBaseDirectoryPath() : string {
+    public function getBaseDirectoryPath(): string {
         return $this->sBaseDirectory;
     }
 
     /**
      * @return string
      */
-    public function getOutputBinaryPath() : string {
+    public function getOutputBinaryPath(): string {
         return $this->sOutputBinary;
     }
 
     /**
      * @return string[]
      */
-    public function getSourceList() : array {
+    public function getSourceList(): array {
         return $this->aSourceFiles;
     }
 
@@ -83,7 +83,7 @@ class Definition {
      *
      * @return State\Target
      */
-    public function getTarget() : State\Target {
+    public function getTarget(): State\Target {
         return $this->oTarget;
     }
 
@@ -92,7 +92,7 @@ class Definition {
      *
      * @return State\DefinitionSet
      */
-    public function getDefinitionSet() : State\DefinitionSet {
+    public function getDefinitionSet(): State\DefinitionSet {
         return $this->oDefinitionSet;
     }
 
@@ -101,7 +101,7 @@ class Definition {
      *
      * @return State\Options
      */
-    public function getOptions() : State\Options {
+    public function getOptions(): State\Options {
         return $this->oOptions;
     }
 
@@ -113,10 +113,10 @@ class Definition {
      * Output binary name
      * List of Sources
      *
-     * @param string $sProjectFile
-     *
+     * @param  string $sProjectFile
+     * @return self (fluent)
      */
-    public function load(string $sProjectFile) : self {
+    public function load(string $sProjectFile): self {
         Log::printf("Attempting to open project file %s...", $sProjectFile);
 
         $oProjectData = $this->loadDefinition($sProjectFile);
@@ -141,7 +141,7 @@ class Definition {
     /**
      * @param object $oProjectData
      */
-    private function processTarget(object $oProjectData) {
+    private function processTarget(object $oProjectData): void {
         $this->oTarget = new State\Target(
             (string)$oProjectData->target->name,
             (string)$oProjectData->target->version
@@ -166,7 +166,7 @@ class Definition {
     /**
      * @param object $oProjectData
      */
-    private function processSources(object $oProjectData) {
+    private function processSources(object $oProjectData): void {
         $this->aSourceFiles = array_map(
             function(string $sSourcePath) {
                 $sSourcePath = $this->sBaseDirectory . $sSourcePath;
@@ -185,7 +185,7 @@ class Definition {
     /**
      * @param object $oProjectData
      */
-    private function processOptions(object $oProjectData) {
+    private function processOptions(object $oProjectData): void {
         if (!empty($oProjectData->options) && (
             is_object($oProjectData->options) ||
             is_array($oProjectData->options)
@@ -197,7 +197,7 @@ class Definition {
     /**
      * @param object $oProjectData
      */
-    private function processDefines(object $oProjectData) {
+    private function processDefines(object $oProjectData): void {
         if (!empty($oProjectData->defines) && (
             is_object($oProjectData->defines) ||
             is_array($oProjectData->defines)
@@ -212,7 +212,7 @@ class Definition {
      * @param  string $oProjectFile
      * @return object
      */
-    private function loadDefinition(string $sProjectFile) : object {
+    private function loadDefinition(string $sProjectFile): object {
         if (
             empty($sProjectFile) ||
             !file_exists($sProjectFile) ||

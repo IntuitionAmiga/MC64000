@@ -369,47 +369,6 @@ interface IMatches extends IRegisterDirect, IRegisterIndirect, IRegisterIndirect
         //////////////////////////////////////////////////////////////////
 
         // Program counter with 32-bit scaled signed 8-bit index (pc, rN.b*4)
-        '/^\(\s*pc\s*,\s*' . self::RDA . '\.b\s*\*\s*4\s*\)$/' => self::PC_IND_IDXB_4,
-
-        // Program counter with 32-bit scaled signed 16-bit index (pc, rN.w*4)
-        '/^\(\s*pc\s*,\s*' . self::RDA . '\.w\s*\*\s*4\s*\)$/' => self::PC_IND_IDXW_4,
-
-        // Program counter with 32-bit scaled signed 32-bit index (pc, rN.l*4)
-        '/^\(\s*pc\s*,\s*' . self::RDA . '\.l\s*\*\s*4\s*\)$/' => self::PC_IND_IDXL_4,
-
-        // Program counter with 32-bit scaled signed 64-bit index (pc, rN.q*4)
-        '/^\(\s*pc\s*,\s*' . self::RDA . '\.q\s*\*\s*4\s*\)$/' => self::PC_IND_IDXQ_4,
-
-        //////////////////////////////////////////////////////////////////
-
-        // Program counter with 32-bit scaled signed 8-bit index and signed displacement d32(pc, rN.b*2)
-        '/^' . self::D32 . '\s*\(\s*pc\s*,\s*' . self::RDA . '\.b\s*\*\s*4\s*\)$/' => self::PC_IND_IDXB_4_DSP,
-
-        // Program counter with 32-bit scaled signed 8-bit index and signed displacement (d32, pc, rN.b*2)
-        '/^\(\s*' . self::D32 . '\s*,\s*pc\s*,\s*' . self::RDA . '\.b\s*\*\s*4\s*\)$/' => self::PC_IND_IDXB_4_DSP,
-
-        // Program counter with 32-bit scaled signed 16-bit index and signed displacement d32(pc, rN.w*2)
-        '/^' . self::D32 . '\s*\(\s*pc\s*,\s*' . self::RDA . '\.w\s*\*\s*4\s*\)$/' => self::PC_IND_IDXW_4_DSP,
-
-        // Program counter with 32-bit scaled signed 16-bit index and signed displacement (d32, pc, rN.w*2)
-        '/^\(\s*' . self::D32 . '\s*,\s*pc\s*,\s*' . self::RDA . '\.w\s*\*\s*4\s*\)$/' => self::PC_IND_IDXW_4_DSP,
-
-        // Program counter with 32-bit scaled signed 32-bit index and signed displacement d32(pc, rN.l*2)
-        '/^' . self::D32 . '\s*\(\s*pc\s*,\s*' . self::RDA . '\.l\s*\*\s*4\s*\)$/' => self::PC_IND_IDXL_4_DSP,
-
-        // Program counter with 32-bit scaled signed 32-bit index and signed displacement (d32, pc, rN.l*2)
-        '/^\(\s*' . self::D32 . '\s*,\s*pc\s*,\s*' . self::RDA . '\.l\s*\*\s*4\s*\)$/' => self::PC_IND_IDXL_4_DSP,
-
-        // Program counter with 32-bit scaled signed 64-bit index and signed displacement d32(pc, rN.q*2)
-        '/^' . self::D32 . '\s*\(\s*pc\s*,\s*' . self::RDA . '\.q\s*\*\s*4\s*\)$/' => self::PC_IND_IDXQ_4_DSP,
-
-        // Program counter with 32-bit scaled signed 64-bit index and signed displacement d32(pc, rN.q*2)
-        '/^\(\s*' . self::D32 . '\s*,\s*pc\s*,\s*' . self::RDA . '\.q\s*\*\s*4\s*\)$/' => self::PC_IND_IDXQ_4_DSP,
-
-
-        //////////////////////////////////////////////////////////////////
-
-        // Program counter with 32-bit scaled signed 8-bit index (pc, rN.b*4)
         '/^\(\s*pc\s*,\s*' . self::RDA . '\.b\s*\*\s*8\s*\)$/' => self::PC_IND_IDXB_8,
 
         // Program counter with 32-bit scaled signed 16-bit index (pc, rN.w*4)

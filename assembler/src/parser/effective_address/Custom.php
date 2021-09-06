@@ -31,7 +31,7 @@ class Custom implements IParser {
     /**
      * @inheritDoc
      */
-    public function hasSideEffects() : bool {
+    public function hasSideEffects(): bool {
         if ($this->oParser instanceof IParser) {
             return $this->oParser->hasSideEffects();
         }
@@ -41,7 +41,7 @@ class Custom implements IParser {
     /**
      * @inheritDoc
      */
-    public function setOperationSize(int $iSize) : self {
+    public function setOperationSize(int $iSize): self {
         if ($this->oParser instanceof IParser) {
             $this->oParser->setOperationSize($iSize);
         }
@@ -60,7 +60,7 @@ class Custom implements IParser {
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         return $this->oParser->parse($sSource);
     }
 }

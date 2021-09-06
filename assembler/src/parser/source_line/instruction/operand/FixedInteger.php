@@ -19,6 +19,7 @@ namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
 use ABadCafe\MC64K;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Parser;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 
 use function \preg_match, \substr, \pack, \strlen, \str_pad;
 
@@ -52,7 +53,7 @@ class FixedInteger implements MC64K\IParser, Defs\IIntLimits {
      *
      * @throws CodeFoldException
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         if (preg_match(self::MATCH_NUMERIC, $sSource, $aMatches)) {
             $sImmediate = $aMatches[self::MATCHED_VALUE];
             if (isset($aMatches[self::MATCHED_HEX])) {
@@ -68,7 +69,7 @@ class FixedInteger implements MC64K\IParser, Defs\IIntLimits {
      * @param  int $iImmediate
      * @return string
      */
-    private function encodeDecimalIntegerImmediate(int $iImmediate) : string {
+    private function encodeDecimalIntegerImmediate(int $iImmediate): string {
         return pack(self::WORD_SIZES[$this->iSize][self::BIN_FORMAT], $iImmediate);
     }
 
@@ -76,10 +77,10 @@ class FixedInteger implements MC64K\IParser, Defs\IIntLimits {
      * @param  string $sImmediate
      * @return string
      */
-    private function encodeHexadecimalIntegerImmediate(string $sImmediate) : string {
+    private function encodeHexadecimalIntegerImmediate(string $sImmediate): string {
         $iHexLength = strlen($sImmediate);
         if ($iHexLength > ($this->iSize * 2)) {
-            throw new \RangeException('Could not encode ' . $sImmediate, ', too large for expected operand size ' . $this->iSize);
+            throw new \RangeException('Could not encode ' . $sImmediate . ', too large for expected operand size ' . $this->iSize);
         }
         $iImmediate = 0;
         switch ($this->iSize) {

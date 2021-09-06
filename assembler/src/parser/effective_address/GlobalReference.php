@@ -44,14 +44,14 @@ class GlobalReference implements IParser, EffectiveAddress\IOther {
     /**
      * @inheritDoc
      */
-    public function hasSideEffects() : bool {
+    public function hasSideEffects(): bool {
         return false;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         if (preg_match(self::MATCH, $sSource, $aMatches)) {
             $sLabel = $aMatches[0];
             $oState = State\Coordinator::get();
@@ -74,6 +74,6 @@ class GlobalReference implements IParser, EffectiveAddress\IOther {
                 return chr(self::PC_IND_DSP) . pack(Defs\IIntLimits::LONG_BIN_FORMAT, $iDisplacement);
             }
         }
-
+        return null;
     }
 }

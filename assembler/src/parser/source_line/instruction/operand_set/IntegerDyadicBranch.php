@@ -84,7 +84,7 @@ class IntegerDyadicBranch extends DyadicBranch {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return array_keys(self::OPCODES);
     }
 
@@ -98,7 +98,7 @@ class IntegerDyadicBranch extends DyadicBranch {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateBitSetByte($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldImmediateBitSetByte($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
         return (1<<($mSrcImmediate & 7)) & $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
     }
 
@@ -112,8 +112,8 @@ class IntegerDyadicBranch extends DyadicBranch {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateBitSetWord($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        return (1<<($mSrcImmediate & 15)) & $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    protected function foldImmediateBitSetWord($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
+        return (1<<($mSrcImmediate & 15)) & $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize): '';
     }
 
     /**
@@ -126,8 +126,8 @@ class IntegerDyadicBranch extends DyadicBranch {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateBitSetLong($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        return (1<<($mSrcImmediate & 31)) & $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    protected function foldImmediateBitSetLong($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
+        return (1<<($mSrcImmediate & 31)) & $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize): '';
     }
 
     /**
@@ -140,8 +140,8 @@ class IntegerDyadicBranch extends DyadicBranch {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateBitSetQuad($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        return (1<<($mSrcImmediate & 63)) & $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    protected function foldImmediateBitSetQuad($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
+        return (1<<($mSrcImmediate & 63)) & $mDstImmediate ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize): '';
     }
 
     /**
@@ -154,8 +154,8 @@ class IntegerDyadicBranch extends DyadicBranch {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateBitClearByte($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        return 0 === ((1<<($mSrcImmediate & 7)) & $mDstImmediate) ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    protected function foldImmediateBitClearByte($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
+        return 0 === ((1<<($mSrcImmediate & 7)) & $mDstImmediate) ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize): '';
     }
 
     /**
@@ -168,8 +168,8 @@ class IntegerDyadicBranch extends DyadicBranch {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateBitClearWord($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
-        return 0 === ((1<<($mSrcImmediate & 15)) & $mDstImmediate) ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
+    protected function foldImmediateBitClearWord($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
+        return 0 === ((1<<($mSrcImmediate & 15)) & $mDstImmediate) ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize): '';
     }
 
     /**
@@ -182,7 +182,7 @@ class IntegerDyadicBranch extends DyadicBranch {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateBitClearLong($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldImmediateBitClearLong($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
         return 0 === ((1<<($mSrcImmediate & 31)) & $mDstImmediate) ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
     }
 
@@ -196,7 +196,7 @@ class IntegerDyadicBranch extends DyadicBranch {
      * @param  int       $iOriginalSize
      * @return string
      */
-    protected function foldImmediateBitClearQuad($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldImmediateBitClearQuad($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
         return 0 === ((1<<($mSrcImmediate & 63)) & $mDstImmediate) ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
     }
 }

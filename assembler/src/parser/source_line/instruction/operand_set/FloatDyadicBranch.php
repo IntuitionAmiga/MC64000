@@ -65,7 +65,7 @@ class FloatDyadicBranch extends DyadicBranch {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return array_keys(self::OPCODES);
     }
 }

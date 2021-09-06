@@ -53,14 +53,14 @@ class GPRIndirectDisplacement implements IParser, EffectiveAddress\IRegisterIndi
     /**
      * @inheritDoc
      */
-    public function hasSideEffects() : bool {
+    public function hasSideEffects(): bool {
         return false;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         foreach (self::MATCHES as $sMatch => $iOffset) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
                 $iRegister = Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_NAME]);

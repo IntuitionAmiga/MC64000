@@ -49,14 +49,14 @@ class GPRIndirectUpdating extends GPRIndirect {
     /**
      * @inheritDoc
      */
-    public function hasSideEffects() : bool {
+    public function hasSideEffects(): bool {
         return true;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         foreach (self::MATCHES as $sMatch => $iOffset) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
                 $sRegister = $aMatches[self::MATCHED_NAME];

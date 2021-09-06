@@ -34,8 +34,6 @@ class PackedFPRPair extends PackedRegisterPair {
 
     /**
      * Constructor
-     *
-     * @param int[] $aOpcodes
      */
     public function __construct() {
         $this->oSrcParser = new EffectiveAddress\FPRDirect();
@@ -46,14 +44,14 @@ class PackedFPRPair extends PackedRegisterPair {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return self::OPCODES;
     }
 
     /**
      * @inheritDoc
      */
-    protected function foldIfOperandsSame(int $iOpcode) : bool {
+    protected function foldIfOperandsSame(int $iOpcode): bool {
         return IDataMove::FEXG === $iOpcode;
     }
 }

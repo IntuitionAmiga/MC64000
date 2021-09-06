@@ -36,8 +36,11 @@ class Options {
 
     /**
      * Import a key-value set of options
+     *
+     * @param  mixed[] $aOptions
+     * @return self (fluent)
      */
-    public function import(array $aOptions) : self {
+    public function import(array $aOptions): self {
         foreach ($aOptions as $sOption => $mValue) {
             $iKind = Defs\Project\IOptions::TYPE_MAP[$sOption] ?? -1;
             switch ($iKind) {
@@ -58,8 +61,8 @@ class Options {
      * @param  string $sOption
      * @return self   fluent
      */
-    public function enable(string $sOption) : self {
-        $this->aAllOptions[$sOption] =
+    public function enable(string $sOption): self {
+        $this->aAllOptions[$sOption]  =
         $this->aBoolOptions[$sOption] = true;
         return $this;
     }
@@ -70,8 +73,8 @@ class Options {
      * @param  string $sOption
      * @return self   fluent
      */
-    public function disable(string $sOption) : self {
-        $this->aAllOptions[$sOption] =
+    public function disable(string $sOption): self {
+        $this->aAllOptions[$sOption]  =
         $this->aBoolOptions[$sOption] = false;
         return $this;
     }
@@ -82,7 +85,7 @@ class Options {
      * @param  string $sOption
      * @return bool   false unless specifically enabled
      */
-    public function isEnabled(string $sOption) : bool {
+    public function isEnabled(string $sOption): bool {
         return $this->aBoolOptions[$sOption] ?? false;
     }
 

@@ -29,8 +29,7 @@ trait TParser {
     /**
      * @implements IParser::checkLine()
      */
-    public function checkLine(string $sLine) : bool {
+    public function checkLine(string $sLine): bool {
         return (bool)preg_match(self::BASIC_LINE_MATCH, $sLine);
     }
-
 }

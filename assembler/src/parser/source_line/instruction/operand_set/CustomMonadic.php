@@ -25,9 +25,19 @@ use ABadCafe\MC64K\Parser\EffectiveAddress;
  */
 class CustomMonadic extends Monadic {
 
+    /** @var int[] $aOpcodes */
     private array $aOpcodes = [];
+
+    /** @var string[] $aPrefix */
     private array $aPrefix  = [];
 
+    /**
+     * Constructor
+     *
+     * @param int[]                    $aOpcodes
+     * @param EffectiveAddress\IParser $oSrcParser
+     * @param string[]                 $aPrefix
+     */
     public function __construct(array $aOpcodes, EffectiveAddress\IParser $oSrcParser, array $aPrefix = []) {
         $this->aOpcodes   = $aOpcodes;
         $this->aPrefix    = $aPrefix;
@@ -37,14 +47,14 @@ class CustomMonadic extends Monadic {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return $this->aOpcodes;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
         $sBytecode = parent::parse($iOpcode, $aOperands, $aSizes);
         if (isset($this->aPrefix[$iOpcode])) {
             return $this->aPrefix[$iOpcode] . $sBytecode;
