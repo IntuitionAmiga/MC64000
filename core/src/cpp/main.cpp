@@ -62,9 +62,8 @@ int main(int iArgN, const char** aArgV) {
 
     try {
         const char* sExecutableName = aArgV[1];
-        Binary oMC64KBinary ( sExecutableName );
+        Binary oMC64KBinary(sExecutableName);
         const Executable* pExecutable = oMC64KBinary.load();
-
         const LinkSymbol* aExports = 0;
 
         std::printf(
@@ -76,14 +75,14 @@ int main(int iArgN, const char** aArgV) {
         uint32 uSymbolCount = 0;
 
         if ( (uSymbolCount = pExecutable->getNumExportedSymbols()) ) {
-            std::printf (
+            std::printf(
                 "Executable defines %u exported symbols:\n",
                 uSymbolCount
             );
 
             aExports = pExecutable->getExportedSymbols();
             for (unsigned u = 0; u < uSymbolCount; ++u) {
-                std::printf (
+                std::printf(
                     "\t%2u %p %s 0x%016lX\n",
                     u,
                     aExports[u].pRawData,
@@ -94,7 +93,7 @@ int main(int iArgN, const char** aArgV) {
         }
 
         if ( (uSymbolCount = pExecutable->getNumImportedSymbols()) ) {
-            std::printf (
+            std::printf(
                 "Executable expects %u imported symbols:\n",
                 uSymbolCount
             );
