@@ -48,14 +48,14 @@ class PackedGPRPair extends PackedRegisterPair {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return self::OPCODES;
     }
 
     /**
      * @inheritDoc
      */
-    protected function foldIfOperandsSame(int $iOpcode) : bool {
+    protected function foldIfOperandsSame(int $iOpcode): bool {
         return IDataMove::EXG === $iOpcode;
     }
 }

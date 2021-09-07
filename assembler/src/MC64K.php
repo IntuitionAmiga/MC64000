@@ -17,6 +17,8 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K;
 
+use function \spl_autoload_register;
+
 /**
  * If you aren't using 7.4, no dice.
  */
@@ -29,6 +31,7 @@ if (PHP_VERSION_ID < 70400) {
  * within it's corresponding subdirectory.
  */
 require_once 'classmap.php';
+
 spl_autoload_register(function(string $str_class) {
     if (isset(CLASS_MAP[$str_class])) {
         require_once __DIR__ . CLASS_MAP[$str_class];

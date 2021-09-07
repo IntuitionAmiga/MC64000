@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Parser\Utils;
 use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\IIntLimits;
 
+use function \substr, \strlen;
+
 /**
  * TSignedDisplacementAware
  *
@@ -30,9 +32,9 @@ trait TSignedDisplacementAware {
      * @param  string $sDisplacement
      * @param  bool   $bHex
      * @return int
-     * @throws \RangeError
+     * @throws \RangeException
      */
-    private function parseDisplacement(string $sDisplacement, bool $bHex) : int {
+    private function parseDisplacement(string $sDisplacement, bool $bHex): int {
         if ($bHex) {
             return $this->parseHexDisplacement($sDisplacement);
         } else {
@@ -43,27 +45,27 @@ trait TSignedDisplacementAware {
     /**
      * @param  string $sDisplacement
      * @return int
-     * @throws \RangeError
+     * @throws \RangeException
      */
-    private function parseHexDisplacement(string $sDisplacement) : int {
+    private function parseHexDisplacement(string $sDisplacement): int {
         $sDisplacement = substr($sDisplacement, 2);
         if (strlen($sDisplacement) <= 8) {
             return Parser\Utils\Hex::stringToInt32($sDisplacement);
         }
-        throw new \RangeError('Displacement ' . $sDisplacement . ' is too large');
+        throw new \RangeException('Displacement ' . $sDisplacement . ' is too large');
     }
 
     /**
      * @param  string $sDisplacement
      * @return int
-     * @throws \RangeError
+     * @throws \RangeException
      */
-    private function parseDecimalDisplacement(string $sDisplacement) : int {
+    private function parseDecimalDisplacement(string $sDisplacement): int {
         $iDisplacement = (int)$sDisplacement;
         // Test against limits for signed 32-bit integer
         if ($iDisplacement >= IIntLimits::LONG_MIN_SIGNED && $iDisplacement <= IIntLimits::LONG_MAX_SIGNED) {
             return $iDisplacement;
         }
-        throw new \RangeError('Displacement ' . $sDisplacement . ' is too large');
+        throw new \RangeException('Displacement ' . $sDisplacement . ' is too large');
     }
 }

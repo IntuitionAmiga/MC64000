@@ -39,7 +39,7 @@ class CodeFoldException extends \Exception {
      *
      * @return string
      */
-    public final function getAlternativeBytecode() : string {
+    public final function getAlternativeBytecode(): string {
         return $this->sAlternative;
     }
 }

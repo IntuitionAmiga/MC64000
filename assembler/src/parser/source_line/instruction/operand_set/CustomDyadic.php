@@ -29,6 +29,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
  */
 class CustomDyadic extends Dyadic {
 
+    /** @var int[] $aOpcodes */
     private array $aOpcodes = [];
 
     /**
@@ -52,7 +53,7 @@ class CustomDyadic extends Dyadic {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return $this->aOpcodes;
     }
 

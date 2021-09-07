@@ -27,26 +27,26 @@ interface ISourceFile {
     /**
      * @return string|null
      */
-    public function readLine() : ?string;
+    public function readLine(): ?string;
 
     /**
      * Get the name of the file
      *
      * @return string
      */
-    public function getFilename() : string;
+    public function getFilename(): string;
 
     /**
      * Get the current line number
      *
      * @return int
      */
-    public function getLineNumber() : int;
+    public function getLineNumber(): int;
 
     /**
      * Get the current line content
      *
      * @return string
      */
-    public function getLine() : string;
+    public function getLine(): string;
 }

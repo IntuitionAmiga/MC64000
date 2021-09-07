@@ -20,6 +20,8 @@ use ABadCafe\MC64K\Parser\SourceLine\Directive;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 
+use function \preg_match, \rtrim;
+
 /**
  * Import
  *
@@ -38,14 +40,14 @@ class Import implements Directive\IProcessor {
     /**
      * @inheritDoc
      */
-    public function getMatchingKeywords() : array {
+    public function getMatchingKeywords(): array {
         return self::KEYWORDS;
     }
 
     /**
      * @inheritDoc
      */
-    public function process(string $sSource) {
+    public function process(string $sSource): void {
         preg_match(self::EXTRACT_MATCH, rtrim($sSource), $aMatches);
         if (!empty($aMatches[1])) {
             State\Coordinator::get()

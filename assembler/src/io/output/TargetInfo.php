@@ -23,26 +23,28 @@ use function \array_column, \implode;
 use function \count, \strlen, \pack, \chr;
 
 /**
- * ExportList
+ * TargetInfo
  *
- * Chunk that contains the exported global labels.
- * As the maximum code size is 2^31-1 bytes, the offsets are recorded as unsigned 32-bit integers.
+ * Contains information about the compiled target. This includes a set of flags that say what the target is,
+ * i.e. an executable or a library, etc. Next follows a dependency list of version ID values and names.
  *
+ * The first entry in the dependency list is the target itself. For executable targets, the next entry in the
+ * list is always the expected host.
  *
  * The raw chunk body data format is:
- *     Number of labels uint32
- *     Offset table     uint32[Number of Labels]
- *     Label names      char[]
+ *     Flags             uint32
+ *     Number of entries uint32
+ *     Version table     uint32[Number of Labels]
+ *     Dependency names  char[]
  *
- * Labels are between 2-256 characters (including a null terminator) and the label names section is
+ * Dependency names are 4-256 characters (including a null terminator) and the label names section is
  * stored as a string blob, including null terminators to allow the data to be safely loaded in a C
  * runtime. Knowing how many labels there are, the runtime just needs to scan through the blob and
  * each time it encounters a null terminator, record the start of the string preceding it.
  */
-class ExportList implements IBinaryChunk {
-
+class TargetInfo implements IBinaryChunk {
     const
-        TYPE  = 'Exported'
+        TYPE  = 'TrgtInfo'
     ;
 
     private string $sBinary;
@@ -50,28 +52,16 @@ class ExportList implements IBinaryChunk {
     /**
      * Constructor. Builds the binary represntation for the export list.
      *
-     * @param State\LabelLocation $oLabelLocation
+     * @param State\Target $oTarget
      */
-    public function __construct(State\LabelLocation $oLabelLocation) {
-        $aExports = $oLabelLocation->resolveExports();
-        $aLabels  = array_column($aExports, 'sLabel');
-        $aIEQualifications = $oLabelLocation->getImportExportQualifications();
-        foreach ($aLabels as $i => $sLabel) {
-            if (!isset($aIEQualifications[$sLabel])) {
-                throw new \Exception("Could not find Import/Export access for label " . $sLabel);
-            }
-            $aLabels[$i] = $sLabel . chr($aIEQualifications[$sLabel]);
-        }
-        $this->sBinary =
-            // Label Count
-            pack('V', count($aExports)) .
-
-            // Offset table
-            pack('V*', ...array_column($aExports, 'iLabelPosition')) .
-
-            // Strings blob. Null terminated strings that are to be rescanned on loading.
-            implode('', $aLabels)
-        ;
+    public function __construct(State\Target $oTarget) {
+        $aDependencies = $oTarget->getDependencySet()->getList();
+        $this->sBinary = pack(
+            'V*',
+            $oTarget->getFlags(),
+            count($aDependencies),
+            ...array_column($aDependencies, 'iVersion')
+        ) . implode(chr(0), array_column($aDependencies, 'sName')) . chr(0);
     }
 
     /**

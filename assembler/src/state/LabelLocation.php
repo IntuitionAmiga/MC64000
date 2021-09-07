@@ -20,6 +20,8 @@ use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\IO;
 
+use function \sprintf, \strlen, \array_flip, \str_split;
+
 /**
  * LabelLocation
  *
@@ -38,14 +40,37 @@ class LabelLocation {
         IE_CALL  = 4
     ;
 
-    private array $aGlobalLabels     = [];
-    private array $aLocalLabels      = [];
-    private array $aUnresolvedLabels = [];
-    private array $aExportedLabels   = [];
-    private array $aImportedLabels   = [];
-    private array $aEumeratedImports = [];
+    /** @var array[] $aGlobalLabels */
+    private array $aGlobalLabels         = [];
 
+    /** @var array[] $aLocalLabels */
+    private array $aLocalLabels          = [];
+
+    /** @var array[] $aUnresolvedLabels */
+    private array $aUnresolvedLabels     = [];
+
+    /** @var string[] $aExportedLabels */
+    private array $aExportedLabels       = [];
+
+    /** @var array[] $aImportedLabels */
+    private array $aImportedLabels       = [];
+
+    /** @var string[] $aEnumeratedImports */
+    private array $aEnumeratedImports    = [];
+
+    /** @var int[] $aLabelIEQualification */
     private array $aLabelIEQualification = [];
+
+    const IE_MODES = [
+        '---',
+        'r--',
+        '-w-',
+        'rw-',
+        '--x',
+        'r-x',
+        '-wx',
+        'rwx'
+    ];
 
     /**
      * Register a label for export. This will be sanity checked in the second pass.
@@ -58,7 +83,7 @@ class LabelLocation {
      * @return self
      * @throws \Exception
      */
-    public function registerExport(string $sLabel, string $sIEQualification) : self {
+    public function registerExport(string $sLabel, string $sIEQualification): self {
         $this->assertLabel($sLabel);
         if (isset($this->aImportedLabels[$sLabel])) {
             throw new \Exception("Label " . $sLabel . " is already registered as an import");
@@ -79,7 +104,7 @@ class LabelLocation {
      * @return self
      * @throws \Exception
      */
-    public function registerImport(string $sLabel, string $sIEQualification) : self {
+    public function registerImport(string $sLabel, string $sIEQualification): self {
         $this->assertLabel($sLabel);
         if (isset($this->aExportedLabels[$sLabel])) {
             throw new \Exception("Label " . $sLabel . " is already registered as an export");
@@ -107,7 +132,7 @@ class LabelLocation {
      * @return self
      * @throws \Exception
      */
-    public function addGlobal(IO\ISourceFile $oFile, string $sLabel, int $iOffset) : self {
+    public function addGlobal(IO\ISourceFile $oFile, string $sLabel, int $iOffset): self {
         $this->assertLabel($sLabel);
         if (isset($this->aGlobalLabels[$sLabel])) {
             throw new \Exception(
@@ -137,20 +162,20 @@ class LabelLocation {
     /**
      * Add a local label to the registry. A local label can be declared only once in given file.
      *
-     * @param  IO\File $oFile
-     * @param  string  $sLabel
-     * @param  int     $iOffset
+     * @param  IO\ISourceFile $oFile
+     * @param  string         $sLabel
+     * @param  int            $iOffset
      * @return self
      * @throws \Exception
      */
-    public function addLocal(IO\ISourceFile $oFile, string $sLabel, int $iOffset) : self {
+    public function addLocal(IO\ISourceFile $oFile, string $sLabel, int $iOffset): self {
         $this->assertLabel($sLabel);
         $sCurrentFile = $oFile->getFilename();
         if (isset($this->aLocalLabels[$sCurrentFile][$sLabel])) {
             throw new \Exception(
                 'Duplicate local: '     . $sLabel .
                 ' already declared in ' . $sCurrentFile .
-                ' on line '             . $this->aLocalLabels[$CurrentFile][$sLabel][self::I_LINE]
+                ' on line '             . $this->aLocalLabels[$sCurrentFile][$sLabel][self::I_LINE]
             );
         }
         $iLine = $oFile->getLineNumber();
@@ -172,19 +197,19 @@ class LabelLocation {
     /**
      * Returns the global symbol table.
      *
-     * @return array [string => [string, string, int]]
+     * @return array[] [string => [string, string, int]]
      */
-    public function getGlobals() : array {
+    public function getGlobals(): array {
         return $this->aGlobalLabels;
     }
 
     /**
      * Returns whether or not a given global label name is currently resolved.
      *
-     * @param  string
+     * @param  string $sLabel
      * @return bool
      */
-    public function isGlobalResolved(string $sLabel) : bool {
+    public function isGlobalResolved(string $sLabel): bool {
         return isset($this->aGlobalLabels[$sLabel]);
     }
 
@@ -195,7 +220,7 @@ class LabelLocation {
      * @param  string         $sLabel
      * @return int|null
      */
-    public function getPositionForLocal(IO\ISourceFile $oFile, string $sLabel) : ?int {
+    public function getPositionForLocal(IO\ISourceFile $oFile, string $sLabel): ?int {
         $sFile = $oFile->getFilename();
         if (isset($this->aLocalLabels[$sFile][$sLabel])) {
             if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_RESOLVE)) {
@@ -216,7 +241,7 @@ class LabelLocation {
      * @param  string $sLabel
      * @return int|null
      */
-    public function getPositionForGlobal(string $sLabel) : ?int {
+    public function getPositionForGlobal(string $sLabel): ?int {
         if (isset($this->aGlobalLabels[$sLabel])) {
             if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_RESOLVE)) {
                 Log::printf(
@@ -235,10 +260,10 @@ class LabelLocation {
      *
      * @param  IO\ISourceFile $oFile
      * @param  string         $sLabel
-     * @parma  int            $iLocation
+     * @param  int            $iLocation
      * @return self
      */
-    public function addUnresolved(IO\ISourceFile $oFile, string $sLabel, int $iLocation) : self {
+    public function addUnresolved(IO\ISourceFile $oFile, string $sLabel, int $iLocation): self {
         $this->assertLabel($sLabel);
         $sCurrentFilename   = $oFile->getFilename();
         $iCurrentLineNumber = $oFile->getLineNumber();
@@ -266,7 +291,7 @@ class LabelLocation {
      * @return self
      * @throws \Exception
      */
-    public function addImportReference(IO\ISourceFile $oFile, string $sLabel, int $iLocation) : self {
+    public function addImportReference(IO\ISourceFile $oFile, string $sLabel, int $iLocation): self {
         $this->assertLabel($sLabel);
 
         if (!isset($this->aImportedLabels[$sLabel])) {
@@ -298,7 +323,7 @@ class LabelLocation {
      * @return object[] {int, string, string, int}[]
      * @throws \Exception
      */
-    public function resolveBranchTargetList() : array {
+    public function resolveBranchTargetList(): array {
         $aResult = [];
         foreach ($this->aUnresolvedLabels as $sCurrentFilename => $aUnresolvedMap) {
             foreach ($aUnresolvedMap as $sLabel => $aUnresolvedLocation) {
@@ -341,7 +366,7 @@ class LabelLocation {
      *
      * @return object[] {string, int, string}[]
      */
-    public function resolveExports() : array {
+    public function resolveExports(): array {
         $aResult = [];
         foreach ($this->aExportedLabels as $sLabel) {
             if (!isset($this->aGlobalLabels[$sLabel])) {
@@ -361,10 +386,10 @@ class LabelLocation {
     /**
      * Set the array of imports that were enumerated in the second pass.
      *
-     * @param  array $aImports
+     * @param  string[] $aImports
      * @return self
      */
-    public function setEnumeratedImports(array $aImports) : self {
+    public function setEnumeratedImports(array $aImports): self {
         $this->aEnumeratedImports = $aImports;
         return $this;
     }
@@ -372,9 +397,9 @@ class LabelLocation {
     /**
      * Get the array of imports that were enumerated in the second pass.
      *
-     * @return array
+     * @return string[]
      */
-    public function getEnumeratedImports() : array {
+    public function getEnumeratedImports(): array {
         return $this->aEnumeratedImports;
     }
 
@@ -384,16 +409,16 @@ class LabelLocation {
      * @param  string $sLabel
      * @return bool
      */
-    public function isDefinedImport(string $sLabel) : bool {
+    public function isDefinedImport(string $sLabel): bool {
         return isset($this->aImportedLabels[$sLabel]);
     }
 
     /**
      * Returns the (pre-enumerated) set of imports.
      *
-     * @return array
+     * @return array[]
      */
-    public function getImports() : array {
+    public function getImports(): array {
         return $this->aImportedLabels;
     }
 
@@ -406,7 +431,7 @@ class LabelLocation {
      *
      * @return int[] - keyed by label.
      */
-    public function getImportExportQualifications() : array {
+    public function getImportExportQualifications(): array {
         return $this->aLabelIEQualification;
     }
 
@@ -416,13 +441,17 @@ class LabelLocation {
      * @param   string $sLabel
      * @@throws \LengthException
      */
-    private function assertLabel(string $sLabel) {
+    private function assertLabel(string $sLabel): void {
         if (strlen($sLabel) > Defs\ILabel::MAX_LENGTH) {
             throw new \LengthException();
         }
     }
 
-    private function parseIEQualification(string $sIEQualification) : int {
+    /**
+     * @param  string $sIEQualification
+     * @return int
+     */
+    private function parseIEQualification(string $sIEQualification): int {
         $aFlags = array_flip(str_split($sIEQualification, 1));
         return
             (isset($aFlags[Defs\ILabel::IE_READ])  ? self::IE_READ  : 0) |
@@ -431,9 +460,27 @@ class LabelLocation {
         ;
     }
 
-    private function addIEQualification(string $sLabel, int $iIEQualification) {
+    /**
+     * @param string $sLabel
+     * @param int    $iIEQualification
+     */
+    private function addIEQualification(string $sLabel, int $iIEQualification): void {
         if (isset($this->aLabelIEQualification[$sLabel])) {
-            $this->aLabelIEQualification[$sLabel] |= $iIEQualification;
+            $iOldIEQualification = $this->aLabelIEQualification[$sLabel];
+            $iNewIEQualification = $iOldIEQualification | $iIEQualification;
+            if ($iNewIEQualification !== $iOldIEQualification) {
+
+                if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_IEMODE)) {
+                    Log::printf(
+                        "Change of access scope on label '%s' from %s to %s",
+                        $sLabel,
+                        self::IE_MODES[$iOldIEQualification],
+                        self::IE_MODES[$iNewIEQualification]
+                    );
+                }
+
+                $this->aLabelIEQualification[$sLabel] = $iNewIEQualification;
+            }
         } else {
             $this->aLabelIEQualification[$sLabel] = $iIEQualification;
         }

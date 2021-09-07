@@ -18,8 +18,10 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\IO\Output;
 use ABadCafe\MC64K\Defs\IIntLimits;
 
+use function \count, \strlen, \pack;
+
 /**
- * ChunkList
+ * Manifest
  *
  * List of chunks to be included.
  *
@@ -40,14 +42,15 @@ use ABadCafe\MC64K\Defs\IIntLimits;
  * | Chunk #N Magic  (8 bytes) |
  *
  */
-class ChunkList implements IBinaryChunk {
+class Manifest implements IBinaryChunk {
 
     const
-        TYPE  = 'ChnkList',
+        TYPE  = 'Manifest',
         PAD   = self::ALIGNMENT - 1,
         ENTRY = 16
     ;
 
+    /** @var array[] $aChunks */
     private array $aChunks = [];
     private int   $iLocation;
 
@@ -71,9 +74,9 @@ class ChunkList implements IBinaryChunk {
      * @return self - fluent
      * @throws \Exception
      */
-    public function registerChunk(IBinaryChunk $oChunk) : self {
+    public function registerChunk(IBinaryChunk $oChunk): self {
         if ($oChunk === $this) {
-            throw new \Exception('ChunkList should not contain itself');
+            throw new \Exception('Manifest should not contain itself');
         }
         $sChunkType = $oChunk->getChunkType();
         if (self::TYPE_SIZE !== strlen($sChunkType)) {
@@ -93,14 +96,14 @@ class ChunkList implements IBinaryChunk {
      *
      * @return string
      */
-    public function getChunkType() : string {
+    public function getChunkType(): string {
         return self::TYPE;
     }
 
     /**
      * Returns the chunk length in bytes (not including the type header)
      */
-    public function getChunkLength() : int {
+    public function getChunkLength(): int {
         return count($this->aChunks) * self::ENTRY;
     }
 
@@ -109,7 +112,7 @@ class ChunkList implements IBinaryChunk {
      *
      * @return string
      */
-    public function getChunkData() : string {
+    public function getChunkData(): string {
         $sBody = '';
         $iChunkOffset = $this->iLocation + $this->getExpectedWriteSize($this);
         foreach ($this->aChunks as $aData) {
@@ -120,7 +123,11 @@ class ChunkList implements IBinaryChunk {
         return $sBody;
     }
 
-    private function getExpectedWriteSize(IBinaryChunk $oChunk) : int {
+    /**
+     * @param  IBinaryChunk $oChunk
+     * @return int
+     */
+    private function getExpectedWriteSize(IBinaryChunk $oChunk): int {
         // 16 byte header plus 8 byte aligned body for each registered chunk
         return self::ENTRY + ($oChunk->getChunkLength() + self::PAD) & ~self::PAD;
     }

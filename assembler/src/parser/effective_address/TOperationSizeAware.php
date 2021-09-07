@@ -29,7 +29,7 @@ trait TOperationSizeAware {
     /**
      * @inheritDoc
      */
-    public function setOperationSize(int $iSize) : self {
+    public function setOperationSize(int $iSize): self {
         $this->iOperationSize = $iSize;
         return $this;
     }

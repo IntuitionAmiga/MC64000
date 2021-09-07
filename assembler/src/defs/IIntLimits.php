@@ -60,25 +60,25 @@ interface IIntLimits {
     const WORD_SIZES = [
         self::BYTE => [
             self::MIN_SIGNED   => self::BYTE_MIN_SIGNED,
-            self::MIN_SIGNED   => self::BYTE_MAX_SIGNED,
+            self::MAX_SIGNED   => self::BYTE_MAX_SIGNED,
             self::MAX_UNSIGNED => self::BYTE_MAX_UNSIGNED,
             self::BIN_FORMAT   => self::BYTE_BIN_FORMAT
         ],
         self::WORD => [
             self::MIN_SIGNED   => self::WORD_MIN_SIGNED,
-            self::MIN_SIGNED   => self::WORD_MAX_SIGNED,
+            self::MAX_SIGNED   => self::WORD_MAX_SIGNED,
             self::MAX_UNSIGNED => self::WORD_MAX_UNSIGNED,
             self::BIN_FORMAT   => self::WORD_BIN_FORMAT
         ],
         self::LONG => [
             self::MIN_SIGNED   => self::LONG_MIN_SIGNED,
-            self::MIN_SIGNED   => self::LONG_MAX_SIGNED,
+            self::MAX_SIGNED   => self::LONG_MAX_SIGNED,
             self::MAX_UNSIGNED => self::LONG_MAX_UNSIGNED,
             self::BIN_FORMAT   => self::LONG_BIN_FORMAT
         ],
         self::QUAD => [
             self::MIN_SIGNED   => self::QUAD_MIN_SIGNED,
-            self::MIN_SIGNED   => self::QUAD_MAX_SIGNED,
+            self::MAX_SIGNED   => self::QUAD_MAX_SIGNED,
             self::MAX_UNSIGNED => self::QUAD_MAX_UNSIGNED,
             self::BIN_FORMAT   => self::QUAD_BIN_FORMAT
         ]

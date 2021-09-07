@@ -1,7 +1,14 @@
 {
-    "name": "Call test",
-    "description": "Function Call Test",
-    "output": "bin/calltest.mc64k",
+    "target": {
+        "name": "Call test",
+        "version": "1.0.0",
+        "description": "Function Call Test",
+        "output": "bin/calltest.mc64k",
+        "host": {
+            "name": "Standard Test Host",
+            "version": "1.0.0"
+        }
+    },
     "options": {
         "log_code_folds": true,
         "log_label_add": false,
@@ -12,6 +19,5 @@
         "src/main.s"
     ],
     "defines": {
-
     }
 }

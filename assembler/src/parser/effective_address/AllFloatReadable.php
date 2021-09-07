@@ -47,14 +47,14 @@ class AllFloatReadable extends Composite {
     /**
      * @return bool
      */
-    public function wasImmediate() : bool {
+    public function wasImmediate(): bool {
         return $this->oParsedBy instanceof FloatImmediate;
     }
 
     /**
-     * return float|null
+     * @return float|null
      */
-    public function getImmediate() : ?float {
+    public function getImmediate(): ?float {
         return $this->wasImmediate() ? $this->oParsedBy->getLastParsed() : null;
     }
 }

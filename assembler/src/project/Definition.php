@@ -20,6 +20,9 @@ namespace ABadCafe\MC64K\Project;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Utils\Log;
 
+use function \file_exists, \is_readable, \count, \array_map, \is_object, \is_array;
+use function \json_decode, \file_get_contents, \is_countable, \realpath, \dirname;
+
 /**
  * Definition
  *
@@ -41,7 +44,7 @@ class Definition {
 
     private State\Options       $oOptions;
     private State\DefinitionSet $oDefinitionSet;
-
+    private State\Target        $oTarget;
 
     /**
      * Constructor - must be given a valid project file definition.
@@ -57,22 +60,31 @@ class Definition {
     /**
      * @return string
      */
-    public function getBaseDirectoryPath() : string {
+    public function getBaseDirectoryPath(): string {
         return $this->sBaseDirectory;
     }
 
     /**
      * @return string
      */
-    public function getOutputBinaryPath() : string {
+    public function getOutputBinaryPath(): string {
         return $this->sOutputBinary;
     }
 
     /**
      * @return string[]
      */
-    public function getSourceList() : array {
+    public function getSourceList(): array {
         return $this->aSourceFiles;
+    }
+
+    /**
+     * Return the target definition
+     *
+     * @return State\Target
+     */
+    public function getTarget(): State\Target {
+        return $this->oTarget;
     }
 
     /**
@@ -80,7 +92,7 @@ class Definition {
      *
      * @return State\DefinitionSet
      */
-    public function getDefinitionSet() : State\DefinitionSet {
+    public function getDefinitionSet(): State\DefinitionSet {
         return $this->oDefinitionSet;
     }
 
@@ -89,7 +101,7 @@ class Definition {
      *
      * @return State\Options
      */
-    public function getOptions() : State\Options {
+    public function getOptions(): State\Options {
         return $this->oOptions;
     }
 
@@ -101,63 +113,18 @@ class Definition {
      * Output binary name
      * List of Sources
      *
-     * @param string $sProjectFile
-     *
+     * @param  string $sProjectFile
+     * @return self (fluent)
      */
-    public function load(string $sProjectFile) : self {
+    public function load(string $sProjectFile): self {
         Log::printf("Attempting to open project file %s...", $sProjectFile);
-        if (
-            empty($sProjectFile) ||
-            !file_exists($sProjectFile) ||
-            !is_readable($sProjectFile)
-        ) {
-            throw new \Exception("Unable to open project file '" . $sProjectFile . "' for reading.\n");
-        }
-        $oProjectData = json_decode(file_get_contents($sProjectFile));
-        if (
-            !($oProjectData instanceof \stdClass) ||
-            empty($oProjectData->name) ||
-            empty($oProjectData->output) ||
-            empty($oProjectData->sources) ||
-            !is_countable($oProjectData->sources)
-        ) {
-            throw new \Exception("Invalid project file '" . $sProjectFile . "'");
-        }
 
-        $sBaseDirectory       = realpath(dirname($sProjectFile)) . '/';
-        $this->aSourceFiles   = array_map(
-            function(string $sSourcePath) use ($sBaseDirectory) {
-                $sSourcePath = $sBaseDirectory . $sSourcePath;
-                if (
-                    !file_exists($sSourcePath) ||
-                    !is_readable($sSourcePath)
-                ) {
-                    throw new \Exception("Invalid source path '" . $sSourcePath . "'");
-                }
-                return $sSourcePath;
-            },
-            $oProjectData->sources
-        );
-        $this->sBaseDirectory = $sBaseDirectory;
-        $this->sName          = (string)$oProjectData->name;
-        $this->sDescription   = (string)($oProjectData->description ?? '');
-        $this->sOutputBinary  = (string)$oProjectData->output;
+        $oProjectData = $this->loadDefinition($sProjectFile);
 
-        if (!empty($oProjectData->options) && (
-            is_object($oProjectData->options) ||
-            is_array($oProjectData->options)
-        )) {
-            $this->oOptions->import((array)$oProjectData->options);
-        }
-
-        if (!empty($oProjectData->defines) && (
-            is_object($oProjectData->defines) ||
-            is_array($oProjectData->defines)
-        )) {
-            foreach ((array)$oProjectData->defines as $sDefine => $sValue) {
-                $this->oDefinitionSet->add($sDefine, (string)$sValue);
-            }
-        }
+        $this->processTarget($oProjectData);
+        $this->processSources($oProjectData);
+        $this->processOptions($oProjectData);
+        $this->processDefines($oProjectData);
 
         Log::printf(
             "Project file %s loaded successfully:\n\tName:   %s\n\tInfo:   %s\n\tOutput: %s\n\tFiles:  %d",
@@ -169,5 +136,105 @@ class Definition {
         );
 
         return $this;
+    }
+
+    /**
+     * @param object $oProjectData
+     */
+    private function processTarget(object $oProjectData): void {
+        $this->oTarget = new State\Target(
+            (string)$oProjectData->target->name,
+            (string)$oProjectData->target->version
+        );
+        if (isset($oProjectData->target->host)) {
+            if (
+                empty($oProjectData->target->host->name) ||
+                empty($oProjectData->target->host->version)
+            ) {
+                throw new \Exception('Host section must not be empty');
+            }
+            $this->oTarget
+                ->setFlags(State\Target::F_EXECUTABLE)
+                ->getDependencySet()
+                ->add(
+                    (string)$oProjectData->target->host->name,
+                    (string)$oProjectData->target->host->version
+                );
+        }
+    }
+
+    /**
+     * @param object $oProjectData
+     */
+    private function processSources(object $oProjectData): void {
+        $this->aSourceFiles = array_map(
+            function(string $sSourcePath) {
+                $sSourcePath = $this->sBaseDirectory . $sSourcePath;
+                if (
+                    !file_exists($sSourcePath) ||
+                    !is_readable($sSourcePath)
+                ) {
+                    throw new \Exception("Invalid source path '" . $sSourcePath . "'");
+                }
+                return $sSourcePath;
+            },
+            $oProjectData->sources
+        );
+    }
+
+    /**
+     * @param object $oProjectData
+     */
+    private function processOptions(object $oProjectData): void {
+        if (!empty($oProjectData->options) && (
+            is_object($oProjectData->options) ||
+            is_array($oProjectData->options)
+        )) {
+            $this->oOptions->import((array)$oProjectData->options);
+        }
+    }
+
+    /**
+     * @param object $oProjectData
+     */
+    private function processDefines(object $oProjectData): void {
+        if (!empty($oProjectData->defines) && (
+            is_object($oProjectData->defines) ||
+            is_array($oProjectData->defines)
+        )) {
+            foreach ((array)$oProjectData->defines as $sDefine => $sValue) {
+                $this->oDefinitionSet->add($sDefine, (string)$sValue);
+            }
+        }
+    }
+
+    /**
+     * @param  string $sProjectFile
+     * @return object
+     */
+    private function loadDefinition(string $sProjectFile): object {
+        if (
+            empty($sProjectFile) ||
+            !file_exists($sProjectFile) ||
+            !is_readable($sProjectFile)
+        ) {
+            throw new \Exception("Unable to open project file '" . $sProjectFile . "' for reading.\n");
+        }
+        $oProjectData = json_decode((string)file_get_contents($sProjectFile));
+        if (
+            !($oProjectData instanceof \stdClass) ||
+            empty($oProjectData->target->name) ||
+            empty($oProjectData->target->version) ||
+            empty($oProjectData->target->output) ||
+            empty($oProjectData->sources) ||
+            !is_countable($oProjectData->sources)
+        ) {
+            throw new \Exception("Invalid structure in project file '" . $sProjectFile . "'");
+        }
+        $this->sBaseDirectory = realpath(dirname($sProjectFile)) . '/';
+        $this->sName          = (string)$oProjectData->target->name;
+        $this->sDescription   = (string)($oProjectData->target->description ?? '');
+        $this->sOutputBinary  = (string)$oProjectData->target->output;
+        return $oProjectData;
     }
 }

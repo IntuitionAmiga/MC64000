@@ -24,6 +24,8 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\State;
 
+use function \strlen;
+
 /**
  * DyadicBranch
  *
@@ -41,7 +43,7 @@ abstract class DyadicBranch extends Dyadic {
     /**
      * @inheritDoc
      */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
 
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
 
@@ -143,6 +145,5 @@ abstract class DyadicBranch extends Dyadic {
 
         return $sBytecode;
     }
-
 
 }

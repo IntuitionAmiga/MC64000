@@ -17,6 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\IO;
 
+use function \file_exists, \is_readable, \fopen, \fclose, \fgets;
 
 /**
  * SourceFile
@@ -24,6 +25,7 @@ namespace ABadCafe\MC64K\IO;
  * Primary implementation of the ISourceFile interface for reading source files from disk.
  */
 final class SourceFile implements ISourceFile {
+    /** @var resource $rSource */
     private        $rSource;
     private string $sFilename;
     private string $sCurrentLine = '', $sLastLine = '';
@@ -34,13 +36,15 @@ final class SourceFile implements ISourceFile {
      * @throws \Exception
      */
     public function __construct(string $sFilename) {
+        $rSource = null;
         if (
             !file_exists($sFilename) ||
             !is_readable($sFilename) ||
-            (!$this->rSource = fopen($sFilename, 'r'))
+            (!($rSource = fopen($sFilename, 'r')))
         ) {
             throw new \Exception($sFilename . ' could not be opened');
         }
+        $this->rSource   = $rSource;
         $this->sFilename = $sFilename;
     }
 
@@ -48,16 +52,13 @@ final class SourceFile implements ISourceFile {
      * Make sure the file is closed on destruction
      */
     public function __destruct() {
-        if ($this->rSource) {
-            fclose($this->rSource);
-            $this->rSource = null;
-        }
+        fclose($this->rSource);
     }
 
     /**
      * @return string|null
      */
-    public function readLine() : ?string {
+    public function readLine(): ?string {
         $sLine = fgets($this->rSource);
         if (false !== $sLine) {
             ++$this->iLineNumber;
@@ -73,7 +74,7 @@ final class SourceFile implements ISourceFile {
      *
      * @return string
      */
-    public function getFilename() : string {
+    public function getFilename(): string {
         return $this->sFilename;
     }
 
@@ -82,7 +83,7 @@ final class SourceFile implements ISourceFile {
      *
      * @return int
      */
-    public function getLineNumber() : int {
+    public function getLineNumber(): int {
         return $this->iLineNumber;
     }
 
@@ -91,7 +92,7 @@ final class SourceFile implements ISourceFile {
      *
      * @return string
      */
-    public function getLine() : string {
+    public function getLine(): string {
         return $this->sCurrentLine;
     }
 
@@ -100,7 +101,7 @@ final class SourceFile implements ISourceFile {
      *
      * @return string
      */
-    public function getPrecedingLine() : string {
+    public function getPrecedingLine(): string {
         return $this->sLastLine;
     }
 }

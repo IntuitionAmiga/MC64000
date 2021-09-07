@@ -17,6 +17,8 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\IO;
 
+use function \explode, \count;
+
 /**
  * SourceString
  *
@@ -24,12 +26,16 @@ namespace ABadCafe\MC64K\IO;
  */
 class SourceString implements ISourceFile {
 
-    private string $sFilename;
+    /** @var string[] $aLines */
     private array  $aLines      = [];
+    private string $sFilename;
     private int    $iLineNumber = 0;
     private int    $iCount      = 0;
 
     /**
+     * Constructor
+     *
+     * @param  string $sSource
      * @param  string $sFilename
      * @throws \Exception
      */
@@ -42,7 +48,7 @@ class SourceString implements ISourceFile {
     /**
      * @return string|null
      */
-    public function readLine() : ?string {
+    public function readLine(): ?string {
         if ($this->iLineNumber < $this->iCount) {
             return $this->aLines[++$this->iLineNumber];
         }
@@ -54,7 +60,7 @@ class SourceString implements ISourceFile {
      *
      * @return string
      */
-    public function getFilename() : string {
+    public function getFilename(): string {
         return $this->sFilename;
     }
 
@@ -63,7 +69,7 @@ class SourceString implements ISourceFile {
      *
      * @return int
      */
-    public function getLineNumber() : int {
+    public function getLineNumber(): int {
         return $this->iLineNumber + 1;
     }
 
@@ -72,7 +78,7 @@ class SourceString implements ISourceFile {
      *
      * @return string
      */
-    public function getLine() : string {
+    public function getLine(): string {
         return $this->aLines[$this->iLineNumber];
     }
 }

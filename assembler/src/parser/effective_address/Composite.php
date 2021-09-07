@@ -37,7 +37,7 @@ abstract class Composite implements IParser {
     /**
      * @inheritDoc
      */
-    public function setOperationSize(int $iSize) : self {
+    public function setOperationSize(int $iSize): self {
         foreach ($this->aParsers as $oParser) {
             $oParser->setOperationSize($iSize);
         }
@@ -47,14 +47,14 @@ abstract class Composite implements IParser {
     /**
      * @inheritDoc
      */
-    public function hasSideEffects() : bool {
+    public function hasSideEffects(): bool {
         return $this->oParsedBy ? $this->oParsedBy->hasSideEffects() : true;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         $this->oParsedBy = null;
         foreach ($this->aParsers as $oParser) {
             $sParsed = $oParser->parse($sSource);

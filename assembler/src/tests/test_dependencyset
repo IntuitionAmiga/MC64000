@@ -1,6 +1,7 @@
+#!/usr/bin/php -n
 <?php
 
- /**
+/**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
  *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
  *   88888b.d88888 888    888 888          d8P 888  888  d8P
@@ -10,27 +11,26 @@
  *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
  *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
  *
- *    - 64-bit 680x0-inspired Virtual Machine and assembler -
+ *
  */
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Parser\SourceLine;
-use ABadCafe\MC64K;
+namespace ABadCafe\MC64K;
 
-/**
- * IParser
- *
- * Main interface for Source Line level parsers.
- */
-interface IParser extends MC64K\IParser {
+require_once '../MC64K.php';
 
-    /**
-     * Lightweight test that returns true if the implementor can process the line.
-     *
-     * @param  string $sLine
-     * @return bool
-     */
-    public function checkLine(string $sLine): bool;
+const EXAMPLES = [
+    ['DependencyA', '1.0.0'],
+    ['DependencyB', '1.1.0'],
+    ['DependencyB', '1.0.0'],
+    ['DependencyA', '1.0.999']
+];
 
+$oDependencySet = new State\DependencySet();
+
+foreach (EXAMPLES as $aTest) {
+    $oDependencySet->add($aTest[0], $aTest[1]);
 }
+
+print_r($oDependencySet->getDependencies());

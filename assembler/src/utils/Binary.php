@@ -17,8 +17,10 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Utils;
 
+use function \implode, \str_split, \bin2hex;
+
 /**
- * Basic Log Facility
+ * Binary
  */
 class Binary {
     /**
@@ -27,7 +29,7 @@ class Binary {
      * @param  string $sBinary
      * @return string
      */
-    public static function format(string $sBinary) : string {
+    public static function format(string $sBinary): string {
         return implode(' ', str_split(bin2hex($sBinary), 2));
     }
 }

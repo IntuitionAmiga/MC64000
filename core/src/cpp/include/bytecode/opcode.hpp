@@ -27,6 +27,8 @@ namespace Opcode {
 
 /**
  * Group
+ *
+ * Enumerates the base offsets for each Operation Type
  */
 enum Group {
     OFS_CONTROL    = 0,
@@ -38,6 +40,8 @@ enum Group {
 
 /**
  * Control
+ *
+ * Enumerates control flow opcodes
  */
 enum Control {
     HCF    = OFS_CONTROL +  0, // 0x00
@@ -125,6 +129,8 @@ enum Control {
 
 /**
  * DataMove
+ *
+ * Enumerates data movement/conversion opcodes
  */
 enum DataMove {
     MOVE_B   = OFS_DATA_MOVE +  0, // 0x4D
@@ -168,6 +174,8 @@ enum DataMove {
 
 /**
  * Logical
+ *
+ * Enumerates bitwise logical opcodes
  */
 enum Logical {
     AND_B    = OFS_LOGICAL +  0, // 0x70
@@ -224,6 +232,8 @@ enum Logical {
 
 /**
  * Arithmetic
+ *
+ * Enumerates arithmetic (integer and floating point) operations.
  */
 enum Arithmetic {
     EXTB_W    = OFS_ARITHMETIC +  0, // 0xA0

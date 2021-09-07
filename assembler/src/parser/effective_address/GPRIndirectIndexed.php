@@ -20,6 +20,8 @@ use ABadCafe\MC64K\Defs\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Register;
 use ABadCafe\MC64K\Parser;
 
+use function \preg_match, \chr;
+
 /**
  * GPRIndirectIndexed
  *
@@ -90,14 +92,14 @@ class GPRIndirectIndexed implements IParser, EffectiveAddress\IRegisterIndirectI
     /**
      * @inheritDoc
      */
-    public function hasSideEffects() : bool {
+    public function hasSideEffects(): bool {
         return false;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         foreach (self::MATCHES as $sMatch => $iOffset) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
                 $iData = $this->getRegisterNumber($aMatches[self::MATCHED_BASE_NAME]) << 4 |
@@ -109,10 +111,10 @@ class GPRIndirectIndexed implements IParser, EffectiveAddress\IRegisterIndirectI
     }
 
     /**
-     * @param  string
+     * @param  string $sRegister
      * @return int
      */
-    private function getRegisterNumber(string $sRegister) : int {
+    private function getRegisterNumber(string $sRegister): int {
         if (!isset(Register\INames::GPR_MAP[$sRegister])) {
             throw new \OutOfBoundsException($sRegister . ' is not a recognised GPR name');
         }

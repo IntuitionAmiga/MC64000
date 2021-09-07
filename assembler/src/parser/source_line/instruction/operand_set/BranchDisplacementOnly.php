@@ -22,6 +22,8 @@ use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\State;
 
+use function \count;
+
 /**
  * BranchDisplacementOnly
  *
@@ -43,6 +45,9 @@ class BranchDisplacementOnly implements Instruction\IOperandSetParser {
         IControl::BSR_B => 1,
     ];
 
+    /**
+     * Constructor
+     */
     public function __construct() {
         $this->oTgtParser = new Operand\BranchDisplacement();
     }
@@ -50,14 +55,14 @@ class BranchDisplacementOnly implements Instruction\IOperandSetParser {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return self::OPCODES;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
         $iCount = count($aOperands);
         if (1 !== $iCount) {
             throw new \LengthException(__CLASS__ . ' expects a single operand, got ' . $iCount);
@@ -74,7 +79,7 @@ class BranchDisplacementOnly implements Instruction\IOperandSetParser {
                 Defs\IBranchLimits::DISPLACEMENT_SIZE)
         );
 
-        $sBytecode = $this->oTgtParser->parse($sLabel);
+        $sBytecode = (string)$this->oTgtParser->parse($sLabel);
 
         if ($this->oTgtParser->wasUnresolved()) {
             $oState->addUnresolvedLabel($sLabel);

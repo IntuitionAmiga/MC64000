@@ -17,6 +17,8 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\Utils;
 
+use function \base_convert, \substr;
+
 /**
  * Hex
  *
@@ -30,7 +32,7 @@ class Hex {
      * @param  string $sHex
      * @return int
      */
-    public static function stringToInt8(string $sHex) : int {
+    public static function stringToInt8(string $sHex): int {
         $iValue = (int)base_convert(substr($sHex, -2), 16, 10);
         return $iValue & 0x80 ? $iValue -= 1<<8 : $iValue;
     }
@@ -41,7 +43,7 @@ class Hex {
      * @param  string $sHex
      * @return int
      */
-    public static function stringToInt16(string $sHex) : int {
+    public static function stringToInt16(string $sHex): int {
         $iValue = (int)base_convert(substr($sHex, -4), 16, 10);
         return $iValue & 0x8000 ? $iValue -= 1<<16 : $iValue;
     }
@@ -52,7 +54,7 @@ class Hex {
      * @param  string $sHex
      * @return int
      */
-    public static function stringToInt32(string $sHex) : int {
+    public static function stringToInt32(string $sHex): int {
         $iValue = (int)base_convert(substr($sHex, -8), 16, 10);
         return $iValue & 0x80000000 ? $iValue -= 1<<32 : $iValue;
     }

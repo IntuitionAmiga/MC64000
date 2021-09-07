@@ -47,7 +47,7 @@ class IntegerMonadic extends Monadic {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return self::OPCODES;
     }
 }

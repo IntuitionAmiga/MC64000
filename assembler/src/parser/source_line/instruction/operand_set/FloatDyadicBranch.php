@@ -23,6 +23,8 @@ use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Defs;
 
+use function \array_keys;
+
 /**
  * FloatDyadicBranch
  *
@@ -63,7 +65,7 @@ class FloatDyadicBranch extends DyadicBranch {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return array_keys(self::OPCODES);
     }
 }

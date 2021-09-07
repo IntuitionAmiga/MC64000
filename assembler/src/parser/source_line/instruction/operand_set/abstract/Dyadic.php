@@ -21,6 +21,8 @@ use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 
+use function \array_combine, \strlen, \ord, \chr;
+
 /**
  * Dyadic
  *
@@ -58,7 +60,7 @@ abstract class Dyadic extends Monadic {
     /**
      * @inheritDoc
      */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
         $this->sSrcBytecode = null;
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
         $oState = State\Coordinator::get()
@@ -97,7 +99,7 @@ abstract class Dyadic extends Monadic {
      *
      * @return int
      */
-    protected function getDestinationOperandIndex() : int {
+    protected function getDestinationOperandIndex(): int {
         return self::DEF_OPERAND_DST;
     }
 
@@ -108,7 +110,7 @@ abstract class Dyadic extends Monadic {
      * @param  string $sDstBytecode
      * @return bool
      */
-    protected function canOptimiseSourceOperand(string $sSrcBytecode, string $sDstBytecode) : bool {
+    protected function canOptimiseSourceOperand(string $sSrcBytecode, string $sDstBytecode): bool {
         // If the source operand bytecode is the same as the destination and the destination mode
         // is in the set defined by ISameAsDestination, we can use the special "same as destination" EA mode
         return $sSrcBytecode === $sDstBytecode && isset(self::$aSameAsDestination[ord($sDstBytecode[0])]);
@@ -121,14 +123,14 @@ abstract class Dyadic extends Monadic {
      * @param  string $sDstBytecode
      * @return string bytecode
      */
-    protected function optimiseSourceOperandBytecode(string $sSrcBytecode, string $sDstBytecode) : string {
+    protected function optimiseSourceOperandBytecode(string $sSrcBytecode, string $sDstBytecode): string {
         if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {
             $sSrcBytecode = chr(Defs\EffectiveAddress\IOther::SAME_AS_DEST);
         }
         return $sSrcBytecode;
     }
 
-    protected function sourceOperandWasOptimised() : bool {
+    protected function sourceOperandWasOptimised(): bool {
         return $this->sSrcBytecode === chr(Defs\EffectiveAddress\IOther::SAME_AS_DEST);
     }
 
@@ -141,7 +143,7 @@ abstract class Dyadic extends Monadic {
      * @param  string $sDstBytecode
      * @return string
      */
-    protected function foldClearDestinationByte(string $sSrcBytecode, string $sDstBytecode) : string {
+    protected function foldClearDestinationByte(string $sSrcBytecode, string $sDstBytecode): string {
         return chr(IDataMove::CLR_B) . $sDstBytecode;
     }
 
@@ -154,7 +156,7 @@ abstract class Dyadic extends Monadic {
      * @param  string $sDstBytecode
      * @return string
      */
-    protected function foldClearDestinationWord(string $sSrcBytecode, string $sDstBytecode) : string {
+    protected function foldClearDestinationWord(string $sSrcBytecode, string $sDstBytecode): string {
         return chr(IDataMove::CLR_W) . $sDstBytecode;
     }
 
@@ -167,7 +169,7 @@ abstract class Dyadic extends Monadic {
      * @param  string $sDstBytecode
      * @return string
      */
-    protected function foldClearDestinationLong(string $sSrcBytecode, string $sDstBytecode) : string {
+    protected function foldClearDestinationLong(string $sSrcBytecode, string $sDstBytecode): string {
         return chr(IDataMove::CLR_L) . $sDstBytecode;
     }
 
@@ -178,7 +180,7 @@ abstract class Dyadic extends Monadic {
      * @param  string $sDstBytecode
      * @return string
      */
-    protected function foldClearDestinationQuad(string $sSrcBytecode, string $sDstBytecode) : string {
+    protected function foldClearDestinationQuad(string $sSrcBytecode, string $sDstBytecode): string {
         return chr(IDataMove::CLR_Q) . $sDstBytecode;
     }
 
@@ -191,7 +193,7 @@ abstract class Dyadic extends Monadic {
      * @param  string $sDstBytecode
      * @return string
      */
-    protected function foldEmpty(string $sSrcBytecode, string $sDstBytecode) : string {
+    protected function foldEmpty(string $sSrcBytecode, string $sDstBytecode): string {
         return '';
     }
     /**
@@ -201,7 +203,7 @@ abstract class Dyadic extends Monadic {
      * @param  string $sDstBytecode
      * @return string
      */
-    protected function trapIllegal(string $sSrcBytecode, string $sDstBytecode) : string {
+    protected function trapIllegal(string $sSrcBytecode, string $sDstBytecode): string {
         throw new \UnexpectedValueException('Immediate zero is an illegal source operand for this operation');
     }
 }

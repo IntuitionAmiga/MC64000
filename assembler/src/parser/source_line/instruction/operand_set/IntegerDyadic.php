@@ -22,6 +22,8 @@ use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\Defs\Mnemonic\ILogical;
 use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
 
+use function \array_keys;
+
 /**
  * IntegerDyadic
  *
@@ -151,11 +153,14 @@ class IntegerDyadic extends Dyadic {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return array_keys(self::OPCODES);
     }
 
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
+    /**
+     * @inheritDoc
+     */
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
         $sFullByteCode = parent::parse($iOpcode, $aOperands, $aSizes);
 
         if (
@@ -189,7 +194,6 @@ class IntegerDyadic extends Dyadic {
                 }
             }
         }
-
         return $sFullByteCode;
     }
 

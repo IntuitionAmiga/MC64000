@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 
+use function \array_filter, \count;
+
 /**
  * None
  *
@@ -29,7 +31,7 @@ class None implements Instruction\IOperandSetParser {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return [
             IControl::RTS, // so far, this is it
         ];
@@ -38,7 +40,7 @@ class None implements Instruction\IOperandSetParser {
     /**
      * @inheritDoc
      */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
         $aOperands = array_filter($aOperands);
         if (!empty($aOperands)) {
             throw new \LengthException(__CLASS__ . ' expects no operands, got ' . count($aOperands));

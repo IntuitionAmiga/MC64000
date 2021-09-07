@@ -28,6 +28,8 @@ namespace EffectiveAddress {
 
 /**
  * Group
+ *
+ * Enumerates the base offsets for each Effective Address Type
  */
 enum Group {
     OFS_GPR_DIR          = 0,   // GPR Direct r<N>
@@ -47,6 +49,8 @@ enum Group {
 
 /**
  * RegisterDirect
+ *
+ * Enumeration of Register Direct EA modes
  */
 enum RegisterDirect {
     // General Purpose Register Direct r<N>
@@ -88,6 +92,8 @@ enum RegisterDirect {
 
 /**
  * RegisterIndirect
+ *
+ * Enumeration of Register Indirect EA modes
  */
 enum RegisterIndirect {
     // Register Indirect (r<N>)
@@ -201,6 +207,8 @@ enum RegisterIndirect {
 
 /**
  * RegisterIndirectIndexed
+ *
+ * Enumeration of Register Indirect with Index EA modes
  */
 enum RegisterIndirectIndexed {
     // Register Indirect with 8-bit scaled index
@@ -302,6 +310,8 @@ enum RegisterIndirectIndexed {
 
 /**
  * Other
+ *
+ * Enumeration of sundry EA modes, in particular immediate EA modes.
  */
 enum Other {
     INT_IMMEDIATE      = OFS_OTHER + 0,

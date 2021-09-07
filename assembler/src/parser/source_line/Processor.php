@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\Parser\SourceLine;
 
 use ABadCafe\MC64K\State;
 
+use function \preg_replace, \rtrim;
+
 /**
  * Processor
  *
@@ -29,6 +31,7 @@ class Processor implements IParser {
 
     const COMMENT_MATCH = '/(?:;|\/\/).*$/';
 
+    /** @var IParser[] $aParsers */
     private array $aParsers = [];
 
     public function __construct() {
@@ -45,14 +48,14 @@ class Processor implements IParser {
      *
      * @inheritDoc
      */
-    public function checkLine(string $sLine) : bool {
+    public function checkLine(string $sLine): bool {
         return true;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(string $sSourceLine) : ?string {
+    public function parse(string $sSourceLine): ?string {
         $sSourceLine = $this->preprocessSourceLine($sSourceLine);
         if (empty($sSourceLine)) {
             return '';
@@ -71,12 +74,11 @@ class Processor implements IParser {
      * @param  string $sSourceLine
      * @return string
      */
-    private function preprocessSourceLine(string $sSourceLine) : string {
+    private function preprocessSourceLine(string $sSourceLine): string {
         return State\Coordinator::get()
             ->getDefinitionSet()
             ->applyTo(
-                rtrim(preg_replace(self::COMMENT_MATCH, '', $sSourceLine))
+                rtrim((string)preg_replace(self::COMMENT_MATCH, '', $sSourceLine))
             );
     }
 }
-

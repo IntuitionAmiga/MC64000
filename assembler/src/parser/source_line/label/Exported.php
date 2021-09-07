@@ -20,6 +20,8 @@ use ABadCafe\MC64K\Parser\SourceLine;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 
+use function \rtrim;
+
 /**
  * Exported
  *
@@ -34,7 +36,7 @@ class Exported implements SourceLine\IParser {
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         State\Coordinator::get()->addGlobalLabel(rtrim($sSource, Defs\ILabel::SUFFIX_CHAR));
         return '';
     }

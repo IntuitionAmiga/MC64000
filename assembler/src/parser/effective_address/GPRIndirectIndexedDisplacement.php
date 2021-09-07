@@ -21,6 +21,8 @@ use ABadCafe\MC64K\Defs\Register;
 use ABadCafe\MC64K\Defs\IIntLimits;
 use ABadCafe\MC64K\Parser;
 
+use function \preg_match, \chr, \pack;
+
 /**
  * GPRIndirectIndexedDisplacement
  *
@@ -142,14 +144,14 @@ class GPRIndirectIndexedDisplacement implements IParser, EffectiveAddress\IRegis
     /**
      * @inheritDoc
      */
-    public function hasSideEffects() : bool {
+    public function hasSideEffects(): bool {
         return false;
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         foreach (self::MATCHES as $sMatch => $iOffset) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
                 $iRegisterPair = Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_BASE_NAME]) << 4

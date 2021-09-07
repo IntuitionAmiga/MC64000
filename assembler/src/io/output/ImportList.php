@@ -19,6 +19,8 @@ namespace ABadCafe\MC64K\IO\Output;
 use ABadCafe\MC64K\Defs\IIntLimits;
 use ABadCafe\MC64K\State;
 
+use function \implode, \count, \strlen, \pack, \chr;
+
 /**
  * ImportList
  *
@@ -43,13 +45,21 @@ class ImportList implements IBinaryChunk {
      * @param State\LabelLocation $oLabelLocation
      */
     public function __construct(State\LabelLocation $oLabelLocation) {
-        $aImports      = $oLabelLocation->getEnumeratedImports();
+        $aImports          = $oLabelLocation->getEnumeratedImports();
+        $aIEQualifications = $oLabelLocation->getImportExportQualifications();
+        foreach ($aImports as $i => $sLabel) {
+            if (!isset($aIEQualifications[$sLabel])) {
+                throw new \Exception("Could not find Import/Export access for label " . $sLabel);
+            }
+            $aImports[$i] = $sLabel . chr($aIEQualifications[$sLabel]);
+        }
+
         $this->sBinary =
             // Label count
             pack('V', count($aImports)) .
 
             // Strings blob
-            implode("\0", $aImports) . "\0";
+            implode('', $aImports);
     }
 
     /**
@@ -57,7 +67,7 @@ class ImportList implements IBinaryChunk {
      *
      * @return string
      */
-    public function getChunkType() : string {
+    public function getChunkType(): string {
         return self::TYPE;
     }
 
@@ -66,7 +76,7 @@ class ImportList implements IBinaryChunk {
      *
      * @return int
      */
-    public function getChunkLength() : int {
+    public function getChunkLength(): int {
         return strlen($this->sBinary);
     }
 
@@ -75,7 +85,7 @@ class ImportList implements IBinaryChunk {
      *
      * @return string
      */
-    public function getChunkData() : string {
+    public function getChunkData(): string {
         return $this->sBinary;
     }
 }

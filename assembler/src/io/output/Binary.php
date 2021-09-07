@@ -19,6 +19,9 @@ namespace ABadCafe\MC64K\IO\Output;
 use ABadCafe\MC64K\Defs\IIntLimits;
 use ABadCafe\MC64K\Utils\Log;
 
+use function \dirname, \is_writeable, \fopen, \fseek, \fwrite, \fclose;
+use function \strlen, \pack;
+
 /**
  * Binary
  *
@@ -27,6 +30,8 @@ use ABadCafe\MC64K\Utils\Log;
 class Binary {
 
     private string $sFilename;
+
+    /** @var resource $rOutput */
     private        $rOutput;
     private int    $iChunkNumber = 0, $iLoadSize = 0;
 
@@ -52,13 +57,15 @@ class Binary {
      * @throws \Exception
      */
     public function __construct(string $sFilename) {
+        $rOutput  = null;
         $sDirname = dirname($sFilename);
         if (!is_writeable($sDirname)) {
             throw new \Exception($sDirname . ' is not a writeable location');
         }
-        if (!$this->rOutput = fopen($sFilename, 'wb')) {
+        if (!($rOutput = fopen($sFilename, 'wb'))) {
             throw new \Exception($sFilename . ' could not be created');
         }
+        $this->rOutput = $rOutput;
         $this->writeHeader();
         $this->sFilename = $sFilename;
     }
@@ -70,7 +77,7 @@ class Binary {
      * @return self (fluent)
      * @throws \Exception
      */
-    public function writeChunk(IBinaryChunk $oChunk) : self {
+    public function writeChunk(IBinaryChunk $oChunk): self {
         $iSize =
             $this->writeChunkHeader($oChunk) +
             $this->writeChunkBody($oChunk) +
@@ -82,7 +89,7 @@ class Binary {
     /**
      * Complete the file write. This will update the header with the total load size for the runtime.
      */
-    public function complete() : void {
+    public function complete(): void {
         fseek($this->rOutput, self::HEADER_LOAD, SEEK_SET);
         fwrite($this->rOutput, pack(IIntLimits::QUAD_BIN_FORMAT, $this->iLoadSize));
     }
@@ -91,10 +98,7 @@ class Binary {
      * Make sure the file is closed on destruction
      */
     public function __destruct() {
-        if ($this->rOutput) {
-            fclose($this->rOutput);
-            $this->rOutput = null;
-        }
+        fclose($this->rOutput);
     }
 
     /**
@@ -102,7 +106,7 @@ class Binary {
      *
      * @return string
      */
-    public function getFilename() : string {
+    public function getFilename(): string {
         return $this->sFilename;
     }
 
@@ -114,7 +118,7 @@ class Binary {
      * @return int
      * @throws \Exception
      */
-    private function writeChunkHeader(IBinaryChunk $oChunk) : int {
+    private function writeChunkHeader(IBinaryChunk $oChunk): int {
         $sChunkHeader = $oChunk->getChunkType();
         if (IBinaryChunk::TYPE_SIZE !== strlen($sChunkHeader)) {
             throw new \Exception("Chunk type has illegal size");
@@ -136,7 +140,7 @@ class Binary {
      * @return int
      * @throws \Exception
      */
-    private function writeChunkBody(IBinaryChunk $oChunk) : int {
+    private function writeChunkBody(IBinaryChunk $oChunk): int {
         $iWriteSize = $oChunk->getChunkLength();
         if ($iWriteSize !== fwrite($this->rOutput, $oChunk->getChunkData())) {
             throw new \Exception("Unexpected write length for chunk data writing to " . $this->sFilename);
@@ -153,7 +157,7 @@ class Binary {
      * @return int
      * @throws \Exception
      */
-    private function writeChunkPadding(IBinaryChunk $oChunk) : int {
+    private function writeChunkPadding(IBinaryChunk $oChunk): int {
         $iAlignment = $oChunk->getChunkLength() & (IBinaryChunk::ALIGNMENT - 1);
         if ($iAlignment) {
             $sAlignPads = self::PADS[$iAlignment];
@@ -169,7 +173,7 @@ class Binary {
     /**
      * @throws \Exception
      */
-    private function writeHeader() {
+    private function writeHeader(): void {
         if (self::HEADER_SIZE !== fwrite($this->rOutput, self::HEADER_MAGIC)) {
             throw new \Exception("Unable to write file header to " . $this->sFilename);
         }

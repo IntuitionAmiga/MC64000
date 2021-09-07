@@ -2,19 +2,57 @@
 #include <cstdlib>
 
 #include "machine/interpreter.hpp"
-#include "bytecode/opcode.hpp"
-#include "bytecode/effective_address.hpp"
 #include "loader/binary.hpp"
+#include "host.hpp"
 
 using namespace MC64K::Loader;
 using namespace MC64K::Machine;
-using namespace MC64K::ByteCode;
 
 Interpreter::Status nativeTest() {
-    std::puts("Native Call");
+    std::puts( "Native Call" );
     return Interpreter::RUNNING;
 }
 
+uint64 testGlobal = 0xABADCAFE;
+
+/**
+ * Null terminated array of host vectors that are directly invokable via HCF
+ */
+Interpreter::HostCall aVectors[] = {
+    nativeTest,
+    0
+};
+
+/**
+ * Symbols the host application requires from the binary. Terminated by a null name.
+ */
+LinkSymbol aImports[] = {
+    { "main", {0}, LinkSymbol::EXECUTE },
+    { 0, { 0 }, 0 }
+};
+
+/**
+ * Symbols the host application makes available to the binary. Terminated by a null name.
+ */
+LinkSymbol aExports[] = {
+    { "abadcafe", { &testGlobal }, LinkSymbol::READ|LinkSymbol::WRITE },
+    { 0, { 0 }, 0 }
+};
+
+/**
+ * Declare the host
+ */
+MC64K::Host hostApplication(
+    "Standard Test Host",
+    1, 0, 0,
+    aVectors,
+    aExports,
+    aImports
+);
+
+/**
+ * Entry point
+ */
 int main(int iArgN, const char** aArgV) {
 
     if (iArgN < 2) {
@@ -26,8 +64,7 @@ int main(int iArgN, const char** aArgV) {
         const char* sExecutableName = aArgV[1];
         Binary oMC64KBinary(sExecutableName);
         const Executable* pExecutable = oMC64KBinary.load();
-
-        const Executable::Symbol* aExports = 0;
+        const LinkSymbol* aExports = 0;
 
         std::printf(
             "Executable %s loaded at %p\n",
@@ -46,10 +83,11 @@ int main(int iArgN, const char** aArgV) {
             aExports = pExecutable->getExportedSymbols();
             for (unsigned u = 0; u < uSymbolCount; ++u) {
                 std::printf(
-                    "\t%2u %p %s\n",
+                    "\t%2u %p %s 0x%016lX\n",
                     u,
                     aExports[u].pRawData,
-                    aExports[u].sIdentifier
+                    aExports[u].sIdentifier,
+                    aExports[u].uFlags
                 );
             }
         }
@@ -60,13 +98,14 @@ int main(int iArgN, const char** aArgV) {
                 uSymbolCount
             );
 
-            const Executable::Symbol* aImports = pExecutable->getImportedSymbols();
+            const LinkSymbol* aImports = pExecutable->getImportedSymbols();
             for (unsigned u = 0; u < uSymbolCount; ++u) {
                 std::printf(
-                    "\t%2u %p %s\n",
+                    "\t%2u %p %s 0x%016lX\n",
                     u,
                     aImports[u].pRawData,
-                    aImports[u].sIdentifier
+                    aImports[u].sIdentifier,
+                    aExports[u].uFlags
                 );
             }
         }
@@ -76,9 +115,9 @@ int main(int iArgN, const char** aArgV) {
             Interpreter::allocateStack(256);
             Interpreter::setHostFunction(nativeTest, 0x69);
             Interpreter::setProgramCounter(aExports[0].pByteCode);
-            Interpreter::dumpState(iDumpState);
+            Interpreter::dumpState (iDumpState);
             Interpreter::run();
-            Interpreter::dumpState(iDumpState|Interpreter::STATE_STACK);
+            Interpreter::dumpState (iDumpState|Interpreter::STATE_STACK);
             Interpreter::freeStack();
         }
         delete pExecutable;

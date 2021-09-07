@@ -17,6 +17,8 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\SourceLine;
 
+use function \preg_match;
+
 /**
  * TParser
  *
@@ -25,10 +27,9 @@ namespace ABadCafe\MC64K\Parser\SourceLine;
 trait TParser {
 
     /**
-     * @implements IParser::checkLine()
+     * @implements IParser::checkLine(string $sLine): bool
      */
-    public function checkLine(string $sLine) : bool {
+    public function checkLine(string $sLine): bool {
         return (bool)preg_match(self::BASIC_LINE_MATCH, $sLine);
     }
-
 }

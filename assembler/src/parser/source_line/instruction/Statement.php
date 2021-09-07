@@ -28,6 +28,8 @@ use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Utils\Binary;
 use ABadCafe\MC64K\State;
 
+use function \chr, \array_flip, \explode, \get_class, \end, \ksort;
+
 /**
  * Statement
  *
@@ -41,10 +43,10 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
 
     private Tokeniser\Instruction $oTokeniser;
 
-    /**
-     * @var IOperandSetParser[] $aOperandParsers
-     */
+    /** @var IOperandSetParser[] $aOperandParsers */
     private array $aOperandParsers = [];
+
+    /** @var string[][] $aCoverage */
     private array $aCoverage = [];
 
     /**
@@ -134,7 +136,7 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         $oToken = $this->oTokeniser->tokenise($sSource);
         if ($oToken) {
             if (!isset(self::MATCHES[$oToken->sMnemonic])) {
@@ -170,9 +172,9 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
     /**
      * Returns the set of covered mnemonics
      *
-     * @return string[2][]
+     * @return string[][]
      */
-    public function getCoverage() : array {
+    public function getCoverage(): array {
         if (empty($this->aCoverage)) {
             $aMnemonics = array_flip(Defs\Mnemonic\IMatches::MATCHES);
             foreach ($this->aOperandParsers as $iOpcode => $oOperandParser) {
@@ -189,19 +191,15 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
      *
      * @param IOperandSetParser $oOperandParser
      */
-    private function addOperandSetParser(IOperandSetParser $oOperandParser) : void {
+    private function addOperandSetParser(IOperandSetParser $oOperandParser): void {
         foreach ($oOperandParser->getOpcodes() as $iOpcode) {
-
             if (isset($this->aOperandParsers[(string)$iOpcode])) {
                 throw new \Exception(
                     "Duplicate Opcode Handler entry for Opcode #" . $iOpcode
                 );
             }
-
             $this->aOperandParsers[(string)$iOpcode] = $oOperandParser;
         }
         $this->aCoverage = [];
     }
-
-
 }

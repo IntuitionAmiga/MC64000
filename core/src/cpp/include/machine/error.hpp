@@ -18,6 +18,8 @@ namespace MC64K {
 namespace Machine {
 
 /**
+ * Error
+ *
  * Exception class for any sort of file IO related loading errors
  */
 class Error {

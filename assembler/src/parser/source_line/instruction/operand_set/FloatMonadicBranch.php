@@ -21,6 +21,8 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 
+use function \array_keys;
+
 /**
  * FloatMonadicBranch
  *
@@ -53,35 +55,35 @@ class FloatMonadicBranch extends MonadicBranch {
     /**
      * @inheritDoc
      */
-    public function getOpcodes() : array {
+    public function getOpcodes(): array {
         return array_keys(self::OPCODES);
     }
 
     /**
      * Trampoline to TBranching code folders
      */
-    protected function foldIsZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsZero(float $fImmediate, int $iDisplacement, int $iOriginalSize): string {
         return $this->foldImmediateIsEqual($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 
     /**
      * Trampoline to TBranching code folders
      */
-    protected function foldIsNotZero(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsNotZero(float $fImmediate, int $iDisplacement, int $iOriginalSize): string {
         return $this->foldImmediateIsNotEqual($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 
     /**
      * Trampoline to TBranching code folders
      */
-    protected function foldIsMinus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsMinus(float $fImmediate, int $iDisplacement, int $iOriginalSize): string {
         return $this->foldImmediateIsLessThan($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 
     /**
      * Trampoline to TBranching code folders
      */
-    protected function foldIsPlus(float $fImmediate, int $iDisplacement, int $iOriginalSize) : string {
+    protected function foldIsPlus(float $fImmediate, int $iDisplacement, int $iOriginalSize): string {
         return $this->foldImmediateIsGreaterOrEqual($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
 }

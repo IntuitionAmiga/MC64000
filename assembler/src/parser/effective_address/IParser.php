@@ -42,10 +42,10 @@ interface IParser extends MC64K\IParser {
      * @param  int $iSize
      * @return self
      */
-    public function setOperationSize(int $iSize) : self;
+    public function setOperationSize(int $iSize): self;
 
     /**
      * Returns true if the EA mode has side effects.
      */
-    public function hasSideEffects() : bool;
+    public function hasSideEffects(): bool;
 }

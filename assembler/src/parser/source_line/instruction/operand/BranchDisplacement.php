@@ -23,6 +23,8 @@ use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\State;
 
+use function \preg_match, \pack;
+
 /**
  * BranchDisplacement
  *
@@ -51,7 +53,7 @@ class BranchDisplacement implements MC64K\IParser {
      *
      * @throws CodeFoldException
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         $this->iLastDisplacement = Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT;
         if (preg_match(self::MATCH_NUMERIC, $sSource, $aMatches)) {
             $this->iLastDisplacement = $this->parseDisplacement(
@@ -70,11 +72,13 @@ class BranchDisplacement implements MC64K\IParser {
             $this->iLastDisplacement = State\Coordinator::get()->getBranchDisplacementForLabel($aMatches[self::MATCHED_LABEL]);
             return pack(Defs\IIntLimits::LONG_BIN_FORMAT, $this->iLastDisplacement);
         }
-
         throw new \UnexpectedValueException($sSource . ' could not be parsed');
     }
 
-    public function wasUnresolved() : bool {
+    /**
+     * @return bool
+     */
+    public function wasUnresolved(): bool {
         return Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT === $this->iLastDisplacement;
     }
 
@@ -83,7 +87,7 @@ class BranchDisplacement implements MC64K\IParser {
      *
      * @return int
      */
-    public function getLastDisplacement() : int {
+    public function getLastDisplacement(): int {
         return $this->iLastDisplacement;
     }
 }

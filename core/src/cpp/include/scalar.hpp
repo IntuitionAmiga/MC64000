@@ -28,6 +28,9 @@ typedef signed char        int8;
 typedef double             float64;
 typedef float              float32;
 
+/**
+ * Template word type qualifiers for printf() etc.
+ */
 #define PFS16 "hd"
 #define PFU16 "hu"
 #define PFS32 "d"

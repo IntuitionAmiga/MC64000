@@ -20,6 +20,9 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\State;
+use ABadCafe\MC64K\Defs;
+
+use function \ord, \chr;
 
 /**
  * PackedRegisterPair
@@ -30,7 +33,7 @@ abstract class PackedRegisterPair extends Dyadic {
     /**
      * @inheritDoc
      */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []) : string {
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
         $oState = State\Coordinator::get()
             ->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE);
@@ -72,5 +75,5 @@ abstract class PackedRegisterPair extends Dyadic {
      * @param  int  $iOpcode
      * @return bool
      */
-    protected abstract function foldIfOperandsSame(int $iOpdcode) : bool;
+    protected abstract function foldIfOperandsSame(int $iOpcode): bool;
 }

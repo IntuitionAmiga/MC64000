@@ -20,6 +20,8 @@ use ABadCafe\MC64K\Parser\SourceLine;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 
+use function \preg_match, \strtolower;
+
 /**
  * Statement
  *
@@ -50,7 +52,7 @@ class Statement implements SourceLine\IParser {
     /**
      * @implements SourceLine\IParser::checkLine()
      */
-    public function checkLine(string $sLine) : bool {
+    public function checkLine(string $sLine): bool {
         if (preg_match(self::BASIC_LINE_MATCH, $sLine, $aMatch)) {
             $sKeyword = strtolower($aMatch[1]);
             if (isset($this->aDirectives[$sKeyword])) {
@@ -64,7 +66,7 @@ class Statement implements SourceLine\IParser {
     /**
      * @inheritDoc
      */
-    public function parse(string $sSource) : ?string {
+    public function parse(string $sSource): ?string {
         return '';
     }
 
@@ -73,7 +75,7 @@ class Statement implements SourceLine\IParser {
      *
      * @param IProcessor $oDirective
      */
-    private function addDirective(IProcessor $oDirective) {
+    private function addDirective(IProcessor $oDirective): void {
         foreach ($oDirective->getMatchingKeywords() as $sKeyword) {
             $this->aDirectives[$sKeyword] = $oDirective;
         }
