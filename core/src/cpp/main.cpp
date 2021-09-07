@@ -2,14 +2,16 @@
 #include <cstdlib>
 
 #include "machine/interpreter.hpp"
-#include "loader/binary.hpp"
-#include "host.hpp"
+#include "loader/executable.hpp"
+#include "host/definition.hpp"
 
 using namespace MC64K::Loader;
 using namespace MC64K::Machine;
+using namespace MC64K::Host;
+
 
 extern Interpreter::Status nativeTest();
-extern MC64K::Host hostApplication;
+extern Definition hostApplication;
 
 /**
  * Entry point

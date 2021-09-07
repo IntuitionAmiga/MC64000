@@ -13,15 +13,14 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include "host.hpp"
+#include "host/definition.hpp"
 
 namespace MC64K {
+namespace Host {
 
-Host::Host(
+Definition::Definition(
     const char* sName,
-    uint32 uMajor,
-    uint32 uMinor,
-    uint32 uPatch,
+    Misc::Version oVersion,
     Machine::Interpreter::HostCall aVectors[],
     Loader::LinkSymbol aExports[],
     Loader::LinkSymbol aImports[]
@@ -30,9 +29,7 @@ Host::Host(
     aHostVectors(0),
     aHostExportSymbols(0),
     aHostImportSymbols(0),
-    uVersionMajor(uMajor),
-    uVersionMinor(uMinor),
-    uVersionPatch(uPatch)
+    oVersion(oVersion)
 {
     if (aVectors) {
         aHostVectors = aVectors;
@@ -50,4 +47,4 @@ Host::Host(
     }
 }
 
-} // namespace
+}} // namespace

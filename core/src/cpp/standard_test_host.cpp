@@ -2,11 +2,13 @@
 #include <cstdlib>
 
 #include "machine/interpreter.hpp"
-#include "loader/binary.hpp"
-#include "host.hpp"
+#include "loader/linksymbol.hpp"
+#include "host/definition.hpp"
 
 using namespace MC64K::Loader;
 using namespace MC64K::Machine;
+using namespace MC64K::Host;
+using namespace MC64K::Misc;
 
 Interpreter::Status nativeTest() {
     std::puts("Native Call");
@@ -40,11 +42,11 @@ LinkSymbol aExports[] = {
 };
 
 /**
- * Declare the host
+ * Declare the Standard Test Host
  */
-MC64K::Host standardTestHost(
+Definition standardTestHost(
     "Standard Test Host",
-    1, 0, 0,
+    Version(1, 0, 0),
     aVectors,
     aExports,
     aImports

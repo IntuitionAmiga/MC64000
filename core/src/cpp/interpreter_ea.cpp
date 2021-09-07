@@ -13,7 +13,7 @@
 
 #include "machine/interpreter.hpp"
 #include "bytecode/effective_address.hpp"
-#include "gnarly.hpp"
+#include "machine/gnarly.hpp"
 #include <cstdio>
 
 namespace MC64K {

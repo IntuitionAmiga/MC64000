@@ -1,5 +1,5 @@
-#ifndef __MC64K_LOADER_ERROR_HPP__
-#   define __MC64K_LOADER_ERROR_HPP__
+#ifndef __MC64K_LOADER_LINKSYMBOL_HPP__
+#   define __MC64K_LOADER_LINKSYMBOL_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,22 +14,46 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
+#include <cstdio>
+
 namespace MC64K {
 namespace Loader {
 
 /**
- * Exception class for any sort of file IO related loading errors
+ * LinkSymbol
+ *
+ * Used to resolve exported and imported symbols
  */
-class Error {
-    public:
-        const char* sFileName;
-        const char* sIssue;
-        uint64 uChunkID;
-        Error(const char* sFileName, const char *sIssue, const uint64 uChunkID = 0) :
-            sFileName(sFileName),
-            sIssue(sIssue),
-            uChunkID(uChunkID) {}
+struct LinkSymbol {
+
+    /**
+     * Flag definitions
+     */
+    enum {
+        READ    = 1,
+        WRITE   = 2,
+        EXECUTE = 4
+    };
+
+    /**
+     * Name
+     */
+    const char* sIdentifier;
+
+    /**
+     * Location
+     */
+    union {
+        void*        pRawData;
+        const uint8* pByteCode;
+    };
+
+    /**
+     * Other properties
+     */
+    uint64 uFlags;
 };
+
 
 }} // namespace
 #endif

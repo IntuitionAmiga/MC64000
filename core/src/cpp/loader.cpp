@@ -14,33 +14,11 @@
 #include <cstdlib>
 #include <new>
 #include "mc64k.hpp"
-#include "loader/binary.hpp"
+#include "loader/executable.hpp"
 
 using namespace MC64K::Loader;
 
-/**
- * Version long constructor
- */
-Version::Version(unsigned iMajor, unsigned iMinor, unsigned iPatch) {
-    if (iMajor > MAX_MAJOR || iMinor > MAX_MINOR || iPatch > MAX_PATCH) {
-        throw InvalidVersion();
-    }
-    uPackedVersion = iMajor << (PATCH_BITS + MINOR_BITS) | iMinor << PATCH_BITS | iPatch;
-}
-
-/**
- * Version compatibility check. Returns true if the current instance has the same major version number
- * and at least the same minor/patch combination.
- */
-bool Version::isCompatible(const Version& oVersion) const {
-    return (
-        // Major part must be equal
-        (uPackedVersion & MASK_MAJOR) == (oVersion.uPackedVersion & MASK_MAJOR)
-    ) && (
-        // Remainder must be greater or equal
-        (uPackedVersion & ~MASK_MAJOR) >= (oVersion.uPackedVersion & ~MASK_MAJOR)
-    );
-}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Binary Constructor
@@ -70,6 +48,8 @@ Binary::~Binary() {
         std::free(pManifest);
     }
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Attempts to read the expected chunk header
@@ -146,6 +126,7 @@ uint8* Binary::readChunkData(const uint64 uChunkID) {
     return pRawData;
 }
 
+
 /**
  * Attempts to load and return the Executable
  */
@@ -168,10 +149,13 @@ const Executable* Binary::load() {
     }
 
     std::free(pByteCode);
-    std::free(pImportList);
     std::free(pExportList);
+    std::free(pImportList);
+    std::free(pTargetData);
     throw Error(sFileName, "unable to load binary");
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Executable Constructor
@@ -188,10 +172,10 @@ Executable::Executable(
     pImportData(pRawImportData),
     pExportData(pRawExportData),
     pByteCode(pRawByteCode),
-    pExportedSymbols(0),
     pImportedSymbols(0),
-    uNumExportedSymbols(0),
-    uNumImportedSymbols(0)
+    pExportedSymbols(0),
+    uNumImportedSymbols(0),
+    uNumExportedSymbols(0)
 {
     if (
         (uNumExportedSymbols = *(uint32*)pExportData) &&

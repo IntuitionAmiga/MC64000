@@ -1,5 +1,5 @@
-#ifndef __MC64K_HPP__
-    #define __MC64K_HPP__
+#ifndef __MC64K_LOADER_DEPENDENCY_HPP__
+#   define __MC64K_LOADER_DEPENDENCY_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,9 +14,19 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-    #ifndef __LP64__
-        #error "This codebase is intended for 64-bit targets only"
-    #endif
+#include <cstdio>
+#include "misc/version.hpp"
 
-    #include "misc/scalar.hpp"
+namespace MC64K {
+namespace Loader {
+
+/**
+ * Simple dependency structure
+ */
+struct Dependency {
+    Misc::Version oVersion;
+    const char*   sName;
+};
+
+}} // namespace
 #endif

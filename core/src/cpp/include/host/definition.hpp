@@ -1,5 +1,5 @@
-#ifndef __MC64K_HOST_HPP__
-    #define __MC64K_HOST_HPP__
+#ifndef __MC64K_HOST_DEFINITION_HPP__
+#define __MC64K_HOST_DEFINITION_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -15,48 +15,44 @@
  */
 
 #include "machine/interpreter.hpp"
-#include "loader/binary.hpp"
+#include "misc/version.hpp"
+#include "loader/linksymbol.hpp"
 
 namespace MC64K {
+namespace Host {
 
 /**
- * Host
+ * Definition
  *
  * Basic Host Definition structure.
  */
-class Host {
+class Definition {
 
     private:
         const char*                     sHostName;
         Machine::Interpreter::HostCall* aHostVectors;
         Loader::LinkSymbol*             aHostExportSymbols;
         Loader::LinkSymbol*             aHostImportSymbols;
-
-        uint32 uVersionMajor;
-        uint32 uVersionMinor;
-        uint32 uVersionPatch;
-        uint8  uMaxVector;
+        Misc::Version                   oVersion;
+        uint8                           uMaxVector;
 
     public:
         /**
-         * aHostVectors is expected to be null terminated.
-         * aExports and aImports must be terminated with a Symbol referencing null
-         */
-        Host(
+        * aHostVectors is expected to be null terminated.
+        * aExports and aImports must be terminated with a Symbol referencing null
+        */
+        Definition(
             const char* sName,
-            uint32 uMajor,
-            uint32 uMinor,
-            uint32 uPatch,
+            Misc::Version oVersion,
             Machine::Interpreter::HostCall aVectors[],
             Loader::LinkSymbol aExports[],
             Loader::LinkSymbol aImports[]
         );
 
         void setVector(Machine::Interpreter::HostCall cFunction, uint8 uIndex);
-
-        void parseExecutable(Loader::Executable* pExecutable);
 };
 
+}
 } // namespace
 
 #endif

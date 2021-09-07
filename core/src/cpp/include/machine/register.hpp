@@ -14,7 +14,7 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include "scalar.hpp"
+#include "misc/scalar.hpp"
 
 namespace MC64K {
 namespace Machine {

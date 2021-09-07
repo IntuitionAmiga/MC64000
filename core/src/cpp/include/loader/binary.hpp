@@ -14,67 +14,14 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include "error.hpp"
 #include <cstdio>
+#include "error.hpp"
+#include "linksymbol.hpp"
 
 namespace MC64K {
 namespace Loader {
 
-class Version {
-    private:
-        uint32 uPackedVersion;
-
-        enum {
-            MAJOR_BITS = 12,
-            MINOR_BITS = 10,
-            PATCH_BITS = 10,
-            MAX_MAJOR  = (1 << MAJOR_BITS) - 1,
-            MAX_MINOR  = (1 << MINOR_BITS) - 1,
-            MAX_PATCH  = (1 << PATCH_BITS) - 1,
-            MASK_MAJOR = MAX_MAJOR << (MINOR_BITS + PATCH_BITS)
-        };
-
-    public:
-        Version(uint32 uVersion) : uPackedVersion(uVersion) {}
-        Version(unsigned iMajor, unsigned iMinor, unsigned iPatch);
-
-        bool isCompatible(const Version& oVersion) const;
-};
-
-/**
- * LinkSymbol
- *
- * Used to resolve exported and imported symbols
- */
-struct LinkSymbol {
-
-    /**
-     * Flag definitions
-     */
-    enum {
-        READ    = 1,
-        WRITE   = 2,
-        EXECUTE = 4
-    };
-
-    /**
-     * Name
-     */
-    const char* sIdentifier;
-
-    /**
-     * Location
-     */
-    union {
-        void*        pRawData;
-        const uint8* pByteCode;
-    };
-
-    /**
-     * Other properties
-     */
-    uint64 uFlags;
-};
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Executable forwards reference.
@@ -122,69 +69,6 @@ class Binary {
         void   loadManifest();
         uint8* readChunkData(const uint64 uChunkID);
         const  ManifestEntry* findChunk(const uint64 uChunkID);
-};
-
-/**
- * Executable
- */
-class Executable {
-    friend const Executable* Binary::load();
-
-    private:
-        const uint8* pTargetData;
-        const uint8* pImportData;
-        const uint8* pExportData;
-        const uint8* pByteCode;
-        LinkSymbol*  pExportedSymbols;
-        LinkSymbol*  pImportedSymbols;
-        uint32       uNumExportedSymbols;
-        uint32       uNumImportedSymbols;
-
-    public:
-
-        /**
-         * Get the number of symbols exported by this binary.
-         */
-        uint32 getNumExportedSymbols() const {
-            return uNumExportedSymbols;
-        }
-
-        /**
-         * Get the symbols exported by this binary. They are assumed immutable from the host side.
-         */
-        const LinkSymbol* getExportedSymbols() const {
-            return pExportedSymbols;
-        }
-
-        /**
-         * Get the number of symbols imported by this binary.
-         */
-        uint32 getNumImportedSymbols() const {
-            return uNumImportedSymbols;
-        }
-
-        /**
-         * Get the symbols imported by this binary. The host is expected to match the identifiers with
-         * appropriate runtime addresses for the expected data.
-         */
-        LinkSymbol* getImportedSymbols() const {
-            return pImportedSymbols;
-        }
-
-
-        ~Executable();
-
-    private:
-        /**
-         * Constructable only by the binary loader
-         */
-        Executable(
-            const uint8* pRawTargetData,
-            const uint8* pRawImportData,
-            const uint8* pRawExportData,
-            const uint8* pRawByteCode
-        );
-
 };
 
 }} // namespace

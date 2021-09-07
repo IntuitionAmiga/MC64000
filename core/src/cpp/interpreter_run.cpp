@@ -14,7 +14,7 @@
 #include "machine/interpreter.hpp"
 #include "machine/timing.hpp"
 #include "bytecode/opcode.hpp"
-#include "gnarly.hpp"
+#include "machine/gnarly.hpp"
 #include <cstdio>
 #include <cmath>
 

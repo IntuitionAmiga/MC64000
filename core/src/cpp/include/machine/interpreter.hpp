@@ -14,7 +14,6 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include "scalar.hpp"
 #include "register.hpp"
 #include "error.hpp"
 
