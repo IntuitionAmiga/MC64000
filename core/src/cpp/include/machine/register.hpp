@@ -21,6 +21,8 @@ namespace Machine {
 
 /**
  * GPRegister
+ *
+ * Basic general purpose (integer / addressing) register definition.
  */
 union GPRegister {
     public:
@@ -88,6 +90,8 @@ union GPRegister {
 
 /**
  * FPRegister
+ *
+ * Floating Point register definition.
  */
 union FPRegister {
     public:

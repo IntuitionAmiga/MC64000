@@ -17,9 +17,13 @@
 #include "machine/interpreter.hpp"
 #include "loader/binary.hpp"
 
-
 namespace MC64K {
 
+/**
+ * Host
+ *
+ * Basic Host Definition structure.
+ */
 class Host {
 
     private:

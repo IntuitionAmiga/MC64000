@@ -87,6 +87,9 @@ void Binary::loadManifest() {
     }
 }
 
+/**
+ * Locate a chunk by ID
+ */
 const Binary::ManifestEntry* Binary::findChunk(const uint64 uChunkID) {
     for (uint32 u = 0; u < uManifestLength; ++u) {
         if (uChunkID == pManifest[u].uMagicID) {
@@ -96,6 +99,9 @@ const Binary::ManifestEntry* Binary::findChunk(const uint64 uChunkID) {
     throw Error(sFileName, "missing chunk", uChunkID);
 }
 
+/**
+ * Allocate and load a chunk by ID
+ */
 uint8* Binary::readChunkData(const uint64 uChunkID) {
     uint64 aHeader[2] = { 0, 0 };
     uint64 uAllocSize = 0;

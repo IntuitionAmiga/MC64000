@@ -14,6 +14,10 @@
 /**
  * Collection of gnarly macros. Bite me.
  */
+
+/**
+ * Sets up a union of temporaries involved in handling displacement values in the opcode stream.
+ */
 #define initDisplacement() \
     union { \
         uint32 uMask; \
@@ -21,28 +25,53 @@
         uint8  uBytes[4]; \
     };
 
+/**
+ * Reads a 4 byte displacement value from the opcode stream into the initialised temporary.
+ */
 #define readDisplacement() \
     uBytes[0] = *pProgramCounter++; \
     uBytes[1] = *pProgramCounter++; \
     uBytes[2] = *pProgramCounter++; \
     uBytes[3] = *pProgramCounter++;
 
+/**
+ * Alias of readDisplacment() for when the value represents a mask value and not a displacement.
+ */
 #define readMask() readDisplacement()
 
-
+/**
+ * Reads the next byte of the opcode stream as a short immediate displacement and updates the program counter.
+ */
 #define branchByte()  { int8 iShortDisplacement = (int8)*pProgramCounter++; pProgramCounter += iShortDisplacement; }
+
+/**
+ * Reads the immediate 4-byte displacement from the opcode stream and updates the program counter.
+ */
 #define branchLong()  { readDisplacement(); pProgramCounter += iDisplacement; }
+
+/**
+ * Tests the condition and if true, updates the program counter with the already loaded displacement.
+ */
 #define bcc(c) if (c) { pProgramCounter += iDisplacement; }
 
+/**
+ * Decodes a single effective address for a monadic operation.
+ */
 #define monadic(size) \
     eOperationSize = size; \
     pDstEA = decodeEffectiveAddress();
 
+/**
+ * Decodes a pair of effective addresses for a dyadic operation.
+ */
 #define dyadic(size) \
     eOperationSize = size; \
     pDstEA = decodeEffectiveAddress(); \
     pSrcEA = decodeEffectiveAddress();
 
+/**
+ * Type casting for access to decoded effective addresses
+ */
 #define asByte(ea)   *((int8*)(ea))
 #define asWord(ea)   *((int16*)(ea))
 #define asLong(ea)   *((int32*)(ea))
@@ -54,12 +83,22 @@
 #define asSingle(ea) *((float32*)(ea))
 #define asDouble(ea) *((float64*)(ea))
 #define asBitPos(ea, m) (1 << (asUByte(ea) & m))
+
+/**
+ * Exit triger for unimplemented instructions.
+ */
 #define todo() eStatus = UNIMPLEMENTED_OPCODE; break;
 
+/**
+ * Saves the program counter onto the stack.
+ */
 #define pushProgramCounter() \
     aGPR[GPRegister::SP].pUByte -= 8; \
     *(aGPR[GPRegister::SP].pUQuad) = (uint64)pProgramCounter;
 
+/**
+ * Restores the program counter from the stack.
+ */
 #define popProgramCounter() \
     pProgramCounter = (const uint8*)(*(aGPR[GPRegister::SP].pUQuad)); \
     aGPR[GPRegister::SP].pUByte += 8;

@@ -55,6 +55,9 @@ struct LinkSymbol {
     uint64 uFlags;
 };
 
+/**
+ * Executable forwards reference.
+ */
 class Executable;
 
 /**

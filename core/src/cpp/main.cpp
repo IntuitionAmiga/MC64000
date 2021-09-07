@@ -43,18 +43,21 @@ LinkSymbol aExports[] = {
  * Declare the host
  */
 MC64K::Host hostApplication(
-    "Test Host",
+    "Standard Test Host",
     1, 0, 0,
     aVectors,
     aExports,
     aImports
 );
 
-int main ( int iArgN, const char** aArgV ) {
+/**
+ * Entry point
+ */
+int main(int iArgN, const char** aArgV) {
 
-    if ( iArgN < 2 ) {
-        std::puts ( "Missing required parameter" );
-        std::exit ( EXIT_FAILURE );
+    if (iArgN < 2) {
+        std::puts("Missing required parameter");
+        std::exit(EXIT_FAILURE);
     }
 
     try {
@@ -64,7 +67,7 @@ int main ( int iArgN, const char** aArgV ) {
 
         const LinkSymbol* aExports = 0;
 
-        std::printf (
+        std::printf(
             "Executable %s loaded at %p\n",
             sExecutableName,
             pExecutable
@@ -72,14 +75,14 @@ int main ( int iArgN, const char** aArgV ) {
 
         uint32 uSymbolCount = 0;
 
-        if ( ( uSymbolCount = pExecutable->getNumExportedSymbols() ) ) {
+        if ( (uSymbolCount = pExecutable->getNumExportedSymbols()) ) {
             std::printf (
                 "Executable defines %u exported symbols:\n",
                 uSymbolCount
             );
 
             aExports = pExecutable->getExportedSymbols();
-            for ( unsigned u = 0; u < uSymbolCount; ++u ) {
+            for (unsigned u = 0; u < uSymbolCount; ++u) {
                 std::printf (
                     "\t%2u %p %s 0x%016lX\n",
                     u,
@@ -90,15 +93,15 @@ int main ( int iArgN, const char** aArgV ) {
             }
         }
 
-        if ( ( uSymbolCount = pExecutable->getNumImportedSymbols() ) ) {
+        if ( (uSymbolCount = pExecutable->getNumImportedSymbols()) ) {
             std::printf (
                 "Executable expects %u imported symbols:\n",
                 uSymbolCount
             );
 
             const LinkSymbol* aImports = pExecutable->getImportedSymbols();
-            for ( unsigned u = 0; u < uSymbolCount; ++u ) {
-                std::printf (
+            for (unsigned u = 0; u < uSymbolCount; ++u) {
+                std::printf(
                     "\t%2u %p %s 0x%016lX\n",
                     u,
                     aImports[u].pRawData,
@@ -108,30 +111,30 @@ int main ( int iArgN, const char** aArgV ) {
             }
         }
 
-        if ( aExports ) {
+        if (aExports) {
             const int iDumpState = Interpreter::STATE_FPR|Interpreter::STATE_GPR|Interpreter::STATE_TMP;
-            Interpreter::allocateStack ( 256 );
-            Interpreter::setHostFunction ( nativeTest, 0x69 );
-            Interpreter::setProgramCounter ( aExports[0].pByteCode );
-            Interpreter::dumpState ( iDumpState );
+            Interpreter::allocateStack(256);
+            Interpreter::setHostFunction(nativeTest, 0x69);
+            Interpreter::setProgramCounter(aExports[0].pByteCode);
+            Interpreter::dumpState (iDumpState);
             Interpreter::run();
-            Interpreter::dumpState ( iDumpState|Interpreter::STATE_STACK );
+            Interpreter::dumpState (iDumpState|Interpreter::STATE_STACK);
             Interpreter::freeStack();
         }
         delete pExecutable;
-    } catch ( MC64K::Loader::Error& oError ) {
-        std::printf (
+    } catch (MC64K::Loader::Error& oError) {
+        std::printf(
             "Unable to load binary file \"%s\", %s.\n",
             oError.sFileName,
             oError.sIssue
         );
-        std::exit ( EXIT_FAILURE );
-    } catch ( MC64K::Machine::Error& oError ) {
-        std::printf (
+        std::exit(EXIT_FAILURE);
+    } catch (MC64K::Machine::Error& oError) {
+        std::printf(
             "Machine error: %s.\n",
             oError.sIssue
         );
-        std::exit ( EXIT_FAILURE );
+        std::exit(EXIT_FAILURE);
     }
 
     return EXIT_SUCCESS;
