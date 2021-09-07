@@ -20,6 +20,27 @@
 namespace MC64K {
 namespace Loader {
 
+class Version {
+    private:
+        uint32 uPackedVersion;
+
+        enum {
+            MAJOR_BITS = 12,
+            MINOR_BITS = 10,
+            PATCH_BITS = 10,
+            MAX_MAJOR  = (1 << MAJOR_BITS) - 1,
+            MAX_MINOR  = (1 << MINOR_BITS) - 1,
+            MAX_PATCH  = (1 << PATCH_BITS) - 1,
+            MASK_MAJOR = MAX_MAJOR << (MINOR_BITS + PATCH_BITS)
+        };
+
+    public:
+        Version(uint32 uVersion) : uPackedVersion(uVersion) {}
+        Version(unsigned iMajor, unsigned iMinor, unsigned iPatch);
+
+        bool isCompatible(const Version& oVersion) const;
+};
+
 /**
  * LinkSymbol
  *
@@ -110,8 +131,9 @@ class Executable {
     friend const Executable* Binary::load();
 
     private:
-        const uint8* pExportData;
+        const uint8* pTargetData;
         const uint8* pImportData;
+        const uint8* pExportData;
         const uint8* pByteCode;
         LinkSymbol*  pExportedSymbols;
         LinkSymbol*  pImportedSymbols;
@@ -157,8 +179,9 @@ class Executable {
          * Constructable only by the binary loader
          */
         Executable(
-            const uint8* pRawExportData,
+            const uint8* pRawTargetData,
             const uint8* pRawImportData,
+            const uint8* pRawExportData,
             const uint8* pRawByteCode
         );
 

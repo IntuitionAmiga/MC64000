@@ -31,5 +31,9 @@ class Error {
             uChunkID(uChunkID) {}
 };
 
+class InvalidVersion {
+
+};
+
 }} // namespace
 #endif

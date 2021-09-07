@@ -19,6 +19,30 @@
 using namespace MC64K::Loader;
 
 /**
+ * Version long constructor
+ */
+Version::Version(unsigned iMajor, unsigned iMinor, unsigned iPatch) {
+    if (iMajor > MAX_MAJOR || iMinor > MAX_MINOR || iPatch > MAX_PATCH) {
+        throw InvalidVersion();
+    }
+    uPackedVersion = iMajor << (PATCH_BITS + MINOR_BITS) | iMinor << PATCH_BITS | iPatch;
+}
+
+/**
+ * Version compatibility check. Returns true if the current instance has the same major version number
+ * and at least the same minor/patch combination.
+ */
+bool Version::isCompatible(const Version& oVersion) const {
+    return (
+        // Major part must be equal
+        (uPackedVersion & MASK_MAJOR) == (oVersion.uPackedVersion & MASK_MAJOR)
+    ) && (
+        // Remainder must be greater or equal
+        (uPackedVersion & ~MASK_MAJOR) >= (oVersion.uPackedVersion & ~MASK_MAJOR)
+    );
+}
+
+/**
  * Binary Constructor
  */
 Binary::Binary(const char* sFileName) :
@@ -127,16 +151,18 @@ uint8* Binary::readChunkData(const uint64 uChunkID) {
  */
 const Executable* Binary::load() {
     loadManifest();
-    uint8*      pByteCode   = 0;
-    uint8*      pExportList = 0;
+    uint8*      pTargetData = 0;
     uint8*      pImportList = 0;
+    uint8*      pExportList = 0;
+    uint8*      pByteCode   = 0;
     Executable* pExecutable = 0;
 
     if (
-        (pByteCode   = readChunkData(CHUNK_BYTE_CODE_ID)) &&
-        (pExportList = readChunkData(CHUNK_EXPORT_LIST_ID)) &&
+        (pTargetData = readChunkData(CHUNK_TARGET_ID)) &&
         (pImportList = readChunkData(CHUNK_IMPORT_LIST_ID)) &&
-        (pExecutable = new (std::nothrow) Executable(pExportList, pImportList, pByteCode))
+        (pExportList = readChunkData(CHUNK_EXPORT_LIST_ID)) &&
+        (pByteCode   = readChunkData(CHUNK_BYTE_CODE_ID)) &&
+        (pExecutable = new (std::nothrow) Executable(pTargetData, pImportList, pExportList, pByteCode))
     ) {
         return pExecutable;
     }
@@ -152,9 +178,15 @@ const Executable* Binary::load() {
  *
  * Private, sanity checks performed before getting here.
  */
-Executable::Executable(const uint8* pRawExportData, const uint8* pRawImportData, const uint8* pRawByteCode) :
-    pExportData(pRawExportData),
+Executable::Executable(
+    const uint8* pRawTargetData,
+    const uint8* pRawImportData,
+    const uint8* pRawExportData,
+    const uint8* pRawByteCode
+) :
+    pTargetData(pRawTargetData),
     pImportData(pRawImportData),
+    pExportData(pRawExportData),
     pByteCode(pRawByteCode),
     pExportedSymbols(0),
     pImportedSymbols(0),
@@ -215,8 +247,9 @@ Executable::Executable(const uint8* pRawExportData, const uint8* pRawImportData,
 Executable::~Executable() {
     std::free((void*)pExportedSymbols);
     std::free((void*)pImportedSymbols);
-    std::free((void*)pImportData);
-    std::free((void*)pExportData);
     std::free((void*)pByteCode);
+    std::free((void*)pExportData);
+    std::free((void*)pImportData);
+    std::free((void*)pTargetData);
 }
 
