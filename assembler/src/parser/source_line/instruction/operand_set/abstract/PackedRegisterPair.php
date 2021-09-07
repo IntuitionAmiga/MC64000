@@ -75,5 +75,5 @@ abstract class PackedRegisterPair extends Dyadic {
      * @param  int  $iOpcode
      * @return bool
      */
-    protected abstract function foldIfOperandsSame(int $iOpdcode): bool;
+    protected abstract function foldIfOperandsSame(int $iOpcode): bool;
 }

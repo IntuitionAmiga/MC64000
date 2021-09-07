@@ -24,11 +24,14 @@ use function \strlen, \uasort, \str_replace, \array_keys, \array_values;
  */
 class DefinitionSet {
 
+    /** @var string[] $aDefinitions [string => string ]*/
     private array $aDefinitions = [];
     private bool  $bolSorted    = false;
 
     /**
      * Constructor
+     *
+     * @param string[] $aDefinitions
      */
     public function __construct(array $aDefinitions = []) {
         $this->aDefinitions = $aDefinitions;

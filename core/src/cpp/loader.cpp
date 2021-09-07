@@ -23,8 +23,8 @@ using namespace MC64K::Loader;
  */
 Binary::Binary(const char* sFileName) :
     sFileName(sFileName),
-    pFileHandle(0), pChunkList(0),
-    uChunkListLength(0)
+    pFileHandle(0), pManifest(0),
+    uManifestLength(0)
 {
     pFileHandle = std::fopen(sFileName, "rb");
     if (!pFileHandle) {
@@ -42,8 +42,8 @@ Binary::~Binary() {
         std::fclose(pFileHandle);
         pFileHandle = 0;
     }
-    if (pChunkList) {
-        std::free(pChunkList);
+    if (pManifest) {
+        std::free(pManifest);
     }
 }
 
@@ -62,30 +62,35 @@ void Binary::readChunkHeader(uint64 *pHeader, uint64 const uExpectedID) {
 /**
  * Attempts to load and allocate the Chunk List
  */
-void Binary::loadChunkList() {
+void Binary::loadManifest() {
     uint64 aHeader[2] = { 0, 0 };
-    readChunkHeader(aHeader, CHUNK_LIST_ID);
+    readChunkHeader(aHeader, CHUNK_MANIFEST_ID);
 
-    pChunkList = (ChunkListEntry*)std::malloc(aHeader[1]);
+    pManifest = (ManifestEntry*)std::malloc(aHeader[1]);
 
-    if (!pChunkList) {
-        throw Error(sFileName, "unable to allocate chunk", CHUNK_LIST_ID);
+    if (!pManifest) {
+        throw Error(sFileName, "unable to allocate chunk", CHUNK_MANIFEST_ID);
     }
 
-    uChunkListLength = aHeader[1] / sizeof(ChunkListEntry);
+    uManifestLength = aHeader[1] / sizeof(ManifestEntry);
 
-    if (uChunkListLength != std::fread(pChunkList, sizeof(ChunkListEntry), uChunkListLength, pFileHandle)) {
-        throw Error(sFileName, "failed to load chunk", CHUNK_LIST_ID);
+    if (uManifestLength != std::fread(pManifest, sizeof(ManifestEntry), uManifestLength, pFileHandle)) {
+        throw Error(sFileName, "failed to load chunk", CHUNK_MANIFEST_ID);
     }
-//     for (uint32 u = 0; u < uChunkListLength; ++u) {
-//         std::printf("\tChunk ID 0x%0lX at offset %ld\n", pChunkList[u].uMagicID, pChunkList[u].iOffset);
-//     }
+    for (uint32 u = 0; u < uManifestLength; ++u) {
+        std::printf(
+            "\tChunk %.*s found at offset %ld\n",
+            8,
+            (const char*)(&pManifest[u].uMagicID),
+            pManifest[u].iOffset
+        );
+    }
 }
 
-const Binary::ChunkListEntry* Binary::findChunk(const uint64 uChunkID) {
-    for (uint32 u = 0; u < uChunkListLength; ++u) {
-        if (uChunkID == pChunkList[u].uMagicID) {
-            return &pChunkList[u];
+const Binary::ManifestEntry* Binary::findChunk(const uint64 uChunkID) {
+    for (uint32 u = 0; u < uManifestLength; ++u) {
+        if (uChunkID == pManifest[u].uMagicID) {
+            return &pManifest[u];
         }
     }
     throw Error(sFileName, "missing chunk", uChunkID);
@@ -95,9 +100,9 @@ uint8* Binary::readChunkData(const uint64 uChunkID) {
     uint64 aHeader[2] = { 0, 0 };
     uint64 uAllocSize = 0;
     uint8* pRawData   = 0;
-    const ChunkListEntry* pChunkListEntry = findChunk(uChunkID);
+    const ManifestEntry* pManifestEntry = findChunk(uChunkID);
 
-    std::fseek(pFileHandle, pChunkListEntry->iOffset, SEEK_SET);
+    std::fseek(pFileHandle, pManifestEntry->iOffset, SEEK_SET);
     readChunkHeader(aHeader, uChunkID);
     uAllocSize = alignSize(aHeader[1]);
     pRawData   = (uint8*)std::malloc(uAllocSize);
@@ -115,7 +120,7 @@ uint8* Binary::readChunkData(const uint64 uChunkID) {
  * Attempts to load and return the Executable
  */
 const Executable* Binary::load() {
-    loadChunkList();
+    loadManifest();
     uint8*      pByteCode   = 0;
     uint8*      pExportList = 0;
     uint8*      pImportList = 0;
@@ -155,7 +160,7 @@ Executable::Executable(const uint8* pRawExportData, const uint8* pRawImportData,
         (pExportedSymbols    = (LinkSymbol*)std::malloc(uNumExportedSymbols * sizeof(LinkSymbol)))
     ) {
         const uint32* pOffsets = (uint32*)(pExportData + 4);
-        char*  pName   = ((char*)pExportData) + 4 + uNumExportedSymbols * sizeof(uint32);
+        char* pName = ((char*)pExportData) + 4 + uNumExportedSymbols * sizeof(uint32);
         for (unsigned u = 0; u < uNumExportedSymbols; ++u) {
             pExportedSymbols[u].sIdentifier = pName;
             pExportedSymbols[u].pByteCode   = pRawByteCode + pOffsets[u];

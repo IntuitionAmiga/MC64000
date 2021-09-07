@@ -57,13 +57,15 @@ class Binary {
      * @throws \Exception
      */
     public function __construct(string $sFilename) {
+        $rOutput  = null;
         $sDirname = dirname($sFilename);
         if (!is_writeable($sDirname)) {
             throw new \Exception($sDirname . ' is not a writeable location');
         }
-        if (!($this->rOutput = fopen($sFilename, 'wb'))) {
+        if (!($rOutput = fopen($sFilename, 'wb'))) {
             throw new \Exception($sFilename . ' could not be created');
         }
+        $this->rOutput = $rOutput;
         $this->writeHeader();
         $this->sFilename = $sFilename;
     }
@@ -96,10 +98,7 @@ class Binary {
      * Make sure the file is closed on destruction
      */
     public function __destruct() {
-        if (is_resource($this->rOutput)) {
-            fclose($this->rOutput);
-            $this->rOutput = false;
-        }
+        fclose($this->rOutput);
     }
 
     /**

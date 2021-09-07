@@ -27,7 +27,7 @@ use function \preg_match;
 trait TParser {
 
     /**
-     * @implements IParser::checkLine()
+     * @implements IParser::checkLine(string $sLine): bool
      */
     public function checkLine(string $sLine): bool {
         return (bool)preg_match(self::BASIC_LINE_MATCH, $sLine);

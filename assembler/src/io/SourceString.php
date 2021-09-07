@@ -26,12 +26,16 @@ use function \explode, \count;
  */
 class SourceString implements ISourceFile {
 
-    private string $sFilename;
+    /** @var string[] $aLines */
     private array  $aLines      = [];
+    private string $sFilename;
     private int    $iLineNumber = 0;
     private int    $iCount      = 0;
 
     /**
+     * Constructor
+     *
+     * @param  string $sSource
      * @param  string $sFilename
      * @throws \Exception
      */

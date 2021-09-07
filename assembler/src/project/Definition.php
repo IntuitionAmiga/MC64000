@@ -209,7 +209,7 @@ class Definition {
     }
 
     /**
-     * @param  string $oProjectFile
+     * @param  string $sProjectFile
      * @return object
      */
     private function loadDefinition(string $sProjectFile): object {
@@ -220,7 +220,7 @@ class Definition {
         ) {
             throw new \Exception("Unable to open project file '" . $sProjectFile . "' for reading.\n");
         }
-        $oProjectData = json_decode(file_get_contents($sProjectFile));
+        $oProjectData = json_decode((string)file_get_contents($sProjectFile));
         if (
             !($oProjectData instanceof \stdClass) ||
             empty($oProjectData->target->name) ||

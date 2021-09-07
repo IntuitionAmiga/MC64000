@@ -55,7 +55,7 @@ class LabelLocation {
     /** @var array[] $aImportedLabels */
     private array $aImportedLabels       = [];
 
-    /** @var array[] $aEnumeratedImports */
+    /** @var string[] $aEnumeratedImports */
     private array $aEnumeratedImports    = [];
 
     /** @var int[] $aLabelIEQualification */
@@ -162,9 +162,9 @@ class LabelLocation {
     /**
      * Add a local label to the registry. A local label can be declared only once in given file.
      *
-     * @param  IO\File $oFile
-     * @param  string  $sLabel
-     * @param  int     $iOffset
+     * @param  IO\ISourceFile $oFile
+     * @param  string         $sLabel
+     * @param  int            $iOffset
      * @return self
      * @throws \Exception
      */
@@ -197,7 +197,7 @@ class LabelLocation {
     /**
      * Returns the global symbol table.
      *
-     * @return array [string => [string, string, int]]
+     * @return array[] [string => [string, string, int]]
      */
     public function getGlobals(): array {
         return $this->aGlobalLabels;
@@ -206,7 +206,7 @@ class LabelLocation {
     /**
      * Returns whether or not a given global label name is currently resolved.
      *
-     * @param  string
+     * @param  string $sLabel
      * @return bool
      */
     public function isGlobalResolved(string $sLabel): bool {
@@ -386,7 +386,7 @@ class LabelLocation {
     /**
      * Set the array of imports that were enumerated in the second pass.
      *
-     * @param  array $aImports
+     * @param  string[] $aImports
      * @return self
      */
     public function setEnumeratedImports(array $aImports): self {
@@ -397,7 +397,7 @@ class LabelLocation {
     /**
      * Get the array of imports that were enumerated in the second pass.
      *
-     * @return array
+     * @return string[]
      */
     public function getEnumeratedImports(): array {
         return $this->aEnumeratedImports;
@@ -416,7 +416,7 @@ class LabelLocation {
     /**
      * Returns the (pre-enumerated) set of imports.
      *
-     * @return array
+     * @return array[]
      */
     public function getImports(): array {
         return $this->aImportedLabels;
@@ -441,7 +441,7 @@ class LabelLocation {
      * @param   string $sLabel
      * @@throws \LengthException
      */
-    private function assertLabel(string $sLabel) {
+    private function assertLabel(string $sLabel): void {
         if (strlen($sLabel) > Defs\ILabel::MAX_LENGTH) {
             throw new \LengthException();
         }

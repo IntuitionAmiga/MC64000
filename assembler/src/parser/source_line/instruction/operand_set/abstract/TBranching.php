@@ -44,7 +44,7 @@ trait TBranching {
      */
     protected function parseBranchDisplacement(string $sSource, bool $bOperandSideEffects): string {
         try {
-            return $this->oTgtParser->parse($sSource);
+            return (string)$this->oTgtParser->parse($sSource);
         } catch (CodeFoldException $oFold) {
             if ($bOperandSideEffects) {
                 throw new UnhandledCodeFoldException("Cannot fold zero branch as one or both operands have side effects");

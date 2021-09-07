@@ -171,7 +171,7 @@ class Coordinator {
      *
      * @param  string $sLabel
      * @return self
-     * @throws Exception
+     * @throws \Exception
      */
     public function addGlobalLabel(string $sLabel): self {
         $this->oLabelLocation->addGlobal(
@@ -187,7 +187,7 @@ class Coordinator {
      *
      * @param  string $sLabel
      * @return self
-     * @throws Exception
+     * @throws \Exception
      */
     public function addLocalLabel(string $sLabel): self {
         $this->oLabelLocation->addLocal(

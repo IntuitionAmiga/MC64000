@@ -52,6 +52,7 @@ class DependencySet {
         self::PATCH => (1 << self::PATCH_BITS) - 1
     ];
 
+    /** @var int[][] $aDependencies [string => int[3]]*/
     private array $aDependencies = [];
 
     /**
@@ -88,7 +89,7 @@ class DependencySet {
      * @return object[]
      */
     public function getList(): array {
-        $aDepedencyList = [];
+        $aDependencyList = [];
         foreach ($this->aDependencies as $sName => $aVersion) {
             $aDependencyList[] = (object)[
                 'sName'       => $sName,
@@ -99,9 +100,9 @@ class DependencySet {
     }
 
     /**
-     * @param  int[3] $aVersion
-     * @param  int[3] $aCurrentVersion
-     * @return int[3]
+     * @param  int[] $aVersion
+     * @param  int[] $aCurrentVersion
+     * @return int[]
      * @throws \UnexpectedValueException
      */
     private function checkVersion(array $aVersion, array $aCurrentVersion): array {
@@ -133,7 +134,7 @@ class DependencySet {
      * based on the 12:10:10 format requirements.
      *
      * @param  string $sVersion
-     * @return int[3]
+     * @return int[]
      * @throws \RangeException
      */
     private function parseVersionNumber(string $sVersion): array {
@@ -152,7 +153,7 @@ class DependencySet {
     }
 
     /**
-     * @param  int[3] $aVersion
+     * @param  int[] $aVersion
      * @return int
      */
     private function encodeVersion(array $aVersion): int {

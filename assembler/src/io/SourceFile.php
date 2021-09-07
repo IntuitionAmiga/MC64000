@@ -36,13 +36,15 @@ final class SourceFile implements ISourceFile {
      * @throws \Exception
      */
     public function __construct(string $sFilename) {
+        $rSource = null;
         if (
             !file_exists($sFilename) ||
             !is_readable($sFilename) ||
-            (!($this->rSource = fopen($sFilename, 'r')))
+            (!($rSource = fopen($sFilename, 'r')))
         ) {
             throw new \Exception($sFilename . ' could not be opened');
         }
+        $this->rSource   = $rSource;
         $this->sFilename = $sFilename;
     }
 
@@ -50,10 +52,7 @@ final class SourceFile implements ISourceFile {
      * Make sure the file is closed on destruction
      */
     public function __destruct() {
-        if (is_resource($this->rSource)) {
-            fclose($this->rSource);
-            $this->rSource = false;
-        }
+        fclose($this->rSource);
     }
 
     /**

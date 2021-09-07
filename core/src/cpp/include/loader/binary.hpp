@@ -75,28 +75,29 @@ class Binary {
 
     private:
         const uint64 FILE_MAGIC_ID        = 0x583030303436434D; // MC64000X
-        const uint64 CHUNK_LIST_ID        = 0x7473694C6B6E6843; // ChnkList
+        const uint64 CHUNK_MANIFEST_ID    = 0x74736566696E614D; // Manifest
+        const uint64 CHUNK_TARGET_ID      = 0x6F666E4974677254; // TrgtInfo
         const uint64 CHUNK_BYTE_CODE_ID   = 0x65646F4365747942; // ByteCode
         const uint64 CHUNK_EXPORT_LIST_ID = 0x646574726F707845; // Exported
         const uint64 CHUNK_IMPORT_LIST_ID = 0x646574726F706D49; // Imported
         const uint64 ALIGN_MASK           = 7;
 
-        struct ChunkListEntry {
+        struct ManifestEntry {
             uint64 uMagicID;
             int64  iOffset;
         };
 
-        ChunkListEntry* pChunkList;
-        uint32          uChunkListLength;
+        ManifestEntry* pManifest;
+        uint32         uManifestLength;
 
         uint64 alignSize(const uint64 uSize) const {
             return (uSize + ALIGN_MASK) & ~ALIGN_MASK;
         }
 
         void   readChunkHeader(uint64* pHeader, const uint64 uExpectedID);
-        void   loadChunkList();
+        void   loadManifest();
         uint8* readChunkData(const uint64 uChunkID);
-        const  ChunkListEntry* findChunk(const uint64 uChunkID);
+        const  ManifestEntry* findChunk(const uint64 uChunkID);
 };
 
 /**
