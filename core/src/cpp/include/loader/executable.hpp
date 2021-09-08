@@ -28,7 +28,7 @@ namespace Loader {
  * Executable
  */
 class Executable {
-    friend const Executable* Binary::load();
+    friend const Executable* Binary::load(const char*);
 
     private:
         const uint8* pTargetData;

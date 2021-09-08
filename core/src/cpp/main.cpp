@@ -11,7 +11,7 @@ using namespace MC64K::Host;
 
 
 extern Interpreter::Status nativeTest();
-extern Definition hostApplication;
+extern Definition standardTestHost;
 
 /**
  * Entry point
@@ -25,8 +25,10 @@ int main(int iArgN, const char** aArgV) {
 
     try {
         const char* sExecutableName = aArgV[1];
-        Binary oMC64KBinary(sExecutableName);
-        const Executable* pExecutable = oMC64KBinary.load();
+
+        // Initialise the binary loader
+        Binary oMC64KBinary(standardTestHost);
+        const Executable* pExecutable = oMC64KBinary.load(sExecutableName);
         const LinkSymbol* aExports = 0;
 
         std::printf(

@@ -20,7 +20,7 @@ namespace Host {
 
 Definition::Definition(
     const char* sName,
-    Misc::Version oVersion,
+    const Misc::Version oVersion,
     Machine::Interpreter::HostCall aVectors[],
     Loader::LinkSymbol aExports[],
     Loader::LinkSymbol aImports[]

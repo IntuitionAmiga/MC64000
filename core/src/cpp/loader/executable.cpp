@@ -12,44 +12,59 @@
  */
 
 #include <cstdlib>
+#include <cstring>
 #include <new>
 #include "mc64k.hpp"
 #include "loader/executable.hpp"
+#include "host/definition.hpp"
 
 using namespace MC64K::Loader;
+using namespace MC64K::Host;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Binary Constructor
  */
-Binary::Binary(const char* sFileName) :
-    sFileName(sFileName),
-    pFileHandle(0), pManifest(0),
+Binary::Binary(const Host::Definition& oDefinition) :
+    oHostDefinition(oDefinition),
+    sFileName(0),
+    pFileHandle(0),
+    pManifest(0),
     uManifestLength(0)
 {
-    pFileHandle = std::fopen(sFileName, "rb");
-    if (!pFileHandle) {
-        throw Error(sFileName, "file could not be opened for input");
-    }
-    uint64 aHeader[2] = { 0, 0 };
-    readChunkHeader(aHeader, FILE_MAGIC_ID);
+
 }
 
 /**
  * Binary Destructor
  */
 Binary::~Binary() {
+    close();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Binary::open(const char* sFileName) {
+    pFileHandle = std::fopen(sFileName, "rb");
+    if (!pFileHandle) {
+        throw Error(sFileName, "file could not be opened for input");
+    }
+    uint64 aHeader[2] = { 0, 0 };
+    readChunkHeader(aHeader, FILE_MAGIC_ID);
+    loadManifest();
+}
+
+void Binary::close() {
     if (pFileHandle) {
         std::fclose(pFileHandle);
         pFileHandle = 0;
     }
     if (pManifest) {
         std::free(pManifest);
+        pManifest = 0;
     }
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Attempts to read the expected chunk header
@@ -130,8 +145,10 @@ uint8* Binary::readChunkData(const uint64 uChunkID) {
 /**
  * Attempts to load and return the Executable
  */
-const Executable* Binary::load() {
-    loadManifest();
+const Executable* Binary::load(const char* sFileName) {
+
+    open(sFileName);
+
     uint8*      pTargetData = 0;
     uint8*      pImportList = 0;
     uint8*      pExportList = 0;
@@ -140,19 +157,79 @@ const Executable* Binary::load() {
 
     if (
         (pTargetData = readChunkData(CHUNK_TARGET_ID)) &&
+        (validateTarget(pTargetData)) &&
         (pImportList = readChunkData(CHUNK_IMPORT_LIST_ID)) &&
         (pExportList = readChunkData(CHUNK_EXPORT_LIST_ID)) &&
         (pByteCode   = readChunkData(CHUNK_BYTE_CODE_ID)) &&
         (pExecutable = new (std::nothrow) Executable(pTargetData, pImportList, pExportList, pByteCode))
     ) {
+        close();
         return pExecutable;
     }
-
+    close();
     std::free(pByteCode);
     std::free(pExportList);
     std::free(pImportList);
     std::free(pTargetData);
     throw Error(sFileName, "unable to load binary");
+}
+
+/**
+ * Lightweight target check.
+ *
+ * The raw chunk body data format is:
+ *     Flags             uint32
+ *     Number of entries uint32
+ *     Version table     uint32[Number of entries]
+ *     Dependency names  char[] (null terminated)
+ *
+ * The first entry in the version table is the target.
+ * For executable targets, the second entry in the version table is the host.
+ */
+bool Binary::validateTarget(const uint8* pRawTarget) {
+    uint32 targetFlags = *(const uint32*)pRawTarget;
+
+    // For an executable target we need to confirm that the current host dependency is viable.
+    if (targetFlags & TARGET_EXECUTABLE) {
+
+        // Initial version check is cheap. If the version number is compatible we can then check that we are
+        // talking about the same thing.
+        const Misc::Version* pVersionTable = (const Misc::Version*)(pRawTarget + sizeof(uint32) * 2);
+
+        if (oHostDefinition.getVersion().isCompatible(pVersionTable[HOST_VERSION_ENTRY])) {
+
+            // We need to compare the dependency name now. This involves locating the entry in the names
+            // section that follows the version table. The host is always the second entry.
+            uint32 uNumEntries = *(const uint32*)(pRawTarget + sizeof(uint32));
+            const char* sName  = (const char*)(pRawTarget + sizeof(uint32) * (2 + uNumEntries));
+
+            // Skip over the target name to the next entry. All names are null terminated.
+            while (*sName++);
+
+            // Compare the names.
+            if (0 == std::strcmp(oHostDefinition.getName(), sName)) {
+                return true;
+            } else {
+                std::printf(
+                    "Incompatible host: Need \'%s\', have \'%s\'\n",
+                    sName,
+                    oHostDefinition.getName()
+                );
+            }
+        } else {
+            std::printf(
+                "Host semantic version number check failed: Need %u.%u.%u, have %u.%u.%u\n",
+                pVersionTable[HOST_VERSION_ENTRY].getMajor(),
+                pVersionTable[HOST_VERSION_ENTRY].getMinor(),
+                pVersionTable[HOST_VERSION_ENTRY].getPatch(),
+                oHostDefinition.getVersion().getMajor(),
+                oHostDefinition.getVersion().getMinor(),
+                oHostDefinition.getVersion().getPatch()
+            );
+        }
+    }
+
+    return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,7 +267,6 @@ Executable::Executable(
             uint8 uByte;
 
             // Advance to the next name
-            // Advance to the next name
             while ((uByte = *pName) > 7) {
                 ++pName;
             }
@@ -212,7 +288,6 @@ Executable::Executable(
 
             uint8 uByte;
 
-            // Advance to the next name
             // Advance to the next name
             while ((uByte = *pName) > 7) {
                 ++pName;
@@ -236,4 +311,5 @@ Executable::~Executable() {
     std::free((void*)pImportData);
     std::free((void*)pTargetData);
 }
+
 

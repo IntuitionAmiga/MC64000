@@ -49,6 +49,18 @@ class Version {
          * equal to the remaining components.
          */
         bool isCompatible(const Version& oVersion) const;
+
+        unsigned getMajor() const {
+            return (uPackedVersion >> (MINOR_BITS + PATCH_BITS)) & MAX_MAJOR;
+        }
+
+        unsigned getMinor() const {
+            return (uPackedVersion >> MINOR_BITS) & MAX_MINOR;
+        }
+
+        unsigned getPatch() const {
+            return (uPackedVersion & MAX_PATCH);
+        }
 };
 
 }} // namespace
