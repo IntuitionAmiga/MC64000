@@ -29,7 +29,7 @@ int main(int iArgN, const char** aArgV) {
         // Initialise the binary loader
         Binary oMC64KBinary(standardTestHost);
         const Executable* pExecutable = oMC64KBinary.load(sExecutableName);
-        const LinkSymbol* aExports = 0;
+        //const LinkSymbol* aExports = 0;
 
         std::printf(
             "Executable %s loaded at %p\n",
@@ -37,54 +37,56 @@ int main(int iArgN, const char** aArgV) {
             pExecutable
         );
 
-        uint32 uSymbolCount = 0;
+        size_t uSymbolCount = 0;
 
-        if ( (uSymbolCount = pExecutable->getNumExportedSymbols()) ) {
+        const LinkSymbolSet* oExported = pExecutable->getExportedSymbolSet();
+        if ( (uSymbolCount = oExported->getCount()) ) {
             std::printf(
                 "Executable defines %u exported symbols:\n",
-                uSymbolCount
+                (uint32)uSymbolCount
             );
-
-            aExports = pExecutable->getExportedSymbols();
-            for (unsigned u = 0; u < uSymbolCount; ++u) {
-                std::printf(
-                    "\t%2u %p %s 0x%016lX\n",
-                    u,
-                    aExports[u].pRawData,
-                    aExports[u].sIdentifier,
-                    aExports[u].uFlags
-                );
-            }
+            oExported->dump(stdout);
+            //aExports = oExported->getSymbols();
         }
-
-        if ( (uSymbolCount = pExecutable->getNumImportedSymbols()) ) {
+        const LinkSymbolSet* oImported = pExecutable->getImportedSymbolSet();
+        if ( (uSymbolCount = oImported->getCount()) ) {
             std::printf(
-                "Executable expects %u imported symbols:\n",
-                uSymbolCount
+                "Executable defines %u imported symbols:\n",
+                (uint32)uSymbolCount
             );
-
-            const LinkSymbol* aImports = pExecutable->getImportedSymbols();
-            for (unsigned u = 0; u < uSymbolCount; ++u) {
-                std::printf(
-                    "\t%2u %p %s 0x%016lX\n",
-                    u,
-                    aImports[u].pRawData,
-                    aImports[u].sIdentifier,
-                    aExports[u].uFlags
-                );
-            }
+            oImported->dump(stdout);
+            //aExports = oExported->getSymbols();
         }
 
-        if (aExports) {
-            const int iDumpState = Interpreter::STATE_FPR|Interpreter::STATE_GPR|Interpreter::STATE_TMP;
-            Interpreter::allocateStack(256);
-            Interpreter::setHostFunction(nativeTest, 0x69);
-            Interpreter::setProgramCounter(aExports[0].pByteCode);
-            Interpreter::dumpState (iDumpState);
-            Interpreter::run();
-            Interpreter::dumpState (iDumpState|Interpreter::STATE_STACK);
-            Interpreter::freeStack();
-        }
+
+//         if ( (uSymbolCount = pExecutable->getNumImportedSymbols()) ) {
+//             std::printf(
+//                 "Executable expects %u imported symbols:\n",
+//                 uSymbolCount
+//             );
+//
+//             const LinkSymbol* aImports = pExecutable->getImportedSymbols();
+//             for (unsigned u = 0; u < uSymbolCount; ++u) {
+//                 std::printf(
+//                     "\t%2u %p %s 0x%016lX\n",
+//                     u,
+//                     aImports[u].pRawData,
+//                     aImports[u].sIdentifier,
+//                     aExports[u].uFlags
+//                 );
+//             }
+//         }
+//
+//         if (aExports) {
+//             const int iDumpState = Interpreter::STATE_FPR|Interpreter::STATE_GPR|Interpreter::STATE_TMP;
+//             Interpreter::allocateStack(256);
+//             Interpreter::setHostFunction(nativeTest, 0x69);
+//             Interpreter::setProgramCounter(aExports[0].pByteCode);
+//             Interpreter::dumpState (iDumpState);
+//             Interpreter::run();
+//             Interpreter::dumpState (iDumpState|Interpreter::STATE_STACK);
+//             Interpreter::freeStack();
+//         }
         delete pExecutable;
     } catch (MC64K::Loader::Error& oError) {
         std::printf(

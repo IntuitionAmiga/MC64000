@@ -19,4 +19,6 @@
     #endif
 
     #include "misc/scalar.hpp"
+    #include "misc/exception.hpp"
+
 #endif

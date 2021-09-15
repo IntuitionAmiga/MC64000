@@ -21,14 +21,16 @@ namespace MC64K {
 namespace Machine {
 
 /**
- * Static
+ * Interpreter
  *
  * Static, single threaded interpreter model.
  */
 class Interpreter {
 
     public:
-
+        /**
+         * Status
+         */
         typedef enum {
             UNINITIALISED = 0,
             INITIALISED,

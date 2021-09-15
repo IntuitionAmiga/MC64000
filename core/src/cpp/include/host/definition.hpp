@@ -24,41 +24,64 @@ namespace Host {
 /**
  * Definition
  *
- * Basic Host Definition structure.
+ * This is the primary interface between the native host application and the MC64K virtual machine. The expectation
+ * is that an instance of this class is statically configured and passed to the loader which uses it to validate
+ * that the target is appropriate for the VM code and to ensure references to native data and vectors are set up.
  */
 class Definition {
 
     private:
         const char*                     sHostName;
         Machine::Interpreter::HostCall* aHostVectors;
-        Loader::LinkSymbol*             aHostExportSymbols;
-        Loader::LinkSymbol*             aHostImportSymbols;
+        Loader::StaticLinkSymbolSet     oExportSet;
+        Loader::StaticLinkSymbolSet     oImportSet;
         Misc::Version                   oVersion;
         uint8                           uMaxVector;
 
     public:
         /**
-        * aHostVectors is expected to be null terminated.
-        * aExports and aImports must be terminated with a Symbol referencing null
-        */
+         * aHostVectors is expected to be null terminated.
+         * aExports and aImports must be terminated with a Symbol referencing null
+         *
+         * @param const char* sName
+         * @param const Misc::Version oVersion
+         * @param Machine::Interpreter::HostCall aVectors[]
+         * @param Loader::LinkSymbol aExports[]
+         * @param Loader::LinkSymbol aImports[]
+         */
         Definition(
             const char* sName,
             const Misc::Version oVersion,
             Machine::Interpreter::HostCall aVectors[],
-            Loader::LinkSymbol aExports[],
-            Loader::LinkSymbol aImports[]
+            const Loader::StaticLinkSymbolSet& oExport,
+            const Loader::StaticLinkSymbolSet& oImport
         );
 
+        /**
+         * Get the name of the host application.
+         *
+         * @return const char*
+         */
         const char* getName() const {
             return sHostName;
         }
 
+        /**
+         * Get the version of the host application.
+         *
+         * @return Misc::Version
+         */
         Misc::Version getVersion() const {
             return oVersion;
         }
 
-        void setVector(Machine::Interpreter::HostCall cFunction, uint8 uIndex);
+        Loader::LinkSymbolSet* getExportSet() {
+            return &oExportSet;
+        }
 
+        Loader::LinkSymbolSet* getImportSet() {
+            return &oImportSet;
+        }
 };
 
 }} // namespace

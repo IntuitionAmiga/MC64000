@@ -26,29 +26,27 @@ Interpreter::HostCall aVectors[] = {
 };
 
 /**
- * Symbols the host application requires from the binary. Terminated by a null name.
- */
-LinkSymbol aImports[] = {
-    { "main", {0}, LinkSymbol::EXECUTE },
-    { 0, { 0 }, 0 }
-};
-
-/**
- * Symbols the host application makes available to the binary. Terminated by a null name.
- */
-LinkSymbol aExports[] = {
-    { "abadcafe", { &testGlobal }, LinkSymbol::READ|LinkSymbol::WRITE },
-    { 0, { 0 }, 0 }
-};
-
-/**
  * Declare the Standard Test Host
  */
 Definition standardTestHost(
+
+    // Host name and version
     "Standard Test Host",
     Version(1, 0, 0),
+
+    // Set of host vectors
     aVectors,
-    aExports,
-    aImports
+
+    // Symbols this host exports to the virtual code
+    StaticLinkSymbolSet({
+        EXPORT_SYMBOL("abadcafe", LinkSymbol::READ|LinkSymbol::WRITE, &testGlobal),
+        END_SYMBOL
+    }),
+
+    // Symbols this host expects to be able to access in the virtual code
+    StaticLinkSymbolSet({
+        IMPORT_SYMBOL("main", LinkSymbol::EXECUTE),
+        END_SYMBOL
+    })
 );
 

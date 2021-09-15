@@ -62,7 +62,13 @@ const Executable* Binary::load(const char* sFileName) {
         (pImportList = readChunkData(CHUNK_IMPORT_LIST_ID)) &&
         (pExportList = readChunkData(CHUNK_EXPORT_LIST_ID)) &&
         (pByteCode   = readChunkData(CHUNK_BYTE_CODE_ID)) &&
-        (pExecutable = new (std::nothrow) Executable(pTargetData, pImportList, pExportList, pByteCode))
+        (pExecutable = new (std::nothrow) Executable(
+            oHostDefinition,
+            pTargetData,
+            pByteCode,
+            pImportList,
+            pExportList)
+        )
     ) {
         close();
         return pExecutable;

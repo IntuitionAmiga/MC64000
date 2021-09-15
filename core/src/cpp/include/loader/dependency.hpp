@@ -21,6 +21,8 @@ namespace MC64K {
 namespace Loader {
 
 /**
+ * Dependency
+ *
  * Simple dependency structure
  */
 struct Dependency {

@@ -24,8 +24,9 @@ namespace Loader {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 /**
- * Executable forwards reference.
+ * Forwards References
  */
 class Executable;
 
@@ -35,20 +36,24 @@ class Executable;
  * Handles loading of assembled binary object code
  */
 class Binary {
-    private:
-        const Host::Definition& oHostDefinition;
-        const char* sFileName;
-        std::FILE*  pFileHandle;
-
     public:
         /**
          * Constructor. Requires a valid Host Definition for loading validation purposes.
+         *
+         * @param const Host::Definition& oDefinition
          */
         Binary(const Host::Definition& oDefinition);
+
+        /**
+         * Destructor
+         */
         ~Binary();
 
         /**
          * Loader. Attempts to load the named binary file and return an executable structure.
+         *
+         * @param  const char* sFileName
+         * @return const Executable*
          */
         const Executable* load(const char* sFileName);
 
@@ -66,38 +71,59 @@ class Binary {
             CHUNK_IMPORT_LIST_ID = 0x646574726F706D49, // Imported
         };
 
-        enum {
+        /**
+         * Target info flags.
+         */
+        enum TargetFlags {
             TARGET_EXECUTABLE    = 1,
-            TARGET_VERSION_ENTRY = 0,
-            HOST_VERSION_ENTRY   = 1
-        };
-
-        enum {
-            ALIGN_MASK           = 7,
         };
 
         /**
-         * Manifest record
+         * Reserved positions in the Target version table.
+         */
+        enum VersionTableOffset {
+            TARGET_VERSION_ENTRY = 0,
+            HOST_VERSION_ENTRY   = 1,
+        };
+
+        /**
+         * Other stuff
+         */
+        enum {
+            ALIGN_MASK = 7,
+        };
+
+        /**
+         * Manifest record structure
          */
         struct ManifestEntry {
             uint64 uMagicID;
             int64  iOffset;
         };
-        ManifestEntry* pManifest;
-        uint32         uManifestLength;
+
+        const Host::Definition& oHostDefinition;
+        const char*             sFileName;
+        std::FILE*              pFileHandle;
+        ManifestEntry*          pManifest;
+        uint32                  uManifestLength;
+
+        /**
+         * Align an input size to the required boundary.
+         *
+         * @param  const size_t uSize
+         * @return size_t
+         */
+        size_t alignSize(const size_t uSize) const {
+            return (uSize + ALIGN_MASK) & ~ALIGN_MASK;
+        }
 
         void   open(const char* sFileName);
         void   close();
-        void   readChunkHeader(uint64* pHeader, const uint64 uExpectedID);
         void   loadManifest();
+        void   readChunkHeader(uint64* pHeader, const uint64 uExpectedID);
         uint8* readChunkData(const uint64 uChunkID);
         const  ManifestEntry* findChunk(const uint64 uChunkID);
-
         bool   validateTarget(const uint8* pRawTarget);
-
-        uint64 alignSize(const uint64 uSize) const {
-            return (uSize + ALIGN_MASK) & ~ALIGN_MASK;
-        }
 };
 
 }} // namespace

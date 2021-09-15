@@ -21,294 +21,75 @@
 using namespace MC64K::Loader;
 using namespace MC64K::Host;
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /**
- * Binary Constructor
- */
-Binary::Binary(const Host::Definition& oDefinition) :
-    oHostDefinition(oDefinition),
-    sFileName(0),
-    pFileHandle(0),
-    pManifest(0),
-    uManifestLength(0)
-{
-
-}
-
-/**
- * Binary Destructor
- */
-Binary::~Binary() {
-    close();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void Binary::open(const char* sFileName) {
-    pFileHandle = std::fopen(sFileName, "rb");
-    if (!pFileHandle) {
-        throw Error(sFileName, "file could not be opened for input");
-    }
-    uint64 aHeader[2] = { 0, 0 };
-    readChunkHeader(aHeader, FILE_MAGIC_ID);
-    loadManifest();
-}
-
-void Binary::close() {
-    if (pFileHandle) {
-        std::fclose(pFileHandle);
-        pFileHandle = 0;
-    }
-    if (pManifest) {
-        std::free(pManifest);
-        pManifest = 0;
-    }
-}
-
-/**
- * Attempts to read the expected chunk header
- */
-void Binary::readChunkHeader(uint64 *pHeader, uint64 const uExpectedID) {
-    if (2 != std::fread(pHeader, sizeof(uint64), 2, pFileHandle)) {
-        throw Error(sFileName, "failed to load header");
-    }
-    if (uExpectedID != pHeader[0]) {
-        throw Error(sFileName, "invalid header ID", pHeader[0]);
-    }
-}
-
-/**
- * Attempts to load and allocate the Chunk List
- */
-void Binary::loadManifest() {
-    uint64 aHeader[2] = { 0, 0 };
-    readChunkHeader(aHeader, CHUNK_MANIFEST_ID);
-
-    pManifest = (ManifestEntry*)std::malloc(aHeader[1]);
-
-    if (!pManifest) {
-        throw Error(sFileName, "unable to allocate chunk", CHUNK_MANIFEST_ID);
-    }
-
-    uManifestLength = aHeader[1] / sizeof(ManifestEntry);
-
-    if (uManifestLength != std::fread(pManifest, sizeof(ManifestEntry), uManifestLength, pFileHandle)) {
-        throw Error(sFileName, "failed to load chunk", CHUNK_MANIFEST_ID);
-    }
-    for (uint32 u = 0; u < uManifestLength; ++u) {
-        std::printf(
-            "\tChunk %.*s found at offset %ld\n",
-            8,
-            (const char*)(&pManifest[u].uMagicID),
-            pManifest[u].iOffset
-        );
-    }
-}
-
-/**
- * Locate a chunk by ID
- */
-const Binary::ManifestEntry* Binary::findChunk(const uint64 uChunkID) {
-    for (uint32 u = 0; u < uManifestLength; ++u) {
-        if (uChunkID == pManifest[u].uMagicID) {
-            return &pManifest[u];
-        }
-    }
-    throw Error(sFileName, "missing chunk", uChunkID);
-}
-
-/**
- * Allocate and load a chunk by ID
- */
-uint8* Binary::readChunkData(const uint64 uChunkID) {
-    uint64 aHeader[2] = { 0, 0 };
-    uint64 uAllocSize = 0;
-    uint8* pRawData   = 0;
-    const ManifestEntry* pManifestEntry = findChunk(uChunkID);
-
-    std::fseek(pFileHandle, pManifestEntry->iOffset, SEEK_SET);
-    readChunkHeader(aHeader, uChunkID);
-    uAllocSize = alignSize(aHeader[1]);
-    pRawData   = (uint8*)std::malloc(uAllocSize);
-    if (!pRawData) {
-        return 0;
-    }
-    if (uAllocSize != std::fread(pRawData, 1, uAllocSize, pFileHandle)) {
-        std::free(pRawData);
-        return 0;
-    }
-    return pRawData;
-}
-
-
-/**
- * Attempts to load and return the Executable
- */
-const Executable* Binary::load(const char* sFileName) {
-
-    open(sFileName);
-
-    uint8*      pTargetData = 0;
-    uint8*      pImportList = 0;
-    uint8*      pExportList = 0;
-    uint8*      pByteCode   = 0;
-    Executable* pExecutable = 0;
-
-    if (
-        (pTargetData = readChunkData(CHUNK_TARGET_ID)) &&
-        (validateTarget(pTargetData)) &&
-        (pImportList = readChunkData(CHUNK_IMPORT_LIST_ID)) &&
-        (pExportList = readChunkData(CHUNK_EXPORT_LIST_ID)) &&
-        (pByteCode   = readChunkData(CHUNK_BYTE_CODE_ID)) &&
-        (pExecutable = new (std::nothrow) Executable(pTargetData, pImportList, pExportList, pByteCode))
-    ) {
-        close();
-        return pExecutable;
-    }
-    close();
-    std::free(pByteCode);
-    std::free(pExportList);
-    std::free(pImportList);
-    std::free(pTargetData);
-    throw Error(sFileName, "unable to load binary");
-}
-
-/**
- * Lightweight target check.
  *
- * The raw chunk body data format is:
- *     Flags             uint32
- *     Number of entries uint32
- *     Version table     uint32[Number of entries]
- *     Dependency names  char[] (null terminated)
- *
- * The first entry in the version table is the target.
- * For executable targets, the second entry in the version table is the host.
  */
-bool Binary::validateTarget(const uint8* pRawTarget) {
-    uint32 targetFlags = *(const uint32*)pRawTarget;
+char* Executable::processSymbolName(char* sSymbolName, uint64& uSymbolFlags) {
+    uint8 uByte;
 
-    // For an executable target we need to confirm that the current host dependency is viable.
-    if (targetFlags & TARGET_EXECUTABLE) {
-
-        // Initial version check is cheap. If the version number is compatible we can then check that we are
-        // talking about the same thing.
-        const Misc::Version* pVersionTable = (const Misc::Version*)(pRawTarget + sizeof(uint32) * 2);
-
-        if (oHostDefinition.getVersion().isCompatible(pVersionTable[HOST_VERSION_ENTRY])) {
-
-            // We need to compare the dependency name now. This involves locating the entry in the names
-            // section that follows the version table. The host is always the second entry.
-            uint32 uNumEntries = *(const uint32*)(pRawTarget + sizeof(uint32));
-            const char* sName  = (const char*)(pRawTarget + sizeof(uint32) * (2 + uNumEntries));
-
-            // Skip over the target name to the next entry. All names are null terminated.
-            while (*sName++);
-
-            // Compare the names.
-            if (0 == std::strcmp(oHostDefinition.getName(), sName)) {
-                return true;
-            } else {
-                std::printf(
-                    "Incompatible host: Need \'%s\', have \'%s\'\n",
-                    sName,
-                    oHostDefinition.getName()
-                );
-            }
-        } else {
-            std::printf(
-                "Host semantic version number check failed: Need %u.%u.%u, have %u.%u.%u\n",
-                pVersionTable[HOST_VERSION_ENTRY].getMajor(),
-                pVersionTable[HOST_VERSION_ENTRY].getMinor(),
-                pVersionTable[HOST_VERSION_ENTRY].getPatch(),
-                oHostDefinition.getVersion().getMajor(),
-                oHostDefinition.getVersion().getMinor(),
-                oHostDefinition.getVersion().getPatch()
-            );
-        }
+    // Advance to the next name. The last byte is the symbol access flags value which is 0-7.
+    // Any value above that is assumed to be part of the name.
+    while ((uByte = *sSymbolName) > LinkSymbol::ACCESS_MASK) {
+        ++sSymbolName;
     }
+    uSymbolFlags = uByte;
 
-    return false;
+    // Null terminate the string for use.
+    *sSymbolName++ = 0;
+    return sSymbolName;
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Executable Constructor
  *
- * Private, sanity checks performed before getting here.
+ * Private, some sanity checks performed before getting here.
  */
 Executable::Executable(
+    const Host::Definition& oDefinition,
     const uint8* pRawTargetData,
-    const uint8* pRawImportData,
-    const uint8* pRawExportData,
-    const uint8* pRawByteCode
+    const uint8* pRawByteCode,
+    uint8*       pRawImportData,
+    uint8*       pRawExportData
 ) :
+    oImportedSymbols(0, pRawImportData),
+    oExportedSymbols(0, pRawExportData),
     pTargetData(pRawTargetData),
-    pImportData(pRawImportData),
-    pExportData(pRawExportData),
-    pByteCode(pRawByteCode),
-    pImportedSymbols(0),
-    pExportedSymbols(0),
-    uNumImportedSymbols(0),
-    uNumExportedSymbols(0)
+    pByteCode(pRawByteCode)
 {
+    LinkSymbol* pSymbol;
+    uint32      uNumSymbols;
     if (
-        (uNumExportedSymbols = *(uint32*)pExportData) &&
-        (pExportedSymbols    = (LinkSymbol*)std::malloc(uNumExportedSymbols * sizeof(LinkSymbol)))
+        (uNumSymbols = *(uint32*)pRawImportData) &&
+        (pSymbol     = oImportedSymbols.allocate(uNumSymbols))
     ) {
-        const uint32* pOffsets = (uint32*)(pExportData + 4);
-        char* pName = ((char*)pExportData) + 4 + uNumExportedSymbols * sizeof(uint32);
-        for (unsigned u = 0; u < uNumExportedSymbols; ++u) {
-            pExportedSymbols[u].sIdentifier = pName;
-            pExportedSymbols[u].pByteCode   = pRawByteCode + pOffsets[u];
-
-            uint8 uByte;
-
-            // Advance to the next name
-            while ((uByte = *pName) > 7) {
-                ++pName;
-            }
-            pExportedSymbols[u].uFlags = uByte;
-
-            // Null terminate
-            *pName++ = 0;
+        char* sSymbolName   = ((char*)pRawImportData) + sizeof(uint32);
+        for (unsigned u = 0; u < uNumSymbols; ++u) {
+            pSymbol[u].sIdentifier = sSymbolName;
+            pSymbol[u].pRawData    = 0;
+            sSymbolName = processSymbolName(sSymbolName, pSymbol[u].uFlags);
         }
     }
 
     if (
-        (uNumImportedSymbols = *(uint32*)pImportData) &&
-        (pImportedSymbols    = (LinkSymbol*)std::malloc(uNumImportedSymbols * sizeof(LinkSymbol)))
+        (uNumSymbols = *(uint32*)pRawExportData) &&
+        (pSymbol     = oExportedSymbols.allocate(uNumSymbols))
     ) {
-        char*  pName   = ((char*)pImportData) + 4;
-        for (unsigned u = 0; u < uNumImportedSymbols; ++u) {
-            pImportedSymbols[u].sIdentifier = pName;
-            pImportedSymbols[u].pRawData    = 0;
-
-            uint8 uByte;
-
-            // Advance to the next name
-            while ((uByte = *pName) > 7) {
-                ++pName;
-            }
-            pImportedSymbols[u].uFlags = uByte;
-
-            // Null terminate
-            *pName++ = 0;
+        const uint32* pCodeOffsets = (uint32*)(pRawExportData + sizeof(uint32));
+        char* sSymbolName = ((char*)pRawExportData) + sizeof(uint32) + uNumSymbols * sizeof(uint32);
+        for (unsigned u = 0; u < uNumSymbols; ++u) {
+            pSymbol[u].sIdentifier = sSymbolName;
+            pSymbol[u].pByteCode   = pRawByteCode + pCodeOffsets[u];
+            sSymbolName = processSymbolName(sSymbolName, pSymbol[u].uFlags);
         }
     }
+    std::printf("Loaded for host %s\n", oDefinition.getName());
 }
 
 /**
  * Executable destructor
  */
 Executable::~Executable() {
-    std::free((void*)pExportedSymbols);
-    std::free((void*)pImportedSymbols);
     std::free((void*)pByteCode);
-    std::free((void*)pExportData);
-    std::free((void*)pImportData);
     std::free((void*)pTargetData);
 }
 

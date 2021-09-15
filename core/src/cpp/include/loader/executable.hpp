@@ -26,80 +26,77 @@ namespace Loader {
 
 /**
  * Executable
+ *
+ * End product of successfully loading an MC64K object file for execution.
  */
 class Executable {
     friend const Executable* Binary::load(const char*);
 
     private:
+        // Symbols are managed by LinkSymbolSet.
+        DynamicLinkSymbolSet oImportedSymbols;
+        DynamicLinkSymbolSet oExportedSymbols;
+
         const uint8* pTargetData;
-        const uint8* pImportData;
-        const uint8* pExportData;
         const uint8* pByteCode;
-        Dependency*  pDependencies;
-        LinkSymbol*  pImportedSymbols;
-        LinkSymbol*  pExportedSymbols;
-        uint32       uNumDependencies;
-        uint32       uNumImportedSymbols;
-        uint32       uNumExportedSymbols;
 
     public:
 
         /**
-         * Get the count of the dependencies.
+         * Obtain the set of imported symbols, i.e. those the executable expects to be provided to it.
+         *
+         * @return const LinkSymbolSet*
          */
-        uint32 getNumDependencies() const {
-            return uNumDependencies;
+        const LinkSymbolSet* getImportedSymbolSet() const {
+            return &oImportedSymbols;
         }
 
         /**
-         * Get the set of named dependencies.
+         * Obtain the set of exported symbols, i.e. those the executable exposes to the application host.
+         *
+         * @return const LinkSymbolSet*
          */
-        const Dependency* getDependencies() const {
-            return pDependencies;
+        const LinkSymbolSet* getExportedSymbolSet() const {
+            return &oExportedSymbols;
         }
 
         /**
-         * Get the number of symbols exported by this binary.
+         * Destructor
          */
-        uint32 getNumExportedSymbols() const {
-            return uNumExportedSymbols;
-        }
-
-        /**
-         * Get the symbols exported by this binary. They are assumed immutable from the host side.
-         */
-        const LinkSymbol* getExportedSymbols() const {
-            return pExportedSymbols;
-        }
-
-        /**
-         * Get the number of symbols imported by this binary.
-         */
-        uint32 getNumImportedSymbols() const {
-            return uNumImportedSymbols;
-        }
-
-        /**
-         * Get the symbols imported by this binary. The host is expected to match the identifiers with
-         * appropriate runtime addresses for the expected data.
-         */
-        LinkSymbol* getImportedSymbols() const {
-            return pImportedSymbols;
-        }
-
         ~Executable();
 
     private:
         /**
-         * Constructable only by the binary loader
+         * Constructor.
+         *
+         * Instantiable only by the binary loader friend class. Note that ownership of the raw memory referenced
+         * by the target data and bytecode are taken over by this instance and are freed by it on destruction.
+         *
+         * @param const Host::Definition& oDefinition
+         * @param const uint8* pRawTargetData
+         * @param const uint8* pRawByteCode
+         * @param uint8*       pRawImportData
+         * @param uint8*       pRawExportData
          */
         Executable(
-            const uint8* pRawTargetData,
-            const uint8* pRawImportData,
-            const uint8* pRawExportData,
-            const uint8* pRawByteCode
+            const Host::Definition& oDefinition,
+            const uint8*            pRawTargetData,
+            const uint8*            pRawByteCode,
+            uint8*                  pRawImportData,
+            uint8*                  pRawExportData
         );
 
+        /**
+         * Extracts the symbol access flags from the end of the symbol name and returns
+         * the starting address of the next one. In the process, the access flags in the
+         * string data are converted to a null so that the name can be used as a regular
+         * C string. Thus, this function modifies the string passed.
+         *
+         * @param  char*   sSymbolName
+         * @param  uint64& uSymbolFlags
+         * @return char*
+         */
+        char* processSymbolName(char* sSymbolName, uint64& uSymbolFlags);
 };
 
 }} // namespace

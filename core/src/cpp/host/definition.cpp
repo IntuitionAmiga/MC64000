@@ -22,13 +22,13 @@ Definition::Definition(
     const char* sName,
     const Misc::Version oVersion,
     Machine::Interpreter::HostCall aVectors[],
-    Loader::LinkSymbol aExports[],
-    Loader::LinkSymbol aImports[]
+    const Loader::StaticLinkSymbolSet& oExport,
+    const Loader::StaticLinkSymbolSet& oImport
 ) :
     sHostName(sName),
     aHostVectors(0),
-    aHostExportSymbols(0),
-    aHostImportSymbols(0),
+    oExportSet(oExport),
+    oImportSet(oImport),
     oVersion(oVersion)
 {
     if (aVectors) {
@@ -39,12 +39,6 @@ Definition::Definition(
         }
     }
 
-    if (aExports) {
-        aHostExportSymbols = aExports;
-    }
-    if (aImports) {
-
-    }
 }
 
 }} // namespace
