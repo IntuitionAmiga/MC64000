@@ -33,9 +33,9 @@ class Executable {
     friend const Executable* Binary::load(const char*);
 
     private:
-        // Symbols are managed by LinkSymbolSet.
-        DynamicLinkSymbolSet oImportedSymbols;
-        DynamicLinkSymbolSet oExportedSymbols;
+        // Symbols are managed by SymbolSet.
+        LoadedSymbolSet oImportedSymbols;
+        LoadedSymbolSet oExportedSymbols;
 
         const uint8* pTargetData;
         const uint8* pByteCode;
@@ -45,18 +45,18 @@ class Executable {
         /**
          * Obtain the set of imported symbols, i.e. those the executable expects to be provided to it.
          *
-         * @return const LinkSymbolSet*
+         * @return const SymbolSet*
          */
-        const LinkSymbolSet* getImportedSymbolSet() const {
+        const SymbolSet* getImportedSymbolSet() const {
             return &oImportedSymbols;
         }
 
         /**
          * Obtain the set of exported symbols, i.e. those the executable exposes to the application host.
          *
-         * @return const LinkSymbolSet*
+         * @return const SymbolSet&
          */
-        const LinkSymbolSet* getExportedSymbolSet() const {
+        const SymbolSet* getExportedSymbolSet() const {
             return &oExportedSymbols;
         }
 

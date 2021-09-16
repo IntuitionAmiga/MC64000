@@ -1,5 +1,5 @@
-#ifndef __MC64K_LOADER_LINKSYMBOL_HPP__
-#   define __MC64K_LOADER_LINKSYMBOL_HPP__
+#ifndef __MC64K_LOADER_SYMBOL_HPP__
+#   define __MC64K_LOADER_SYMBOL_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -22,16 +22,15 @@
 namespace MC64K {
 namespace Loader {
 
-#define END_SYMBOL { 0, { 0 }, 0 }
 #define IMPORT_SYMBOL(name, access)         { (name), {0}, (access) }
-#define EXPORT_SYMBOL(name, access, entity) { (name), { (entity) }, (access) }
+#define EXPORT_SYMBOL(name, access, entity) { (name), { (void*)entity }, (access) }
 
 /**
- * LinkSymbol
+ * Symbol
  *
  * Used to resolve exported and imported symbols
  */
-struct LinkSymbol {
+struct Symbol {
 
     /**
      * Flag definitions
@@ -53,6 +52,7 @@ struct LinkSymbol {
      */
     union {
         void*        pRawData;
+        const void*  pConstRawData;
         const uint8* pByteCode;
     };
 
@@ -64,13 +64,13 @@ struct LinkSymbol {
 
 
 /**
- * LinkSymbolSet (abstract).
+ * SymbolSet (abstract).
  *
- * Provides the basic interface for a set of LinkSymbol instances but doesn't do any resource management.
+ * Provides the basic interface for a set of Symbol instances but doesn't do any resource management.
  */
-class LinkSymbolSet {
+class SymbolSet {
     protected:
-        LinkSymbol*  pSymbols;
+        Symbol*  pSymbols;
         size_t       uNumSymbols;
 
         /**
@@ -79,7 +79,7 @@ class LinkSymbolSet {
          * @param  size_t uIndex
          * @throws MC64K::OutOfRangeException
          */
-        void assertIndex(size_t uIndex) const {
+        void assertIndex(const size_t uIndex) const {
             if (uIndex >= uNumSymbols) {
                 throw MC64K::OutOfRangeException("Invalid index");
             }
@@ -87,15 +87,25 @@ class LinkSymbolSet {
 
         /**
          * Protected constructor, to be invoked by derived classes only.
+         *
+         * @param size_t uNumSymbols
          */
-        LinkSymbolSet(LinkSymbol* pSymbols, size_t uNumSymbols) : pSymbols(pSymbols), uNumSymbols(uNumSymbols) {
-        }
+        SymbolSet(const size_t uNumSymbols);
+
+        /**
+         * Allocator routine
+         *
+         * @param  size_t uNumSymbols
+         * @throws MC64K::OutOfMemoryException
+         */
+        void allocateStorage(const size_t uNumSymbols);
 
     public:
+
         /**
          * Virtual Destructor.
          */
-        virtual ~LinkSymbolSet() = 0;
+        virtual ~SymbolSet() = 0;
 
         /**
          * Return the number of symbols in the set.
@@ -109,9 +119,9 @@ class LinkSymbolSet {
         /**
          * Return a reference to the Symbol data
          *
-         * @return LinkSymbol*
+         * @return Symbol*
          */
-        LinkSymbol* getSymbols() const {
+        Symbol* getSymbols() const {
             return pSymbols;
         }
 
@@ -119,10 +129,10 @@ class LinkSymbolSet {
          * Array access (range checked)
          *
          * @param  size_t uIndex
-         * @return LinkSymbol&
+         * @return Symbol&
          * @throws MC64K::OutOfRangeException
          */
-        LinkSymbol& operator[](size_t uIndex) {
+        Symbol& operator[](const size_t uIndex) {
             assertIndex(uIndex);
             return pSymbols[uIndex];
         }
@@ -131,13 +141,24 @@ class LinkSymbolSet {
          * Array access (range checked)
          *
          * @param  size_t uIndex
-         * @return const LinkSymbol&
+         * @return const Symbol&
          * @throws MC64K::OutOfRangeException
          */
-        const LinkSymbol& operator[](size_t uIndex) const {
+        const Symbol& operator[](const size_t uIndex) const {
             assertIndex(uIndex);
             return pSymbols[uIndex];
         }
+
+        /**
+         * Try to find the Symbol for a given identifier that can satisfy the given access flags.
+         * Where a symbol name is located, each set bit in the supplied access flags must be enabled
+         * for the symbol.
+         *
+         * @param  const  char* sIdentifier
+         * @param  uint64 uFlags
+         * @return Symbol*
+         */
+        Symbol* find(const char* sIdentifier, const uint64 uAccess = 0) const;
 
         /**
          * Symbol table dump to stream.
@@ -145,60 +166,61 @@ class LinkSymbolSet {
          * @param std::FILE* pStream
          */
         void dump(std::FILE* pStream) const;
+
+
+        void linkAgainst(const SymbolSet& oOther) const;
 };
 
 /**
- * StaticLinkSymbolSet
+ * InitialisedSymbolSet
  *
- * Statically initialised symbol set.
+ * Statically declared symbol set.
  */
-class StaticLinkSymbolSet : public LinkSymbolSet {
+class InitialisedSymbolSet : public SymbolSet {
     public:
         /**
-         * Constructor. Expects an array of symbols, terminated by a symbol referencing null
+         * Constructor for initialised set
          */
-        StaticLinkSymbolSet(std::initializer_list<LinkSymbol> oSymbols);
-        ~StaticLinkSymbolSet();
-
-        StaticLinkSymbolSet(const StaticLinkSymbolSet& oSet);
+        InitialisedSymbolSet(const std::initializer_list<Symbol>& oSymbols);
+        ~InitialisedSymbolSet();
 };
 
 /**
- * DynamicLinkSymbolSet
+ * LoadedSymbolSet
+ *
+ * This represents a symbol table that was loaded from an object file. In addition to managing the storage, it also
+ * takes ownership of a pointer to the raw data that was loaded and ensures it is released.
  */
-class DynamicLinkSymbolSet : public LinkSymbolSet {
+class LoadedSymbolSet : public SymbolSet {
     private:
         const uint8* pRawData;
 
     public:
         /**
-         * Constructor. If raw data is provided, e.g. the already loaded string data, ownership of that data
-         * is transferred to this instance and will be released on destruction.
+         * Constructor
          *
-         * If a non-zero symbol count is provided, allocate() behaviour is invoked.
-         *
-         * @param  size_t       uNumSymbols
+         * @param  const size_t uNumSymbols
          * @param  const uint8* pRawData
          * @throws MC64K::OutOfMemoryException
          */
-        DynamicLinkSymbolSet(size_t uNumSymbols, const uint8* pRawData = 0);
+        LoadedSymbolSet(const size_t uNumSymbols, const uint8* pRawData);
 
         /**
-         * Destructor. Releases any resource owned by the set.
+         * Destructor.
          */
-        ~DynamicLinkSymbolSet();
+        ~LoadedSymbolSet();
 
         /**
-         * Allocate space for a set of LinkSymbols. These are allocated uninitialised and may contain junk.
+         * Allocate space for a set of Symbols. These are allocated uninitialised and may contain junk.
          *
-         * @param  size_t uNumSymbols
-         * @return LinkSymbol
+         * @param  const size_t uNumSymbols
+         * @return Symbol
          * @throws MC64K::OutOfRangeException
          * @throws MC64K::OutOfMemoryException
          */
-        LinkSymbol* allocate(size_t uNumSymbols);
-
+        Symbol* allocate(const size_t uNumSymbols);
 };
 
 }} // namespace
 #endif
+

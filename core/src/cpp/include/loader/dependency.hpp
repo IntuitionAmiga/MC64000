@@ -23,7 +23,7 @@ namespace Loader {
 /**
  * Dependency
  *
- * Simple dependency structure
+ * Simple dependency data structure
  */
 struct Dependency {
     Misc::Version oVersion;

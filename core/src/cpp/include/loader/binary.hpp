@@ -16,7 +16,7 @@
 
 #include <cstdio>
 #include "error.hpp"
-#include "linksymbol.hpp"
+#include "symbol.hpp"
 #include "host/definition.hpp"
 
 namespace MC64K {
@@ -94,7 +94,7 @@ class Binary {
         };
 
         /**
-         * Manifest record structure
+         * Manifest record structure.
          */
         struct ManifestEntry {
             uint64 uMagicID;
@@ -117,12 +117,54 @@ class Binary {
             return (uSize + ALIGN_MASK) & ~ALIGN_MASK;
         }
 
+        /**
+         * Open the binary object file
+         *
+         * @param const char* sFileName
+         */
         void   open(const char* sFileName);
+
+        /**
+         * Close the binary object file
+         */
         void   close();
+
+        /**
+         * Load and allocate the Manifest List data
+         */
         void   loadManifest();
-        void   readChunkHeader(uint64* pHeader, const uint64 uExpectedID);
-        uint8* readChunkData(const uint64 uChunkID);
+
+        /**
+         * Try to find manifest record with the given chunk ID
+         *
+         * @param  const uint64 uExpectedID
+         * @return const ManifestEntry*
+         */
         const  ManifestEntry* findChunk(const uint64 uChunkID);
+
+        /**
+         * Read a chunk header into a marshalling area
+         *
+         * @param uint64*      pHeader
+         * @param const uint64 uExpectedID
+         */
+        void   readChunkHeader(uint64* pHeader, const uint64 uExpectedID);
+
+        /**
+         * Load a chunk with the given ID. Uses the manifest data to locate the offset (if present),
+         * allocates storage and loads the raw data.
+         *
+         * @param  const uint64 uChunkID
+         * @return uint8*
+         */
+        uint8* readChunkData(const uint64 uChunkID);
+
+        /**
+         * Validate the raw taget data (minimum verification)
+         *
+         * @param  const uint8* pRawTarget
+         * @return bool
+         */
         bool   validateTarget(const uint8* pRawTarget);
 };
 

@@ -33,5 +33,9 @@ class Error {
             uChunkID(uChunkID) {}
 };
 
+class LinkError {
+
+};
+
 }} // namespace
 #endif

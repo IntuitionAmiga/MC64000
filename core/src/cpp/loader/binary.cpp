@@ -138,14 +138,6 @@ void Binary::loadManifest() {
     if (uManifestLength != std::fread(pManifest, sizeof(ManifestEntry), uManifestLength, pFileHandle)) {
         throw Error(sFileName, "failed to load chunk", CHUNK_MANIFEST_ID);
     }
-    for (uint32 u = 0; u < uManifestLength; ++u) {
-        std::printf(
-            "\tChunk %.*s found at offset %ld\n",
-            8,
-            (const char*)(&pManifest[u].uMagicID),
-            pManifest[u].iOffset
-        );
-    }
 }
 
 /**
@@ -220,14 +212,16 @@ bool Binary::validateTarget(const uint8* pRawTarget) {
             if (0 == std::strcmp(oHostDefinition.getName(), sName)) {
                 return true;
             } else {
-                std::printf(
+                std::fprintf(
+                    stderr,
                     "Incompatible host: Need \'%s\', have \'%s\'\n",
                     sName,
                     oHostDefinition.getName()
                 );
             }
         } else {
-            std::printf(
+            std::fprintf(
+                stderr,
                 "Host semantic version number check failed: Need %u.%u.%u, have %u.%u.%u\n",
                 pVersionTable[HOST_VERSION_ENTRY].getMajor(),
                 pVersionTable[HOST_VERSION_ENTRY].getMinor(),

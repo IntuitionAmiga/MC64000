@@ -29,7 +29,7 @@ char* Executable::processSymbolName(char* sSymbolName, uint64& uSymbolFlags) {
 
     // Advance to the next name. The last byte is the symbol access flags value which is 0-7.
     // Any value above that is assumed to be part of the name.
-    while ((uByte = *sSymbolName) > LinkSymbol::ACCESS_MASK) {
+    while ((uByte = *sSymbolName) > Symbol::ACCESS_MASK) {
         ++sSymbolName;
     }
     uSymbolFlags = uByte;
@@ -56,24 +56,29 @@ Executable::Executable(
     pTargetData(pRawTargetData),
     pByteCode(pRawByteCode)
 {
-    LinkSymbol* pSymbol;
-    uint32      uNumSymbols;
+    std::fprintf(stderr, "Loading object file as host '%s'\n", oDefinition.getName());
+
+    Symbol* pSymbol;
+    uint32  uNumSymbols;
     if (
         (uNumSymbols = *(uint32*)pRawImportData) &&
         (pSymbol     = oImportedSymbols.allocate(uNumSymbols))
     ) {
+        std::fprintf(stderr, "Linking %u imported symbols...\n", uNumSymbols);
         char* sSymbolName   = ((char*)pRawImportData) + sizeof(uint32);
         for (unsigned u = 0; u < uNumSymbols; ++u) {
             pSymbol[u].sIdentifier = sSymbolName;
             pSymbol[u].pRawData    = 0;
             sSymbolName = processSymbolName(sSymbolName, pSymbol[u].uFlags);
         }
+        oImportedSymbols.linkAgainst(oDefinition.getExportedSymbolSet());
     }
 
     if (
         (uNumSymbols = *(uint32*)pRawExportData) &&
         (pSymbol     = oExportedSymbols.allocate(uNumSymbols))
     ) {
+        std::fprintf(stderr, "Linking %u exported symbols...\n", uNumSymbols);
         const uint32* pCodeOffsets = (uint32*)(pRawExportData + sizeof(uint32));
         char* sSymbolName = ((char*)pRawExportData) + sizeof(uint32) + uNumSymbols * sizeof(uint32);
         for (unsigned u = 0; u < uNumSymbols; ++u) {
@@ -81,8 +86,9 @@ Executable::Executable(
             pSymbol[u].pByteCode   = pRawByteCode + pCodeOffsets[u];
             sSymbolName = processSymbolName(sSymbolName, pSymbol[u].uFlags);
         }
+        oDefinition.getImportedSymbolSet().linkAgainst(oExportedSymbols);
     }
-    std::printf("Loaded for host %s\n", oDefinition.getName());
+
 }
 
 /**
@@ -92,5 +98,6 @@ Executable::~Executable() {
     std::free((void*)pByteCode);
     std::free((void*)pTargetData);
 }
+
 
 

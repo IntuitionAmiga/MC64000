@@ -12,33 +12,53 @@
  */
 
 #include <cstdio>
+#include <cstring>
 #include <cstdlib>
 #include "host/definition.hpp"
 
 namespace MC64K {
 namespace Host {
 
+/**
+ * Constructor
+ *
+ * @param const char* sName,
+ * @param const Misc::Version oVersion,
+ * @param const std::initializer_list<Machine::Interpreter::HostCall>& oVectors,
+ * @param const std::initializer_list<Loader::Symbol>& oExportedSymbols,
+ * @param const std::initializer_list<Loader::Symbol>& oImportedSymbols
+ */
 Definition::Definition(
     const char* sName,
     const Misc::Version oVersion,
-    Machine::Interpreter::HostCall aVectors[],
-    const Loader::StaticLinkSymbolSet& oExport,
-    const Loader::StaticLinkSymbolSet& oImport
+    const std::initializer_list<Machine::Interpreter::HostCall>& oVectors,
+    const std::initializer_list<Loader::Symbol>& oExportedSymbols,
+    const std::initializer_list<Loader::Symbol>& oImportedSymbols
 ) :
     sHostName(sName),
     aHostVectors(0),
-    oExportSet(oExport),
-    oImportSet(oImport),
+    oExportSet(oExportedSymbols),
+    oImportSet(oImportedSymbols),
     oVersion(oVersion)
 {
-    if (aVectors) {
-        aHostVectors = aVectors;
-        while (*aVectors) {
-            ++uMaxVector;
-            ++aVectors;
-        }
+    if (oVectors.size() > 256) {
+        throw MC64K::OutOfRangeException("Vector List Too Large");
     }
+    if ((uMaxVector = oVectors.size())) {
 
+        size_t uSize = sizeof(Machine::Interpreter::HostCall) * oVectors.size();
+        if (!(aHostVectors = (Machine::Interpreter::HostCall*)std::malloc(uSize))) {
+            throw MC64K::OutOfMemoryException();
+        }
+        std::memcpy(aHostVectors, oVectors.begin(), uSize);
+    }
+}
+
+/**
+ * Destructor
+ */
+Definition::~Definition() {
+    std::free((void*)aHostVectors);
 }
 
 }} // namespace

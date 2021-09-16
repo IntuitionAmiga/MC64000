@@ -1,8 +1,9 @@
 #include <cstdio>
+#include <cmath>
 #include <cstdlib>
 
 #include "machine/interpreter.hpp"
-#include "loader/linksymbol.hpp"
+#include "loader/symbol.hpp"
 #include "host/definition.hpp"
 
 using namespace MC64K::Loader;
@@ -10,20 +11,25 @@ using namespace MC64K::Machine;
 using namespace MC64K::Host;
 using namespace MC64K::Misc;
 
-Interpreter::Status nativeTest() {
-    std::puts("Native Call");
+/**
+ * Example host vectors
+ */
+Interpreter::Status nativeFunctionTest1() {
+    std::puts("Native Call 1");
     return Interpreter::RUNNING;
 }
 
-uint64 testGlobal = 0xABADCAFE;
+Interpreter::Status nativeFunctionTest2() {
+    std::puts("Native Call 2");
+    return Interpreter::RUNNING;
+}
 
 /**
- * Null terminated array of host vectors that are directly invokable via HCF
+ * Example host provided global data
  */
-Interpreter::HostCall aVectors[] = {
-    nativeTest,
-    0
-};
+uint64        testGlobalU = 0xABADCAFE;
+const float64 testConstPi = M_PI;
+const char*   testString  = "Hello";
 
 /**
  * Declare the Standard Test Host
@@ -34,19 +40,23 @@ Definition standardTestHost(
     "Standard Test Host",
     Version(1, 0, 0),
 
-    // Set of host vectors
-    aVectors,
+    // Host Vectors
+    {
+        nativeFunctionTest1,
+        nativeFunctionTest2
+    },
 
-    // Symbols this host exports to the virtual code
-    StaticLinkSymbolSet({
-        EXPORT_SYMBOL("abadcafe", LinkSymbol::READ|LinkSymbol::WRITE, &testGlobal),
-        END_SYMBOL
-    }),
+    // Symbols this host exports to the virtual code.
+    {
+        EXPORT_SYMBOL("abadcafe", Symbol::READ|Symbol::WRITE, &testGlobalU),
+        EXPORT_SYMBOL("M_PI_f64", Symbol::READ, &testConstPi),
+        EXPORT_SYMBOL("my_external_reference", Symbol::READ, testString)
+    },
 
-    // Symbols this host expects to be able to access in the virtual code
-    StaticLinkSymbolSet({
-        IMPORT_SYMBOL("main", LinkSymbol::EXECUTE),
-        END_SYMBOL
-    })
+    // Symbols this host expects to be able to access from the virtual code
+    {
+        IMPORT_SYMBOL("main", Symbol::EXECUTE),
+        //IMPORT_SYMBOL("exit", Symbol::EXECUTE),
+    }
 );
 

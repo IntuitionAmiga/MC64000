@@ -18,6 +18,14 @@
 #include "error.hpp"
 
 namespace MC64K {
+
+/**
+ * Forwards reference
+ */
+namespace Loader {
+    class Executable;
+}
+
 namespace Machine {
 
 /**
@@ -51,6 +59,8 @@ class Interpreter {
 
         typedef Status (*HostCall)();
 
+        static void setExecutable(const Loader::Executable* pExecutable);
+
         static void         setHostFunction(HostCall cFunction, uint8 uOffset);
         static void         allocateStack(uint32 uStackSize);
         static void         freeStack();
@@ -62,6 +72,7 @@ class Interpreter {
         static void         dumpState(const int iFlags);
 
     private:
+        static const Loader::Executable* pExecutable;
         static HostCall     aHostAPI[256];
         static GPRegister   aGPR[GPRegister::MAX];
         static FPRegister   aFPR[FPRegister::MAX];

@@ -13,10 +13,11 @@
  *
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
+#include <initializer_list>
 
 #include "machine/interpreter.hpp"
 #include "misc/version.hpp"
-#include "loader/linksymbol.hpp"
+#include "loader/symbol.hpp"
 
 namespace MC64K {
 namespace Host {
@@ -33,8 +34,8 @@ class Definition {
     private:
         const char*                     sHostName;
         Machine::Interpreter::HostCall* aHostVectors;
-        Loader::StaticLinkSymbolSet     oExportSet;
-        Loader::StaticLinkSymbolSet     oImportSet;
+        Loader::InitialisedSymbolSet    oExportSet;
+        Loader::InitialisedSymbolSet    oImportSet;
         Misc::Version                   oVersion;
         uint8                           uMaxVector;
 
@@ -45,17 +46,19 @@ class Definition {
          *
          * @param const char* sName
          * @param const Misc::Version oVersion
-         * @param Machine::Interpreter::HostCall aVectors[]
-         * @param Loader::LinkSymbol aExports[]
-         * @param Loader::LinkSymbol aImports[]
+         * @param const std::initializer_list<Machine::Interpreter::HostCall>& oVectors,
+         * @param const std::initializer_list<Loader::Symbol>& oExportedSymbols,
+         * @param const std::initializer_list<Loader::Symbol>& oImportedSymbols
          */
         Definition(
             const char* sName,
             const Misc::Version oVersion,
-            Machine::Interpreter::HostCall aVectors[],
-            const Loader::StaticLinkSymbolSet& oExport,
-            const Loader::StaticLinkSymbolSet& oImport
+            const std::initializer_list<Machine::Interpreter::HostCall>& oVectors,
+            const std::initializer_list<Loader::Symbol>& oExportedSymbols,
+            const std::initializer_list<Loader::Symbol>& oImportedSymbols
         );
+
+        ~Definition();
 
         /**
          * Get the name of the host application.
@@ -75,13 +78,24 @@ class Definition {
             return oVersion;
         }
 
-        Loader::LinkSymbolSet* getExportSet() {
-            return &oExportSet;
+        /**
+         * Get the symbols exported by the host definition
+         *
+         * @return const Loader::SymbolSet&
+         */
+        const Loader::SymbolSet& getExportedSymbolSet() const {
+            return oExportSet;
         }
 
-        Loader::LinkSymbolSet* getImportSet() {
-            return &oImportSet;
+        /**
+         * Get the symbols host expects to import.
+         *
+         * @return const Loader::SymbolSet&
+         */
+        const Loader::SymbolSet& getImportedSymbolSet() const {
+            return oImportSet;
         }
+
 };
 
 }} // namespace

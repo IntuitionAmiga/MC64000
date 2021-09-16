@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include "machine/error.hpp"
 #include "machine/interpreter.hpp"
+#include "loader/executable.hpp"
 
 namespace MC64K {
 namespace Machine {
@@ -43,6 +44,12 @@ const char* aStatusNames[] = {
     "Unimplemented Effective Address",
     "Unimplemented Host Call",
 };
+
+void Interpreter::setExecutable(const Loader::Executable* pExecutable) {
+    if (pExecutable) {
+        pExecutable->getExportedSymbolSet()->dump(stdout);
+    }
+}
 
 /**
  * Set a host function

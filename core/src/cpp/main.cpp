@@ -9,7 +9,6 @@ using namespace MC64K::Loader;
 using namespace MC64K::Machine;
 using namespace MC64K::Host;
 
-
 extern Interpreter::Status nativeTest();
 extern Definition standardTestHost;
 
@@ -29,53 +28,11 @@ int main(int iArgN, const char** aArgV) {
         // Initialise the binary loader
         Binary oMC64KBinary(standardTestHost);
         const Executable* pExecutable = oMC64KBinary.load(sExecutableName);
-        //const LinkSymbol* aExports = 0;
 
-        std::printf(
-            "Executable %s loaded at %p\n",
-            sExecutableName,
-            pExecutable
-        );
+        Interpreter::setExecutable(pExecutable);
 
-        size_t uSymbolCount = 0;
+        standardTestHost.getImportedSymbolSet().dump(stdout);
 
-        const LinkSymbolSet* oExported = pExecutable->getExportedSymbolSet();
-        if ( (uSymbolCount = oExported->getCount()) ) {
-            std::printf(
-                "Executable defines %u exported symbols:\n",
-                (uint32)uSymbolCount
-            );
-            oExported->dump(stdout);
-            //aExports = oExported->getSymbols();
-        }
-        const LinkSymbolSet* oImported = pExecutable->getImportedSymbolSet();
-        if ( (uSymbolCount = oImported->getCount()) ) {
-            std::printf(
-                "Executable defines %u imported symbols:\n",
-                (uint32)uSymbolCount
-            );
-            oImported->dump(stdout);
-            //aExports = oExported->getSymbols();
-        }
-
-
-//         if ( (uSymbolCount = pExecutable->getNumImportedSymbols()) ) {
-//             std::printf(
-//                 "Executable expects %u imported symbols:\n",
-//                 uSymbolCount
-//             );
-//
-//             const LinkSymbol* aImports = pExecutable->getImportedSymbols();
-//             for (unsigned u = 0; u < uSymbolCount; ++u) {
-//                 std::printf(
-//                     "\t%2u %p %s 0x%016lX\n",
-//                     u,
-//                     aImports[u].pRawData,
-//                     aImports[u].sIdentifier,
-//                     aExports[u].uFlags
-//                 );
-//             }
-//         }
 //
 //         if (aExports) {
 //             const int iDumpState = Interpreter::STATE_FPR|Interpreter::STATE_GPR|Interpreter::STATE_TMP;
