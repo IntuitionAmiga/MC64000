@@ -22,9 +22,9 @@ using namespace MC64K::Loader;
 using namespace MC64K::Host;
 
 /**
- *
+ * @inheritDoc
  */
-char* Executable::processSymbolName(char* sSymbolName, uint64& uSymbolFlags) {
+char* Executable::processSymbolName(char* sSymbolName, uint64& ruSymbolFlags) {
     uint8 uByte;
 
     // Advance to the next name. The last byte is the symbol access flags value which is 0-7.
@@ -32,7 +32,7 @@ char* Executable::processSymbolName(char* sSymbolName, uint64& uSymbolFlags) {
     while ((uByte = *sSymbolName) > Symbol::ACCESS_MASK) {
         ++sSymbolName;
     }
-    uSymbolFlags = uByte;
+    ruSymbolFlags = uByte;
 
     // Null terminate the string for use.
     *sSymbolName++ = 0;
@@ -40,63 +40,60 @@ char* Executable::processSymbolName(char* sSymbolName, uint64& uSymbolFlags) {
 }
 
 /**
- * Executable Constructor
- *
- * Private, some sanity checks performed before getting here.
+ * @inheritDoc
  */
 Executable::Executable(
-    const Host::Definition& oDefinition,
-    const uint8* pRawTargetData,
-    const uint8* pRawByteCode,
-    uint8*       pRawImportData,
-    uint8*       pRawExportData
+    const Host::Definition& roDefinition,
+    const uint8* puRawTargetData,
+    const uint8* puRawByteCode,
+    uint8*       puRawImportData,
+    uint8*       puRawExportData
 ) :
-    oImportedSymbols(0, pRawImportData),
-    oExportedSymbols(0, pRawExportData),
-    pTargetData(pRawTargetData),
-    pByteCode(pRawByteCode)
+    oImportedSymbols(0, puRawImportData),
+    oExportedSymbols(0, puRawExportData),
+    puTargetData(puRawTargetData),
+    puByteCode(puRawByteCode)
 {
-    std::fprintf(stderr, "Loading object file as host '%s'\n", oDefinition.getName());
+    std::fprintf(stderr, "Loading object file as host '%s'\n", roDefinition.getName());
 
-    Symbol* pSymbol;
+    Symbol* poSymbol;
     uint32  uNumSymbols;
     if (
-        (uNumSymbols = *(uint32*)pRawImportData) &&
-        (pSymbol     = oImportedSymbols.allocate(uNumSymbols))
+        (uNumSymbols = *(uint32*)puRawImportData) &&
+        (poSymbol    = oImportedSymbols.allocate(uNumSymbols))
     ) {
         std::fprintf(stderr, "Linking %u imported symbols...\n", uNumSymbols);
-        char* sSymbolName   = ((char*)pRawImportData) + sizeof(uint32);
+        char* sSymbolName   = ((char*)puRawImportData) + sizeof(uint32);
         for (unsigned u = 0; u < uNumSymbols; ++u) {
-            pSymbol[u].sIdentifier = sSymbolName;
-            pSymbol[u].pRawData    = 0;
-            sSymbolName = processSymbolName(sSymbolName, pSymbol[u].uFlags);
+            poSymbol[u].sIdentifier = sSymbolName;
+            poSymbol[u].pRawData    = 0;
+            sSymbolName = processSymbolName(sSymbolName, poSymbol[u].uFlags);
         }
-        oImportedSymbols.linkAgainst(oDefinition.getExportedSymbolSet());
+        oImportedSymbols.linkAgainst(roDefinition.getExportedSymbolSet());
     }
 
     if (
-        (uNumSymbols = *(uint32*)pRawExportData) &&
-        (pSymbol     = oExportedSymbols.allocate(uNumSymbols))
+        (uNumSymbols = *(uint32*)puRawExportData) &&
+        (poSymbol    = oExportedSymbols.allocate(uNumSymbols))
     ) {
         std::fprintf(stderr, "Linking %u exported symbols...\n", uNumSymbols);
-        const uint32* pCodeOffsets = (uint32*)(pRawExportData + sizeof(uint32));
-        char* sSymbolName = ((char*)pRawExportData) + sizeof(uint32) + uNumSymbols * sizeof(uint32);
+        const uint32* puCodeOffsets = (uint32*)(puRawExportData + sizeof(uint32));
+        char* sSymbolName = ((char*)puRawExportData) + sizeof(uint32) + uNumSymbols * sizeof(uint32);
         for (unsigned u = 0; u < uNumSymbols; ++u) {
-            pSymbol[u].sIdentifier = sSymbolName;
-            pSymbol[u].pByteCode   = pRawByteCode + pCodeOffsets[u];
-            sSymbolName = processSymbolName(sSymbolName, pSymbol[u].uFlags);
+            poSymbol[u].sIdentifier = sSymbolName;
+            poSymbol[u].puByteCode  = puRawByteCode + puCodeOffsets[u];
+            sSymbolName = processSymbolName(sSymbolName, poSymbol[u].uFlags);
         }
-        oDefinition.getImportedSymbolSet().linkAgainst(oExportedSymbols);
+        roDefinition.getImportedSymbolSet().linkAgainst(oExportedSymbols);
     }
-
 }
 
 /**
- * Executable destructor
+ * @inheritDoc
  */
 Executable::~Executable() {
-    std::free((void*)pByteCode);
-    std::free((void*)pTargetData);
+    std::free((void*)puByteCode);
+    std::free((void*)puTargetData);
 }
 
 

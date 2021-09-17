@@ -66,16 +66,16 @@ union GPRegister {
         };
 
         void*    pAny;
-        uint64*  pUQuad;
-        int64*   pIQuad;
-        uint32*  pULong;
-        int32*   pILong;
-        uint16*  pUWord;
-        int16*   pIWord;
-        uint8*   pUByte;
-        int8*    pIByte;
-        float64* pDouble;
-        float32* pFloat;
+        uint64*  puQuad;
+        int64*   piQuad;
+        uint32*  puLong;
+        int32*   piLong;
+        uint16*  puWord;
+        int16*   piWord;
+        uint8*   puByte;
+        int8*    piByte;
+        float64* pfDouble;
+        float32* pfFloat;
 
         uint64   uQuad;
         int64    iQuad;

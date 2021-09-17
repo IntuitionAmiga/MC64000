@@ -37,8 +37,8 @@ class Executable {
         LoadedSymbolSet oImportedSymbols;
         LoadedSymbolSet oExportedSymbols;
 
-        const uint8* pTargetData;
-        const uint8* pByteCode;
+        const uint8* puTargetData;
+        const uint8* puByteCode;
 
     public:
 
@@ -72,18 +72,18 @@ class Executable {
          * Instantiable only by the binary loader friend class. Note that ownership of the raw memory referenced
          * by the target data and bytecode are taken over by this instance and are freed by it on destruction.
          *
-         * @param const Host::Definition& oDefinition
-         * @param const uint8* pRawTargetData
-         * @param const uint8* pRawByteCode
-         * @param uint8*       pRawImportData
-         * @param uint8*       pRawExportData
+         * @param const Host::Definition& roDefinition
+         * @param const uint8*            puRawTargetData
+         * @param const uint8*            puRawByteCode
+         * @param uint8*                  puRawImportData
+         * @param uint8*                  puRawExportData
          */
         Executable(
-            const Host::Definition& oDefinition,
-            const uint8*            pRawTargetData,
-            const uint8*            pRawByteCode,
-            uint8*                  pRawImportData,
-            uint8*                  pRawExportData
+            const Host::Definition& roDefinition,
+            const uint8*            puRawTargetData,
+            const uint8*            puRawByteCode,
+            uint8*                  puRawImportData,
+            uint8*                  puRawExportData
         );
 
         /**
@@ -93,10 +93,10 @@ class Executable {
          * C string. Thus, this function modifies the string passed.
          *
          * @param  char*   sSymbolName
-         * @param  uint64& uSymbolFlags
+         * @param  uint64& ruSymbolFlags
          * @return char*
          */
-        char* processSymbolName(char* sSymbolName, uint64& uSymbolFlags);
+        char* processSymbolName(char* sSymbolName, uint64& ruSymbolFlags);
 };
 
 }} // namespace

@@ -31,7 +31,7 @@ class Error {
          *
          * @param const char* sIssue
          */
-        Error(const char *sIssue) : sIssue(sIssue) {}
+        Error(const char* sIssue) : sIssue(sIssue) {}
 };
 
 }} // namespace

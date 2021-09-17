@@ -33,7 +33,7 @@ class Definition {
 
     private:
         const char*                     sHostName;
-        Machine::Interpreter::HostCall* aHostVectors;
+        Machine::Interpreter::HostCall* pcVectors;
         Loader::InitialisedSymbolSet    oExportSet;
         Loader::InitialisedSymbolSet    oImportSet;
         Misc::Version                   oVersion;
@@ -41,23 +41,26 @@ class Definition {
 
     public:
         /**
-         * aHostVectors is expected to be null terminated.
-         * aExports and aImports must be terminated with a Symbol referencing null
+         * Constructor. Uses a set of initializer_list for the vectors, export symbols and import symbols.
+         * The data in these are copied to the instance internally and are not modified.
          *
          * @param const char* sName
          * @param const Misc::Version oVersion
-         * @param const std::initializer_list<Machine::Interpreter::HostCall>& oVectors,
-         * @param const std::initializer_list<Loader::Symbol>& oExportedSymbols,
-         * @param const std::initializer_list<Loader::Symbol>& oImportedSymbols
+         * @param const std::initializer_list<Machine::Interpreter::HostCall>& roVectors,
+         * @param const std::initializer_list<Loader::Symbol>& roExportedSymbols,
+         * @param const std::initializer_list<Loader::Symbol>& roImportedSymbols
          */
         Definition(
             const char* sName,
             const Misc::Version oVersion,
-            const std::initializer_list<Machine::Interpreter::HostCall>& oVectors,
-            const std::initializer_list<Loader::Symbol>& oExportedSymbols,
-            const std::initializer_list<Loader::Symbol>& oImportedSymbols
+            const std::initializer_list<Machine::Interpreter::HostCall>& roVectors,
+            const std::initializer_list<Loader::Symbol>& roExportedSymbols,
+            const std::initializer_list<Loader::Symbol>& roImportedSymbols
         );
 
+        /**
+         * Destructor
+         */
         ~Definition();
 
         /**

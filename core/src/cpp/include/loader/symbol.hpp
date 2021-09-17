@@ -53,7 +53,7 @@ struct Symbol {
     union {
         void*        pRawData;
         const void*  pConstRawData;
-        const uint8* pByteCode;
+        const uint8* puByteCode;
     };
 
     /**
@@ -70,8 +70,8 @@ struct Symbol {
  */
 class SymbolSet {
     protected:
-        Symbol*  pSymbols;
-        size_t       uNumSymbols;
+        Symbol*  poSymbols;
+        size_t   uNumSymbols;
 
         /**
          * Check that the index is in range.
@@ -122,7 +122,7 @@ class SymbolSet {
          * @return Symbol*
          */
         Symbol* getSymbols() const {
-            return pSymbols;
+            return poSymbols;
         }
 
         /**
@@ -134,7 +134,7 @@ class SymbolSet {
          */
         Symbol& operator[](const size_t uIndex) {
             assertIndex(uIndex);
-            return pSymbols[uIndex];
+            return poSymbols[uIndex];
         }
 
         /**
@@ -146,7 +146,7 @@ class SymbolSet {
          */
         const Symbol& operator[](const size_t uIndex) const {
             assertIndex(uIndex);
-            return pSymbols[uIndex];
+            return poSymbols[uIndex];
         }
 
         /**
@@ -163,12 +163,14 @@ class SymbolSet {
         /**
          * Symbol table dump to stream.
          *
-         * @param std::FILE* pStream
+         * @param std::FILE* poStream
          */
-        void dump(std::FILE* pStream) const;
+        void dump(std::FILE* poStream) const;
 
-
-        void linkAgainst(const SymbolSet& oOther) const;
+        /**
+         * Link symbols against another symbol set.
+         */
+        void linkAgainst(const SymbolSet& roOther) const;
 };
 
 /**
@@ -180,8 +182,14 @@ class InitialisedSymbolSet : public SymbolSet {
     public:
         /**
          * Constructor for initialised set
+         *
+         * @param const std::initializer_list<Symbol>& roSymbols
          */
-        InitialisedSymbolSet(const std::initializer_list<Symbol>& oSymbols);
+        InitialisedSymbolSet(const std::initializer_list<Symbol>& roSymbols);
+
+        /**
+         * Destructor
+         */
         ~InitialisedSymbolSet();
 };
 
@@ -193,17 +201,17 @@ class InitialisedSymbolSet : public SymbolSet {
  */
 class LoadedSymbolSet : public SymbolSet {
     private:
-        const uint8* pRawData;
+        const uint8* puRawData;
 
     public:
         /**
          * Constructor
          *
          * @param  const size_t uNumSymbols
-         * @param  const uint8* pRawData
+         * @param  const uint8* puRawData
          * @throws MC64K::OutOfMemoryException
          */
-        LoadedSymbolSet(const size_t uNumSymbols, const uint8* pRawData);
+        LoadedSymbolSet(const size_t uNumSymbols, const uint8* puRawData);
 
         /**
          * Destructor.

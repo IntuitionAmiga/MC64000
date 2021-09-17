@@ -20,21 +20,24 @@
 namespace MC64K {
 namespace Machine {
 
-GPRegister   Interpreter::aGPR[GPRegister::MAX] = {};
-FPRegister   Interpreter::aFPR[FPRegister::MAX] = {};
-const uint8* Interpreter::pProgramCounter       = 0;
-void*        Interpreter::pDstEA                = 0;
-void*        Interpreter::pSrcEA                = 0;
-void*        Interpreter::pTmpEA                = 0;
-uint8*       Interpreter::pStackTop             = 0;
-uint8*       Interpreter::pStackBase            = 0;
-int          Interpreter::iCallDepth            = 0;
+GPRegister   Interpreter::aoGPR[GPRegister::MAX] = {};
+FPRegister   Interpreter::aoFPR[FPRegister::MAX] = {};
+const uint8* Interpreter::puProgramCounter       = 0;
+void*        Interpreter::pDstEA                 = 0;
+void*        Interpreter::pSrcEA                 = 0;
+void*        Interpreter::pTmpEA                 = 0;
+uint8*       Interpreter::puStackTop             = 0;
+uint8*       Interpreter::puStackBase            = 0;
+int          Interpreter::iCallDepth             = 0;
 
 Interpreter::OperationSize Interpreter::eOperationSize = Interpreter::SIZE_BYTE;
 Interpreter::Status        Interpreter::eStatus        = Interpreter::UNINITIALISED;
-Interpreter::HostCall      Interpreter::aHostAPI[256] = { 0 };
+Interpreter::HostCall      Interpreter::acHostAPI[256] = { 0 };
 
-const char* aStatusNames[] = {
+/**
+ * Human readable names for Interpreter::eStatus
+ */
+const char* asStatusNames[] = {
     "Uninitialised",
     "Initialised",
     "Running",
@@ -45,76 +48,86 @@ const char* aStatusNames[] = {
     "Unimplemented Host Call",
 };
 
-void Interpreter::setExecutable(const Loader::Executable* pExecutable) {
-    if (pExecutable) {
-        pExecutable->getExportedSymbolSet()->dump(stdout);
+/**
+ * @inheritDoc
+ */
+void Interpreter::setExecutable(const Loader::Executable* poExecutable) {
+    if (poExecutable) {
+        poExecutable->getExportedSymbolSet()->dump(stdout);
     }
 }
 
 /**
- * Set a host function
+ * @inheritDoc
  */
 void Interpreter::setHostFunction(Interpreter::HostCall cFunction, uint8 uOffset) {
-    aHostAPI[uOffset] = cFunction;
+    acHostAPI[uOffset] = cFunction;
 }
 
+/**
+ * @inheritDoc
+ */
 void Interpreter::allocateStack(uint32 uSize) {
     uSize += 31;
     uSize &= ~31;
-    pStackBase = (uint8*)std::calloc(uSize, 1);
-    if (!pStackBase) {
+    puStackBase = (uint8*)std::calloc(uSize, 1);
+    if (!puStackBase) {
         throw Error("Failed to allocate stack");
     }
-    pStackTop = pStackBase + uSize;
-    aGPR[GPRegister::SP].pUByte = pStackTop;
-}
-
-void Interpreter::freeStack() {
-    std::free(pStackBase);
-    pStackTop = pStackBase = 0;
+    puStackTop = puStackBase + uSize;
+    aoGPR[GPRegister::SP].puByte = puStackTop;
 }
 
 /**
- * Get a general purpose register
+ * @inheritDoc
+ */
+void Interpreter::freeStack() {
+    std::free(puStackBase);
+    puStackTop = puStackBase = 0;
+}
+
+/**
+ * @inheritDoc
  */
 GPRegister& Interpreter::gpr(const unsigned int uReg) {
-    return aGPR[uReg & GPRegister::MASK];
+    return aoGPR[uReg & GPRegister::MASK];
 }
 
 /**
- * Get a floating point register
+ * @inheritDoc
  */
 FPRegister& Interpreter::fpr(const unsigned int uReg) {
-    return aFPR[uReg & FPRegister::MASK];
+    return aoFPR[uReg & FPRegister::MASK];
 }
 
 /**
- * Set the entry point
+ * @inheritDoc
  */
-void Interpreter::setProgramCounter(const uint8* pNewProgramCounter) {
-    pProgramCounter = pNewProgramCounter;
+void Interpreter::setProgramCounter(const uint8* puNewProgramCounter) {
+    puProgramCounter = puNewProgramCounter;
 }
 
-
 /**
- * Debugging
+ * @inheritDoc
  */
-void Interpreter::dumpState(const int iFlags) {
-    std::printf(
+void Interpreter::dumpState(std::FILE* poStream, const unsigned uFlags) {
+    std::fprintf(
+        poStream,
         "Machine State\n"
         "\tProgram Counter: %p [... 0x%02X > 0x%02X < 0x%02X ...]\n"
         "\tCall Depth:      %d\n"
         "\tStatus:          %d [%s]\n",
-        pProgramCounter,
-        (uint32) *(pProgramCounter - 1),
-        (uint32) *(pProgramCounter),
-        (uint32) *(pProgramCounter + 1),
+        puProgramCounter,
+        (uint32) *(puProgramCounter - 1),
+        (uint32) *(puProgramCounter),
+        (uint32) *(puProgramCounter + 1),
         iCallDepth,
         eStatus,
-        aStatusNames[eStatus]
+        asStatusNames[eStatus]
     );
-    if (iFlags & STATE_TMP) {
-        std::printf(
+    if (uFlags & STATE_TMP) {
+        std::fprintf(
+            poStream,
             "Last Operation\n"
             "\tData Size: %d\n"
             "\tDst Addr:  %p\n"
@@ -126,36 +139,40 @@ void Interpreter::dumpState(const int iFlags) {
             pTmpEA
         );
     }
-    if (iFlags & STATE_GPR) {
-        std::printf("GP Registers (%p)\n", aGPR);
-        for (int i = 0; i < GPRegister::MAX; ++i) {
-            std::printf(
-                "\t%2d : 0x%016lX\n",
-                i,
-                aGPR[i].uQuad
+    if (uFlags & STATE_GPR) {
+        std::fprintf(poStream, "GP Registers (%p)\n", aoGPR);
+        for (unsigned u = 0; u < GPRegister::MAX; ++u) {
+            std::fprintf(
+                poStream,
+                "\t%2u : 0x%016lX\n",
+                u,
+                aoGPR[u].uQuad
             );
         }
     }
-    if (iFlags & STATE_FPR) {
-        std::printf("FP Registers (%p)\n", aFPR);
-        for (int i = 0; i < FPRegister::MAX; ++i) {
-            std::printf(
-                "\t%2d : 0x%016lX %.15e %.7e\n",
-                i,
-                aFPR[i].uBinary,
-                aFPR[i].fDouble,
-                (float64)aFPR[i].fSingle
+    if (uFlags & STATE_FPR) {
+        std::fprintf(poStream, "FP Registers (%p)\n", aoFPR);
+        for (unsigned u = 0; u < FPRegister::MAX; ++u) {
+            std::fprintf(
+                poStream,
+                "\t%2u : 0x%016lX %.15e %.7e\n",
+                u,
+                aoFPR[u].uBinary,
+                aoFPR[u].fDouble,
+                (float64)aoFPR[u].fSingle
             );
         }
     }
-    if (iFlags & STATE_STACK) {
-        std::printf("Stack\n");
-        if (pStackTop && pStackBase) {
-            uint64* p = (uint64*)pStackTop;
-            while (--p > (uint64*)pStackBase) {
-                std::printf(
+    if (uFlags & STATE_STACK) {
+        std::fprintf(poStream, "Stack\n");
+        if (puStackTop && puStackBase) {
+            uint64* pu = (uint64*)puStackTop;
+            while (--pu > (uint64*)puStackBase) {
+                std::fprintf(
+                    poStream,
                     "\t%p : 0x%016lX\n",
-                    p, *p
+                    pu,
+                    *pu
                 );
             }
         }

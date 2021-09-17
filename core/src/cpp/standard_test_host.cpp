@@ -2,14 +2,16 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "machine/interpreter.hpp"
+#include "standard_test_host.hpp"
 #include "loader/symbol.hpp"
-#include "host/definition.hpp"
 
 using namespace MC64K::Loader;
 using namespace MC64K::Machine;
 using namespace MC64K::Host;
 using namespace MC64K::Misc;
+
+namespace MC64K {
+namespace StandardTestHost {
 
 /**
  * Example host vectors
@@ -34,7 +36,7 @@ const char*   testString  = "Hello";
 /**
  * Declare the Standard Test Host
  */
-Definition standardTestHost(
+Host::Definition instance(
 
     // Host name and version
     "Standard Test Host",
@@ -56,7 +58,8 @@ Definition standardTestHost(
     // Symbols this host expects to be able to access from the virtual code
     {
         IMPORT_SYMBOL("main", Symbol::EXECUTE),
-        //IMPORT_SYMBOL("exit", Symbol::EXECUTE),
+        IMPORT_SYMBOL("exit", Symbol::EXECUTE),
     }
 );
 
+}}

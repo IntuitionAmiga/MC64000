@@ -14,6 +14,7 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
+#include <cstdio>
 #include "register.hpp"
 #include "error.hpp"
 
@@ -59,33 +60,33 @@ class Interpreter {
 
         typedef Status (*HostCall)();
 
-        static void setExecutable(const Loader::Executable* pExecutable);
+        static void setExecutable(const Loader::Executable* poExecutable);
 
         static void         setHostFunction(HostCall cFunction, uint8 uOffset);
         static void         allocateStack(uint32 uStackSize);
         static void         freeStack();
-        static void         setProgramCounter(const uint8* pNewProgramCounter);
+        static void         setProgramCounter(const uint8* puNewProgramCounter);
         static void         run();
 
         static GPRegister&  gpr(const unsigned int uReg);
         static FPRegister&  fpr(const unsigned int uReg);
-        static void         dumpState(const int iFlags);
+        static void         dumpState(std::FILE* poStream, const unsigned int uFlags);
 
     private:
-        static const Loader::Executable* pExecutable;
-        static HostCall     aHostAPI[256];
-        static GPRegister   aGPR[GPRegister::MAX];
-        static FPRegister   aFPR[FPRegister::MAX];
-        static const uint8* pProgramCounter;
+        static const Loader::Executable* poExecutable;
+        static HostCall     acHostAPI[256];
+        static GPRegister   aoGPR[GPRegister::MAX];
+        static FPRegister   aoFPR[FPRegister::MAX];
+        static const uint8* puProgramCounter;
         static void*        pDstEA;
         static void*        pSrcEA;
         static void*        pTmpEA;
         static int          iCallDepth;
 
-        static uint8*       pStackTop;
-        static uint8*       pStackBase;
+        static uint8*       puStackTop;
+        static uint8*       puStackBase;
 
-        static enum  OperationSize {
+        static enum OperationSize {
             SIZE_BYTE = 1,
             SIZE_WORD = 2,
             SIZE_LONG = 4,

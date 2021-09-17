@@ -58,3 +58,6 @@ danger:
     add.q r0, r0
     rts
 
+    @export exit x
+exit:
+    rts

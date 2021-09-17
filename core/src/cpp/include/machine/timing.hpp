@@ -19,6 +19,7 @@
 
 namespace MC64K {
 namespace Machine {
+
 /**
  * Nanosecond measurement
  */
@@ -26,6 +27,9 @@ class Nanoseconds {
     public:
         typedef uint64 Value;
 
+        /**
+         * @returnValue
+         */
         static Value mark() {
             timespec oCurrent;
             clock_gettime(CLOCK_MONOTONIC, &oCurrent);

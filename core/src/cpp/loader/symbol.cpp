@@ -21,8 +21,11 @@
 using namespace MC64K::Loader;
 using namespace MC64K::Host;
 
+/**
+ * @inheritDoc
+ */
 SymbolSet::SymbolSet(const size_t uNumSymbols) :
-    pSymbols(0),
+    poSymbols(0),
     uNumSymbols(uNumSymbols)
 {
     if (uNumSymbols > 0) {
@@ -31,132 +34,134 @@ SymbolSet::SymbolSet(const size_t uNumSymbols) :
 }
 
 /**
- * Required destructor
+ * @inheritDoc
  */
 SymbolSet::~SymbolSet() {
-    std::free((void*)pSymbols);
+    std::free((void*)poSymbols);
 }
 
+/**
+ * @inheritDoc
+ */
 void SymbolSet::allocateStorage(const size_t uNumSymbols) {
-    if (!(pSymbols = (Symbol*)std::malloc(uNumSymbols * sizeof(Symbol)))) {
+    if (!(poSymbols = (Symbol*)std::malloc(uNumSymbols * sizeof(Symbol)))) {
         throw MC64K::OutOfMemoryException();
     }
     this->uNumSymbols = uNumSymbols;
 }
 
 /**
- * Dump the symbol set to a file stream.
+ * @inheritDoc
  */
-void SymbolSet::dump(std::FILE* pStream) const {
+void SymbolSet::dump(std::FILE* poStream) const {
     for (size_t u = 0; u < uNumSymbols; ++u) {
         std::fprintf(
-            pStream,
+            poStream,
             "\t%4zu @ %p [%c%c%c] \'%s\'\n",
             u,
-            pSymbols[u].pRawData,
-            (pSymbols[u].uFlags & Symbol::READ    ? 'r' : '-'),
-            (pSymbols[u].uFlags & Symbol::WRITE   ? 'w' : '-'),
-            (pSymbols[u].uFlags & Symbol::EXECUTE ? 'x' : '-'),
-            pSymbols[u].sIdentifier
+            poSymbols[u].pRawData,
+            (poSymbols[u].uFlags & Symbol::READ    ? 'r' : '-'),
+            (poSymbols[u].uFlags & Symbol::WRITE   ? 'w' : '-'),
+            (poSymbols[u].uFlags & Symbol::EXECUTE ? 'x' : '-'),
+            poSymbols[u].sIdentifier
         );
     }
 }
 
 /**
- * Attempt to locate symbol by name.
+ * @inheritDoc
  */
 Symbol* SymbolSet::find(const char* sIdentifier, const uint64 uAccess) const {
     for (size_t u = 0; u < uNumSymbols; ++u) {
         if (
-            uAccess == (uAccess & pSymbols[u].uFlags) &&
-            0 == std::strcmp(sIdentifier, pSymbols[u].sIdentifier)
+            uAccess == (uAccess & poSymbols[u].uFlags) &&
+            0 == std::strcmp(sIdentifier, poSymbols[u].sIdentifier)
         ) {
-            return &pSymbols[u];
+            return &poSymbols[u];
         }
     }
     return 0;
 }
 
-void SymbolSet::linkAgainst(const SymbolSet& oOther) const {
+/**
+ * @inheritDoc
+ */
+void SymbolSet::linkAgainst(const SymbolSet& roOther) const {
     for (size_t u = 0; u < uNumSymbols; ++u) {
-        Symbol* pMatched = oOther.find(
-            pSymbols[u].sIdentifier,
-            pSymbols[u].uFlags & Symbol::ACCESS_MASK
+        Symbol* poMatched = roOther.find(
+            poSymbols[u].sIdentifier,
+            poSymbols[u].uFlags & Symbol::ACCESS_MASK
         );
-        if (pMatched) {
-            pSymbols[u].pRawData = pMatched->pRawData;
+        if (poMatched) {
+            poSymbols[u].pRawData = poMatched->pRawData;
             std::fprintf(
                 stderr,
                 "\tMatched %4zu %p [%c%c%c] %s\n",
                 u,
-                pSymbols[u].pRawData,
-                (pSymbols[u].uFlags & Symbol::READ    ? 'r' : '-'),
-                (pSymbols[u].uFlags & Symbol::WRITE   ? 'w' : '-'),
-                (pSymbols[u].uFlags & Symbol::EXECUTE ? 'x' : '-'),
-                pSymbols[u].sIdentifier
+                poSymbols[u].pRawData,
+                (poSymbols[u].uFlags & Symbol::READ    ? 'r' : '-'),
+                (poSymbols[u].uFlags & Symbol::WRITE   ? 'w' : '-'),
+                (poSymbols[u].uFlags & Symbol::EXECUTE ? 'x' : '-'),
+                poSymbols[u].sIdentifier
             );
         } else {
             std::fprintf(
                 stderr,
                 "\tUnable to match %4zu %p [%c%c%c] %s\n",
                 u,
-                pSymbols[u].pRawData,
-                (pSymbols[u].uFlags & Symbol::READ    ? 'r' : '-'),
-                (pSymbols[u].uFlags & Symbol::WRITE   ? 'w' : '-'),
-                (pSymbols[u].uFlags & Symbol::EXECUTE ? 'x' : '-'),
-                pSymbols[u].sIdentifier
+                poSymbols[u].pRawData,
+                (poSymbols[u].uFlags & Symbol::READ    ? 'r' : '-'),
+                (poSymbols[u].uFlags & Symbol::WRITE   ? 'w' : '-'),
+                (poSymbols[u].uFlags & Symbol::EXECUTE ? 'x' : '-'),
+                poSymbols[u].sIdentifier
             );
             throw LinkError();
         }
     }
 }
 
-
 /**
- * StaticSymbolSet Constructor
- *
- * Explicitly copy the std::initializer_list<Symbol> data here as the internal representation goes out of scope
- * once the calling context has gone.
+ * @inheritDoc
  */
-InitialisedSymbolSet::InitialisedSymbolSet(const std::initializer_list<Symbol>& oSymbols) :
-    SymbolSet(oSymbols.size())
+InitialisedSymbolSet::InitialisedSymbolSet(const std::initializer_list<Symbol>& roSymbols) :
+    SymbolSet(roSymbols.size())
 {
     if (uNumSymbols) {
-        std::memcpy(pSymbols, oSymbols.begin(), uNumSymbols * sizeof(Symbol));
+        std::memcpy(poSymbols, roSymbols.begin(), uNumSymbols * sizeof(Symbol));
     }
 }
 
 /**
- * Required destructor
+ * @inheritDoc
  */
 InitialisedSymbolSet::~InitialisedSymbolSet() {
 
 }
 
 /**
- * DynamicSymbolSet Constructor
+ * @inheritDoc
  */
-LoadedSymbolSet::LoadedSymbolSet(const size_t uNumSymbols, const uint8* pRawData) :
+LoadedSymbolSet::LoadedSymbolSet(const size_t uNumSymbols, const uint8* puRawData) :
     SymbolSet(uNumSymbols),
-    pRawData(pRawData)
+    puRawData(puRawData)
 {
 
 }
 
 /**
- * SymbolSet allocator
+ * @inheritDoc
  */
 Symbol* LoadedSymbolSet::allocate(const size_t uNumSymbols) {
     if (uNumSymbols < 1) {
         throw MC64K::OutOfRangeException("Cannot allocate empty SymbolSet");
     }
     allocateStorage(uNumSymbols);
-    return pSymbols;
+    return poSymbols;
 }
 
 /**
- * Required destructor
+ * @inheritDoc
  */
 LoadedSymbolSet::~LoadedSymbolSet() {
-    std::free((void*)pRawData);
+    std::free((void*)puRawData);
 }

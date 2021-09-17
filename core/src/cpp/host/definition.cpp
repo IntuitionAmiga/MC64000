@@ -20,45 +20,38 @@ namespace MC64K {
 namespace Host {
 
 /**
- * Constructor
- *
- * @param const char* sName,
- * @param const Misc::Version oVersion,
- * @param const std::initializer_list<Machine::Interpreter::HostCall>& oVectors,
- * @param const std::initializer_list<Loader::Symbol>& oExportedSymbols,
- * @param const std::initializer_list<Loader::Symbol>& oImportedSymbols
+ * @inheritDoc
  */
 Definition::Definition(
     const char* sName,
     const Misc::Version oVersion,
-    const std::initializer_list<Machine::Interpreter::HostCall>& oVectors,
-    const std::initializer_list<Loader::Symbol>& oExportedSymbols,
-    const std::initializer_list<Loader::Symbol>& oImportedSymbols
+    const std::initializer_list<Machine::Interpreter::HostCall>& roVectors,
+    const std::initializer_list<Loader::Symbol>& roExportedSymbols,
+    const std::initializer_list<Loader::Symbol>& roImportedSymbols
 ) :
     sHostName(sName),
-    aHostVectors(0),
-    oExportSet(oExportedSymbols),
-    oImportSet(oImportedSymbols),
+    pcVectors(0),
+    oExportSet(roExportedSymbols),
+    oImportSet(roImportedSymbols),
     oVersion(oVersion)
 {
-    if (oVectors.size() > 256) {
+    if (roVectors.size() > 256) {
         throw MC64K::OutOfRangeException("Vector List Too Large");
     }
-    if ((uMaxVector = oVectors.size())) {
-
-        size_t uSize = sizeof(Machine::Interpreter::HostCall) * oVectors.size();
-        if (!(aHostVectors = (Machine::Interpreter::HostCall*)std::malloc(uSize))) {
+    if ((uMaxVector = roVectors.size())) {
+        size_t uSize = sizeof(Machine::Interpreter::HostCall) * roVectors.size();
+        if (!(pcVectors = (Machine::Interpreter::HostCall*)std::malloc(uSize))) {
             throw MC64K::OutOfMemoryException();
         }
-        std::memcpy(aHostVectors, oVectors.begin(), uSize);
+        std::memcpy(pcVectors, roVectors.begin(), uSize);
     }
 }
 
 /**
- * Destructor
+ * @inheritDoc
  */
 Definition::~Definition() {
-    std::free((void*)aHostVectors);
+    std::free((void*)pcVectors);
 }
 
 }} // namespace

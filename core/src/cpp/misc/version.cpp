@@ -19,26 +19,25 @@ namespace MC64K {
 namespace Misc {
 
 /**
- * Version long constructor
+ * @inheritDoc
  */
-Version::Version(unsigned iMajor, unsigned iMinor, unsigned iPatch) {
-    if (iMajor > MAX_MAJOR || iMinor > MAX_MINOR || iPatch > MAX_PATCH) {
+Version::Version(uint32 uMajor, uint32 uMinor, uint32 uPatch) {
+    if (uMajor > MAX_MAJOR || uMinor > MAX_MINOR || uPatch > MAX_PATCH) {
         throw InvalidVersion();
     }
-    uPackedVersion = iMajor << (PATCH_BITS + MINOR_BITS) | iMinor << PATCH_BITS | iPatch;
+    uPackedVersion = uMajor << (PATCH_BITS + MINOR_BITS) | uMinor << PATCH_BITS | uPatch;
 }
 
 /**
- * Version compatibility check. Returns true if the current instance has the same major version number
- * and at least the same minor/patch combination.
+ * @inheritDoc
  */
-bool Version::isCompatible(const Version& oVersion) const {
+bool Version::isCompatible(const Version& roVersion) const {
     return (
         // Major part must be equal
-        (uPackedVersion & MASK_MAJOR) == (oVersion.uPackedVersion & MASK_MAJOR)
+        (uPackedVersion & MASK_MAJOR) == (roVersion.uPackedVersion & MASK_MAJOR)
     ) && (
         // Remainder must be greater or equal
-        (uPackedVersion & ~MASK_MAJOR) >= (oVersion.uPackedVersion & ~MASK_MAJOR)
+        (uPackedVersion & ~MASK_MAJOR) >= (roVersion.uPackedVersion & ~MASK_MAJOR)
     );
 }
 

@@ -21,18 +21,20 @@ namespace Machine {
 
 namespace {
     /**
-     *
+     * Union used for reading bytestream immediate EA data into a machine aligned type.
      */
     union {
         float64 fDouble;
         float32 fSingle;
         int64   iQuad;
-        uint8   uBytes[8];
+        uint8   auBytes[8];
     } oImmediate;
 }
 
 /**
  * decodeEffectiveAddress()
+ *
+ * return void*
  */
 void* Interpreter::decodeEffectiveAddress() {
 
@@ -40,7 +42,7 @@ void* Interpreter::decodeEffectiveAddress() {
 
     initDisplacement();
 
-    uint8 uEffectiveAddress = *pProgramCounter++;
+    uint8 uEffectiveAddress = *puProgramCounter++;
     uint8 uEALower = uEffectiveAddress & 0x0F; // Lower nybble varies, usually a register.
 
     // Switch based on the mode
@@ -48,72 +50,72 @@ void* Interpreter::decodeEffectiveAddress() {
 
         // General Purpose Register Direct r<N>
         case EffectiveAddress::OFS_GPR_DIR:
-            return &aGPR[uEALower];
+            return &aoGPR[uEALower];
 
         // Register Indirect (r<N>)
         case EffectiveAddress::OFS_GPR_IND:
-            return aGPR[uEALower].pAny;
+            return aoGPR[uEALower].pAny;
 
         // Register Indirect, Post Increment (r<N>)+
         case EffectiveAddress::OFS_GPR_IND_POST_INC: {
-            void* p = aGPR[uEALower].pAny;
-            aGPR[uEALower].pIByte += eOperationSize;
+            void* p = aoGPR[uEALower].pAny;
+            aoGPR[uEALower].piByte += eOperationSize;
             return p;
         }
 
         // Register Indirect, Post Increment (r<N>)-
         case EffectiveAddress::OFS_GPR_IND_POST_DEC: {
-            void* p = aGPR[uEALower].pAny;
-            aGPR[uEALower].pIByte -= eOperationSize;
+            void* p = aoGPR[uEALower].pAny;
+            aoGPR[uEALower].piByte -= eOperationSize;
             return p;
         }
 
         // Register Indirect, Post Decrement (r<N>)-
         case EffectiveAddress::OFS_GPR_IND_PRE_INC:
-            aGPR[uEALower].pIByte += eOperationSize;
-            return aGPR[uEALower].pAny;
+            aoGPR[uEALower].piByte += eOperationSize;
+            return aoGPR[uEALower].pAny;
 
         // Register Indirect, Post Decrement -(r<N>)
         case EffectiveAddress::OFS_GPR_IND_PRE_DEC:
-            aGPR[uEALower].pIByte -= eOperationSize;
-            return aGPR[uEALower].pAny;
+            aoGPR[uEALower].piByte -= eOperationSize;
+            return aoGPR[uEALower].pAny;
 
         // Register Indirect with displacement <d32>(r<N>) / (<d32>, r<N>)
         case EffectiveAddress::OFS_GPR_IND_DSP:
             readDisplacement();
-            return aGPR[uEALower].pIByte + iDisplacement;
+            return aoGPR[uEALower].piByte + iDisplacement;
 
         // FPU Register Direct fp<N>
         case EffectiveAddress::OFS_FPR_DIR:
-            return &aFPR[uEALower];
+            return &aoFPR[uEALower];
 
         // Register Indirect with scaled index
         case EffectiveAddress::OFS_GPR_IDX: {
-            uint8 uIndexReg = *pProgramCounter++;
+            uint8 uIndexReg = *puProgramCounter++;
             uint8 uBaseReg  = uIndexReg >> 4;
             uint8 uScale    = uEALower >> 2;
             uIndexReg      &= 0xF;
             switch (uEALower & 3) {
-                case 0: return aGPR[uBaseReg].pIByte + (aGPR[uIndexReg].iByte << uScale);
-                case 1: return aGPR[uBaseReg].pIByte + (aGPR[uIndexReg].iWord << uScale);
-                case 2: return aGPR[uBaseReg].pIByte + (aGPR[uIndexReg].iLong << uScale);
-                case 3: return aGPR[uBaseReg].pIByte + (aGPR[uIndexReg].iQuad << uScale);
+                case 0: return aoGPR[uBaseReg].piByte + (aoGPR[uIndexReg].iByte << uScale);
+                case 1: return aoGPR[uBaseReg].piByte + (aoGPR[uIndexReg].iWord << uScale);
+                case 2: return aoGPR[uBaseReg].piByte + (aoGPR[uIndexReg].iLong << uScale);
+                case 3: return aoGPR[uBaseReg].piByte + (aoGPR[uIndexReg].iQuad << uScale);
             }
             break;
         }
 
         // Register Indirect with scaled index and displacement
         case EffectiveAddress::OFS_GPR_IDX_DSP: {
-            uint8 uIndexReg = *pProgramCounter++;
+            uint8 uIndexReg = *puProgramCounter++;
             uint8 uBaseReg  = uIndexReg >> 4;
             uint8 uScale    = uEALower >> 2;
             uIndexReg      &= 0xF;
             readDisplacement();
             switch (uEALower & 3) {
-                case 0: return aGPR[uBaseReg].pIByte + iDisplacement + (aGPR[uIndexReg].iByte << uScale);
-                case 1: return aGPR[uBaseReg].pIByte + iDisplacement + (aGPR[uIndexReg].iWord << uScale);
-                case 2: return aGPR[uBaseReg].pIByte + iDisplacement + (aGPR[uIndexReg].iLong << uScale);
-                case 3: return aGPR[uBaseReg].pIByte + iDisplacement + (aGPR[uIndexReg].iQuad << uScale);
+                case 0: return aoGPR[uBaseReg].piByte + iDisplacement + (aoGPR[uIndexReg].iByte << uScale);
+                case 1: return aoGPR[uBaseReg].piByte + iDisplacement + (aoGPR[uIndexReg].iWord << uScale);
+                case 2: return aoGPR[uBaseReg].piByte + iDisplacement + (aoGPR[uIndexReg].iLong << uScale);
+                case 3: return aoGPR[uBaseReg].piByte + iDisplacement + (aoGPR[uIndexReg].iQuad << uScale);
             }
             break;
         }
@@ -138,39 +140,39 @@ void* Interpreter::decodeEffectiveAddress() {
                 // For integer immediates, we always sign extend to 64-bits as the operation mayb be bigger
                 // than the immediate size.
                 case EffectiveAddress::Other::INT_IMM_BYTE:
-                    oImmediate.iQuad = (int8)*pProgramCounter++;
+                    oImmediate.iQuad = (int8)*puProgramCounter++;
                     return &oImmediate.iQuad;
 
                 case EffectiveAddress::Other::INT_IMM_WORD:
-                    oImmediate.iQuad  = (int8)pProgramCounter[1];
-                    oImmediate.uBytes[0] = *pProgramCounter++;
-                    oImmediate.uBytes[1] = *pProgramCounter++;
+                    oImmediate.iQuad = (int8)puProgramCounter[1];
+                    oImmediate.auBytes[0] = *puProgramCounter++;
+                    oImmediate.auBytes[1] = *puProgramCounter++;
                     return &oImmediate.iQuad;
 
                 case EffectiveAddress::Other::INT_IMM_LONG:
                 case EffectiveAddress::Other::FLT_IMM_SINGLE:
-                    oImmediate.iQuad  = (int8)pProgramCounter[3];
-                    oImmediate.uBytes[0] = *pProgramCounter++;
-                    oImmediate.uBytes[1] = *pProgramCounter++;
-                    oImmediate.uBytes[2] = *pProgramCounter++;
-                    oImmediate.uBytes[3] = *pProgramCounter++;
+                    oImmediate.iQuad = (int8)puProgramCounter[3];
+                    oImmediate.auBytes[0] = *puProgramCounter++;
+                    oImmediate.auBytes[1] = *puProgramCounter++;
+                    oImmediate.auBytes[2] = *puProgramCounter++;
+                    oImmediate.auBytes[3] = *puProgramCounter++;
                     return &oImmediate.iQuad;
 
                 case EffectiveAddress::Other::INT_IMM_QUAD:
                 case EffectiveAddress::Other::FLT_IMM_DOUBLE:
-                    oImmediate.uBytes[0] = *pProgramCounter++;
-                    oImmediate.uBytes[1] = *pProgramCounter++;
-                    oImmediate.uBytes[2] = *pProgramCounter++;
-                    oImmediate.uBytes[3] = *pProgramCounter++;
-                    oImmediate.uBytes[4] = *pProgramCounter++;
-                    oImmediate.uBytes[5] = *pProgramCounter++;
-                    oImmediate.uBytes[6] = *pProgramCounter++;
-                    oImmediate.uBytes[7] = *pProgramCounter++;
+                    oImmediate.auBytes[0] = *puProgramCounter++;
+                    oImmediate.auBytes[1] = *puProgramCounter++;
+                    oImmediate.auBytes[2] = *puProgramCounter++;
+                    oImmediate.auBytes[3] = *puProgramCounter++;
+                    oImmediate.auBytes[4] = *puProgramCounter++;
+                    oImmediate.auBytes[5] = *puProgramCounter++;
+                    oImmediate.auBytes[6] = *puProgramCounter++;
+                    oImmediate.auBytes[7] = *puProgramCounter++;
                     return &oImmediate.iQuad;
 
                 case EffectiveAddress::Other::PC_IND_DSP:
                     readDisplacement();
-                    return (uint8*)pProgramCounter + iDisplacement;
+                    return (uint8*)puProgramCounter + iDisplacement;
                 default:
                     // TODO
                     eStatus = UNIMPLEMENTED_EAMODE;
@@ -192,13 +194,15 @@ void* Interpreter::decodeEffectiveAddress() {
 /**
  * Save the registers indicated by the mask to the effective address
  *
+ * @param uint32 uMask
+ * @param uint8  uEAMode
  */
 void Interpreter::saveRegisters(uint32 uMask, uint8 uEAMode) {
 
     using namespace MC64K::ByteCode;
 
     uint32  uHalfMask;
-    uint64* pStack = aGPR[uEAMode & 0xF].pUQuad;
+    uint64* puStack = aoGPR[uEAMode & 0xF].puQuad;
 
     switch (uEAMode & 0xF0) {
 
@@ -206,14 +210,14 @@ void Interpreter::saveRegisters(uint32 uMask, uint8 uEAMode) {
             if ( (uHalfMask = (uMask & 0xFFFF)) ) {
                 for (int i = 15; i >= 0; --i) {
                     if (uHalfMask & (1 << i)) {
-                        *(pStack++) = aGPR[i].uQuad;
+                        *(puStack++) = aoGPR[i].uQuad;
                     }
                 }
             }
             if ( (uHalfMask = (uMask >> 16)) ) {
                 for (int i = 15; i >= 0; --i) {
                     if (uHalfMask & (1 << i)) {
-                        *(pStack++) = aFPR[i].uBinary;
+                        *(puStack++) = aoFPR[i].uBinary;
                     }
                 }
             }
@@ -223,14 +227,14 @@ void Interpreter::saveRegisters(uint32 uMask, uint8 uEAMode) {
             if ( (uHalfMask = (uMask & 0xFFFF)) ) {
                 for (int i = 15; i >= 0; --i) {
                     if (uHalfMask & (1 << i)) {
-                        *(pStack--) = aGPR[i].uQuad;
+                        *(puStack--) = aoGPR[i].uQuad;
                     }
                 }
             }
             if ( (uHalfMask = (uMask >> 16)) ) {
                 for (int i = 15; i >= 0; --i) {
                     if (uHalfMask & (1 << i)) {
-                        *(pStack--) = aFPR[i].uBinary;
+                        *(puStack--) = aoFPR[i].uBinary;
                     }
                 }
             }
@@ -240,14 +244,14 @@ void Interpreter::saveRegisters(uint32 uMask, uint8 uEAMode) {
             if ( (uHalfMask = (uMask & 0xFFFF)) ) {
                 for (int i = 15; i >= 0; --i) {
                     if (uHalfMask & (1 << i)) {
-                        *(++pStack) = aGPR[i].uQuad;
+                        *(++puStack) = aoGPR[i].uQuad;
                     }
                 }
             }
             if ( (uHalfMask = (uMask >> 16)) ) {
                 for (int i = 15; i >= 0; --i) {
                     if (uHalfMask & (1 << i)) {
-                        *(++pStack) = aFPR[i].uBinary;
+                        *(++puStack) = aoFPR[i].uBinary;
                     }
                 }
             }
@@ -257,14 +261,14 @@ void Interpreter::saveRegisters(uint32 uMask, uint8 uEAMode) {
             if ( (uHalfMask = (uMask & 0xFFFF)) ) {
                 for (int i = 15; i >= 0; --i) {
                     if (uHalfMask & (1 << i)) {
-                        *(--pStack) = aGPR[i].uQuad;
+                        *(--puStack) = aoGPR[i].uQuad;
                     }
                 }
             }
             if ( (uHalfMask = (uMask >> 16)) ) {
                 for (int i = 15; i >= 0; --i) {
                     if (uHalfMask & (1 << i)) {
-                        *(--pStack) = aFPR[i].uBinary;
+                        *(--puStack) = aoFPR[i].uBinary;
                     }
                 }
             }
@@ -275,7 +279,7 @@ void Interpreter::saveRegisters(uint32 uMask, uint8 uEAMode) {
             return;
             break;
     }
-    aGPR[uEAMode & 0xF].pUQuad = pStack;
+    aoGPR[uEAMode & 0xF].puQuad = puStack;
 }
 
 /**
@@ -287,21 +291,21 @@ void Interpreter::restoreRegisters(uint32 uMask, uint8 uEAMode) {
     using namespace MC64K::ByteCode;
 
     uint32  uHalfMask;
-    uint64* pStack = aGPR[uEAMode & 0xF].pUQuad;
+    uint64* puStack = aoGPR[uEAMode & 0xF].puQuad;
 
     switch (uEAMode & 0xF0) {
         case EffectiveAddress::OFS_GPR_IND_POST_INC:
             if ( (uHalfMask = (uMask >> 16)) ) {
                 for (int i = 0; i < 16; ++i) {
                     if (uHalfMask & (1 << i)) {
-                        aFPR[i].uBinary = *pStack++;
+                        aoFPR[i].uBinary = *puStack++;
                     }
                 }
             }
             if ( (uHalfMask = (uMask & 0xFFFF)) ) {
                 for (int i = 0; i < 16; ++i) {
                     if (uHalfMask & (1 << i)) {
-                        aGPR[i].uQuad = *pStack++;
+                        aoGPR[i].uQuad = *puStack++;
                     }
                 }
             }
@@ -311,14 +315,14 @@ void Interpreter::restoreRegisters(uint32 uMask, uint8 uEAMode) {
             if ( (uHalfMask = (uMask >> 16)) ) {
                 for (int i = 0; i < 16; ++i) {
                     if (uHalfMask & (1 << i)) {
-                        aFPR[i].uBinary = *pStack--;
+                        aoFPR[i].uBinary = *puStack--;
                     }
                 }
             }
             if ( (uHalfMask = (uMask & 0xFFFF)) ) {
                 for (int i = 0; i < 16; ++i) {
                     if (uHalfMask & (1 << i)) {
-                        aGPR[i].uQuad = *pStack--;
+                        aoGPR[i].uQuad = *puStack--;
                     }
                 }
             }
@@ -328,14 +332,14 @@ void Interpreter::restoreRegisters(uint32 uMask, uint8 uEAMode) {
             if ( (uHalfMask = (uMask >> 16)) ) {
                 for (int i = 0; i < 16; ++i) {
                     if (uHalfMask & (1 << i)) {
-                        aFPR[i].uBinary = *(++pStack);
+                        aoFPR[i].uBinary = *(++puStack);
                     }
                 }
             }
             if ( (uHalfMask = (uMask & 0xFFFF)) ) {
                 for (int i = 0; i < 16; ++i) {
                     if (uHalfMask & (1 << i)) {
-                        aGPR[i].uQuad = *(++pStack);
+                        aoGPR[i].uQuad = *(++puStack);
                     }
                 }
             }
@@ -345,14 +349,14 @@ void Interpreter::restoreRegisters(uint32 uMask, uint8 uEAMode) {
             if ( (uHalfMask = (uMask >> 16)) ) {
                 for (int i = 0; i < 16; ++i) {
                     if (uHalfMask & (1 << i)) {
-                        aFPR[i].uBinary = *(--pStack);
+                        aoFPR[i].uBinary = *(--puStack);
                     }
                 }
             }
             if ( (uHalfMask = (uMask & 0xFFFF)) ) {
                 for (int i = 0; i < 16; ++i) {
                     if (uHalfMask & (1 << i)) {
-                        aGPR[i].uQuad = *(--pStack);
+                        aoGPR[i].uQuad = *(--puStack);
                     }
                 }
             }
@@ -363,7 +367,7 @@ void Interpreter::restoreRegisters(uint32 uMask, uint8 uEAMode) {
             return;
             break;
     }
-    aGPR[uEAMode & 0xF].pUQuad = pStack;
+    aoGPR[uEAMode & 0xF].puQuad = puStack;
 }
 
 

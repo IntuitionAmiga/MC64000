@@ -27,12 +27,23 @@ class Error {
         const char* sFileName;
         const char* sIssue;
         uint64 uChunkID;
-        Error(const char* sFileName, const char *sIssue, const uint64 uChunkID = 0) :
+
+        /**
+         * Constructor
+         *
+         * @param const char* sFileName
+         * @param const char* sIssue
+         * @param uint64      uChunkID
+         */
+        Error(const char* sFileName, const char* sIssue, const uint64 uChunkID = 0) :
             sFileName(sFileName),
             sIssue(sIssue),
             uChunkID(uChunkID) {}
 };
 
+/**
+ * LinkError
+ */
 class LinkError {
 
 };

@@ -3,14 +3,11 @@
 
 #include "machine/interpreter.hpp"
 #include "loader/executable.hpp"
-#include "host/definition.hpp"
+#include "standard_test_host.hpp"
 
 using namespace MC64K::Loader;
 using namespace MC64K::Machine;
 using namespace MC64K::Host;
-
-extern Interpreter::Status nativeTest();
-extern Definition standardTestHost;
 
 /**
  * Entry point
@@ -26,12 +23,10 @@ int main(int iArgN, const char** aArgV) {
         const char* sExecutableName = aArgV[1];
 
         // Initialise the binary loader
-        Binary oMC64KBinary(standardTestHost);
+        Binary oMC64KBinary(MC64K::StandardTestHost::instance);
         const Executable* pExecutable = oMC64KBinary.load(sExecutableName);
 
         Interpreter::setExecutable(pExecutable);
-
-        standardTestHost.getImportedSymbolSet().dump(stdout);
 
 //
 //         if (aExports) {

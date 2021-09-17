@@ -40,9 +40,9 @@ class Binary {
         /**
          * Constructor. Requires a valid Host Definition for loading validation purposes.
          *
-         * @param const Host::Definition& oDefinition
+         * @param const Host::Definition& roDefinition
          */
-        Binary(const Host::Definition& oDefinition);
+        Binary(const Host::Definition& roDefinition);
 
         /**
          * Destructor
@@ -101,10 +101,10 @@ class Binary {
             int64  iOffset;
         };
 
-        const Host::Definition& oHostDefinition;
+        const Host::Definition& roHostDefinition;
         const char*             sFileName;
-        std::FILE*              pFileHandle;
-        ManifestEntry*          pManifest;
+        std::FILE*              poFileHandle;
+        ManifestEntry*          poManifest;
         uint32                  uManifestLength;
 
         /**
@@ -122,17 +122,17 @@ class Binary {
          *
          * @param const char* sFileName
          */
-        void   open(const char* sFileName);
+        void open(const char* sFileName);
 
         /**
          * Close the binary object file
          */
-        void   close();
+        void close();
 
         /**
          * Load and allocate the Manifest List data
          */
-        void   loadManifest();
+        void loadManifest();
 
         /**
          * Try to find manifest record with the given chunk ID
@@ -140,15 +140,15 @@ class Binary {
          * @param  const uint64 uExpectedID
          * @return const ManifestEntry*
          */
-        const  ManifestEntry* findChunk(const uint64 uChunkID);
+        const ManifestEntry* findChunk(const uint64 uChunkID);
 
         /**
          * Read a chunk header into a marshalling area
          *
-         * @param uint64*      pHeader
+         * @param uint64*      puHeader
          * @param const uint64 uExpectedID
          */
-        void   readChunkHeader(uint64* pHeader, const uint64 uExpectedID);
+        void readChunkHeader(uint64* puHeader, const uint64 uExpectedID);
 
         /**
          * Load a chunk with the given ID. Uses the manifest data to locate the offset (if present),
@@ -162,10 +162,10 @@ class Binary {
         /**
          * Validate the raw taget data (minimum verification)
          *
-         * @param  const uint8* pRawTarget
+         * @param  const uint8* puRawTarget
          * @return bool
          */
-        bool   validateTarget(const uint8* pRawTarget);
+        bool validateTarget(const uint8* puRawTarget);
 };
 
 }} // namespace

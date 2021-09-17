@@ -21,62 +21,62 @@
 namespace MC64K {
 namespace Machine {
 
-inline void rolByte(uint8* pVal, uint8 size) {
-    size &= 7;
-    uint8 val = *pVal;
-    *pVal = val << size | val >> (8 - size);
+inline void rolByte(uint8* puValue, uint8 uSize) {
+    uSize &= 7;
+    uint8 val = *puValue;
+    *puValue = val << uSize | val >> (8 - uSize);
 }
 
-inline void rolWord(uint16* pVal, uint8 size) {
-    size &= 15;
-    uint16 val = *pVal;
-    *pVal = val << size | val >> (16 - size);
+inline void rolWord(uint16* puValue, uint8 uSize) {
+    uSize &= 15;
+    uint16 val = *puValue;
+    *puValue = val << uSize | val >> (16 - uSize);
 }
 
-inline void rolLong(uint32* pVal, uint8 size) {
-    size &= 31;
-    uint32 val = *pVal;
-    *pVal = val << size | val >> (32 - size);
+inline void rolLong(uint32* puValue, uint8 uSize) {
+    uSize &= 31;
+    uint32 val = *puValue;
+    *puValue = val << uSize | val >> (32 - uSize);
 }
 
-inline void rolQuad(uint64* pVal, uint8 size) {
-    size &= 63;
-    uint64 val = *pVal;
-    *pVal = val << size | val >> (64 - size);
+inline void rolQuad(uint64* puValue, uint8 uSize) {
+    uSize &= 63;
+    uint64 val = *puValue;
+    *puValue = val << uSize | val >> (64 - uSize);
 }
 
-inline void rorByte(uint8* pVal, uint8 size) {
-    size &= 7;
-    uint8 val = *pVal;
-    *pVal = val >> size | val << (8 - size);
+inline void rorByte(uint8* puValue, uint8 uSize) {
+    uSize &= 7;
+    uint8 val = *puValue;
+    *puValue = val >> uSize | val << (8 - uSize);
 }
 
-inline void rorWord(uint16* pVal, uint8 size) {
-    size &= 15;
-    uint16 val = *pVal;
-    *pVal = val >> size | val << (16 - size);
+inline void rorWord(uint16* puValue, uint8 uSize) {
+    uSize &= 15;
+    uint16 val = *puValue;
+    *puValue = val >> uSize | val << (16 - uSize);
 }
 
-inline void rorLong(uint32* pVal, uint8 size) {
-    size &= 31;
-    uint32 val = *pVal;
-    *pVal = val >> size | val << (32 - size);
+inline void rorLong(uint32* puValue, uint8 uSize) {
+    uSize &= 31;
+    uint32 val = *puValue;
+    *puValue = val >> uSize | val << (32 - uSize);
 }
 
-inline void rorQuad(uint64* pVal, uint8 size) {
-    size &= 63;
-    uint64 val = *pVal;
-    *pVal = val >> size | val << (64 - size);
+inline void rorQuad(uint64* puValue, uint8 uSize) {
+    uSize &= 63;
+    uint64 val = *puValue;
+    *puValue = val >> uSize | val << (64 - uSize);
 }
 
 /**
- * run()
+ * @inheritDoc
  */
 void Interpreter::run() {
 
     using namespace MC64K::ByteCode;
 
-    if (!pProgramCounter) {
+    if (!puProgramCounter) {
         return;
     }
 
@@ -90,21 +90,21 @@ void Interpreter::run() {
 
     while (RUNNING == eStatus) {
         ++uInstructionCount;
-        switch (*pProgramCounter++) {
+        switch (*puProgramCounter++) {
             // Control
             case Opcode::HCF: {
                 // This opcode expects 0xFF followed by a byte indicating which function to call.
                 // If the second byte is not 0xFF we assume we aren't in a valid bytecode stream
                 // any more.
-                uint8 uNext = *pProgramCounter++;
+                uint8 uNext = *puProgramCounter++;
                 if (uNext != 0xFF) {
                     eStatus = CAUGHT_FIRE;
                 } else {
                     // Get the function ID and call it. The function is expected to return a valid
                     // status code we can set.
-                    uNext = *pProgramCounter++;
-                    if (aHostAPI[uNext]) {
-                        eStatus = aHostAPI[uNext]();
+                    uNext = *puProgramCounter++;
+                    if (acHostAPI[uNext]) {
+                        eStatus = acHostAPI[uNext]();
                     } else {
                         eStatus = UNKNOWN_HOST_CALL;
                     }
@@ -116,9 +116,9 @@ void Interpreter::run() {
             case Opcode::BRA:   branchLong(); break;
 
             case Opcode::BSR_B: {
-                int8 iShortDisplacement = (int8)*pProgramCounter++;
+                int8 iShortDisplacement = (int8)*puProgramCounter++;
                 pushProgramCounter();
-                pProgramCounter += iShortDisplacement;
+                puProgramCounter += iShortDisplacement;
                 ++iCallDepth;
                 break;
             }
@@ -126,19 +126,19 @@ void Interpreter::run() {
             case Opcode::BSR:
                 readDisplacement();
                 pushProgramCounter();
-                pProgramCounter += iDisplacement;
+                puProgramCounter += iDisplacement;
                 ++iCallDepth;
                 break;
 
             case Opcode::JMP:
                 monadic(SIZE_QUAD);
-                pProgramCounter = (const uint8*)pDstEA;
+                puProgramCounter = (const uint8*)pDstEA;
                 break;
 
             case Opcode::JSR:
                 monadic(SIZE_QUAD);
                 pushProgramCounter();
-                pProgramCounter = (const uint8*)pDstEA;
+                puProgramCounter = (const uint8*)pDstEA;
                 ++iCallDepth;
                 break;
 
@@ -253,14 +253,14 @@ void Interpreter::run() {
 
             // GPR save/restore
             case Opcode::SAVEM: {
-                uint8 uEAMode = *pProgramCounter++;
+                uint8 uEAMode = *puProgramCounter++;
                 readMask();
                 saveRegisters(uMask, uEAMode);
                 break;
             }
             case Opcode::LOADM: {
                 readMask();
-                uint8 uEAMode = *pProgramCounter++;
+                uint8 uEAMode = *puProgramCounter++;
                 restoreRegisters(uMask, uEAMode);
                 break;
             }
@@ -320,8 +320,8 @@ void Interpreter::run() {
             case Opcode::LEA:    dyadic(SIZE_QUAD); asUQuad(pDstEA) = (uint64)pSrcEA;           break;
             case Opcode::PEA: {
                 monadic(SIZE_QUAD);
-                aGPR[GPRegister::SP].pUByte -= 8;
-                *(aGPR[GPRegister::SP].pUQuad) = (uint64)pSrcEA;
+                aoGPR[GPRegister::SP].puByte -= 8;
+                *(aoGPR[GPRegister::SP].puQuad) = (uint64)pSrcEA;
                 break;
             }
 

@@ -24,158 +24,160 @@ using namespace MC64K::Host;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Binary Constructor
+ * @inheritDoc
  */
-Binary::Binary(const Host::Definition& oDefinition) :
-    oHostDefinition(oDefinition),
+Binary::Binary(const Host::Definition& roDefinition) :
+    roHostDefinition(roDefinition),
     sFileName(0),
-    pFileHandle(0),
-    pManifest(0),
+    poFileHandle(0),
+    poManifest(0),
     uManifestLength(0)
 {
 
 }
 
 /**
- * Binary Destructor
+ * @inheritDoc
  */
 Binary::~Binary() {
     close();
 }
 
 /**
- * Attempts to load and return the Executable
+ * @inheritDoc
  */
 const Executable* Binary::load(const char* sFileName) {
 
     open(sFileName);
 
-    uint8*      pTargetData = 0;
-    uint8*      pImportList = 0;
-    uint8*      pExportList = 0;
-    uint8*      pByteCode   = 0;
-    Executable* pExecutable = 0;
+    uint8*      puTargetData = 0;
+    uint8*      puImportList = 0;
+    uint8*      puExportList = 0;
+    uint8*      puByteCode   = 0;
+    Executable* poExecutable = 0;
 
     if (
-        (pTargetData = readChunkData(CHUNK_TARGET_ID)) &&
-        (validateTarget(pTargetData)) &&
-        (pImportList = readChunkData(CHUNK_IMPORT_LIST_ID)) &&
-        (pExportList = readChunkData(CHUNK_EXPORT_LIST_ID)) &&
-        (pByteCode   = readChunkData(CHUNK_BYTE_CODE_ID)) &&
-        (pExecutable = new (std::nothrow) Executable(
-            oHostDefinition,
-            pTargetData,
-            pByteCode,
-            pImportList,
-            pExportList)
+        (puTargetData = readChunkData(CHUNK_TARGET_ID)) &&
+        (validateTarget(puTargetData)) &&
+        (puImportList = readChunkData(CHUNK_IMPORT_LIST_ID)) &&
+        (puExportList = readChunkData(CHUNK_EXPORT_LIST_ID)) &&
+        (puByteCode   = readChunkData(CHUNK_BYTE_CODE_ID)) &&
+        (poExecutable = new (std::nothrow) Executable(
+            roHostDefinition,
+            puTargetData,
+            puByteCode,
+            puImportList,
+            puExportList)
         )
     ) {
         close();
-        return pExecutable;
+        return poExecutable;
     }
     close();
-    std::free(pByteCode);
-    std::free(pExportList);
-    std::free(pImportList);
-    std::free(pTargetData);
+    std::free(puByteCode);
+    std::free(puExportList);
+    std::free(puImportList);
+    std::free(puTargetData);
     throw Error(sFileName, "unable to load binary");
 }
 
 /**
- * Opens a binary file ready for processing.
+ * @inheritDoc
  */
 void Binary::open(const char* sFileName) {
-    pFileHandle = std::fopen(sFileName, "rb");
-    if (!pFileHandle) {
+    poFileHandle = std::fopen(sFileName, "rb");
+    if (!poFileHandle) {
         throw Error(sFileName, "file could not be opened for input");
     }
-    uint64 aHeader[2] = { 0, 0 };
-    readChunkHeader(aHeader, FILE_MAGIC_ID);
+    uint64 auHeader[2] = { 0, 0 };
+    readChunkHeader(auHeader, FILE_MAGIC_ID);
     loadManifest();
 }
 
 /**
- * Closes the binary file and frees any associated resources.
+ * @inheritDoc
  */
 void Binary::close() {
-    if (pFileHandle) {
-        std::fclose(pFileHandle);
-        pFileHandle = 0;
+    if (poFileHandle) {
+        std::fclose(poFileHandle);
+        poFileHandle = 0;
     }
-    if (pManifest) {
-        std::free(pManifest);
-        pManifest = 0;
+    if (poManifest) {
+        std::free(poManifest);
+        poManifest = 0;
     }
 }
 
 /**
- * Attempts to read the expected chunk header
+ * @inheritDoc
  */
-void Binary::readChunkHeader(uint64 *pHeader, uint64 const uExpectedID) {
-    if (2 != std::fread(pHeader, sizeof(uint64), 2, pFileHandle)) {
+void Binary::readChunkHeader(uint64* puHeader, const uint64 uExpectedID) {
+    if (2 != std::fread(puHeader, sizeof(uint64), 2, poFileHandle)) {
         throw Error(sFileName, "failed to load header");
     }
-    if (uExpectedID != pHeader[0]) {
-        throw Error(sFileName, "invalid header ID", pHeader[0]);
+    if (uExpectedID != puHeader[0]) {
+        throw Error(sFileName, "invalid header ID", puHeader[0]);
     }
 }
 
 /**
- * Attempts to load and allocate the Chunk List
+ * @inheritDoc
  */
 void Binary::loadManifest() {
-    uint64 aHeader[2] = { 0, 0 };
-    readChunkHeader(aHeader, CHUNK_MANIFEST_ID);
+    uint64 auHeader[2] = { 0, 0 };
+    readChunkHeader(auHeader, CHUNK_MANIFEST_ID);
 
-    pManifest = (ManifestEntry*)std::malloc(aHeader[1]);
+    poManifest = (ManifestEntry*)std::malloc(auHeader[1]);
 
-    if (!pManifest) {
+    if (!poManifest) {
         throw Error(sFileName, "unable to allocate chunk", CHUNK_MANIFEST_ID);
     }
 
-    uManifestLength = aHeader[1] / sizeof(ManifestEntry);
+    uManifestLength = auHeader[1] / sizeof(ManifestEntry);
 
-    if (uManifestLength != std::fread(pManifest, sizeof(ManifestEntry), uManifestLength, pFileHandle)) {
+    if (uManifestLength != std::fread(poManifest, sizeof(ManifestEntry), uManifestLength, poFileHandle)) {
         throw Error(sFileName, "failed to load chunk", CHUNK_MANIFEST_ID);
     }
 }
 
 /**
- * Locate a chunk by ID
+ * @inheritDoc
  */
 const Binary::ManifestEntry* Binary::findChunk(const uint64 uChunkID) {
     for (uint32 u = 0; u < uManifestLength; ++u) {
-        if (uChunkID == pManifest[u].uMagicID) {
-            return &pManifest[u];
+        if (uChunkID == poManifest[u].uMagicID) {
+            return &poManifest[u];
         }
     }
     throw Error(sFileName, "missing chunk", uChunkID);
 }
 
 /**
- * Allocate and load a chunk by ID
+ * @inheritDoc
  */
 uint8* Binary::readChunkData(const uint64 uChunkID) {
-    uint64 aHeader[2] = { 0, 0 };
-    uint64 uAllocSize = 0;
-    uint8* pRawData   = 0;
-    const ManifestEntry* pManifestEntry = findChunk(uChunkID);
+    uint64 auHeader[2] = { 0, 0 };
+    uint64 uAllocSize  = 0;
+    uint8* puRawData   = 0;
+    const  ManifestEntry* poManifestEntry = findChunk(uChunkID);
 
-    std::fseek(pFileHandle, pManifestEntry->iOffset, SEEK_SET);
-    readChunkHeader(aHeader, uChunkID);
-    uAllocSize = alignSize(aHeader[1]);
-    pRawData   = (uint8*)std::malloc(uAllocSize);
-    if (!pRawData) {
+    std::fseek(poFileHandle, poManifestEntry->iOffset, SEEK_SET);
+    readChunkHeader(auHeader, uChunkID);
+    uAllocSize = alignSize(auHeader[1]);
+    puRawData   = (uint8*)std::malloc(uAllocSize);
+    if (!puRawData) {
         return 0;
     }
-    if (uAllocSize != std::fread(pRawData, 1, uAllocSize, pFileHandle)) {
-        std::free(pRawData);
+    if (uAllocSize != std::fread(puRawData, 1, uAllocSize, poFileHandle)) {
+        std::free(puRawData);
         return 0;
     }
-    return pRawData;
+    return puRawData;
 }
 
 /**
+ * @inheritDoc
+ *
  * Simple target compatibility check.
  *
  * The raw chunk body data format is:
@@ -187,48 +189,48 @@ uint8* Binary::readChunkData(const uint64 uChunkID) {
  * The first entry in the version table is the target.
  * For executable targets, the second entry in the version table is the host.
  */
-bool Binary::validateTarget(const uint8* pRawTarget) {
-    uint32 targetFlags = *(const uint32*)pRawTarget;
+bool Binary::validateTarget(const uint8* puRawTarget) {
+    uint32 uTargetFlags = *(const uint32*)puRawTarget;
 
     // For an executable target we need to confirm that the current host dependency is viable.
-    if (targetFlags & TARGET_EXECUTABLE) {
+    if (uTargetFlags & TARGET_EXECUTABLE) {
 
         // Initial version check is cheap. If the version number is compatible we can then check that we are
         // talking about the same thing.
-        const Misc::Version* pVersionTable = (const Misc::Version*)(pRawTarget + sizeof(uint32) * 2);
+        const Misc::Version* poVersionTable = (const Misc::Version*)(puRawTarget + sizeof(uint32) * 2);
 
-        if (oHostDefinition.getVersion().isCompatible(pVersionTable[HOST_VERSION_ENTRY])) {
+        if (roHostDefinition.getVersion().isCompatible(poVersionTable[HOST_VERSION_ENTRY])) {
 
             // We need to compare the dependency name now. This involves locating the entry in the names
             // section that follows the version table. The host is always the second entry.
-            uint32 uNumEntries = *(const uint32*)(pRawTarget + sizeof(uint32));
-            const char* sName  = (const char*)(pRawTarget + sizeof(uint32) * (2 + uNumEntries));
+            uint32 uNumEntries = *(const uint32*)(puRawTarget + sizeof(uint32));
+            const char* sName  = (const char*)(puRawTarget + sizeof(uint32) * (2 + uNumEntries));
 
             // Skip over the target name to the next entry, which is expected to be the host.
             // Since all names are null terminated, we skip onwards into buffer overrun oblivion...
             while (*sName++);
 
             // Compare the names.
-            if (0 == std::strcmp(oHostDefinition.getName(), sName)) {
+            if (0 == std::strcmp(roHostDefinition.getName(), sName)) {
                 return true;
             } else {
                 std::fprintf(
                     stderr,
                     "Incompatible host: Need \'%s\', have \'%s\'\n",
                     sName,
-                    oHostDefinition.getName()
+                    roHostDefinition.getName()
                 );
             }
         } else {
             std::fprintf(
                 stderr,
                 "Host semantic version number check failed: Need %u.%u.%u, have %u.%u.%u\n",
-                pVersionTable[HOST_VERSION_ENTRY].getMajor(),
-                pVersionTable[HOST_VERSION_ENTRY].getMinor(),
-                pVersionTable[HOST_VERSION_ENTRY].getPatch(),
-                oHostDefinition.getVersion().getMajor(),
-                oHostDefinition.getVersion().getMinor(),
-                oHostDefinition.getVersion().getPatch()
+                poVersionTable[HOST_VERSION_ENTRY].getMajor(),
+                poVersionTable[HOST_VERSION_ENTRY].getMinor(),
+                poVersionTable[HOST_VERSION_ENTRY].getPatch(),
+                roHostDefinition.getVersion().getMajor(),
+                roHostDefinition.getVersion().getMinor(),
+                roHostDefinition.getVersion().getPatch()
             );
         }
     }

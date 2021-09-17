@@ -22,17 +22,17 @@
     union { \
         uint32 uMask; \
         int32  iDisplacement; \
-        uint8  uBytes[4]; \
+        uint8  auBytes[4]; \
     };
 
 /**
  * Reads a 4 byte displacement value from the opcode stream into the initialised temporary.
  */
 #define readDisplacement() \
-    uBytes[0] = *pProgramCounter++; \
-    uBytes[1] = *pProgramCounter++; \
-    uBytes[2] = *pProgramCounter++; \
-    uBytes[3] = *pProgramCounter++;
+    auBytes[0] = *puProgramCounter++; \
+    auBytes[1] = *puProgramCounter++; \
+    auBytes[2] = *puProgramCounter++; \
+    auBytes[3] = *puProgramCounter++;
 
 /**
  * Alias of readDisplacment() for when the value represents a mask value and not a displacement.
@@ -42,17 +42,17 @@
 /**
  * Reads the next byte of the opcode stream as a short immediate displacement and updates the program counter.
  */
-#define branchByte()  { int8 iShortDisplacement = (int8)*pProgramCounter++; pProgramCounter += iShortDisplacement; }
+#define branchByte() { int8 iShortDisplacement = (int8)*puProgramCounter++; puProgramCounter += iShortDisplacement; }
 
 /**
  * Reads the immediate 4-byte displacement from the opcode stream and updates the program counter.
  */
-#define branchLong()  { readDisplacement(); pProgramCounter += iDisplacement; }
+#define branchLong() { readDisplacement(); puProgramCounter += iDisplacement; }
 
 /**
  * Tests the condition and if true, updates the program counter with the already loaded displacement.
  */
-#define bcc(c) if (c) { pProgramCounter += iDisplacement; }
+#define bcc(c) if (c) { puProgramCounter += iDisplacement; }
 
 /**
  * Decodes a single effective address for a monadic operation.
@@ -93,12 +93,12 @@
  * Saves the program counter onto the stack.
  */
 #define pushProgramCounter() \
-    aGPR[GPRegister::SP].pUByte -= 8; \
-    *(aGPR[GPRegister::SP].pUQuad) = (uint64)pProgramCounter;
+    aoGPR[GPRegister::SP].puByte -= 8; \
+    *(aoGPR[GPRegister::SP].puQuad) = (uint64)puProgramCounter;
 
 /**
  * Restores the program counter from the stack.
  */
 #define popProgramCounter() \
-    pProgramCounter = (const uint8*)(*(aGPR[GPRegister::SP].pUQuad)); \
-    aGPR[GPRegister::SP].pUByte += 8;
+    puProgramCounter = (const uint8*)(*(aoGPR[GPRegister::SP].puQuad)); \
+    aoGPR[GPRegister::SP].puByte += 8;
