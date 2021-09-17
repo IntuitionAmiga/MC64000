@@ -103,8 +103,8 @@ void Interpreter::run() {
                     // Get the function ID and call it. The function is expected to return a valid
                     // status code we can set.
                     uNext = *puProgramCounter++;
-                    if (acHostAPI[uNext]) {
-                        eStatus = acHostAPI[uNext]();
+                    if (acHCFVectors[uNext]) {
+                        eStatus = acHCFVectors[uNext]();
                     } else {
                         eStatus = UNKNOWN_HOST_CALL;
                     }

@@ -51,6 +51,9 @@ class Interpreter {
             UNKNOWN_HOST_CALL,
         } Status;
 
+        /**
+         * Debug dump options
+         */
         enum DumpFlags {
             STATE_GPR   = 1,
             STATE_FPR   = 2,
@@ -58,23 +61,72 @@ class Interpreter {
             STATE_STACK = 8
         };
 
-        typedef Status (*HostCall)();
+        enum Limits {
+            MAX_HCF_VECTOR = 256
+        };
 
-        static void setExecutable(const Loader::Executable* poExecutable);
+        /**
+         * HCF Vector (host native call triggered by HCF operation)
+         */
+        typedef Status (*HCFVector)();
 
-        static void         setHostFunction(HostCall cFunction, uint8 uOffset);
-        static void         allocateStack(uint32 uStackSize);
-        static void         freeStack();
-        static void         setProgramCounter(const uint8* puNewProgramCounter);
-        static void         run();
+        /**
+         * Initialise the HCF vectors.
+         *
+         * @param const HCFVector*    pcHCFVectors
+         * @param const unsigned int  uNumHCFVectors
+         */
+        static void initHCFVectors(const HCFVector* pcHCFVectors, const unsigned int uNumHCFVectors);
 
-        static GPRegister&  gpr(const unsigned int uReg);
-        static FPRegister&  fpr(const unsigned int uReg);
-        static void         dumpState(std::FILE* poStream, const unsigned int uFlags);
+        /**
+         * Allocate the machine stack. The top of the stack will be assigned to r15 as the USP.
+         *
+         * @param  uint32 uStackSize
+         * @throws
+         */
+        static void allocateStack(uint32 uStackSize);
+
+        /**
+         * Release the stack allocation
+         */
+        static void freeStack();
+
+        /**
+         * Specify the bytecode location to begin execution from
+         */
+        static void setProgramCounter(const uint8* puNewProgramCounter);
+
+        /**
+         * Run!
+         */
+        static void run();
+
+        /**
+         * Get a GRP register
+         *
+         * @param  const unsigned int uReg
+         * @return GPRegister&
+         */
+        static GPRegister& gpr(const unsigned int uReg);
+
+        /**
+         * Get a FPR register
+         *
+         * @param  const unsigned int uReg
+         * @return FPRegister&
+         */
+        static FPRegister& fpr(const unsigned int uReg);
+
+        /**
+         * Dump the machine state
+         *
+         * @param std::FILE* poStream
+         * @param const unsigned int uFlags
+         */
+        static void dumpState(std::FILE* poStream, const unsigned int uFlags);
 
     private:
-        static const Loader::Executable* poExecutable;
-        static HostCall     acHostAPI[256];
+        static HCFVector    acHCFVectors[MAX_HCF_VECTOR];
         static GPRegister   aoGPR[GPRegister::MAX];
         static FPRegister   aoFPR[FPRegister::MAX];
         static const uint8* puProgramCounter;
@@ -82,10 +134,12 @@ class Interpreter {
         static void*        pSrcEA;
         static void*        pTmpEA;
         static int          iCallDepth;
-
         static uint8*       puStackTop;
         static uint8*       puStackBase;
 
+        /**
+         * Operation size
+         */
         static enum OperationSize {
             SIZE_BYTE = 1,
             SIZE_WORD = 2,
@@ -93,10 +147,32 @@ class Interpreter {
             SIZE_QUAD = 8
         } eOperationSize;
 
+        /**
+         * Machine status
+         */
         static Status eStatus;
 
+        /**
+         * Decode the effective address currently under evaluation
+         *
+         * @return void*
+         */
         static void* decodeEffectiveAddress();
+
+        /**
+         * Save the registers implied by the 32-bit mask, using the specified EA mode
+         *
+         * @param uint32 uMask
+         * @param uint8  uEAMode
+         */
         static void  saveRegisters(uint32 uMask, uint8 uEAMode);
+
+        /**
+         * Restore the registers implies by the 32-bit mask, using the specified EA mode
+         *
+         * @param uint32 uMask
+         * @param uint8  uEAMode
+         */
         static void  restoreRegisters(uint32 uMask, uint8 uEAMode);
 };
 

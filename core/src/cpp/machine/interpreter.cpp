@@ -12,6 +12,7 @@
  */
 
 #include <cstdio>
+#include <cstring>
 #include <cstdlib>
 #include "machine/error.hpp"
 #include "machine/interpreter.hpp"
@@ -32,7 +33,7 @@ int          Interpreter::iCallDepth             = 0;
 
 Interpreter::OperationSize Interpreter::eOperationSize = Interpreter::SIZE_BYTE;
 Interpreter::Status        Interpreter::eStatus        = Interpreter::UNINITIALISED;
-Interpreter::HostCall      Interpreter::acHostAPI[256] = { 0 };
+Interpreter::HCFVector     Interpreter::acHCFVectors[256] = { 0 };
 
 /**
  * Human readable names for Interpreter::eStatus
@@ -48,20 +49,11 @@ const char* asStatusNames[] = {
     "Unimplemented Host Call",
 };
 
-/**
- * @inheritDoc
- */
-void Interpreter::setExecutable(const Loader::Executable* poExecutable) {
-    if (poExecutable) {
-        poExecutable->getExportedSymbolSet()->dump(stdout);
+void Interpreter::initHCFVectors(const Interpreter::HCFVector* pcHCFVectors, const unsigned int uNumHCFVectors) {
+    if (uNumHCFVectors > MAX_HCF_VECTOR) {
+        throw MC64K::OutOfRangeException("HCF Vector List Too Large");
     }
-}
-
-/**
- * @inheritDoc
- */
-void Interpreter::setHostFunction(Interpreter::HostCall cFunction, uint8 uOffset) {
-    acHostAPI[uOffset] = cFunction;
+    std::memcpy(acHCFVectors, pcHCFVectors, uNumHCFVectors * sizeof(Interpreter::HCFVector));
 }
 
 /**

@@ -26,8 +26,6 @@ int main(int iArgN, const char** aArgV) {
         Binary oMC64KBinary(MC64K::StandardTestHost::instance);
         const Executable* pExecutable = oMC64KBinary.load(sExecutableName);
 
-        Interpreter::setExecutable(pExecutable);
-
 //
 //         if (aExports) {
 //             const int iDumpState = Interpreter::STATE_FPR|Interpreter::STATE_GPR|Interpreter::STATE_TMP;

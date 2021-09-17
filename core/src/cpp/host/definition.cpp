@@ -25,25 +25,26 @@ namespace Host {
 Definition::Definition(
     const char* sName,
     const Misc::Version oVersion,
-    const std::initializer_list<Machine::Interpreter::HostCall>& roVectors,
+    const std::initializer_list<Machine::Interpreter::HCFVector>& roHCFVectors,
     const std::initializer_list<Loader::Symbol>& roExportedSymbols,
     const std::initializer_list<Loader::Symbol>& roImportedSymbols
 ) :
     sHostName(sName),
-    pcVectors(0),
+    pcHCFVectors(0),
     oExportSet(roExportedSymbols),
     oImportSet(roImportedSymbols),
-    oVersion(oVersion)
+    oVersion(oVersion),
+    uNumHCFVectors(0)
 {
-    if (roVectors.size() > 256) {
-        throw MC64K::OutOfRangeException("Vector List Too Large");
+    if (roHCFVectors.size() > Machine::Interpreter::MAX_HCF_VECTOR) {
+        throw MC64K::OutOfRangeException("HCF Vector List Too Large");
     }
-    if ((uMaxVector = roVectors.size())) {
-        size_t uSize = sizeof(Machine::Interpreter::HostCall) * roVectors.size();
-        if (!(pcVectors = (Machine::Interpreter::HostCall*)std::malloc(uSize))) {
+    if ((uNumHCFVectors = roHCFVectors.size())) {
+        size_t uSize = sizeof(Machine::Interpreter::HCFVector) * uNumHCFVectors;
+        if (!(pcHCFVectors = (Machine::Interpreter::HCFVector*)std::malloc(uSize))) {
             throw MC64K::OutOfMemoryException();
         }
-        std::memcpy(pcVectors, roVectors.begin(), uSize);
+        std::memcpy(pcHCFVectors, roHCFVectors.begin(), uSize);
     }
 }
 
@@ -51,7 +52,7 @@ Definition::Definition(
  * @inheritDoc
  */
 Definition::~Definition() {
-    std::free((void*)pcVectors);
+    std::free((void*)pcHCFVectors);
 }
 
 }} // namespace

@@ -32,12 +32,12 @@ namespace Host {
 class Definition {
 
     private:
-        const char*                     sHostName;
-        Machine::Interpreter::HostCall* pcVectors;
-        Loader::InitialisedSymbolSet    oExportSet;
-        Loader::InitialisedSymbolSet    oImportSet;
-        Misc::Version                   oVersion;
-        uint8                           uMaxVector;
+        const char*                      sHostName;
+        Machine::Interpreter::HCFVector* pcHCFVectors;
+        Loader::InitialisedSymbolSet     oExportSet;
+        Loader::InitialisedSymbolSet     oImportSet;
+        Misc::Version                    oVersion;
+        uint32                           uNumHCFVectors;
 
     public:
         /**
@@ -46,14 +46,14 @@ class Definition {
          *
          * @param const char* sName
          * @param const Misc::Version oVersion
-         * @param const std::initializer_list<Machine::Interpreter::HostCall>& roVectors,
+         * @param const std::initializer_list<Machine::Interpreter::HCFVector>& roHCFVectors,
          * @param const std::initializer_list<Loader::Symbol>& roExportedSymbols,
          * @param const std::initializer_list<Loader::Symbol>& roImportedSymbols
          */
         Definition(
             const char* sName,
             const Misc::Version oVersion,
-            const std::initializer_list<Machine::Interpreter::HostCall>& roVectors,
+            const std::initializer_list<Machine::Interpreter::HCFVector>& roHCFVectors,
             const std::initializer_list<Loader::Symbol>& roExportedSymbols,
             const std::initializer_list<Loader::Symbol>& roImportedSymbols
         );
@@ -99,6 +99,19 @@ class Definition {
             return oImportSet;
         }
 
+        /**
+         * @return const Machine::Interpreter::HCFVector*
+         */
+        const Machine::Interpreter::HCFVector* getHCFVectors() const {
+            return pcHCFVectors;
+        }
+
+        /**
+         * @return uint32
+         */
+        uint32 getNumHCFVectors() const {
+            return uNumHCFVectors;
+        }
 };
 
 }} // namespace
