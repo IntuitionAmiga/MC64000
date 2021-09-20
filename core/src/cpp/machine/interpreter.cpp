@@ -62,14 +62,20 @@ void Interpreter::initHCFVectors(const Interpreter::HCFVector* pcHCFVectors, con
  * @inheritDoc
  */
 void Interpreter::allocateStack(uint32 uSize) {
-    uSize += 31;
-    uSize &= ~31;
+    uSize += (STACK_ALIGN - 1);
+    uSize &= ~(STACK_ALIGN - 1);
     puStackBase = (uint8*)std::calloc(uSize, 1);
     if (!puStackBase) {
         throw Error("Failed to allocate stack");
     }
     puStackTop = puStackBase + uSize;
     aoGPR[GPRegister::SP].puByte = puStackTop;
+    std::fprintf(
+        stderr,
+        "Stack of %u allocated at %p ... %p\n",
+        uSize,
+        puStackBase, puStackTop
+    );
 }
 
 /**
@@ -105,20 +111,32 @@ void Interpreter::setProgramCounter(const uint8* puNewProgramCounter) {
  * @inheritDoc
  */
 void Interpreter::dumpState(std::FILE* poStream, const unsigned uFlags) {
-    std::fprintf(
-        poStream,
-        "Machine State\n"
-        "\tProgram Counter: %p [... 0x%02X > 0x%02X < 0x%02X ...]\n"
-        "\tCall Depth:      %d\n"
-        "\tStatus:          %d [%s]\n",
-        puProgramCounter,
-        (uint32) *(puProgramCounter - 1),
-        (uint32) *(puProgramCounter),
-        (uint32) *(puProgramCounter + 1),
-        iCallDepth,
-        eStatus,
-        asStatusNames[eStatus]
-    );
+    if (puProgramCounter) {
+        std::fprintf(
+            poStream,
+            "Machine State\n"
+            "\tProgram Counter: %p [... 0x%02X > 0x%02X < 0x%02X ...]\n"
+            "\tCall Depth:      %d\n"
+            "\tStatus:          %d [%s]\n\n",
+            puProgramCounter,
+            (uint32) *(puProgramCounter - 1),
+            (uint32) *(puProgramCounter),
+            (uint32) *(puProgramCounter + 1),
+            iCallDepth,
+            eStatus,
+            asStatusNames[eStatus]
+        );
+    } else {
+        std::fprintf(
+            poStream,
+            "Machine State\n"
+            "\tCall Depth:      %d\n"
+            "\tStatus:          %d [%s]\n\n",
+            iCallDepth,
+            eStatus,
+            asStatusNames[eStatus]
+        );
+    }
     if (uFlags & STATE_TMP) {
         std::fprintf(
             poStream,
@@ -126,12 +144,26 @@ void Interpreter::dumpState(std::FILE* poStream, const unsigned uFlags) {
             "\tData Size: %d\n"
             "\tDst Addr:  %p\n"
             "\tSrc Addr:  %p\n"
-            "\tTmp Addr:  %p\n",
+            "\tTmp Addr:  %p\n\n",
             eOperationSize,
             pDstEA,
             pSrcEA,
             pTmpEA
         );
+    }
+    if (uFlags & STATE_HCF) {
+        std::fprintf(poStream, "HCF Vectors\n");
+        if (pcHCFVectors && uNumHCFVectors) {
+            for (uint32 u = 0; u < uNumHCFVectors; ++u) {
+                std::fprintf(
+                    poStream,
+                    "\t%02X : %p\n",
+                    u,
+                    pcHCFVectors[u]
+                );
+            }
+            std::fprintf(poStream, "\n");
+        }
     }
     if (uFlags & STATE_GPR) {
         std::fprintf(poStream, "GP Registers (%p)\n", aoGPR);
@@ -143,6 +175,7 @@ void Interpreter::dumpState(std::FILE* poStream, const unsigned uFlags) {
                 aoGPR[u].uQuad
             );
         }
+        std::fprintf(poStream, "\n");
     }
     if (uFlags & STATE_FPR) {
         std::fprintf(poStream, "FP Registers (%p)\n", aoFPR);
@@ -156,6 +189,7 @@ void Interpreter::dumpState(std::FILE* poStream, const unsigned uFlags) {
                 (float64)aoFPR[u].fSingle
             );
         }
+        std::fprintf(poStream, "\n");
     }
     if (uFlags & STATE_STACK) {
         std::fprintf(poStream, "Stack\n");
@@ -170,7 +204,9 @@ void Interpreter::dumpState(std::FILE* poStream, const unsigned uFlags) {
                 );
             }
         }
+        std::fprintf(poStream, "\n");
     }
+
 }
 
 }} // namespace

@@ -33,6 +33,13 @@ Runtime::Runtime(Definition& roDefinition, const char* sBinaryPath) :
     Binary oBinary(roDefinition);
     poExecutable = oBinary.load(sBinaryPath);
 
+    std::fprintf(
+        stderr,
+        "Runtime: Executable instance loaded at %p for binary \'%s\'\n",
+        poExecutable,
+        sBinaryPath
+    );
+
     // If the binary loaded without throwing stuff all over the shop, initialise the Interpreter
     Interpreter::allocateStack(256);
     Interpreter::initHCFVectors(
@@ -44,8 +51,8 @@ Runtime::Runtime(Definition& roDefinition, const char* sBinaryPath) :
 /**
  * @inheritDoc
  */
-
 Runtime::~Runtime() {
+    Interpreter::dumpState(stdout, 0xFFFFFFFF);
     delete poExecutable;
     Interpreter::freeStack();
 }

@@ -55,14 +55,16 @@ class Interpreter {
          * Debug dump options
          */
         enum DumpFlags {
-            STATE_GPR   = 1,
-            STATE_FPR   = 2,
-            STATE_TMP   = 4,
-            STATE_STACK = 8
+            STATE_GPR   =  1,
+            STATE_FPR   =  2,
+            STATE_TMP   =  4,
+            STATE_STACK =  8,
+            STATE_HCF   = 16
         };
 
         enum Limits {
-            MAX_HCF_VECTOR = 256
+            MAX_HCF_VECTOR = 256,
+            STACK_ALIGN    = 32
         };
 
         /**
