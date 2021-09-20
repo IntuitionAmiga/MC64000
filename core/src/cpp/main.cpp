@@ -1,13 +1,9 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "machine/interpreter.hpp"
-#include "loader/executable.hpp"
 #include "standard_test_host.hpp"
-
-using namespace MC64K::Loader;
-using namespace MC64K::Machine;
-using namespace MC64K::Host;
+#include "host/runtime.hpp"
+#include "loader/error.hpp"
 
 /**
  * Entry point
@@ -22,9 +18,7 @@ int main(int iArgN, const char** aArgV) {
     try {
         const char* sExecutableName = aArgV[1];
 
-        // Initialise the binary loader
-        Binary oMC64KBinary(MC64K::StandardTestHost::instance);
-        const Executable* pExecutable = oMC64KBinary.load(sExecutableName);
+        MC64K::Host::Runtime oRuntime(MC64K::StandardTestHost::instance, sExecutableName);
 
 //
 //         if (aExports) {
@@ -37,7 +31,6 @@ int main(int iArgN, const char** aArgV) {
 //             Interpreter::dumpState (iDumpState|Interpreter::STATE_STACK);
 //             Interpreter::freeStack();
 //         }
-        delete pExecutable;
     } catch (MC64K::Loader::Error& oError) {
         std::printf(
             "Unable to load binary file \"%s\", %s.\n",

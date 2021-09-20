@@ -23,8 +23,8 @@ namespace Host {
  */
 class Runtime {
     private:
-        Definition&         roDefinition;
-        Loader::Executable* poExecutable;
+        Definition& roDefinition;
+        const Loader::Executable* poExecutable;
 
     public:
         /**

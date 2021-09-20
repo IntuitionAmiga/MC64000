@@ -20,6 +20,9 @@
 namespace MC64K {
 namespace Host {
 
+using MC64K::Loader::Binary;
+using MC64K::Machine::Interpreter;
+
 /**
  * @inheritDoc
  */
@@ -27,7 +30,15 @@ Runtime::Runtime(Definition& roDefinition, const char* sBinaryPath) :
     roDefinition(roDefinition),
     poExecutable(0)
 {
-    std::puts(sBinaryPath);
+    Binary oBinary(roDefinition);
+    poExecutable = oBinary.load(sBinaryPath);
+
+    // If the binary loaded without throwing stuff all over the shop, initialise the Interpreter
+    Interpreter::allocateStack(256);
+    Interpreter::initHCFVectors(
+        roDefinition.getHCFVectors(),
+        roDefinition.getNumHCFVectors()
+    );
 }
 
 /**
@@ -36,6 +47,7 @@ Runtime::Runtime(Definition& roDefinition, const char* sBinaryPath) :
 
 Runtime::~Runtime() {
     delete poExecutable;
+    Interpreter::freeStack();
 }
 
 /**
