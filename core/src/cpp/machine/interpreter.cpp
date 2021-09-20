@@ -29,11 +29,12 @@ void*        Interpreter::pSrcEA                 = 0;
 void*        Interpreter::pTmpEA                 = 0;
 uint8*       Interpreter::puStackTop             = 0;
 uint8*       Interpreter::puStackBase            = 0;
-int          Interpreter::iCallDepth             = 0;
+int32        Interpreter::iCallDepth             = 0;
+uint32       Interpreter::uNumHCFVectors         = 0;
 
-Interpreter::OperationSize Interpreter::eOperationSize = Interpreter::SIZE_BYTE;
-Interpreter::Status        Interpreter::eStatus        = Interpreter::UNINITIALISED;
-Interpreter::HCFVector     Interpreter::acHCFVectors[256] = { 0 };
+const Interpreter::HCFVector* Interpreter::pcHCFVectors   = 0;
+Interpreter::OperationSize    Interpreter::eOperationSize = Interpreter::SIZE_BYTE;
+Interpreter::Status           Interpreter::eStatus        = Interpreter::UNINITIALISED;
 
 /**
  * Human readable names for Interpreter::eStatus
@@ -49,11 +50,12 @@ const char* asStatusNames[] = {
     "Unimplemented Host Call",
 };
 
-void Interpreter::initHCFVectors(const Interpreter::HCFVector* pcHCFVectors, const unsigned int uNumHCFVectors) {
+void Interpreter::initHCFVectors(const Interpreter::HCFVector* pcHCFVectors, const uint32 uNumHCFVectors) {
     if (uNumHCFVectors > MAX_HCF_VECTOR) {
         throw MC64K::OutOfRangeException("HCF Vector List Too Large");
     }
-    std::memcpy(acHCFVectors, pcHCFVectors, uNumHCFVectors * sizeof(Interpreter::HCFVector));
+    Interpreter::pcHCFVectors   = pcHCFVectors;
+    Interpreter::uNumHCFVectors = uNumHCFVectors;
 }
 
 /**

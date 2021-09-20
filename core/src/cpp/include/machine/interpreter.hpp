@@ -71,12 +71,12 @@ class Interpreter {
         typedef Status (*HCFVector)();
 
         /**
-         * Initialise the HCF vectors.
+         * Initialise the HCF vectors. Only a reference is taken so the supplied table must not go out of scope.
          *
          * @param const HCFVector*    pcHCFVectors
          * @param const unsigned int  uNumHCFVectors
          */
-        static void initHCFVectors(const HCFVector* pcHCFVectors, const unsigned int uNumHCFVectors);
+        static void initHCFVectors(const HCFVector* pcHCFVectors, const uint32 uNumHCFVectors);
 
         /**
          * Allocate the machine stack. The top of the stack will be assigned to r15 as the USP.
@@ -126,16 +126,17 @@ class Interpreter {
         static void dumpState(std::FILE* poStream, const unsigned int uFlags);
 
     private:
-        static HCFVector    acHCFVectors[MAX_HCF_VECTOR];
-        static GPRegister   aoGPR[GPRegister::MAX];
-        static FPRegister   aoFPR[FPRegister::MAX];
-        static const uint8* puProgramCounter;
-        static void*        pDstEA;
-        static void*        pSrcEA;
-        static void*        pTmpEA;
-        static int          iCallDepth;
-        static uint8*       puStackTop;
-        static uint8*       puStackBase;
+        static GPRegister       aoGPR[GPRegister::MAX];
+        static FPRegister       aoFPR[FPRegister::MAX];
+        static const uint8*     puProgramCounter;
+        static void*            pDstEA;
+        static void*            pSrcEA;
+        static void*            pTmpEA;
+        static uint8*           puStackTop;
+        static uint8*           puStackBase;
+        static const HCFVector* pcHCFVectors;
+        static int32            iCallDepth;
+        static uint32           uNumHCFVectors;
 
         /**
          * Operation size

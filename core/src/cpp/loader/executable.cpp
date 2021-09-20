@@ -18,8 +18,8 @@
 #include "loader/executable.hpp"
 #include "host/definition.hpp"
 
-using namespace MC64K::Loader;
-using namespace MC64K::Host;
+namespace MC64K {
+namespace Loader {
 
 /**
  * @inheritDoc
@@ -96,5 +96,5 @@ Executable::~Executable() {
     std::free((void*)puTargetData);
 }
 
-
+}} // namespace
 

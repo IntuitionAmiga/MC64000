@@ -18,8 +18,8 @@
 #include "loader/executable.hpp"
 #include "host/definition.hpp"
 
-using namespace MC64K::Loader;
-using namespace MC64K::Host;
+namespace MC64K {
+namespace Loader {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -236,3 +236,6 @@ bool Binary::validateTarget(const uint8* puRawTarget) {
     }
     return false;
 }
+
+}} // namespace
+
