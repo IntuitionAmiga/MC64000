@@ -15,7 +15,7 @@
     @enable log_label_iemode
 
     @import my_unusued_reference rw
-    @import my_external_reference x
+    @import my_external_reference r
     @import my_other_external_reference
 
     @import my_unusued_reference rwx
@@ -58,3 +58,6 @@ danger:
     add.q r0, r0
     rts
 
+    @export exit x
+exit:
+    rts

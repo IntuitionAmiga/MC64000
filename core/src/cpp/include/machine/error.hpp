@@ -25,7 +25,13 @@ namespace Machine {
 class Error {
     public:
         const char* sIssue;
-        Error(const char *sIssue) : sIssue(sIssue) {}
+
+        /**
+         * Constructor
+         *
+         * @param const char* sIssue
+         */
+        Error(const char* sIssue) : sIssue(sIssue) {}
 };
 
 }} // namespace

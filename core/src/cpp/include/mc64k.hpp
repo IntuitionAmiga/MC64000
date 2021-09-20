@@ -18,5 +18,7 @@
         #error "This codebase is intended for 64-bit targets only"
     #endif
 
-    #include "scalar.hpp"
+    #include "misc/scalar.hpp"
+    #include "misc/exception.hpp"
+
 #endif

@@ -13,5 +13,9 @@
 ; Empty project - main.s
 
     @export main x
+    @export exit x
 main:
+    rts
+
+exit:
     rts

@@ -14,49 +14,19 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include "error.hpp"
 #include <cstdio>
+#include "error.hpp"
+#include "symbol.hpp"
+#include "host/definition.hpp"
 
 namespace MC64K {
 namespace Loader {
 
-/**
- * LinkSymbol
- *
- * Used to resolve exported and imported symbols
- */
-struct LinkSymbol {
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Flag definitions
-     */
-    enum {
-        READ    = 1,
-        WRITE   = 2,
-        EXECUTE = 4
-    };
-
-    /**
-     * Name
-     */
-    const char* sIdentifier;
-
-    /**
-     * Location
-     */
-    union {
-        void*        pRawData;
-        const uint8* pByteCode;
-    };
-
-    /**
-     * Other properties
-     */
-    uint64 uFlags;
-};
 
 /**
- * Executable forwards reference.
+ * Forwards References
  */
 class Executable;
 
@@ -66,102 +36,136 @@ class Executable;
  * Handles loading of assembled binary object code
  */
 class Binary {
-    private:
-        const char* sFileName;
-        std::FILE*  pFileHandle;
-
     public:
-        Binary(const char* sFileName);
+        /**
+         * Constructor. Requires a valid Host Definition for loading validation purposes.
+         *
+         * @param const Host::Definition& roDefinition
+         */
+        Binary(const Host::Definition& roDefinition);
+
+        /**
+         * Destructor
+         */
         ~Binary();
 
-        const Executable* load();
+        /**
+         * Loader. Attempts to load the named binary file and return an executable structure.
+         *
+         * @param  const char* sFileName
+         * @return const Executable*
+         */
+        const Executable* load(const char* sFileName);
 
     private:
-        const uint64 FILE_MAGIC_ID        = 0x583030303436434D; // MC64000X
-        const uint64 CHUNK_MANIFEST_ID    = 0x74736566696E614D; // Manifest
-        const uint64 CHUNK_TARGET_ID      = 0x6F666E4974677254; // TrgtInfo
-        const uint64 CHUNK_BYTE_CODE_ID   = 0x65646F4365747942; // ByteCode
-        const uint64 CHUNK_EXPORT_LIST_ID = 0x646574726F707845; // Exported
-        const uint64 CHUNK_IMPORT_LIST_ID = 0x646574726F706D49; // Imported
-        const uint64 ALIGN_MASK           = 7;
 
+        /**
+         * Magic ID values. 64-bit word representation of 8 character strings
+         */
+        enum Magic {
+            FILE_MAGIC_ID        = 0x583030303436434D, // MC64000X
+            CHUNK_MANIFEST_ID    = 0x74736566696E614D, // Manifest
+            CHUNK_TARGET_ID      = 0x6F666E4974677254, // TrgtInfo
+            CHUNK_BYTE_CODE_ID   = 0x65646F4365747942, // ByteCode
+            CHUNK_EXPORT_LIST_ID = 0x646574726F707845, // Exported
+            CHUNK_IMPORT_LIST_ID = 0x646574726F706D49, // Imported
+        };
+
+        /**
+         * Target info flags.
+         */
+        enum TargetFlags {
+            TARGET_EXECUTABLE    = 1,
+        };
+
+        /**
+         * Reserved positions in the Target version table.
+         */
+        enum VersionTableOffset {
+            TARGET_VERSION_ENTRY = 0,
+            HOST_VERSION_ENTRY   = 1,
+        };
+
+        /**
+         * Other stuff
+         */
+        enum {
+            ALIGN_MASK = 7,
+        };
+
+        /**
+         * Manifest record structure.
+         */
         struct ManifestEntry {
             uint64 uMagicID;
             int64  iOffset;
         };
 
-        ManifestEntry* pManifest;
-        uint32         uManifestLength;
+        const Host::Definition& roHostDefinition;
+        const char*             sFileName;
+        std::FILE*              poFileHandle;
+        ManifestEntry*          poManifest;
+        uint32                  uManifestLength;
 
-        uint64 alignSize(const uint64 uSize) const {
+        /**
+         * Align an input size to the required boundary.
+         *
+         * @param  const size_t uSize
+         * @return size_t
+         */
+        size_t alignSize(const size_t uSize) const {
             return (uSize + ALIGN_MASK) & ~ALIGN_MASK;
         }
 
-        void   readChunkHeader(uint64* pHeader, const uint64 uExpectedID);
-        void   loadManifest();
+        /**
+         * Open the binary object file
+         *
+         * @param const char* sFileName
+         */
+        void open(const char* sFileName);
+
+        /**
+         * Close the binary object file
+         */
+        void close();
+
+        /**
+         * Load and allocate the Manifest List data
+         */
+        void loadManifest();
+
+        /**
+         * Try to find manifest record with the given chunk ID
+         *
+         * @param  const uint64 uExpectedID
+         * @return const ManifestEntry*
+         */
+        const ManifestEntry* findChunk(const uint64 uChunkID);
+
+        /**
+         * Read a chunk header into a marshalling area
+         *
+         * @param uint64*      puHeader
+         * @param const uint64 uExpectedID
+         */
+        void readChunkHeader(uint64* puHeader, const uint64 uExpectedID);
+
+        /**
+         * Load a chunk with the given ID. Uses the manifest data to locate the offset (if present),
+         * allocates storage and loads the raw data.
+         *
+         * @param  const uint64 uChunkID
+         * @return uint8*
+         */
         uint8* readChunkData(const uint64 uChunkID);
-        const  ManifestEntry* findChunk(const uint64 uChunkID);
-};
-
-/**
- * Executable
- */
-class Executable {
-    friend const Executable* Binary::load();
-
-    private:
-        const uint8* pExportData;
-        const uint8* pImportData;
-        const uint8* pByteCode;
-        LinkSymbol*  pExportedSymbols;
-        LinkSymbol*  pImportedSymbols;
-        uint32       uNumExportedSymbols;
-        uint32       uNumImportedSymbols;
-
-    public:
 
         /**
-         * Get the number of symbols exported by this binary.
+         * Validate the raw taget data (minimum verification)
+         *
+         * @param  const uint8* puRawTarget
+         * @return bool
          */
-        uint32 getNumExportedSymbols() const {
-            return uNumExportedSymbols;
-        }
-
-        /**
-         * Get the symbols exported by this binary. They are assumed immutable from the host side.
-         */
-        const LinkSymbol* getExportedSymbols() const {
-            return pExportedSymbols;
-        }
-
-        /**
-         * Get the number of symbols imported by this binary.
-         */
-        uint32 getNumImportedSymbols() const {
-            return uNumImportedSymbols;
-        }
-
-        /**
-         * Get the symbols imported by this binary. The host is expected to match the identifiers with
-         * appropriate runtime addresses for the expected data.
-         */
-        LinkSymbol* getImportedSymbols() const {
-            return pImportedSymbols;
-        }
-
-
-        ~Executable();
-
-    private:
-        /**
-         * Constructable only by the binary loader
-         */
-        Executable(
-            const uint8* pRawExportData,
-            const uint8* pRawImportData,
-            const uint8* pRawByteCode
-        );
-
+        bool validateTarget(const uint8* puRawTarget);
 };
 
 }} // namespace

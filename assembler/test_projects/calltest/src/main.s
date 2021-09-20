@@ -12,9 +12,10 @@
 ;
 ; My first project - main.s
 
-    @export main
-    @export my_exported_func
-    @define my_native_func #0x69
+    @export main x
+    @export my_exported_func x
+    @export exit x
+    @define my_native_func #0x00
     @stacksize 128
 
 main:
@@ -35,4 +36,7 @@ my_hidden_func:
     move.q #5, r4
     hcf my_native_func
     move.q #6, r5
+    rts
+
+exit:
     rts
