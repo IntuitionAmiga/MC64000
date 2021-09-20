@@ -49,6 +49,7 @@ class Interpreter {
             UNIMPLEMENTED_OPCODE,
             UNIMPLEMENTED_EAMODE,
             UNKNOWN_HOST_CALL,
+            INVALID_ENTRYPOINT
         } Status;
 
         /**
@@ -127,6 +128,13 @@ class Interpreter {
          */
         static void dumpState(std::FILE* poStream, const unsigned int uFlags);
 
+        /**
+         * Return the current interpreter status
+         *
+         * @return Status
+         */
+        static Status getStatus();
+
     private:
         static GPRegister       aoGPR[GPRegister::MAX];
         static FPRegister       aoFPR[FPRegister::MAX];
@@ -178,6 +186,10 @@ class Interpreter {
          */
         static void  restoreRegisters(uint32 uMask, uint8 uEAMode);
 };
+
+inline Interpreter::Status Interpreter::getStatus() {
+    return eStatus;
+}
 
 }} // namespace
 #endif

@@ -15,7 +15,7 @@
     @export main x
     @export my_exported_func x
     @export exit x
-    @define my_native_func #0x69
+    @define my_native_func #0x00
     @stacksize 128
 
 main:

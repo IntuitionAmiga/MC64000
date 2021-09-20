@@ -20,17 +20,8 @@ int main(int iArgN, const char** aArgV) {
 
         MC64K::Host::Runtime oRuntime(MC64K::StandardTestHost::instance, sExecutableName);
 
-//
-//         if (aExports) {
-//             const int iDumpState = Interpreter::STATE_FPR|Interpreter::STATE_GPR|Interpreter::STATE_TMP;
-//             Interpreter::allocateStack(256);
-//             Interpreter::setHostFunction(nativeTest, 0x69);
-//             Interpreter::setProgramCounter(aExports[0].pByteCode);
-//             Interpreter::dumpState (iDumpState);
-//             Interpreter::run();
-//             Interpreter::dumpState (iDumpState|Interpreter::STATE_STACK);
-//             Interpreter::freeStack();
-//         }
+        oRuntime.invoke(MC64K::StandardTestHost::MAIN);
+
     } catch (MC64K::Loader::Error& oError) {
         std::printf(
             "Unable to load binary file \"%s\", %s.\n",

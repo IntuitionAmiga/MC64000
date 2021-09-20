@@ -48,6 +48,7 @@ const char* asStatusNames[] = {
     "Unimplemented Opcode",
     "Unimplemented Effective Address",
     "Unimplemented Host Call",
+    "Invalid Entrypoint"
 };
 
 void Interpreter::initHCFVectors(const Interpreter::HCFVector* pcHCFVectors, const uint32 uNumHCFVectors) {

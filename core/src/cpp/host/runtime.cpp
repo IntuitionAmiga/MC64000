@@ -61,10 +61,13 @@ Runtime::~Runtime() {
  * @inheritDoc
  */
 Machine::Interpreter::Status Runtime::invoke(size_t uFunctionID) {
-    switch (uFunctionID) {
-        default:
-        return Machine::Interpreter::UNINITIALISED;
+    const Loader::SymbolSet& roInvokable = roDefinition.getImportedSymbolSet();
+    if (roInvokable[uFunctionID].uFlags & Loader::Symbol::EXECUTE) {
+        Interpreter::setProgramCounter(roInvokable[uFunctionID].puByteCode);
+        Interpreter::run();
+        return Interpreter::getStatus();
     }
+    return Machine::Interpreter::INVALID_ENTRYPOINT;
 }
 
 }} // namespace
