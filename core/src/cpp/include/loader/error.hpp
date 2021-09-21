@@ -24,18 +24,18 @@ namespace Loader {
  */
 class Error {
     public:
-        const char* sFileName;
-        const char* sIssue;
+        char const* sFileName;
+        char const* sIssue;
         uint64 uChunkID;
 
         /**
          * Constructor
          *
-         * @param const char* sFileName
-         * @param const char* sIssue
-         * @param uint64      uChunkID
+         * @param char const*  sFileName
+         * @param char const*  sIssue
+         * @param uint64 const uChunkID
          */
-        Error(const char* sFileName, const char* sIssue, const uint64 uChunkID = 0) :
+        Error(char const* sFileName, char const* sIssue, uint64 const uChunkID = 0) :
             sFileName(sFileName),
             sIssue(sIssue),
             uChunkID(uChunkID) {}

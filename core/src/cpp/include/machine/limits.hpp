@@ -1,5 +1,5 @@
-#ifndef __MC64K_MACHINE_ERROR_HPP__
-#   define __MC64K_MACHINE_ERROR_HPP__
+#ifndef __MC64K_MACHINE_LIMITS_HPP__
+#   define __MC64K_MACHINE_LIMITS_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,25 +14,19 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
+#include <cstdio>
+#include "register.hpp"
+#include "error.hpp"
+
 namespace MC64K {
 namespace Machine {
+namespace Limits {
 
-/**
- * Error
- *
- * Exception class for any sort of file IO related loading errors
- */
-class Error {
-    public:
-        char const* sIssue;
-
-        /**
-         * Constructor
-         *
-         * @param char const* sIssue
-         */
-        Error(char const* sIssue) : sIssue(sIssue) {}
+enum {
+    MAX_HCF_VECTORS = 256,
+    STACK_ALIGN     = 32,
+    MIN_STACK_SIZE  = 256
 };
 
-}} // namespace
+}}} // namespace
 #endif

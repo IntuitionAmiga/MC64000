@@ -40,9 +40,9 @@ class Binary {
         /**
          * Constructor. Requires a valid Host Definition for loading validation purposes.
          *
-         * @param const Host::Definition& roDefinition
+         * @param Host::Definition const& roDefinition
          */
-        Binary(const Host::Definition& roDefinition);
+        Binary(Host::Definition const& roDefinition);
 
         /**
          * Destructor
@@ -52,10 +52,10 @@ class Binary {
         /**
          * Loader. Attempts to load the named binary file and return an executable structure.
          *
-         * @param  const char* sFileName
-         * @return const Executable*
+         * @param  char const* sFileName
+         * @return Executable const*
          */
-        const Executable* load(const char* sFileName);
+        Executable const* load(char const* sFileName);
 
     private:
 
@@ -101,8 +101,8 @@ class Binary {
             int64  iOffset;
         };
 
-        const Host::Definition& roHostDefinition;
-        const char*             sFileName;
+        Host::Definition const& roHostDefinition;
+        char const*             sFileName;
         std::FILE*              poFileHandle;
         ManifestEntry*          poManifest;
         uint32                  uManifestLength;
@@ -120,9 +120,9 @@ class Binary {
         /**
          * Open the binary object file
          *
-         * @param const char* sFileName
+         * @param char const* sFileName
          */
-        void open(const char* sFileName);
+        void open(char const* sFileName);
 
         /**
          * Close the binary object file
@@ -137,35 +137,35 @@ class Binary {
         /**
          * Try to find manifest record with the given chunk ID
          *
-         * @param  const uint64 uExpectedID
-         * @return const ManifestEntry*
+         * @param  uint64 const uExpectedID
+         * @return ManifestEntry const*
          */
-        const ManifestEntry* findChunk(const uint64 uChunkID);
+        ManifestEntry const* findChunk(uint64 const uChunkID);
 
         /**
          * Read a chunk header into a marshalling area
          *
          * @param uint64*      puHeader
-         * @param const uint64 uExpectedID
+         * @param uint64 const uExpectedID
          */
-        void readChunkHeader(uint64* puHeader, const uint64 uExpectedID);
+        void readChunkHeader(uint64* puHeader, uint64 const uExpectedID);
 
         /**
          * Load a chunk with the given ID. Uses the manifest data to locate the offset (if present),
          * allocates storage and loads the raw data.
          *
-         * @param  const uint64 uChunkID
+         * @param  uint64 const uChunkID
          * @return uint8*
          */
-        uint8* readChunkData(const uint64 uChunkID);
+        uint8* readChunkData(uint64 const uChunkID);
 
         /**
          * Validate the raw taget data (minimum verification)
          *
-         * @param  const uint8* puRawTarget
+         * @param  uint8 const* puRawTarget
          * @return bool
          */
-        bool validateTarget(const uint8* puRawTarget);
+        bool validateTarget(uint8 const* puRawTarget);
 };
 
 }} // namespace

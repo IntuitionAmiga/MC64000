@@ -42,18 +42,18 @@ class Version {
         /**
          * Constructor
          *
-         * @param uint32 uVersion
+         * @param uint32 const uVersion
          */
-        Version(uint32 uVersion = 0) : uPackedVersion(uVersion) {}
+        Version(uint32 const uVersion = 0) : uPackedVersion(uVersion) {}
 
         /**
          * Constructor
          *
-         * @param uint32 uMajor
-         * @param uint32 uMinor
-         * @param uint32 uPatch
+         * @param uint32 const uMajor
+         * @param uint32 const uMinor
+         * @param uint32 const uPatch
          */
-        Version(uint32 uMajor, uint32 uMinor, uint32 uPatch);
+        Version(uint32 const uMajor, uint32 const uMinor, const uint32 uPatch);
 
         /**
          * Check if the current version instance is compatible with the supplied one.
@@ -61,10 +61,10 @@ class Version {
          * This is true when the major version are the same and the remaining minor/patch are greater than or
          * equal to the remaining components.
          *
-         * @param  const Version& roVersion
+         * @param  Version const& roVersion
          * @return bool
          */
-        bool isCompatible(const Version& roVersion) const;
+        bool isCompatible(Version const& roVersion) const;
 
         /**
          * @return uint32

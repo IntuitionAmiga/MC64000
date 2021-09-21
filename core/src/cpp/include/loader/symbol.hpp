@@ -45,15 +45,15 @@ struct Symbol {
     /**
      * Name
      */
-    const char* sIdentifier;
+    char const* sIdentifier;
 
     /**
      * Location
      */
     union {
         void*        pRawData;
-        const void*  pConstRawData;
-        const uint8* puByteCode;
+        void const*  pConstRawData;
+        uint8 const* puByteCode;
     };
 
     /**
@@ -67,6 +67,9 @@ struct Symbol {
  * SymbolSet (abstract).
  *
  * Provides the basic interface for a set of Symbol instances but doesn't do any resource management.
+ *
+ * Note that while the SymbolSet itself adheres to const correctness, it manages a set of symbols that are not
+ * constant, i.e. are open to modification. This is a requirement of the basic linking operation.
  */
 class SymbolSet {
     protected:
@@ -76,10 +79,10 @@ class SymbolSet {
         /**
          * Check that the index is in range.
          *
-         * @param  size_t uIndex
+         * @param  size_t const uIndex
          * @throws MC64K::OutOfRangeException
          */
-        void assertIndex(const size_t uIndex) const {
+        void assertIndex(size_t const uIndex) const {
             if (uIndex >= uNumSymbols) {
                 throw MC64K::OutOfRangeException("Invalid index");
             }
@@ -88,17 +91,17 @@ class SymbolSet {
         /**
          * Protected constructor, to be invoked by derived classes only.
          *
-         * @param size_t uNumSymbols
+         * @param size_t const uNumSymbols
          */
-        SymbolSet(const size_t uNumSymbols);
+        SymbolSet(size_t const uNumSymbols);
 
         /**
          * Allocator routine
          *
-         * @param  size_t uNumSymbols
+         * @param  size_t const uNumSymbols
          * @throws MC64K::OutOfMemoryException
          */
-        void allocateStorage(const size_t uNumSymbols);
+        void allocateStorage(size_t const uNumSymbols);
 
     public:
 
@@ -128,11 +131,11 @@ class SymbolSet {
         /**
          * Array access (range checked)
          *
-         * @param  size_t uIndex
+         * @param  size_t const uIndex
          * @return Symbol&
          * @throws MC64K::OutOfRangeException
          */
-        Symbol& operator[](const size_t uIndex) {
+        Symbol& operator[](size_t const uIndex) {
             assertIndex(uIndex);
             return poSymbols[uIndex];
         }
@@ -140,11 +143,11 @@ class SymbolSet {
         /**
          * Array access (range checked)
          *
-         * @param  size_t uIndex
-         * @return const Symbol&
+         * @param  size_t const uIndex
+         * @return Symbol const&
          * @throws MC64K::OutOfRangeException
          */
-        const Symbol& operator[](const size_t uIndex) const {
+        Symbol const& operator[](size_t const uIndex) const {
             assertIndex(uIndex);
             return poSymbols[uIndex];
         }
@@ -154,11 +157,11 @@ class SymbolSet {
          * Where a symbol name is located, each set bit in the supplied access flags must be enabled
          * for the symbol.
          *
-         * @param  const  char* sIdentifier
-         * @param  uint64 uFlags
+         * @param  char const* sIdentifier
+         * @param  uint64 const uFlags
          * @return Symbol*
          */
-        Symbol* find(const char* sIdentifier, const uint64 uAccess = 0) const;
+        Symbol* find(char const* sIdentifier, uint64 const uAccess = 0) const;
 
         /**
          * Symbol table dump to stream.
@@ -170,7 +173,7 @@ class SymbolSet {
         /**
          * Link symbols against another symbol set.
          */
-        void linkAgainst(const SymbolSet& roOther) const;
+        void linkAgainst(SymbolSet const& roOther) const;
 };
 
 /**
@@ -183,9 +186,9 @@ class InitialisedSymbolSet : public SymbolSet {
         /**
          * Constructor for initialised set
          *
-         * @param const std::initializer_list<Symbol>& roSymbols
+         * @param std::initializer_list<Symbol> const& roSymbols
          */
-        InitialisedSymbolSet(const std::initializer_list<Symbol>& roSymbols);
+        InitialisedSymbolSet(std::initializer_list<Symbol> const& roSymbols);
 
         /**
          * Destructor
@@ -201,17 +204,17 @@ class InitialisedSymbolSet : public SymbolSet {
  */
 class LoadedSymbolSet : public SymbolSet {
     private:
-        const uint8* puRawData;
+        uint8 const* puRawData;
 
     public:
         /**
          * Constructor
          *
-         * @param  const size_t uNumSymbols
-         * @param  const uint8* puRawData
+         * @param  size_t const uNumSymbols
+         * @param  uint8 const* puRawData
          * @throws MC64K::OutOfMemoryException
          */
-        LoadedSymbolSet(const size_t uNumSymbols, const uint8* puRawData);
+        LoadedSymbolSet(size_t const uNumSymbols, uint8 const* puRawData);
 
         /**
          * Destructor.
@@ -221,12 +224,12 @@ class LoadedSymbolSet : public SymbolSet {
         /**
          * Allocate space for a set of Symbols. These are allocated uninitialised and may contain junk.
          *
-         * @param  const size_t uNumSymbols
+         * @param  size_t const uNumSymbols
          * @return Symbol
          * @throws MC64K::OutOfRangeException
          * @throws MC64K::OutOfMemoryException
          */
-        Symbol* allocate(const size_t uNumSymbols);
+        Symbol* allocate(size_t const uNumSymbols);
 };
 
 }} // namespace

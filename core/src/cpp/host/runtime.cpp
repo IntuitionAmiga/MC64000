@@ -14,23 +14,21 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <cassert>
 #include "host/runtime.hpp"
 #include "loader/executable.hpp"
 
 namespace MC64K {
 namespace Host {
 
-using MC64K::Loader::Binary;
-using MC64K::Machine::Interpreter;
-
 /**
  * @inheritDoc
  */
-Runtime::Runtime(Definition& roDefinition, const char* sBinaryPath) :
+Runtime::Runtime(Definition& roDefinition, char const* sBinaryPath) :
     roDefinition(roDefinition),
     poExecutable(0)
 {
-    Binary oBinary(roDefinition);
+    Loader::Binary oBinary(roDefinition);
     poExecutable = oBinary.load(sBinaryPath);
 
     std::fprintf(
@@ -41,8 +39,8 @@ Runtime::Runtime(Definition& roDefinition, const char* sBinaryPath) :
     );
 
     // If the binary loaded without throwing stuff all over the shop, initialise the Interpreter
-    Interpreter::allocateStack(256);
-    Interpreter::initHCFVectors(
+    Machine::Interpreter::allocateStack(poExecutable->getStackSize());
+    Machine::Interpreter::initHCFVectors(
         roDefinition.getHCFVectors(),
         roDefinition.getNumHCFVectors()
     );
@@ -52,9 +50,9 @@ Runtime::Runtime(Definition& roDefinition, const char* sBinaryPath) :
  * @inheritDoc
  */
 Runtime::~Runtime() {
-    Interpreter::dumpState(stdout, 0xFFFFFFFF);
+    Machine::Interpreter::dumpState(stdout, 0xFFFFFFFF);
     delete poExecutable;
-    Interpreter::freeStack();
+    Machine::Interpreter::freeStack();
 }
 
 /**
@@ -62,12 +60,10 @@ Runtime::~Runtime() {
  */
 Machine::Interpreter::Status Runtime::invoke(size_t uFunctionID) {
     const Loader::SymbolSet& roInvokable = roDefinition.getImportedSymbolSet();
-    if (roInvokable[uFunctionID].uFlags & Loader::Symbol::EXECUTE) {
-        Interpreter::setProgramCounter(roInvokable[uFunctionID].puByteCode);
-        Interpreter::run();
-        return Interpreter::getStatus();
-    }
-    return Machine::Interpreter::INVALID_ENTRYPOINT;
+    assert(roInvokable[uFunctionID].uFlags & Loader::Symbol::EXECUTE);
+    Machine::Interpreter::setProgramCounter(roInvokable[uFunctionID].puByteCode);
+    Machine::Interpreter::run();
+    return Machine::Interpreter::getStatus();
 }
 
 }} // namespace

@@ -43,9 +43,9 @@ char* Executable::processSymbolName(char* sSymbolName, uint64& ruSymbolFlags) {
  * @inheritDoc
  */
 Executable::Executable(
-    const Host::Definition& roDefinition,
-    const uint8* puRawTargetData,
-    const uint8* puRawByteCode,
+    Host::Definition const& roDefinition,
+    uint8 const* puRawTargetData,
+    uint8 const* puRawByteCode,
     uint8*       puRawImportData,
     uint8*       puRawExportData
 ) :
@@ -77,7 +77,7 @@ Executable::Executable(
         (poSymbol    = oExportedSymbols.allocate(uNumSymbols))
     ) {
         std::fprintf(stderr, "Linking %u exported symbols...\n", uNumSymbols);
-        const uint32* puCodeOffsets = (uint32*)(puRawExportData + sizeof(uint32));
+        uint32 const* puCodeOffsets = (uint32 const*)(puRawExportData + sizeof(uint32));
         char* sSymbolName = ((char*)puRawExportData) + sizeof(uint32) + uNumSymbols * sizeof(uint32);
         for (unsigned u = 0; u < uNumSymbols; ++u) {
             poSymbol[u].sIdentifier = sSymbolName;

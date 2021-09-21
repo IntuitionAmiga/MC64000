@@ -14,7 +14,9 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <cassert>
 #include "host/definition.hpp"
+#include "machine/limits.hpp"
 
 namespace MC64K {
 namespace Host {
@@ -23,11 +25,11 @@ namespace Host {
  * @inheritDoc
  */
 Definition::Definition(
-    const char* sName,
-    const Misc::Version oVersion,
-    const std::initializer_list<Machine::Interpreter::HCFVector>& roHCFVectors,
-    const std::initializer_list<Loader::Symbol>& roExportedSymbols,
-    const std::initializer_list<Loader::Symbol>& roImportedSymbols
+    char const* sName,
+    Misc::Version const oVersion,
+    std::initializer_list<Machine::Interpreter::HCFVector> const& roHCFVectors,
+    std::initializer_list<Loader::Symbol> const& roExportedSymbols,
+    std::initializer_list<Loader::Symbol> const& roImportedSymbols
 ) :
     sHostName(sName),
     pcHCFVectors(0),
@@ -36,9 +38,7 @@ Definition::Definition(
     oVersion(oVersion),
     uNumHCFVectors(0)
 {
-    if (roHCFVectors.size() > Machine::Interpreter::MAX_HCF_VECTOR) {
-        throw MC64K::OutOfRangeException("HCF Vector List Too Large");
-    }
+    assert(roHCFVectors.size() <= Machine::Limits::MAX_HCF_VECTORS);
     if ((uNumHCFVectors = roHCFVectors.size())) {
         size_t uSize = sizeof(Machine::Interpreter::HCFVector) * uNumHCFVectors;
         if (!(pcHCFVectors = (Machine::Interpreter::HCFVector*)std::malloc(uSize))) {

@@ -16,6 +16,7 @@
 
 #include <cstdio>
 #include "misc/scalar.hpp"
+#include "machine/limits.hpp"
 #include "dependency.hpp"
 #include "binary.hpp"
 
@@ -30,34 +31,41 @@ namespace Loader {
  * End product of successfully loading an MC64K object file for execution.
  */
 class Executable {
-    friend const Executable* Binary::load(const char*);
+    friend Executable const* Binary::load(char const*);
 
     private:
         // Symbols are managed by SymbolSet.
         LoadedSymbolSet oImportedSymbols;
         LoadedSymbolSet oExportedSymbols;
 
-        const uint8* puTargetData;
-        const uint8* puByteCode;
+        uint8 const* puTargetData;
+        uint8 const* puByteCode;
 
     public:
 
         /**
          * Obtain the set of imported symbols, i.e. those the executable expects to be provided to it.
          *
-         * @return const SymbolSet*
+         * @return SymbolSet const*
          */
-        const SymbolSet* getImportedSymbolSet() const {
+        SymbolSet const* getImportedSymbolSet() const {
             return &oImportedSymbols;
         }
 
         /**
          * Obtain the set of exported symbols, i.e. those the executable exposes to the application host.
          *
-         * @return const SymbolSet&
+         * @return SymbolSet const*
          */
-        const SymbolSet* getExportedSymbolSet() const {
+        SymbolSet const* getExportedSymbolSet() const {
             return &oExportedSymbols;
+        }
+
+        /**
+         * Get the stack size indicated by the executable
+         */
+        uint32 getStackSize() const {
+            return Machine::Limits::MIN_STACK_SIZE;
         }
 
         /**
@@ -72,16 +80,16 @@ class Executable {
          * Instantiable only by the binary loader friend class. Note that ownership of the raw memory referenced
          * by the target data and bytecode are taken over by this instance and are freed by it on destruction.
          *
-         * @param const Host::Definition& roDefinition
-         * @param const uint8*            puRawTargetData
-         * @param const uint8*            puRawByteCode
+         * @param Host::Definition const& roDefinition
+         * @param uint8 const*            puRawTargetData
+         * @param uint8 const*            puRawByteCode
          * @param uint8*                  puRawImportData
          * @param uint8*                  puRawExportData
          */
         Executable(
-            const Host::Definition& roDefinition,
-            const uint8*            puRawTargetData,
-            const uint8*            puRawByteCode,
+            Host::Definition const& roDefinition,
+            uint8 const*            puRawTargetData,
+            uint8 const*            puRawByteCode,
             uint8*                  puRawImportData,
             uint8*                  puRawExportData
         );
@@ -96,7 +104,7 @@ class Executable {
          * @param  uint64& ruSymbolFlags
          * @return char*
          */
-        char* processSymbolName(char* sSymbolName, uint64& ruSymbolFlags);
+        char* processSymbolName(char * sSymbolName, uint64 & ruSymbolFlags);
 };
 
 }} // namespace

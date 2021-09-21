@@ -132,13 +132,13 @@ void Interpreter::run() {
 
             case Opcode::JMP:
                 monadic(SIZE_QUAD);
-                puProgramCounter = (const uint8*)pDstEA;
+                puProgramCounter = (uint8 const*)pDstEA;
                 break;
 
             case Opcode::JSR:
                 monadic(SIZE_QUAD);
                 pushProgramCounter();
-                puProgramCounter = (const uint8*)pDstEA;
+                puProgramCounter = (uint8 const*)pDstEA;
                 ++iCallDepth;
                 break;
 

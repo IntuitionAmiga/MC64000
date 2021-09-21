@@ -100,5 +100,5 @@
  * Restores the program counter from the stack.
  */
 #define popProgramCounter() \
-    puProgramCounter = (const uint8*)(*(aoGPR[GPRegister::SP].puQuad)); \
+    puProgramCounter = (uint8 const*)(*(aoGPR[GPRegister::SP].puQuad)); \
     aoGPR[GPRegister::SP].puByte += 8;
