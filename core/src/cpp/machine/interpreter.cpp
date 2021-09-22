@@ -23,16 +23,18 @@
 namespace MC64K {
 namespace Machine {
 
-GPRegister   Interpreter::aoGPR[GPRegister::MAX] = {};
-FPRegister   Interpreter::aoFPR[FPRegister::MAX] = {};
-uint8 const* Interpreter::puProgramCounter       = 0;
-void*        Interpreter::pDstEA                 = 0;
-void*        Interpreter::pSrcEA                 = 0;
-void*        Interpreter::pTmpEA                 = 0;
-uint8*       Interpreter::puStackTop             = 0;
-uint8*       Interpreter::puStackBase            = 0;
-int32        Interpreter::iCallDepth             = 0;
-uint32       Interpreter::uNumHCFVectors         = 0;
+GPRegister      Interpreter::aoGPR[GPRegister::MAX] = {};
+FPRegister      Interpreter::aoFPR[FPRegister::MAX] = {};
+uint8 const*    Interpreter::puProgramCounter       = 0;
+void*           Interpreter::pDstEA                 = 0;
+void*           Interpreter::pSrcEA                 = 0;
+void*           Interpreter::pTmpEA                 = 0;
+uint8*          Interpreter::puStackTop             = 0;
+uint8*          Interpreter::puStackBase            = 0;
+Loader::Symbol* Interpreter::poImportSymbols        = 0;
+int32           Interpreter::iCallDepth             = 0;
+uint32          Interpreter::uNumHCFVectors         = 0;
+uint32          Interpreter::uNumImportSymbols      = 0;
 
 Interpreter::HCFVector const* Interpreter::pcHCFVectors   = 0;
 Interpreter::OperationSize    Interpreter::eOperationSize = Interpreter::SIZE_BYTE;
@@ -53,11 +55,24 @@ const char* asStatusNames[] = {
     "Invalid Entrypoint"
 };
 
+/**
+ * @inheritDoc
+ */
+
 void Interpreter::initHCFVectors(Interpreter::HCFVector const* pcHCFVectors, uint32 const uNumHCFVectors) {
     assert(uNumHCFVectors <= Limits::MAX_HCF_VECTORS);
     Interpreter::pcHCFVectors   = pcHCFVectors;
     Interpreter::uNumHCFVectors = uNumHCFVectors;
 }
+
+/**
+ * @inheritDoc
+ */
+void Interpreter::initImportSymbols(Loader::Symbol* poImportSymbols, uint32 const uNumImportSymbols) {
+    Interpreter::poImportSymbols   = poImportSymbols;
+    Interpreter::uNumImportSymbols = uNumImportSymbols;
+}
+
 
 /**
  * @inheritDoc
@@ -85,20 +100,6 @@ void Interpreter::allocateStack(uint32 uSize) {
 void Interpreter::freeStack() {
     std::free(puStackBase);
     puStackTop = puStackBase = 0;
-}
-
-/**
- * @inheritDoc
- */
-GPRegister& Interpreter::gpr(unsigned int const uReg) {
-    return aoGPR[uReg & GPRegister::MASK];
-}
-
-/**
- * @inheritDoc
- */
-FPRegister& Interpreter::fpr(unsigned int const uReg) {
-    return aoFPR[uReg & FPRegister::MASK];
 }
 
 /**

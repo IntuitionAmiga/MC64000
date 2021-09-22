@@ -21,6 +21,7 @@
 #define initDisplacement() \
     union { \
         uint32 uMask; \
+        uint32 uIndex; \
         int32  iDisplacement; \
         uint8  auBytes[4]; \
     };
@@ -38,6 +39,8 @@
  * Alias of readDisplacment() for when the value represents a mask value and not a displacement.
  */
 #define readMask() readDisplacement()
+
+#define readSymbolIndex() readDisplacement()
 
 /**
  * Reads the next byte of the opcode stream as a short immediate displacement and updates the program counter.

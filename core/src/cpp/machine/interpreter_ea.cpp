@@ -13,6 +13,7 @@
 
 #include "machine/interpreter.hpp"
 #include "bytecode/effective_address.hpp"
+#include "loader/symbol.hpp"
 #include "machine/gnarly.hpp"
 #include <cstdio>
 
@@ -173,21 +174,32 @@ void* Interpreter::decodeEffectiveAddress() {
                 case EffectiveAddress::Other::PC_IND_DSP:
                     readDisplacement();
                     return (uint8*)puProgramCounter + iDisplacement;
+
                 default:
-                    // TODO
-                    eStatus = UNIMPLEMENTED_EAMODE;
+                    break;
+            }
+            break;
+        }
+        case  EffectiveAddress::OFS_OTHER_2: {
+            switch (uEALower) {
+                case EffectiveAddress::SAME_AS_DEST:
+                    return pDstEA;
+
+                case EffectiveAddress::IMPORT_SYMBOL_ID:
+                    readSymbolIndex();
+                    return (uint8*)poImportSymbols[uIndex].pRawData;
+
+                default:
                     break;
             }
             break;
         }
 
-        // Same as destination
-        case EffectiveAddress::SAME_AS_DEST:
-            return pDstEA;
-
         default:
             break;
     }
+    std::fprintf(stderr, "\tCrashing with bad EA mode: %02X\n", uEffectiveAddress);
+    eStatus = UNIMPLEMENTED_EAMODE;
     return 0;
 }
 
@@ -363,6 +375,7 @@ void Interpreter::restoreRegisters(uint32 uMask, uint8 uEAMode) {
             break;
 
         default:
+
             eStatus = UNIMPLEMENTED_EAMODE;
             return;
             break;

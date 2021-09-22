@@ -21,10 +21,11 @@
 namespace MC64K {
 
 /**
- * Forwards reference
+ * Forwards references
  */
 namespace Loader {
     class Executable;
+    class Symbol;
 }
 
 namespace Machine {
@@ -75,6 +76,14 @@ class Interpreter {
          * @param uint32 const     uNumHCFVectors
          */
         static void initHCFVectors(HCFVector const* pcHCFVectors, uint32 const uNumHCFVectors);
+
+        /**
+         * Initialise the imported symbols. Only a reference is taken so the supplied table must not go out of scope.
+         *
+         * @param Loader::Symbol* poImportSymbols
+         * @param uint32 const    uNumImportSymbols
+         */
+        static void initImportSymbols(Loader::Symbol* poImportSymbols, uint32 const uNumImportSymbols);
 
         /**
          * Allocate the machine stack. The top of the stack will be assigned to r15 as the USP.
@@ -140,8 +149,10 @@ class Interpreter {
         static uint8*           puStackTop;
         static uint8*           puStackBase;
         static HCFVector const* pcHCFVectors;
+        static Loader::Symbol*  poImportSymbols;
         static int32            iCallDepth;
         static uint32           uNumHCFVectors;
+        static uint32           uNumImportSymbols;
 
         /**
          * Operation size
@@ -187,6 +198,20 @@ class Interpreter {
  */
 inline Interpreter::Status Interpreter::getStatus() {
     return eStatus;
+}
+
+/**
+ * @inheritDoc
+ */
+inline GPRegister& Interpreter::gpr(unsigned int const uReg) {
+    return aoGPR[uReg & GPRegister::MASK];
+}
+
+/**
+ * @inheritDoc
+ */
+inline FPRegister& Interpreter::fpr(unsigned int const uReg) {
+    return aoFPR[uReg & FPRegister::MASK];
 }
 
 }} // namespace

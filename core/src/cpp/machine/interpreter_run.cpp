@@ -80,6 +80,8 @@ void Interpreter::run() {
         return;
     }
 
+    std::fprintf(stderr, "Beginning run at PC:%p...\n", puProgramCounter);
+
     eStatus    = RUNNING;
     iCallDepth = 1;
 

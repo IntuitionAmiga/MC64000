@@ -44,6 +44,10 @@ Runtime::Runtime(Definition& roDefinition, char const* sBinaryPath) :
         roDefinition.getHCFVectors(),
         roDefinition.getNumHCFVectors()
     );
+    Machine::Interpreter::initImportSymbols(
+        poExecutable->getImportedSymbolSet()->getSymbols(),
+        poExecutable->getImportedSymbolSet()->getCount()
+    );
 }
 
 /**
