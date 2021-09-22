@@ -37,6 +37,9 @@ class Processor implements IParser {
     public function __construct() {
         $this->aParsers = [
             new Directive\Statement(),
+
+            // todo - dc.b/w/l/q/f/d and friends - before instructions
+
             new Instruction\Statement(),
             new Label\Local(),
             new Label\Exported()

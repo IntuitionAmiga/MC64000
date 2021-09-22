@@ -19,10 +19,15 @@
     @import my_external_reference r
     @export main x
 main:
-    lea my_external_reference, r0
+    lea hello, r0
     hcf outputString
     rts
 
     @export exit x
 exit:
     rts
+
+    @align 0, 16
+hello:
+    rts
+    #dc.b "hello world\0"

@@ -47,6 +47,7 @@ class Statement implements SourceLine\IParser {
         $this->addDirective(new Processor\Undefine());
         $this->addDirective(new Processor\Export());
         $this->addDirective(new Processor\Import());
+        $this->addDirective(new Processor\Align());
     }
 
     /**
