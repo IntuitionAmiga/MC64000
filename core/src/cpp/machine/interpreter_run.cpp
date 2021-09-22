@@ -80,6 +80,8 @@ void Interpreter::run() {
         return;
     }
 
+    std::fprintf(stderr, "Beginning run at PC:%p...\n", puProgramCounter);
+
     eStatus    = RUNNING;
     iCallDepth = 1;
 
@@ -132,13 +134,13 @@ void Interpreter::run() {
 
             case Opcode::JMP:
                 monadic(SIZE_QUAD);
-                puProgramCounter = (const uint8*)pDstEA;
+                puProgramCounter = (uint8 const*)pDstEA;
                 break;
 
             case Opcode::JSR:
                 monadic(SIZE_QUAD);
                 pushProgramCounter();
-                puProgramCounter = (const uint8*)pDstEA;
+                puProgramCounter = (uint8 const*)pDstEA;
                 ++iCallDepth;
                 break;
 

@@ -24,7 +24,7 @@ namespace Host {
 class Runtime {
     private:
         Definition& roDefinition;
-        const Loader::Executable* poExecutable;
+        Loader::Executable const* poExecutable;
 
     public:
         /**
@@ -32,7 +32,7 @@ class Runtime {
          *
          * Requires the host definition and the name of a binary executable to load.
          */
-        Runtime(Definition& roDefinition, const char* sBinaryPath);
+        Runtime(Definition& roDefinition, char const* sBinaryPath);
         ~Runtime();
 
         /**
@@ -40,10 +40,10 @@ class Runtime {
          * it returns at the same stack depth of encounters an error. The ID
          * must match an expected enumerated function ID exported by the binary.
          *
-         * @param  size_t uFunctionID
+         * @param  size_t const uFunctionID
          * @return Machine::Interpreter::Status
          */
-        Machine::Interpreter::Status invoke(size_t uFunctionID);
+        Machine::Interpreter::Status invoke(size_t const uFunctionID);
 };
 
 }} // namespace

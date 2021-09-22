@@ -1,28 +1,58 @@
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *    - 64-bit 680x0-inspired Virtual Machine and assembler -
+ */
+
 #include <cstdio>
 #include <cmath>
 #include <cstdlib>
 
 #include "standard_test_host.hpp"
 #include "loader/symbol.hpp"
+#include "host/macros.hpp"
 
-using namespace MC64K::Loader;
-using namespace MC64K::Machine;
-using namespace MC64K::Host;
-using namespace MC64K::Misc;
+using MC64K::Loader::Symbol;
+using MC64K::Machine::Interpreter;
+using MC64K::Misc::Version;
 
 namespace MC64K {
 namespace StandardTestHost {
 
 /**
- * Example host vectors
+ *  hcf outputString r0
  */
-Interpreter::Status nativeFunctionTest1() {
-    std::puts("Native Call 1");
+Interpreter::Status outputString() {
+    std::puts(Interpreter::gpr(0).sString);
     return Interpreter::RUNNING;
 }
 
-Interpreter::Status nativeFunctionTest2() {
-    std::puts("Native Call 2");
+/**
+ *  hcf allocate r0 => r0
+ */
+Machine::Interpreter::Status allocate() {
+    uint64 uSize = Interpreter::gpr(0).uQuad;
+    void *p = std::malloc(uSize);
+    if (!p) {
+        throw MC64K::OutOfMemoryException();
+    }
+    Interpreter::gpr(0).pAny = p;
+    return Interpreter::RUNNING;
+}
+
+/**
+ *  hcf free r0
+ */
+Machine::Interpreter::Status release() {
+    void* p = Interpreter::gpr(0).pAny;
+    std::free(p);
     return Interpreter::RUNNING;
 }
 
@@ -30,8 +60,8 @@ Interpreter::Status nativeFunctionTest2() {
  * Example host provided global data
  */
 uint64        testGlobalU = 0xABADCAFE;
-const float64 testConstPi = M_PI;
-const char*   testString  = "Hello";
+float64 const testConstPi = M_PI;
+char const*   testString  = "Hello";
 
 /**
  * Declare the Standard Test Host
@@ -44,8 +74,9 @@ Host::Definition instance(
 
     // Host Vectors
     {
-        nativeFunctionTest1,
-        nativeFunctionTest2
+        outputString,
+        allocate,
+        release
     },
 
     // Symbols this host exports to the virtual code.

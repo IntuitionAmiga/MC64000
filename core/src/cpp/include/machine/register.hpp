@@ -85,6 +85,9 @@ union GPRegister {
         int16    iWord;
         uint8    uByte;
         int8     iByte;
+
+        char const* sString;
+
         GPRegister() : uQuad(0) {}
 };
 

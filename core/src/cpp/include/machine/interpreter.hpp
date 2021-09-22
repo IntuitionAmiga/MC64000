@@ -21,10 +21,11 @@
 namespace MC64K {
 
 /**
- * Forwards reference
+ * Forwards references
  */
 namespace Loader {
     class Executable;
+    class Symbol;
 }
 
 namespace Machine {
@@ -63,11 +64,6 @@ class Interpreter {
             STATE_HCF   = 16
         };
 
-        enum Limits {
-            MAX_HCF_VECTOR = 256,
-            STACK_ALIGN    = 32
-        };
-
         /**
          * HCF Vector (host native call triggered by HCF operation)
          */
@@ -76,18 +72,26 @@ class Interpreter {
         /**
          * Initialise the HCF vectors. Only a reference is taken so the supplied table must not go out of scope.
          *
-         * @param const HCFVector*    pcHCFVectors
-         * @param const unsigned int  uNumHCFVectors
+         * @param HCFVector const* pcHCFVectors
+         * @param uint32 const     uNumHCFVectors
          */
-        static void initHCFVectors(const HCFVector* pcHCFVectors, const uint32 uNumHCFVectors);
+        static void initHCFVectors(HCFVector const* pcHCFVectors, uint32 const uNumHCFVectors);
+
+        /**
+         * Initialise the imported symbols. Only a reference is taken so the supplied table must not go out of scope.
+         *
+         * @param Loader::Symbol* poImportSymbols
+         * @param uint32 const    uNumImportSymbols
+         */
+        static void initImportSymbols(Loader::Symbol* poImportSymbols, uint32 const uNumImportSymbols);
 
         /**
          * Allocate the machine stack. The top of the stack will be assigned to r15 as the USP.
          *
-         * @param  uint32 uStackSize
+         * @param  uint32 const uStackSize
          * @throws
          */
-        static void allocateStack(uint32 uStackSize);
+        static void allocateStack(uint32 const uStackSize);
 
         /**
          * Release the stack allocation
@@ -97,7 +101,7 @@ class Interpreter {
         /**
          * Specify the bytecode location to begin execution from
          */
-        static void setProgramCounter(const uint8* puNewProgramCounter);
+        static void setProgramCounter(uint8 const* puNewProgramCounter);
 
         /**
          * Run!
@@ -107,26 +111,26 @@ class Interpreter {
         /**
          * Get a GRP register
          *
-         * @param  const unsigned int uReg
+         * @param  unsigned int const uReg
          * @return GPRegister&
          */
-        static GPRegister& gpr(const unsigned int uReg);
+        static GPRegister& gpr(unsigned int const uReg);
 
         /**
          * Get a FPR register
          *
-         * @param  const unsigned int uReg
+         * @param  unsigned int const uReg
          * @return FPRegister&
          */
-        static FPRegister& fpr(const unsigned int uReg);
+        static FPRegister& fpr(unsigned int const uReg);
 
         /**
          * Dump the machine state
          *
          * @param std::FILE* poStream
-         * @param const unsigned int uFlags
+         * @param unsigned const int uFlags
          */
-        static void dumpState(std::FILE* poStream, const unsigned int uFlags);
+        static void dumpState(std::FILE* poStream, unsigned int const uFlags);
 
         /**
          * Return the current interpreter status
@@ -138,15 +142,17 @@ class Interpreter {
     private:
         static GPRegister       aoGPR[GPRegister::MAX];
         static FPRegister       aoFPR[FPRegister::MAX];
-        static const uint8*     puProgramCounter;
+        static uint8 const*     puProgramCounter;
         static void*            pDstEA;
         static void*            pSrcEA;
         static void*            pTmpEA;
         static uint8*           puStackTop;
         static uint8*           puStackBase;
-        static const HCFVector* pcHCFVectors;
+        static HCFVector const* pcHCFVectors;
+        static Loader::Symbol*  poImportSymbols;
         static int32            iCallDepth;
         static uint32           uNumHCFVectors;
+        static uint32           uNumImportSymbols;
 
         /**
          * Operation size
@@ -173,22 +179,39 @@ class Interpreter {
         /**
          * Save the registers implied by the 32-bit mask, using the specified EA mode
          *
-         * @param uint32 uMask
-         * @param uint8  uEAMode
+         * @param uint32 const uMask
+         * @param uint8  const uEAMode
          */
-        static void  saveRegisters(uint32 uMask, uint8 uEAMode);
+        static void  saveRegisters(uint32 const uMask, uint8 const uEAMode);
 
         /**
          * Restore the registers implies by the 32-bit mask, using the specified EA mode
          *
-         * @param uint32 uMask
-         * @param uint8  uEAMode
+         * @param uint32 const uMask
+         * @param uint8  const uEAMode
          */
-        static void  restoreRegisters(uint32 uMask, uint8 uEAMode);
+        static void  restoreRegisters(uint32 const uMask, uint8 const uEAMode);
 };
 
+/**
+ * @inheritDoc
+ */
 inline Interpreter::Status Interpreter::getStatus() {
     return eStatus;
+}
+
+/**
+ * @inheritDoc
+ */
+inline GPRegister& Interpreter::gpr(unsigned int const uReg) {
+    return aoGPR[uReg & GPRegister::MASK];
+}
+
+/**
+ * @inheritDoc
+ */
+inline FPRegister& Interpreter::fpr(unsigned int const uReg) {
+    return aoFPR[uReg & FPRegister::MASK];
 }
 
 }} // namespace

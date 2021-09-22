@@ -21,7 +21,7 @@ namespace Misc {
 /**
  * @inheritDoc
  */
-Version::Version(uint32 uMajor, uint32 uMinor, uint32 uPatch) {
+Version::Version(uint32 const uMajor, uint32 const uMinor, uint32 const uPatch) {
     if (uMajor > MAX_MAJOR || uMinor > MAX_MINOR || uPatch > MAX_PATCH) {
         throw InvalidVersion();
     }
@@ -31,7 +31,7 @@ Version::Version(uint32 uMajor, uint32 uMinor, uint32 uPatch) {
 /**
  * @inheritDoc
  */
-bool Version::isCompatible(const Version& roVersion) const {
+bool Version::isCompatible(Version const& roVersion) const {
     return (
         // Major part must be equal
         (uPackedVersion & MASK_MAJOR) == (roVersion.uPackedVersion & MASK_MAJOR)

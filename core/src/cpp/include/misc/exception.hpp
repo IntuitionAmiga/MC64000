@@ -21,11 +21,11 @@ namespace MC64K {
  */
 class Exception {
     private:
-        const char* sMessage;
+        char const* sMessage;
     public:
-        Exception(const char* sMessage = "Exception") : sMessage(sMessage) {}
+        Exception(char const* sMessage = "Exception") : sMessage(sMessage) {}
 
-        const char* getMessage() const {
+        char const* getMessage() const {
             return sMessage;
         }
 };
@@ -35,12 +35,12 @@ class Exception {
  */
 class OutOfRangeException  : public Exception {
     public:
-        OutOfRangeException(const char* sMessage = "Value out of range") : Exception(sMessage) {}
+        OutOfRangeException(char const* sMessage = "Value out of range") : Exception(sMessage) {}
 };
 
 class OutOfMemoryException : public Exception {
     public:
-        OutOfMemoryException(const char* sMessage = "Insufficent memory") : Exception(sMessage) {}
+        OutOfMemoryException(char const* sMessage = "Insufficent memory") : Exception(sMessage) {}
 };
 
 }// namespace

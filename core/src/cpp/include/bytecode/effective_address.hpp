@@ -44,7 +44,8 @@ enum Group {
     OFS_GPR_IDX_DSP      = 144, // GPR Indexed with Displacement <d32>(r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
     OFS_PC_IND_IDX       = 160, // PC Indirect, indexed  (pc, r<N>.<b|w|l|q> [ * <2|4|8>])
     OFS_PC_IND_IDX_DSP   = 176, // PC Indirect, indeced with displacement  <d32>(pc, r<N>.<b|w|l|q> [ * <2|4|8>])
-    OFS_OTHER            = 192
+    OFS_OTHER            = 192,
+    OFS_OTHER_2          = 208
 };
 
 /**
@@ -344,7 +345,15 @@ enum Other {
     // Program counter indirect with displacement
     PC_IND_DSP         = 15,
 
-    SAME_AS_DEST       = OFS_OTHER + 16
+
+};
+
+enum Other2 {
+    // For the case where the source operand is the same as the destination (without side effects)
+    SAME_AS_DEST       = 0,
+
+    // Reference to an imported symbol ID
+    IMPORT_SYMBOL_ID   = 1
 };
 
 }}} // namespace

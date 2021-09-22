@@ -24,7 +24,7 @@ namespace Loader {
 /**
  * @inheritDoc
  */
-SymbolSet::SymbolSet(const size_t uNumSymbols) :
+SymbolSet::SymbolSet(size_t const uNumSymbols) :
     poSymbols(0),
     uNumSymbols(uNumSymbols)
 {
@@ -43,7 +43,7 @@ SymbolSet::~SymbolSet() {
 /**
  * @inheritDoc
  */
-void SymbolSet::allocateStorage(const size_t uNumSymbols) {
+void SymbolSet::allocateStorage(size_t const uNumSymbols) {
     if (!(poSymbols = (Symbol*)std::malloc(uNumSymbols * sizeof(Symbol)))) {
         throw MC64K::OutOfMemoryException();
     }
@@ -71,7 +71,7 @@ void SymbolSet::dump(std::FILE* poStream) const {
 /**
  * @inheritDoc
  */
-Symbol* SymbolSet::find(const char* sIdentifier, const uint64 uAccess) const {
+Symbol* SymbolSet::find(char const* sIdentifier, uint64 const uAccess) const {
     for (size_t u = 0; u < uNumSymbols; ++u) {
         if (
             uAccess == (uAccess & poSymbols[u].uFlags) &&
@@ -86,7 +86,7 @@ Symbol* SymbolSet::find(const char* sIdentifier, const uint64 uAccess) const {
 /**
  * @inheritDoc
  */
-void SymbolSet::linkAgainst(const SymbolSet& roOther) const {
+void SymbolSet::linkAgainst(SymbolSet const& roOther) const {
     for (size_t u = 0; u < uNumSymbols; ++u) {
         Symbol* poMatched = roOther.find(
             poSymbols[u].sIdentifier,

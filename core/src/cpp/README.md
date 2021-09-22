@@ -14,16 +14,22 @@
 ## Example C++ Runtime
 
 ### Coding Style
-- Opening braces at end of line.
 - 4 space indentation.
+- Opening brace on same line as structure/function/control statement.
 - CamelCase for namespace, class, struct, union.
 - camelCase for function, method, etc.
+- East Const notation:
+    - `int const`  for constant integer.
+    - `int const*` for pointer to constant integer.
+    - `int const*` for constant pointer to integer.
+    - `int const* const` for constant pointer to constant integer.
+- Google style namespaces.
 - Simplified Hungarian Notation, single character prefix for non-function identifier names:
     - i for signed integer types int8, int16, int32, int64, short, int, long, etc.
         - int32 iExample
     - u for unsigned integers uint8, uint16, unit32, uint64, unsigned, size_t, etc.
         - size_t uSize
-    - e for explicitly enumerated integer values: 
+    - e for explicitly enumerated integer values:
         - Interpreter::Status eStatus
     - s for C strings char\*, const char\*.
         - const char\* sMessage

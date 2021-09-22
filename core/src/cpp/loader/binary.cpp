@@ -26,7 +26,7 @@ namespace Loader {
 /**
  * @inheritDoc
  */
-Binary::Binary(const Host::Definition& roDefinition) :
+Binary::Binary(Host::Definition const& roDefinition) :
     roHostDefinition(roDefinition),
     sFileName(0),
     poFileHandle(0),
@@ -46,7 +46,7 @@ Binary::~Binary() {
 /**
  * @inheritDoc
  */
-const Executable* Binary::load(const char* sFileName) {
+const Executable* Binary::load(char const* sFileName) {
 
     open(sFileName);
 
@@ -84,7 +84,7 @@ const Executable* Binary::load(const char* sFileName) {
 /**
  * @inheritDoc
  */
-void Binary::open(const char* sFileName) {
+void Binary::open(char const* sFileName) {
     poFileHandle = std::fopen(sFileName, "rb");
     if (!poFileHandle) {
         throw Error(sFileName, "file could not be opened for input");
@@ -111,7 +111,7 @@ void Binary::close() {
 /**
  * @inheritDoc
  */
-void Binary::readChunkHeader(uint64* puHeader, const uint64 uExpectedID) {
+void Binary::readChunkHeader(uint64* puHeader, uint64 const uExpectedID) {
     if (2 != std::fread(puHeader, sizeof(uint64), 2, poFileHandle)) {
         throw Error(sFileName, "failed to load header");
     }
@@ -143,7 +143,7 @@ void Binary::loadManifest() {
 /**
  * @inheritDoc
  */
-const Binary::ManifestEntry* Binary::findChunk(const uint64 uChunkID) {
+const Binary::ManifestEntry* Binary::findChunk(uint64 const uChunkID) {
     for (uint32 u = 0; u < uManifestLength; ++u) {
         if (uChunkID == poManifest[u].uMagicID) {
             return &poManifest[u];
@@ -155,11 +155,11 @@ const Binary::ManifestEntry* Binary::findChunk(const uint64 uChunkID) {
 /**
  * @inheritDoc
  */
-uint8* Binary::readChunkData(const uint64 uChunkID) {
+uint8* Binary::readChunkData(uint64 const uChunkID) {
     uint64 auHeader[2] = { 0, 0 };
     uint64 uAllocSize  = 0;
     uint8* puRawData   = 0;
-    const  ManifestEntry* poManifestEntry = findChunk(uChunkID);
+    ManifestEntry const* poManifestEntry = findChunk(uChunkID);
 
     std::fseek(poFileHandle, poManifestEntry->iOffset, SEEK_SET);
     readChunkHeader(auHeader, uChunkID);
@@ -189,8 +189,8 @@ uint8* Binary::readChunkData(const uint64 uChunkID) {
  * The first entry in the version table is the target.
  * For executable targets, the second entry in the version table is the host.
  */
-bool Binary::validateTarget(const uint8* puRawTarget) {
-    uint32 uTargetFlags = *(const uint32*)puRawTarget;
+bool Binary::validateTarget(uint8 const* puRawTarget) {
+    uint32 uTargetFlags = *(uint32 const*)puRawTarget;
 
     // For an executable target we need to confirm that the current host dependency is viable.
     if (uTargetFlags & TARGET_EXECUTABLE) {
@@ -203,8 +203,8 @@ bool Binary::validateTarget(const uint8* puRawTarget) {
 
             // We need to compare the dependency name now. This involves locating the entry in the names
             // section that follows the version table. The host is always the second entry.
-            uint32 uNumEntries = *(const uint32*)(puRawTarget + sizeof(uint32));
-            const char* sName  = (const char*)(puRawTarget + sizeof(uint32) * (2 + uNumEntries));
+            uint32 uNumEntries = *(uint32 const*)(puRawTarget + sizeof(uint32));
+            char const* sName  = (char const*)(puRawTarget + sizeof(uint32) * (2 + uNumEntries));
 
             // Skip over the target name to the next entry, which is expected to be the host.
             // Since all names are null terminated, we skip onwards into buffer overrun oblivion...

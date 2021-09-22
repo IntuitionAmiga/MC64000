@@ -32,7 +32,7 @@ namespace Host {
 class Definition {
 
     private:
-        const char*                      sHostName;
+        char const*                      sHostName;
         Machine::Interpreter::HCFVector* pcHCFVectors;
         Loader::InitialisedSymbolSet     oExportSet;
         Loader::InitialisedSymbolSet     oImportSet;
@@ -44,18 +44,21 @@ class Definition {
          * Constructor. Uses a set of initializer_list for the vectors, export symbols and import symbols.
          * The data in these are copied to the instance internally and are not modified.
          *
-         * @param const char* sName
-         * @param const Misc::Version oVersion
-         * @param const std::initializer_list<Machine::Interpreter::HCFVector>& roHCFVectors,
-         * @param const std::initializer_list<Loader::Symbol>& roExportedSymbols,
-         * @param const std::initializer_list<Loader::Symbol>& roImportedSymbols
+         * Note that the free-form list initialisers may be subject to length limits. For example, if more than
+         * 256 HCFVectors are defined, the code will fail an assertion check.
+         *
+         * @param char const* sName
+         * @param Misc::Version const oVersion
+         * @param std::initializer_list<Machine::Interpreter::HCFVector> const& roHCFVectors,
+         * @param std::initializer_list<Loader::Symbol> const& roExportedSymbols,
+         * @param std::initializer_list<Loader::Symbol> const& roImportedSymbols
          */
         Definition(
-            const char* sName,
-            const Misc::Version oVersion,
-            const std::initializer_list<Machine::Interpreter::HCFVector>& roHCFVectors,
-            const std::initializer_list<Loader::Symbol>& roExportedSymbols,
-            const std::initializer_list<Loader::Symbol>& roImportedSymbols
+            char const* sName,
+            Misc::Version const oVersion,
+            std::initializer_list<Machine::Interpreter::HCFVector> const& roHCFVectors,
+            std::initializer_list<Loader::Symbol> const& roExportedSymbols,
+            std::initializer_list<Loader::Symbol> const& roImportedSymbols
         );
 
         /**
@@ -66,43 +69,43 @@ class Definition {
         /**
          * Get the name of the host application.
          *
-         * @return const char*
+         * @return char const*
          */
-        const char* getName() const {
+        char const* getName() const {
             return sHostName;
         }
 
         /**
          * Get the version of the host application.
          *
-         * @return Misc::Version
+         * @return Misc::Version const
          */
-        Misc::Version getVersion() const {
+        Misc::Version const getVersion() const {
             return oVersion;
         }
 
         /**
          * Get the symbols exported by the host definition
          *
-         * @return const Loader::SymbolSet&
+         * @return Loader::SymbolSet const&
          */
-        const Loader::SymbolSet& getExportedSymbolSet() const {
+        Loader::SymbolSet const& getExportedSymbolSet() const {
             return oExportSet;
         }
 
         /**
          * Get the symbols host expects to import.
          *
-         * @return const Loader::SymbolSet&
+         * @return Loader::SymbolSet const&
          */
-        const Loader::SymbolSet& getImportedSymbolSet() const {
+        Loader::SymbolSet const& getImportedSymbolSet() const {
             return oImportSet;
         }
 
         /**
-         * @return const Machine::Interpreter::HCFVector*
+         * @return Machine::Interpreter::HCFVector const*
          */
-        const Machine::Interpreter::HCFVector* getHCFVectors() const {
+        Machine::Interpreter::HCFVector const* getHCFVectors() const {
             return pcHCFVectors;
         }
 

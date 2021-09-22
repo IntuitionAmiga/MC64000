@@ -27,7 +27,7 @@ namespace Loader {
  */
 struct Dependency {
     Misc::Version oVersion;
-    const char*   sName;
+    char const*   sName;
 };
 
 }} // namespace

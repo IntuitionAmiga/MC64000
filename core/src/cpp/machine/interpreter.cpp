@@ -14,25 +14,29 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <cassert>
 #include "machine/error.hpp"
+#include "machine/limits.hpp"
 #include "machine/interpreter.hpp"
 #include "loader/executable.hpp"
 
 namespace MC64K {
 namespace Machine {
 
-GPRegister   Interpreter::aoGPR[GPRegister::MAX] = {};
-FPRegister   Interpreter::aoFPR[FPRegister::MAX] = {};
-const uint8* Interpreter::puProgramCounter       = 0;
-void*        Interpreter::pDstEA                 = 0;
-void*        Interpreter::pSrcEA                 = 0;
-void*        Interpreter::pTmpEA                 = 0;
-uint8*       Interpreter::puStackTop             = 0;
-uint8*       Interpreter::puStackBase            = 0;
-int32        Interpreter::iCallDepth             = 0;
-uint32       Interpreter::uNumHCFVectors         = 0;
+GPRegister      Interpreter::aoGPR[GPRegister::MAX] = {};
+FPRegister      Interpreter::aoFPR[FPRegister::MAX] = {};
+uint8 const*    Interpreter::puProgramCounter       = 0;
+void*           Interpreter::pDstEA                 = 0;
+void*           Interpreter::pSrcEA                 = 0;
+void*           Interpreter::pTmpEA                 = 0;
+uint8*          Interpreter::puStackTop             = 0;
+uint8*          Interpreter::puStackBase            = 0;
+Loader::Symbol* Interpreter::poImportSymbols        = 0;
+int32           Interpreter::iCallDepth             = 0;
+uint32          Interpreter::uNumHCFVectors         = 0;
+uint32          Interpreter::uNumImportSymbols      = 0;
 
-const Interpreter::HCFVector* Interpreter::pcHCFVectors   = 0;
+Interpreter::HCFVector const* Interpreter::pcHCFVectors   = 0;
 Interpreter::OperationSize    Interpreter::eOperationSize = Interpreter::SIZE_BYTE;
 Interpreter::Status           Interpreter::eStatus        = Interpreter::UNINITIALISED;
 
@@ -51,10 +55,12 @@ const char* asStatusNames[] = {
     "Invalid Entrypoint"
 };
 
-void Interpreter::initHCFVectors(const Interpreter::HCFVector* pcHCFVectors, const uint32 uNumHCFVectors) {
-    if (uNumHCFVectors > MAX_HCF_VECTOR) {
-        throw MC64K::OutOfRangeException("HCF Vector List Too Large");
-    }
+/**
+ * @inheritDoc
+ */
+
+void Interpreter::initHCFVectors(Interpreter::HCFVector const* pcHCFVectors, uint32 const uNumHCFVectors) {
+    assert(uNumHCFVectors <= Limits::MAX_HCF_VECTORS);
     Interpreter::pcHCFVectors   = pcHCFVectors;
     Interpreter::uNumHCFVectors = uNumHCFVectors;
 }
@@ -62,9 +68,18 @@ void Interpreter::initHCFVectors(const Interpreter::HCFVector* pcHCFVectors, con
 /**
  * @inheritDoc
  */
+void Interpreter::initImportSymbols(Loader::Symbol* poImportSymbols, uint32 const uNumImportSymbols) {
+    Interpreter::poImportSymbols   = poImportSymbols;
+    Interpreter::uNumImportSymbols = uNumImportSymbols;
+}
+
+
+/**
+ * @inheritDoc
+ */
 void Interpreter::allocateStack(uint32 uSize) {
-    uSize += (STACK_ALIGN - 1);
-    uSize &= ~(STACK_ALIGN - 1);
+    uSize += (Limits::STACK_ALIGN - 1);
+    uSize &= ~(Limits::STACK_ALIGN - 1);
     puStackBase = (uint8*)std::calloc(uSize, 1);
     if (!puStackBase) {
         throw Error("Failed to allocate stack");
@@ -90,28 +105,14 @@ void Interpreter::freeStack() {
 /**
  * @inheritDoc
  */
-GPRegister& Interpreter::gpr(const unsigned int uReg) {
-    return aoGPR[uReg & GPRegister::MASK];
-}
-
-/**
- * @inheritDoc
- */
-FPRegister& Interpreter::fpr(const unsigned int uReg) {
-    return aoFPR[uReg & FPRegister::MASK];
-}
-
-/**
- * @inheritDoc
- */
-void Interpreter::setProgramCounter(const uint8* puNewProgramCounter) {
+void Interpreter::setProgramCounter(uint8 const* puNewProgramCounter) {
     puProgramCounter = puNewProgramCounter;
 }
 
 /**
  * @inheritDoc
  */
-void Interpreter::dumpState(std::FILE* poStream, const unsigned uFlags) {
+void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
     if (puProgramCounter) {
         std::fprintf(
             poStream,
