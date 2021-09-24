@@ -483,7 +483,8 @@ void Interpreter::run() {
 
     float64 fMIPS = (1000.0 * uInstructionCount) / (float64)uElapsed;
 
-    std::printf(
+    std::fprintf(
+        stderr,
         "Total instructions %lu in %lu nanoseconds, %.2f MIPS\n",
         uInstructionCount,
         uElapsed,

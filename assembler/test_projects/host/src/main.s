@@ -10,24 +10,19 @@
 ;
 ;   - 64-bit 680x0-inspired Virtual Machine and assembler -
 ;
-;
+;   Hello world.
 
     @define outputString #0 ; output the string in r0
-    @define allocate #1
-    @define release #2
 
-    @import my_external_reference r
     @export main x
 main:
     lea hello, r0
     hcf outputString
-    rts
 
     @export exit x
 exit:
     rts
 
-    @align 0, 16
+    @align 0, 8
 hello:
-    rts
-    #dc.b "hello world\0"
+    dc.b "Hello outside world!\0"

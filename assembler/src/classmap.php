@@ -50,6 +50,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\Dyadic' => '/parser/source_line/instruction/operand_set/abstract/Dyadic.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\DyadicBranch' => '/parser/source_line/instruction/operand_set/abstract/DyadicBranch.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\OperandSet\\PackedRegisterPair' => '/parser/source_line/instruction/operand_set/abstract/PackedRegisterPair.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\Data\\Declaration' => '/parser/source_line/data/Declaration.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\IntegerImmediate' => '/parser/effective_address/IntegerImmediate.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\GPRIndirectUpdating' => '/parser/effective_address/GPRIndirectUpdating.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\AllFloatReadable' => '/parser/effective_address/AllFloatReadable.php',

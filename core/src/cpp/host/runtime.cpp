@@ -54,7 +54,7 @@ Runtime::Runtime(Definition& roDefinition, char const* sBinaryPath) :
  * @inheritDoc
  */
 Runtime::~Runtime() {
-    Machine::Interpreter::dumpState(stdout, 0xFFFFFFFF);
+    Machine::Interpreter::dumpState(stderr, 0xFFFFFFFF);
     delete poExecutable;
     Machine::Interpreter::freeStack();
 }

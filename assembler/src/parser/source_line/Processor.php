@@ -18,7 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\SourceLine;
 
 use ABadCafe\MC64K\State;
-
+use ABadCafe\MC64K\IIntLimits;
 use function \preg_replace, \rtrim;
 
 /**
@@ -37,9 +37,7 @@ class Processor implements IParser {
     public function __construct() {
         $this->aParsers = [
             new Directive\Statement(),
-
-            // todo - dc.b/w/l/q/f/d and friends - before instructions
-
+            new Data\Declaration(),
             new Instruction\Statement(),
             new Label\Local(),
             new Label\Exported()
