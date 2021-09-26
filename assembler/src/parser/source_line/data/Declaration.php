@@ -25,6 +25,7 @@ use function \rtrim, \preg_match, \stripcslashes;
 /**
  * Declaration
  *
+ * Handles in-line constant data declarations.
  */
 class Declaration implements SourceLine\IParser {
 
@@ -64,37 +65,82 @@ class Declaration implements SourceLine\IParser {
         return $cProcessHook($this->aMatches[self::IDX_DATA]);
     }
 
+    /**
+     * Process a list of discrete byte values. This can be a comma separated list or a quote delimited string of
+     * characters. This is not explicitly null terminated.
+     *
+     * @param  string $sData
+     * @return string
+     */
     private function processBytes(string $sData): string {
         if (preg_match('/^"(.*?)"$/', $sData, $aMatches)) {
             return stripcslashes($aMatches[1]);
         }
-
-        return '';
+        $aData = $this->getValues($sData);
+        return pack(Defs\IIntLimits::BYTE_BIN_FORMAT . '*', ...$aData);
     }
 
+    /**
+     * Process a comma separated list of discrete word values.
+     *
+     * @param  string $sData
+     * @return string
+     */
     private function processWords(string $sData): string {
         $aData = $this->getValues($sData);
         return pack(Defs\IIntLimits::WORD_BIN_FORMAT . '*', ...$aData);
     }
 
+    /**
+     * Process a comma separated list of discrete values.
+     *
+     * @param  string $sData
+     * @return string
+     */
     private function processLongs(string $sData): string {
         $aData = $this->getValues($sData);
         return pack(Defs\IIntLimits::LONG_BIN_FORMAT . '*', ...$aData);
     }
 
+    /**
+     * Process a comma separated list of quad values.
+     *
+     * @param  string $sData
+     * @return string
+     */
     private function processQuads(string $sData): string {
         $aData = $this->getValues($sData);
         return pack(Defs\IIntLimits::QUAD_BIN_FORMAT . '*', ...$aData);
     }
 
+    /**
+     * Process a comma separated list of single precision float values.
+     *
+     * @param  string $sData
+     * @return string
+     */
     private function processSingles(string $sData): string {
-        return '';
+        $aData = $this->getValues($sData);
+        return pack('g*', ...$aData);
     }
 
+    /**
+     * Process a comma separated list of double precision float values.
+     *
+     * @param  string $sData
+     * @return string
+     */
     private function processDoubles(string $sData): string {
-        return '';
+        $aData = $this->getValues($sData);
+        return pack('e*', ...$aData);
     }
 
+    /**
+     * Process a comma separated list of single precision float values.
+     *
+     * @param  string $sData
+     * @return string[]
+     */
     private function getValues(string $sData) : array {
         return array_map(
             'trim',

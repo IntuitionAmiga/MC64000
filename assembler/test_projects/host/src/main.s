@@ -24,5 +24,17 @@ exit:
     rts
 
     @align 0, 8
+doubles:
+    dc.d 1.0, 2.0, 3.0, 4.0
+singles:
+    dc.s 1.0, 2.0, 3.0, 4.0
+quads:
+    dc.q 1, 2, 3, 4
+longs:
+    dc.l 1, 2, 3, 4
+words:
+    dc.w 1, 2, 3, 4
+bytes:
+    dc.b 1, 2, 3, 4
 hello:
-    dc.b "Hello outside world!\0"
+    dc.b "Hello outside world!\n\0"
