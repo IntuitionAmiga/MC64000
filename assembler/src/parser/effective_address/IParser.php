@@ -26,8 +26,8 @@ use ABadCafe\MC64K;
 interface IParser extends MC64K\IParser {
 
     const
-        // Matches a displacement value, either a signed decimal or 0x prefixed hexadecimal literal
-        D32 = '([\+\-]{0,1}\d+|(0x)[0-9A-Fa-f]+)',
+        // Matches a displacement value, either a signed decimal or 0x/$ prefixed hexadecimal literal
+        D32 = '([\+\-]{0,1}\d+|(0x|\$)[0-9A-Fa-f]+)',
 
         // Matches an address register qualification (rN or aN)
         RA  = '([ra]\d+|sp)',

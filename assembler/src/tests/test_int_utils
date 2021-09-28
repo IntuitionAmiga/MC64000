@@ -1,0 +1,93 @@
+#!/usr/bin/php
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *
+ */
+
+declare(strict_types = 1);
+
+namespace ABadCafe\MC64K;
+
+require_once '../MC64K.php';
+
+const TEST_CASES = [
+
+    //Bin
+    '0b01111111'         => Defs\IIntLimits::BYTE,
+    '0b10000000'         => Defs\IIntLimits::BYTE,
+    '0b11111111'         => Defs\IIntLimits::BYTE,
+    '%01111111'          => Defs\IIntLimits::BYTE,
+    '%10000000'          => Defs\IIntLimits::BYTE,
+    '%11111111'          => Defs\IIntLimits::BYTE,
+
+    //Oct
+    '0177'               => Defs\IIntLimits::BYTE,
+    '0200'               => Defs\IIntLimits::BYTE,
+    '0377'               => Defs\IIntLimits::BYTE,
+    '@177'               => Defs\IIntLimits::BYTE,
+    '@200'               => Defs\IIntLimits::BYTE,
+    '@377'               => Defs\IIntLimits::BYTE,
+    '@77777'             => Defs\IIntLimits::WORD,
+    '@100000'            => Defs\IIntLimits::WORD,
+    '@177777'            => Defs\IIntLimits::WORD,
+
+    // Dec
+    '127'                => Defs\IIntLimits::BYTE,
+    '-128'               => Defs\IIntLimits::BYTE,
+    '+127'               => Defs\IIntLimits::BYTE,
+    '255'                => Defs\IIntLimits::BYTE,
+
+    '32767'              => Defs\IIntLimits::WORD,
+    '-32768'             => Defs\IIntLimits::WORD,
+    '+32767'             => Defs\IIntLimits::WORD,
+    '65535'              => Defs\IIntLimits::WORD,
+
+    '2147483647'         => Defs\IIntLimits::LONG,
+    '-2147483648'        => Defs\IIntLimits::LONG,
+    '+2147483647'        => Defs\IIntLimits::LONG,
+    '4294967295'         => Defs\IIntLimits::LONG,
+
+    // Hex
+    '0x7F'               => Defs\IIntLimits::BYTE,
+    '0x80'               => Defs\IIntLimits::BYTE,
+    '0xFF'               => Defs\IIntLimits::BYTE,
+    '$7F'                => Defs\IIntLimits::BYTE,
+    '$80'                => Defs\IIntLimits::BYTE,
+    '$FF'                => Defs\IIntLimits::BYTE,
+    '0x7FFF'             => Defs\IIntLimits::WORD,
+    '0x8000'             => Defs\IIntLimits::WORD,
+    '0xFFFF'             => Defs\IIntLimits::WORD,
+    '$7FFF'              => Defs\IIntLimits::WORD,
+    '$8000'              => Defs\IIntLimits::WORD,
+    '$FFFF'              => Defs\IIntLimits::WORD,
+    '0x7FFFFFFF'         => Defs\IIntLimits::LONG,
+    '0x80000000'         => Defs\IIntLimits::LONG,
+    '0xFFFFFFFF'         => Defs\IIntLimits::LONG,
+    '$7FFFFFFF'          => Defs\IIntLimits::LONG,
+    '$80000000'          => Defs\IIntLimits::LONG,
+    '$FFFFFFFF'          => Defs\IIntLimits::LONG,
+    '0x7FFFFFFFFFFFFFFF' => Defs\IIntLimits::QUAD,
+    '0x8000000000000000' => Defs\IIntLimits::QUAD,
+    '0xFFFFFFFFFFFFFFFF' => Defs\IIntLimits::QUAD,
+    '$7FFFFFFFFFFFFFFF'  => Defs\IIntLimits::QUAD,
+    '$8000000000000000'  => Defs\IIntLimits::QUAD,
+    '$FFFFFFFFFFFFFFFF'  => Defs\IIntLimits::QUAD,
+
+];
+
+foreach (TEST_CASES as $sExpression => $iWordSize) {
+    echo
+        $sExpression, " [",
+        $iWordSize, "-byte]=> ",
+        Parser\Utils\Integer::parseLiteral((string)$sExpression, $iWordSize), "\n";
+}

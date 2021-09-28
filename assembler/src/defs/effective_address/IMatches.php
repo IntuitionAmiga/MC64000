@@ -26,7 +26,7 @@ interface IMatches extends IRegisterDirect, IRegisterIndirect, IRegisterIndirect
 
     const
         // Matches a displacement value, either a signed decimal or 0x prefixed hexadecimal literal
-        D32 = '([\+\-]{0,1}\d+|0x[0-9A-Fa-f]+)',
+        D32 = '([\+\-]{0,1}\d+|(0x|\$)[0-9A-Fa-f]+)',
 
         // Matches an address register qualification (rN or aN)
         RA  = '([ra]\d+|sp)',
