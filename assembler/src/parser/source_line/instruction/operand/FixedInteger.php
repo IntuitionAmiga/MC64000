@@ -26,7 +26,7 @@ use function \preg_match, \substr, \pack, \strlen, \str_pad;
 /**
  * FixedInteger
  *
- * Operand parser for fixed integer values.
+ * Operand parser for fixed size integer values.
  */
 class FixedInteger implements MC64K\IParser, Defs\IIntLimits {
 
