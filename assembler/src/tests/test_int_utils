@@ -20,74 +20,139 @@ namespace ABadCafe\MC64K;
 
 require_once '../MC64K.php';
 
+/**
+ * TEST_CASES
+ *
+ * For each machine word size, tests the minimum signed, maximum signed and maximum unsigned values
+ * for each supported base/format:
+ *
+ * Binary: 0bNNNN
+ *
+ */
 const TEST_CASES = [
 
-    //Bin
-    '0b01111111'         => Defs\IIntLimits::BYTE,
-    '0b10000000'         => Defs\IIntLimits::BYTE,
-    '0b11111111'         => Defs\IIntLimits::BYTE,
-    '%01111111'          => Defs\IIntLimits::BYTE,
-    '%10000000'          => Defs\IIntLimits::BYTE,
-    '%11111111'          => Defs\IIntLimits::BYTE,
+    Defs\IIntLimits::BYTE => [
+        // Binary format 0bN...
+        '0b01111111',
+        '0b10000000',
+        '0b11111111',
 
-    //Oct
-    '0177'               => Defs\IIntLimits::BYTE,
-    '0200'               => Defs\IIntLimits::BYTE,
-    '0377'               => Defs\IIntLimits::BYTE,
-    '@177'               => Defs\IIntLimits::BYTE,
-    '@200'               => Defs\IIntLimits::BYTE,
-    '@377'               => Defs\IIntLimits::BYTE,
-    '@77777'             => Defs\IIntLimits::WORD,
-    '@100000'            => Defs\IIntLimits::WORD,
-    '@177777'            => Defs\IIntLimits::WORD,
+        // Binary format %N...
+        '%01111111',
+        '%10000000',
+        '%11111111',
 
-    // Dec
-    '127'                => Defs\IIntLimits::BYTE,
-    '-128'               => Defs\IIntLimits::BYTE,
-    '+127'               => Defs\IIntLimits::BYTE,
-    '255'                => Defs\IIntLimits::BYTE,
+        // Octal 0N...
+        '0177',
+        '0200',
+        '0377',
+        '@177',
 
-    '32767'              => Defs\IIntLimits::WORD,
-    '-32768'             => Defs\IIntLimits::WORD,
-    '+32767'             => Defs\IIntLimits::WORD,
-    '65535'              => Defs\IIntLimits::WORD,
+        // Octal format @N...
+        '@200',
+        '@377',
 
-    '2147483647'         => Defs\IIntLimits::LONG,
-    '-2147483648'        => Defs\IIntLimits::LONG,
-    '+2147483647'        => Defs\IIntLimits::LONG,
-    '4294967295'         => Defs\IIntLimits::LONG,
+        // Decimal format, signed and unsigned
+        '127',
+        '-128',
+        '+127',
+        '255',
+        '+255',
 
-    // Hex
-    '0x7F'               => Defs\IIntLimits::BYTE,
-    '0x80'               => Defs\IIntLimits::BYTE,
-    '0xFF'               => Defs\IIntLimits::BYTE,
-    '$7F'                => Defs\IIntLimits::BYTE,
-    '$80'                => Defs\IIntLimits::BYTE,
-    '$FF'                => Defs\IIntLimits::BYTE,
-    '0x7FFF'             => Defs\IIntLimits::WORD,
-    '0x8000'             => Defs\IIntLimits::WORD,
-    '0xFFFF'             => Defs\IIntLimits::WORD,
-    '$7FFF'              => Defs\IIntLimits::WORD,
-    '$8000'              => Defs\IIntLimits::WORD,
-    '$FFFF'              => Defs\IIntLimits::WORD,
-    '0x7FFFFFFF'         => Defs\IIntLimits::LONG,
-    '0x80000000'         => Defs\IIntLimits::LONG,
-    '0xFFFFFFFF'         => Defs\IIntLimits::LONG,
-    '$7FFFFFFF'          => Defs\IIntLimits::LONG,
-    '$80000000'          => Defs\IIntLimits::LONG,
-    '$FFFFFFFF'          => Defs\IIntLimits::LONG,
-    '0x7FFFFFFFFFFFFFFF' => Defs\IIntLimits::QUAD,
-    '0x8000000000000000' => Defs\IIntLimits::QUAD,
-    '0xFFFFFFFFFFFFFFFF' => Defs\IIntLimits::QUAD,
-    '$7FFFFFFFFFFFFFFF'  => Defs\IIntLimits::QUAD,
-    '$8000000000000000'  => Defs\IIntLimits::QUAD,
-    '$FFFFFFFFFFFFFFFF'  => Defs\IIntLimits::QUAD,
+        // Hexadecimal format 0xN...
+        '0x7F',
+        '0x80',
+        '0xFF',
 
+        // Hexadecimal format $N...
+        '$7F',
+        '$80',
+        '$FF',
+    ],
+
+    Defs\IIntLimits::WORD => [
+        '0b0111111111111111',
+        '0b1000000000000000',
+        '0b1111111111111111',
+        '%0111111111111111',
+        '%1000000000000000',
+        '%1111111111111111',
+        '@77777',
+        '@100000',
+        '@177777',
+        '077777',
+        '0100000',
+        '0177777',
+        '32767',
+        '-32768',
+        '+32767',
+        '65535',
+        '0x7FFF',
+        '0x8000',
+        '0xFFFF',
+        '$7FFF',
+        '$8000',
+        '$FFFF',
+    ],
+    Defs\IIntLimits::LONG => [
+        '0b01111111111111111111111111111111',
+        '0b10000000000000000000000000000000',
+        '0b11111111111111111111111111111111',
+        '%01111111111111111111111111111111',
+        '%10000000000000000000000000000000',
+        '%11111111111111111111111111111111',
+        '017777777777',
+        '020000000000',
+        '037777777777',
+        '@17777777777',
+        '@20000000000',
+        '@37777777777',
+        '2147483647',
+        '-2147483648',
+        '+2147483647',
+        '4294967295',
+        '+4294967295',
+        '0x7FFFFFFF',
+        '0x80000000',
+        '0xFFFFFFFF',
+        '$7FFFFFFF',
+        '$80000000',
+        '$FFFFFFFF',
+    ],
+    Defs\IIntLimits::QUAD => [
+        '0b0111111111111111111111111111111111111111111111111111111111111111',
+        '0b1000000000000000000000000000000000000000000000000000000000000000',
+        '0b1111111111111111111111111111111111111111111111111111111111111111',
+        '%0111111111111111111111111111111111111111111111111111111111111111',
+        '%1000000000000000000000000000000000000000000000000000000000000000',
+        '%1111111111111111111111111111111111111111111111111111111111111111',
+        '0777777777777777777777',
+        '01000000000000000000000',
+        '01777777777777777777777',
+        '@777777777777777777777',
+        '@1000000000000000000000',
+        '@1777777777777777777777',
+        '9223372036854775807',
+        '-9223372036854775808',
+        '+9223372036854775807',
+        '18446744073709551615',
+        '+18446744073709551615',
+        '0x7FFFFFFFFFFFFFFF',
+        '0x8000000000000000',
+        '0xFFFFFFFFFFFFFFFF',
+        '$7FFFFFFFFFFFFFFF',
+        '$8000000000000000',
+        '$FFFFFFFFFFFFFFFF',
+    ],
 ];
 
-foreach (TEST_CASES as $sExpression => $iWordSize) {
-    echo
-        $sExpression, " [",
-        $iWordSize, "-byte]=> ",
-        Parser\Utils\Integer::parseLiteral((string)$sExpression, $iWordSize), "\n";
+foreach (TEST_CASES as $iWordSize => $aTestCases) {
+    echo "Testing word size ", $iWordSize, "...\n";
+
+    foreach ($aTestCases as $sExpression) {
+        echo
+            "\t", $sExpression, " => ",
+            Parser\Utils\Integer::parseLiteral((string)$sExpression, $iWordSize), "\n";
+    }
+    echo "\n";
 }

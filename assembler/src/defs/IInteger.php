@@ -71,7 +71,7 @@ interface IInteger {
             IIntLimits::BYTE => 3,
             IIntLimits::WORD => 5,
             IIntLimits::LONG => 10,
-            IIntLimits::QUAD => 19
+            IIntLimits::QUAD => 20
         ],
 
         self::BASE_8 => [
