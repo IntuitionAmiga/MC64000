@@ -173,7 +173,7 @@ interface IOperandSizes {
 // Logical
         ILogical::AND_B => [1, 1],
         ILogical::AND_W => [2, 2],
-        ILogical::AND_L => [3, 3],
+        ILogical::AND_L => [4, 4],
         ILogical::AND_Q => [8, 8],
 
         ILogical::OR_B  => [1, 1],

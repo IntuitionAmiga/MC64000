@@ -99,4 +99,6 @@ interface IInteger {
         IDX_BASE_SIGIL = 0,
         IDX_VALUE_DATA = 1
     ;
+
+    const LITERAL_PREFIX = '#';
 }

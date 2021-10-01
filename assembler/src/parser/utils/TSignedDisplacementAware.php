@@ -28,6 +28,19 @@ use function \substr, \strlen;
  */
 trait TSignedDisplacementAware {
 
+   /**
+    * @param  string $sDisplacement
+    * @return int|null
+    */
+   private function parseIntegerDisplacement(string $sDisplacement): ?int {
+       $aMatches = Integer::match($sDisplacement, Integer::LITERAL_PREFIX);
+       if (empty($aMatches)) {
+           return null;
+       }
+       return Integer::parseMatch($aMatches, IIntLimits::LONG);
+    }
+
+
     /**
      * @param  string $sDisplacement
      * @param  bool   $bHex

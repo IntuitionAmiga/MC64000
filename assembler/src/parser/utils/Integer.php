@@ -101,6 +101,7 @@ class Integer implements Defs\IInteger, Defs\IIntLimits {
      * @return int
      */
     public static function parseMatch(array $aMatches, int $iWordSize): int {
+
         $iBase    = self::MAP_SIGIL_BASE[$aMatches[self::IDX_BASE_SIGIL]] ?? self::BASE_10;
         $sValue   = $aMatches[self::IDX_VALUE_DATA];
 
