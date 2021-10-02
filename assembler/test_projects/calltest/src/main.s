@@ -34,7 +34,7 @@ my_exported_func:
 
 my_hidden_func:
     move.q #5, r4
-    hcf my_native_func
+    ;hcf my_native_func
     move.q #6, r5
     rts
 

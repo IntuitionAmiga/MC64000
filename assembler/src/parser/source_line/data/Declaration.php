@@ -20,7 +20,7 @@ use ABadCafe\MC64K\Parser\SourceLine;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 
-use function \rtrim, \preg_match, \stripcslashes;
+use function \rtrim, \preg_match, \stripcslashes, \pack, \array_map, \explode;
 
 /**
  * Declaration

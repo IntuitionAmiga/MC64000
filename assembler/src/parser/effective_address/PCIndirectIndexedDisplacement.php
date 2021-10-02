@@ -31,7 +31,6 @@ use function \preg_match, \chr, \pack;
 class PCIndirectIndexedDisplacement implements IParser, EffectiveAddress\IRegisterIndirectIndexed {
 
     use TOperationSizeAware;
-    use Parser\Utils\TSignedDisplacementAware;
 
     /**
      * Required match
@@ -135,8 +134,7 @@ class PCIndirectIndexedDisplacement implements IParser, EffectiveAddress\IRegist
     ];
 
     const
-        MATCHED_INDEX_NAME = 3,
-        MATCHED_HEX        = 2,
+        MATCHED_INDEX_NAME = 2,
         MATCHED_DISP       = 1
     ;
 
@@ -154,10 +152,7 @@ class PCIndirectIndexedDisplacement implements IParser, EffectiveAddress\IRegist
         foreach (self::MATCHES as $sMatch => $iOffset) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
                 $iIndex = Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_INDEX_NAME]);
-                $iDisplacement = $this->parseDisplacement(
-                    $aMatches[self::MATCHED_DISP],
-                    !empty($aMatches[self::MATCHED_HEX])
-                );
+                $iDisplacement = Parser\Utils\Integer::parseLiteral($aMatches[self::MATCHED_DISP], IIntLimits::LONG);
                 return chr($iOffset) . chr($iIndex) . pack(IIntLimits::LONG_BIN_FORMAT, $iDisplacement);
             }
         }

@@ -32,8 +32,6 @@ use function \preg_match, \pack;
  */
 class BranchDisplacement implements MC64K\IParser {
 
-    use Parser\Utils\TSignedDisplacementAware;
-
     const
         MATCH_NUMERIC = '/^#' . Parser\EffectiveAddress\IParser::D32 . '$/',
         MATCH_LABEL   = '/^(\.){0,1}[a-zA-Z_]{1}[0-9a-zA-Z_]{0,}$/',
@@ -55,21 +53,20 @@ class BranchDisplacement implements MC64K\IParser {
      */
     public function parse(string $sSource): ?string {
         $this->iLastDisplacement = Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT;
-        if (preg_match(self::MATCH_NUMERIC, $sSource, $aMatches)) {
-            $this->iLastDisplacement = $this->parseDisplacement(
-                $aMatches[self::MATCHED_DISP],
-                isset($aMatches[self::MATCHED_HEX])
-            );
 
+        $int_displacement = $this->parseIntegerDisplacement($sSource);
+        if (null !== $int_displacement) {
+            $this->iLastDisplacement = $int_displacement;
             if (0 === $this->iLastDisplacement) {
                 throw new CodeFoldException('Branch to next instruction has no useful effect');
             }
-
             return pack(Defs\IIntLimits::LONG_BIN_FORMAT, $this->iLastDisplacement);
         }
+
         // TODO - handle labels
         if (preg_match(self::MATCH_LABEL, $sSource, $aMatches)) {
-            $this->iLastDisplacement = State\Coordinator::get()->getBranchDisplacementForLabel($aMatches[self::MATCHED_LABEL]);
+            $this->iLastDisplacement = State\Coordinator::get()
+               ->getBranchDisplacementForLabel($aMatches[self::MATCHED_LABEL]);
             return pack(Defs\IIntLimits::LONG_BIN_FORMAT, $this->iLastDisplacement);
         }
         throw new \UnexpectedValueException($sSource . ' could not be parsed');
@@ -90,4 +87,17 @@ class BranchDisplacement implements MC64K\IParser {
     public function getLastDisplacement(): int {
         return $this->iLastDisplacement;
     }
+
+   /**
+    * @param  string $sDisplacement
+    * @return int|null
+    */
+   private function parseIntegerDisplacement(string $sDisplacement): ?int {
+       $aMatches = Parser\Utils\Integer::match($sDisplacement, Defs\IInteger::LITERAL_PREFIX);
+       if (empty($aMatches)) {
+           return null;
+       }
+       return Parser\Utils\Integer::parseMatch($aMatches, Defs\IIntLimits::LONG);
+    }
+
 }
