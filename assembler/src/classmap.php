@@ -6,7 +6,6 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\IParser' => '/IParser.php',
   'ABadCafe\\MC64K\\Parser\\SourceError' => '/parser/SourceError.php',
   'ABadCafe\\MC64K\\Parser\\Utils\\Integer' => '/parser/utils/Integer.php',
-  'ABadCafe\\MC64K\\Parser\\Utils\\Hex' => '/parser/utils/Hex.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\TParser' => '/parser/source_line/TParser.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\IParser' => '/parser/source_line/IParser.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Processor' => '/parser/source_line/Processor.php',
