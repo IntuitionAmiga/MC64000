@@ -38,10 +38,11 @@ interface IInteger {
      * Regular expression fragments to match integers expressed in each base.
      */
     const
-        MATCH_BASE_16 = '(0x|\$)([0-9A-Fa-f]+)',
-        MATCH_BASE_10 = '([\+\-]{0,1}\d+)',
-        MATCH_BASE_8  = '(0|@)([0-7]+)',
-        MATCH_BASE_2  = '(0b|\%)([01]+)'
+        MATCH_OPTIMISTIC = '([\+\-\$\%\@0]{0,}[0-9A-Fa-fx][0-9A-Fa-f]{0,})',
+        MATCH_BASE_16    = '(0x|\$)([0-9A-Fa-f]+)',
+        MATCH_BASE_10    = '([\+\-]{0,1}\d+)',
+        MATCH_BASE_8     = '(0|@)([0-7]+)',
+        MATCH_BASE_2     = '(0b|\%)([01]+)'
     ;
 
     /**

@@ -31,7 +31,6 @@ use function \preg_match, \chr, \pack;
 class GPRIndirectDisplacement implements IParser, EffectiveAddress\IRegisterIndirect {
 
     use TOperationSizeAware;
-    use Parser\Utils\TSignedDisplacementAware;
 
     /**
      * Required match
@@ -46,8 +45,7 @@ class GPRIndirectDisplacement implements IParser, EffectiveAddress\IRegisterIndi
 
     const
         MATCHED_DISP = 1,
-        MATCHED_HEX  = 2,
-        MATCHED_NAME = 3
+        MATCHED_NAME = 2
     ;
 
     /**
@@ -63,11 +61,8 @@ class GPRIndirectDisplacement implements IParser, EffectiveAddress\IRegisterIndi
     public function parse(string $sSource): ?string {
         foreach (self::MATCHES as $sMatch => $iOffset) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
-                $iRegister = Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_NAME]);
-                $iDisplacement = $this->parseDisplacement(
-                    $aMatches[self::MATCHED_DISP],
-                    !empty($aMatches[self::MATCHED_HEX])
-                );
+                $iRegister     = Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_NAME]);
+                $iDisplacement = Parser\Utils\Integer::parseLiteral($aMatches[self::MATCHED_DISP], IIntLimits::LONG);
                 return chr($iOffset + $iRegister) . pack(IIntLimits::LONG_BIN_FORMAT, $iDisplacement);
             }
         }

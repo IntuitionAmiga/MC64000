@@ -19,7 +19,7 @@ namespace ABadCafe\MC64K\Parser\Utils;
 
 use ABadCafe\MC64K\Defs;
 
-use function \trim, \base_convert, \substr, \strlen, \bcadd, \bcmul, \bcdiv, \bcmod, \bccomp;
+use function \preg_match, \array_slice, \ltrim, \trim, \base_convert, \substr, \strlen, \bcadd, \bcsub, \bcmul, \bcdiv, \bcmod, \bccomp;
 
 /**
  * Integer
@@ -281,8 +281,6 @@ class Integer implements Defs\IInteger, Defs\IIntLimits {
             );
         }
     }
-
-
 
     /**
      * Replaces base_convert() with code suitable for arbitrarily large numbers by processing the string representation

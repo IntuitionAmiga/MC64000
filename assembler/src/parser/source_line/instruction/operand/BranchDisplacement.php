@@ -32,8 +32,6 @@ use function \preg_match, \pack;
  */
 class BranchDisplacement implements MC64K\IParser {
 
-    use Parser\Utils\TSignedDisplacementAware;
-
     const
         MATCH_NUMERIC = '/^#' . Parser\EffectiveAddress\IParser::D32 . '$/',
         MATCH_LABEL   = '/^(\.){0,1}[a-zA-Z_]{1}[0-9a-zA-Z_]{0,}$/',
@@ -89,4 +87,17 @@ class BranchDisplacement implements MC64K\IParser {
     public function getLastDisplacement(): int {
         return $this->iLastDisplacement;
     }
+
+   /**
+    * @param  string $sDisplacement
+    * @return int|null
+    */
+   private function parseIntegerDisplacement(string $sDisplacement): ?int {
+       $aMatches = Parser\Utils\Integer::match($sDisplacement, Defs\IInteger::LITERAL_PREFIX);
+       if (empty($aMatches)) {
+           return null;
+       }
+       return Parser\Utils\Integer::parseMatch($aMatches, Defs\IIntLimits::LONG);
+    }
+
 }

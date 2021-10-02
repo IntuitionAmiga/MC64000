@@ -17,6 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K;
+use ABadCafe\MC64K\Defs;
 
 /**
  * IParser
@@ -27,7 +28,8 @@ interface IParser extends MC64K\IParser {
 
     const
         // Matches a displacement value, either a signed decimal or 0x/$ prefixed hexadecimal literal
-        D32 = '([\+\-]{0,1}\d+|(0x|\$)[0-9A-Fa-f]+)',
+        //D32 = '([\+\-]{0,1}\d+|(0x|\$)[0-9A-Fa-f]+)',
+        D32 = Defs\IInteger::MATCH_OPTIMISTIC,
 
         // Matches an address register qualification (rN or aN)
         RA  = '([ra]\d+|sp)',
