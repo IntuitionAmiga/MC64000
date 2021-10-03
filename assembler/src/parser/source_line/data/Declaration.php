@@ -17,6 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\SourceLine\Data;
 use ABadCafe\MC64K\Parser\SourceLine;
+use ABadCafe\MC64K\Parser\Utils;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 
@@ -77,6 +78,9 @@ class Declaration implements SourceLine\IParser {
             return stripcslashes($aMatches[1]);
         }
         $aData = $this->getValues($sData);
+        foreach ($aData as $i => $sValue) {
+            $aData[$i] = Utils\Integer::parseLiteral($sValue, Defs\IIntLimits::BYTE);
+        }
         return pack(Defs\IIntLimits::BYTE_BIN_FORMAT . '*', ...$aData);
     }
 
@@ -88,6 +92,9 @@ class Declaration implements SourceLine\IParser {
      */
     private function processWords(string $sData): string {
         $aData = $this->getValues($sData);
+        foreach ($aData as $i => $sValue) {
+            $aData[$i] = Utils\Integer::parseLiteral($sValue, Defs\IIntLimits::WORD);
+        }
         return pack(Defs\IIntLimits::WORD_BIN_FORMAT . '*', ...$aData);
     }
 
@@ -99,6 +106,9 @@ class Declaration implements SourceLine\IParser {
      */
     private function processLongs(string $sData): string {
         $aData = $this->getValues($sData);
+        foreach ($aData as $i => $sValue) {
+            $aData[$i] = Utils\Integer::parseLiteral($sValue, Defs\IIntLimits::LONG);
+        }
         return pack(Defs\IIntLimits::LONG_BIN_FORMAT . '*', ...$aData);
     }
 
@@ -110,6 +120,9 @@ class Declaration implements SourceLine\IParser {
      */
     private function processQuads(string $sData): string {
         $aData = $this->getValues($sData);
+        foreach ($aData as $i => $sValue) {
+            $aData[$i] = Utils\Integer::parseLiteral($sValue, Defs\IIntLimits::QUAD);
+        }
         return pack(Defs\IIntLimits::QUAD_BIN_FORMAT . '*', ...$aData);
     }
 
