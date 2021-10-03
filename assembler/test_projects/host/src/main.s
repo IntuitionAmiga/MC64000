@@ -29,7 +29,11 @@ doubles:
 singles:
     dc.s 1.0, 2.0, 3.0, 4.0
 quads:
-    dc.q 1, 2, 3, 4
+    ; test that integer format paraer
+    dc.q 1, 2, 3, 4, -1, -2, -3, -4, +1, +2, +3, +4 ; decimal
+    dc.q %1, %10, %11, %100, 0b1, 0b10, 0b11, 0b100 ; binary
+    dc.q @1, @2, @3, @4, 01, 02, 03, 04             ; octlol
+    dc.q $1, $2, $3, $4, 0x1, 0x2, 0x3, 0x4         ; hex
 longs:
     dc.l 1, 2, 3, 4
 words:
