@@ -14,7 +14,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "standard_test_host.hpp"
+#include "host/standard_test_host.hpp"
 #include "host/runtime.hpp"
 #include "loader/error.hpp"
 

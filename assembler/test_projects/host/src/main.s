@@ -15,17 +15,22 @@
     @export main x
 main:
     ; set up how we want our countdown number to look
-    lea    count_fmt, r0
-    bsr    io_setfmt_long
+    lea    count_fmt, a0
+    bsr    io_set_fmt_long
 
-    lea    hello, r2
-    move.l #10, r1
+    lea    hello, a1
+    move.l #10, d1
 .loop:
-    move.q r1, r0
+    move.q d1, d0
     bsr    io_print_long
-    move.q r2, r0
+    move.q a1, a0
     bsr    io_print_string
-    dbnz   r1, .loop
+    dbnz   d1, .loop
+
+    lea    myfile, a0
+    move.q #IO_MODE_WRITE, d0
+    bsr    io_file_open
+
 
     @export exit x
 exit:
@@ -34,6 +39,9 @@ exit:
     @align 0, 8
 hello:
     dc.b " >>>> Hello outside world!\n\0"
+
+myfile:
+    dc.b "test_file.bin\0"
 
 count_fmt:
     dc.b "%3d\0"
