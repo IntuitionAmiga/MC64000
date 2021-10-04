@@ -18,6 +18,7 @@
 #include "standard_test_host.hpp"
 #include "loader/symbol.hpp"
 #include "host/macros.hpp"
+#include "machine/register.hpp"
 
 using MC64K::Loader::Symbol;
 using MC64K::Machine::Interpreter;
@@ -27,11 +28,106 @@ namespace MC64K {
 namespace StandardTestHost {
 
 /**
- *  hcf outputString r0
+ * Basic IO routines
+ */
+namespace IO {
+
+char const* sDefaultByteFormat   = "%c";
+char const* sDefaultWordFormat   = "%" PFS16;
+char const* sDefaultLongFormat   = "%" PFS32;
+char const* sDefaultQuadFormat   = "%" PFS64;
+char const* sDefaultSingleFormat = "%g";
+char const* sDefaultDoubleFormat = "%g";
+
+
+char const* sByteFormat   = sDefaultByteFormat;
+char const* sWordFormat   = sDefaultWordFormat;
+char const* sLongFormat   = sDefaultLongFormat;
+char const* sQuadFormat   = sDefaultQuadFormat;
+char const* sSingleFormat = sDefaultSingleFormat;
+char const* sDoubleFormat = sDefaultDoubleFormat;
+
+/**
+ * Basic IO
+ *
+ * The VM has put the byte value of the enumeration on the stack and triggered our HCF vector.
+ *
  */
 Interpreter::Status outputString() {
-    std::puts(Interpreter::gpr(0).sString);
+
+    int iOperation = (int) *Interpreter::gpr(Machine::GPRegister::SP).piByte;
+
+    switch (iOperation) {
+        case INIT:
+            break;
+        case PRINT_STRING:
+            std::fputs(Interpreter::gpr(Machine::GPRegister::R0).sString, stdout);
+            break;
+        case PRINT_BYTE:
+            std::printf(sByteFormat, Interpreter::gpr(Machine::GPRegister::R0).iByte);
+            break;
+        case PRINT_WORD:
+            std::printf(sWordFormat, Interpreter::gpr(Machine::GPRegister::R0).iWord);
+            break;
+        case PRINT_LONG:
+            std::printf(sLongFormat, Interpreter::gpr(Machine::GPRegister::R0).iLong);
+            break;
+        case PRINT_QUAD:
+            std::printf(sQuadFormat,   Interpreter::gpr(Machine::GPRegister::R0).iQuad);
+            break;
+        case PRINT_SINGLE:
+            std::printf(sSingleFormat, (double)Interpreter::fpr(Machine::FPRegister::FP0).fSingle);
+            break;
+        case PRINT_DOUBLE:
+            std::printf(sDoubleFormat, (double)Interpreter::fpr(Machine::FPRegister::FP0).fDouble);
+            break;
+        case SET_FMT_BYTE:
+            sByteFormat = Interpreter::gpr(Machine::GPRegister::R0).sString;
+            break;
+        case SET_FMT_WORD:
+            sWordFormat = Interpreter::gpr(Machine::GPRegister::R0).sString;
+            break;
+        case SET_FMT_LONG:
+            sLongFormat = Interpreter::gpr(Machine::GPRegister::R0).sString;
+            break;
+        case SET_FMT_QUAD:
+            sQuadFormat = Interpreter::gpr(Machine::GPRegister::R0).sString;
+            break;
+        case SET_FMT_SINGLE:
+            sSingleFormat = Interpreter::gpr(Machine::GPRegister::R0).sString;
+            break;
+        case SET_FMT_DOUBLE:
+            sDoubleFormat = Interpreter::gpr(Machine::GPRegister::R0).sString;
+            break;
+        case CLR_FMT_BYTE:
+            sByteFormat = sDefaultByteFormat;
+            break;
+        case CLR_FMT_WORD:
+            sWordFormat = sDefaultWordFormat;
+            break;
+        case CLR_FMT_LONG:
+            sLongFormat = sDefaultLongFormat;
+            break;
+        case CLR_FMT_QUAD:
+            sQuadFormat = sDefaultQuadFormat;
+            break;
+        case CLR_FMT_SINGLE:
+            sSingleFormat = sDefaultSingleFormat;
+            break;
+        case CLR_FMT_DOUBLE:
+            sDoubleFormat = sDefaultDoubleFormat;
+            break;
+
+        default:
+            std::fprintf(stderr, "\n>>>> Unknown IO operation %d\n", iOperation);
+
+            return Interpreter::UNKNOWN_HOST_CALL;
+            break;
+    }
+
     return Interpreter::RUNNING;
+}
+
 }
 
 /**
@@ -74,7 +170,7 @@ Host::Definition instance(
 
     // Host Vectors
     {
-        outputString,
+        IO::outputString,
         allocate,
         release
     },

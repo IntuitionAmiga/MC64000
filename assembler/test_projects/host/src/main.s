@@ -12,33 +12,28 @@
 ;
 ;   Hello world.
 
-    @define outputString #0 ; output the string in r0
-
     @export main x
 main:
-    lea hello, r0
-    hcf outputString
+    ; set up how we want our countdown number to look
+    lea    count_fmt, r0
+    bsr    io_setfmt_long
+
+    lea    hello, r2
+    move.l #10, r1
+.loop:
+    move.q r1, r0
+    bsr    io_print_long
+    move.q r2, r0
+    bsr    io_print_string
+    dbnz   r1, .loop
 
     @export exit x
 exit:
     rts
 
     @align 0, 8
-doubles:
-    dc.d 1.0, 2.0, 3.0, 4.0
-singles:
-    dc.s 1.0, 2.0, 3.0, 4.0
-quads:
-    ; test that integer format paraer
-    dc.q 1, 2, 3, 4, -1, -2, -3, -4, +1, +2, +3, +4 ; decimal
-    dc.q %1, %10, %11, %100, 0b1, 0b10, 0b11, 0b100 ; binary
-    dc.q @1, @2, @3, @4, 01, 02, 03, 04             ; octlol
-    dc.q $1, $2, $3, $4, 0x1, 0x2, 0x3, 0x4         ; hex
-longs:
-    dc.l 1, 2, 3, 4
-words:
-    dc.w 1, 2, 3, 4
-bytes:
-    dc.b 1, 2, 3, 4
 hello:
-    dc.b "Hello outside world!\n\0"
+    dc.b " >>>> Hello outside world!\n\0"
+
+count_fmt:
+    dc.b "%3d\0"
