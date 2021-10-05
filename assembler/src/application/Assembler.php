@@ -23,6 +23,8 @@ use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\IO;
 use ABadCafe\MC64K\Utils\Log;
 
+use function \is_dir, \is_readable;
+
 /**
  * Assembler
  *
@@ -30,6 +32,7 @@ use ABadCafe\MC64K\Utils\Log;
  */
 class Assembler {
 
+    private string $sLibraryPath;
     private Project\Definition $oProject;
     private Parser\SourceLine\Processor $oParser;
 
@@ -38,7 +41,12 @@ class Assembler {
      *
      * @throws \Exception
      */
-    public function __construct() {
+    public function __construct(string $sLibraryPath) {
+
+        if (!is_dir($sLibraryPath) || !is_readable($sLibraryPath)) {
+            throw new \Exception('Invalid library path ' . $sLibraryPath);
+        }
+        $this->sLibraryPath = realpath($sLibraryPath) . '/';
         $this->oParser  = new Parser\SourceLine\Processor();
     }
 
@@ -49,7 +57,7 @@ class Assembler {
      * @throws \Exception
      */
     public function loadProject(string $sProjectFile): self {
-        $this->oProject = new Project\Definition($sProjectFile);
+        $this->oProject = new Project\Definition($sProjectFile, $this->sLibraryPath);
         State\Coordinator::get()
             ->setGlobalOptions($this->oProject->getOptions())
             ->setGlobalDefinitionSet($this->oProject->getDefinitionSet());

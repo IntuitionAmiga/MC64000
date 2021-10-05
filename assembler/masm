@@ -23,7 +23,7 @@ use ABadCafe\MC64K\Utils\Log;
 require_once 'src/MC64K.php';
 
 if ((int)$_SERVER['argc'] < 2) {
-    echo "No project file specified\nUsage: masm <path to project file>";
+    echo "No project file specified\nUsage: masm <path to project file>\n";
     exit(0);
 }
 
@@ -31,17 +31,19 @@ if ((int)$_SERVER['argc'] < 2) {
 try {
     $sProjectFile = $_SERVER['argv'][1];
 
+    $sLibraryPath = $_SERVER['argv'][2] ?? 'libs/';
+
     if (is_dir($sProjectFile)) {
         $sProjectFile = rtrim($sProjectFile, '/') . '/proj.json';
     }
 
-    $oAssembler   = new Application\Assembler();
+    $oAssembler   = new Application\Assembler($sLibraryPath);
     $oAssembler
         ->loadProject($sProjectFile)
         ->firstPass()
         ->secondPass()
         ->writeBinary();
 } catch (Parser\SourceError $oError) {
-    Log::write($oError->getMessage());
+    Log::write($oError->getMessage() . "\n");
 }
 
