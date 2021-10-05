@@ -33,10 +33,11 @@ use function \preg_match, \rtrim;
 class Define implements Directive\IProcessor {
 
     const
-        EXTRACT_MATCH = '/^\s+@(?:def|define)\s+([a-zA-Z_]{1}[a-zA-Z0-9_]*)\s+(.*)/',
+        EXTRACT_MATCH = '/^\s+@(def|define|equ)\s+([a-zA-Z_]{1}[a-zA-Z0-9_]*)\s+(.*)/',
         KEYWORDS      = [
             'def',
-            'define'
+            'define',
+            'equ'
         ]
     ;
 
@@ -52,8 +53,15 @@ class Define implements Directive\IProcessor {
      */
     public function process(string $sSource): void {
         preg_match(self::EXTRACT_MATCH, rtrim($sSource), $aMatches);
-        if (!empty($aMatches[1]) && !empty($aMatches[2])) {
-            State\Coordinator::get()->getDefinitionSet()->add($aMatches[1], $aMatches[2]);
+        if (!empty($aMatches[2]) && !empty($aMatches[3])) {
+            State\Coordinator::get()
+                ->getDefinitionSet()
+                ->add($aMatches[2], $aMatches[3]);
+            if ('equ' === $aMatches[1]) {
+                State\Coordinator::get()
+                    ->getGlobalDefinitionSet()
+                    ->add($aMatches[2], $aMatches[3]);
+            }
         }
     }
 }

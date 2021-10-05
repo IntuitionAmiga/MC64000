@@ -55,7 +55,9 @@ class Undefine implements Directive\IProcessor {
     public function process(string $sSource): void {
         preg_match(self::EXTRACT_MATCH, rtrim($sSource), $aMatches);
         if (!empty($aMatches[1])) {
-            State\Coordinator::get()->getDefinitionSet()->remove($aMatches[1]);
+            State\Coordinator::get()
+                ->getDefinitionSet()
+                ->remove($aMatches[1]);
         }
     }
 }

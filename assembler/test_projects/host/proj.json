@@ -11,11 +11,14 @@
     },
     "options": {
         "log_code_folds": false,
-        "log_label_add": true,
-        "log_label_ref": true,
-        "log_label_resolve": true
+        "log_label_add": false,
+        "log_label_ref": false,
+        "log_label_resolve": false,
+        "log_chunk_info": true
     },
     "sources": [
+        "lib:standard_test_host/v1.0.0/host.s",
+        "lib:standard_test_host/v1.0.0/io.s",
         "src/main.s"
     ],
     "defines": {

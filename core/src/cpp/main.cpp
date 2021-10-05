@@ -14,7 +14,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "standard_test_host.hpp"
+#include "host/standard_test_host.hpp"
 #include "host/runtime.hpp"
 #include "loader/error.hpp"
 
@@ -33,7 +33,7 @@ int main(int iArgN, const char** aArgV) {
 
         MC64K::Host::Runtime oRuntime(MC64K::StandardTestHost::instance, sExecutableName);
 
-        oRuntime.invoke(MC64K::StandardTestHost::MAIN);
+        oRuntime.invoke(MC64K::StandardTestHost::ABI::MAIN);
 
     } catch (MC64K::Loader::Error& oError) {
         std::printf(

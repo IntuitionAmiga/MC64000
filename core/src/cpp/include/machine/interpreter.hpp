@@ -109,7 +109,7 @@ class Interpreter {
         static void run();
 
         /**
-         * Get a GRP register
+         * Get a GRP register (range checked)
          *
          * @param  unsigned int const uReg
          * @return GPRegister&
@@ -117,12 +117,22 @@ class Interpreter {
         static GPRegister& gpr(unsigned int const uReg);
 
         /**
-         * Get a FPR register
+         * Get a FPR register (range checked)
          *
          * @param  unsigned int const uReg
          * @return FPRegister&
          */
         static FPRegister& fpr(unsigned int const uReg);
+
+        /**
+         * Get the GP register set (array access)
+         */
+        static GPRegister* gpr();
+
+        /**
+         * Get the FP register set (array access)
+         */
+        static FPRegister* fpr();
 
         /**
          * Dump the machine state
@@ -198,6 +208,20 @@ class Interpreter {
  */
 inline Interpreter::Status Interpreter::getStatus() {
     return eStatus;
+}
+
+/**
+ * @inheritDoc
+ */
+inline GPRegister* Interpreter::gpr() {
+    return aoGPR;
+}
+
+/**
+ * @inheritDoc
+ */
+inline FPRegister* Interpreter::fpr() {
+    return aoFPR;
 }
 
 /**

@@ -92,6 +92,15 @@ class Coordinator {
     }
 
     /**
+     * Get the global definition set.
+     *
+     * @return DefinitionSet
+     */
+    public function getGlobalDefinitionSet(): DefinitionSet {
+        return $this->oGlobalDefinitionSet;
+    }
+
+    /**
      * Set the global options. Used during Project import.
      *
      * @param  Options $oOptions

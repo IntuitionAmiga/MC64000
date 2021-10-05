@@ -31,6 +31,7 @@ use function \json_decode, \file_get_contents, \is_countable, \realpath, \dirnam
 class Definition {
 
     private string
+        $sLibraryPath,
         $sBaseDirectory,
         $sName,
         $sDescription,
@@ -51,7 +52,8 @@ class Definition {
      *
      * @param string $sProjectFile
      */
-    public function __construct(string $sProjectFile) {
+    public function __construct(string $sProjectFile, string $sLibraryPath) {
+        $this->sLibraryPath   = $sLibraryPath;
         $this->oOptions       = new State\Options();
         $this->oDefinitionSet = new State\DefinitionSet();
         $this->load($sProjectFile);
@@ -169,7 +171,12 @@ class Definition {
     private function processSources(object $oProjectData): void {
         $this->aSourceFiles = array_map(
             function(string $sSourcePath) {
-                $sSourcePath = $this->sBaseDirectory . $sSourcePath;
+
+                if (preg_match('/^lib\:/', $sSourcePath)) {
+                    $sSourcePath = $this->sLibraryPath . substr($sSourcePath, 4);
+                } else {
+                    $sSourcePath = $this->sBaseDirectory . $sSourcePath;
+                }
                 if (
                     !file_exists($sSourcePath) ||
                     !is_readable($sSourcePath)
