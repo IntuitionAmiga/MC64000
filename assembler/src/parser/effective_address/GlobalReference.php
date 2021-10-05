@@ -62,9 +62,9 @@ class GlobalReference implements IParser, EffectiveAddress\IOther {
                     ->addImportReference($sLabel);
                 return chr(self::IMPORT_INDEX) . pack(Defs\IIntLimits::LONG_BIN_FORMAT, 0);
             } else {
+                $oState->adjustCurrentStatementLength(self::EA_SIZE);
                 $iDisplacement = $oState
                     ->getBranchDisplacementForLabel($sLabel);
-                $oState->adjustCurrentStatementLength(self::EA_SIZE);
                 // Confirm if the displacement is actually undefined
                 if ($iDisplacement === 0) {
                     if (!$oState->getLabelLocation()->isGlobalResolved($sLabel)) {

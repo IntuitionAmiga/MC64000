@@ -235,16 +235,16 @@ Interpreter::Status hostVector() {
             break;
 
         case PRINT_SINGLE: {
-                Machine::FPRegister* aoFPR = Interpreter::fpr();
-                std::printf(sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle);
-            }
+            Machine::FPRegister* aoFPR = Interpreter::fpr();
+            std::printf(sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle);
             break;
+        }
 
         case PRINT_DOUBLE: {
-                Machine::FPRegister* aoFPR = Interpreter::fpr();
-                std::printf(sDoubleFormat, (double)aoFPR[Machine::FPRegister::FP0].fDouble);
-            }
+            Machine::FPRegister* aoFPR = Interpreter::fpr();
+            std::printf(sDoubleFormat, (double)aoFPR[ABI::FLT_REG_0].fDouble);
             break;
+        }
 
         case SET_FMT_BYTE:
             sByteFormat = aoGPR[ABI::PTR_REG_0].sString;

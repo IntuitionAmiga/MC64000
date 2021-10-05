@@ -44,7 +44,7 @@ class PCIndirectDisplacement implements IParser, EffectiveAddress\IOther {
     ];
 
     const
-        MATCHED_DISP = 1
+        MATCHED_DISP     = 1
     ;
 
     /**
