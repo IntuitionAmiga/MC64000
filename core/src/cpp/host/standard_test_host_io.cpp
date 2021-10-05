@@ -12,7 +12,7 @@
  */
 
 #include <cstdio>
-#include "host/standard_test_host.hpp"
+#include "host/standard_test_host_io.hpp"
 #include "machine/register.hpp"
 
 using MC64K::Machine::Interpreter;
@@ -47,89 +47,164 @@ char const* sDoubleFormat = sDefaultDoubleFormat;
 char const* aOpenModes[6] = {"r", "w", "a", "r+", "w+", "a+"};
 
 /**
- * Open a stream
+ * File seek modes
+ */
+int aSeekModes[3] = { SEEK_SET, SEEK_CUR, SEEK_END };
+
+/**
+ * Open a stream. Split out of hook().
+ *
+ * @param Machine::GPRegister* aoGPR
  */
 void openStream(Machine::GPRegister* aoGPR) {
-    unsigned iMode = aoGPR[Machine::GPRegister::R0].uByte;
+    unsigned iMode = aoGPR[ABI::INT_REG_0].uByte;
 
     // Pessimism...
-    aoGPR[Machine::GPRegister::R0].uQuad = ERR_OPEN;
-    if (iMode > MODE_APPEND_UPDATE) {
-        aoGPR[Machine::GPRegister::R8].sString = 0;
+    aoGPR[ABI::INT_REG_0].uQuad = ERR_OPEN;
+    if (iMode > OPEN_APPEND_UPDATE) {
+        aoGPR[ABI::PTR_REG_0].sString = 0;
     } else {
-        std::fprintf(
-            stderr,
-            "Attempting to open %s in %s...\n",
-            aoGPR[Machine::GPRegister::R8].sString,
-            aOpenModes[iMode]
-        );
-
         std::FILE* pStream = std::fopen(
-            aoGPR[Machine::GPRegister::R8].sString,
+            aoGPR[ABI::PTR_REG_0].sString,
             aOpenModes[iMode]
         );
         if (pStream) {
-            aoGPR[Machine::GPRegister::R8].pAny  = pStream;
-            aoGPR[Machine::GPRegister::R0].uQuad = ERR_NONE;
+            aoGPR[ABI::PTR_REG_0].pAny  = pStream;
+            aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
         }
     }
 };
 
+/**
+ * Close a stream. Split out of hook().
+ *
+ * @param Machine::GPRegister* aoGPR
+ */
 void closeStream(Machine::GPRegister* aoGPR) {
-    std::FILE* pStream = (std::FILE*)aoGPR[Machine::GPRegister::R8].pAny;
+    std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny;
     if (pStream) {
         std::fclose(pStream);
-        aoGPR[Machine::GPRegister::R8].pAny  = 0;
-        aoGPR[Machine::GPRegister::R0].uQuad = ERR_NONE;
+        aoGPR[ABI::PTR_REG_0].pAny  = 0;
+        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
     } else {
-        aoGPR[Machine::GPRegister::R0].uQuad = ERR_CLOSE;
-    }
-}
-
-void readStream(Machine::GPRegister* aoGPR) {
-    std::FILE* pStream = (std::FILE*)aoGPR[Machine::GPRegister::R8].pAny;
-    uint8*     pBuffer = aoGPR[Machine::GPRegister::R9].puByte;
-    size_t     uSize   = aoGPR[Machine::GPRegister::R0].uQuad;
-    if (pStream && pBuffer) {
-
-        aoGPR[Machine::GPRegister::R0].uQuad = std::fread(
-            pBuffer,
-            1,
-            uSize,
-            pStream
-        );
-        aoGPR[Machine::GPRegister::R1].uQuad = aoGPR[Machine::GPRegister::R0].uQuad == uSize ? ERR_NONE : ERR_READ;
-    } else {
-        aoGPR[Machine::GPRegister::R0].uQuad = 0;
-        aoGPR[Machine::GPRegister::R1].uQuad = ERR_READ;
-    }
-}
-
-void writeStream(Machine::GPRegister* aoGPR) {
-    std::FILE* pStream = (std::FILE*)aoGPR[Machine::GPRegister::R8].pAny;
-    uint8*     pBuffer = aoGPR[Machine::GPRegister::R9].puByte;
-    size_t     uSize   = aoGPR[Machine::GPRegister::R0].uQuad;
-    if (pStream && pBuffer) {
-        aoGPR[Machine::GPRegister::R0].uQuad = std::fwrite(
-            pBuffer,
-            1,
-            uSize,
-            pStream
-        );
-        aoGPR[Machine::GPRegister::R1].uQuad = aoGPR[Machine::GPRegister::R0].uQuad == uSize ? ERR_NONE : ERR_WRITE;
-    } else {
-        aoGPR[Machine::GPRegister::R0].uQuad = 0;
-        aoGPR[Machine::GPRegister::R1].uQuad = ERR_WRITE;
+        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
     }
 }
 
 /**
- * Basic IO
+ * Read from a stream. Split out of hook().
+ *
+ * @param Machine::GPRegister* aoGPR
+ */
+void readStream(Machine::GPRegister* aoGPR) {
+    std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny;
+    uint8*     pBuffer = aoGPR[ABI::PTR_REG_1].puByte;
+
+    if (pStream && pBuffer) {
+        size_t uSize = aoGPR[ABI::INT_REG_0].uQuad;
+
+        if (uSize) {
+            aoGPR[ABI::INT_REG_0].uQuad = std::fread(
+                pBuffer,
+                1,
+                uSize,
+                pStream
+            );
+            aoGPR[ABI::INT_REG_1].uQuad = aoGPR[ABI::INT_REG_0].uQuad == uSize ?
+                (uint64)ABI::ERR_NONE :
+                (uint64)ERR_READ;
+        } else {
+            aoGPR[ABI::INT_REG_0].uQuad = 0;
+            aoGPR[ABI::INT_REG_1].uQuad = ABI::ERR_BAD_SIZE;
+        }
+    } else {
+        aoGPR[ABI::INT_REG_0].uQuad = 0;
+        aoGPR[ABI::INT_REG_1].uQuad = ABI::ERR_NULL_PTR;
+    }
+}
+
+/**
+ * Write to a stream. Split out of hook().
+ *
+ * @param Machine::GPRegister* aoGPR
+ */
+void writeStream(Machine::GPRegister* aoGPR) {
+    std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny;
+    uint8*     pBuffer = aoGPR[ABI::PTR_REG_1].puByte;
+
+    if (pStream && pBuffer) {
+        size_t uSize   = aoGPR[ABI::INT_REG_0].uQuad;
+
+        if (uSize) {
+            aoGPR[ABI::INT_REG_0].uQuad = std::fwrite(
+                pBuffer,
+                1,
+                uSize,
+                pStream
+            );
+            aoGPR[ABI::INT_REG_1].uQuad = aoGPR[ABI::INT_REG_0].uQuad == uSize ?
+                (uint64)ABI::ERR_NONE :
+                (uint64)ERR_WRITE;
+        } else {
+            aoGPR[ABI::INT_REG_0].uQuad = 0;
+            aoGPR[ABI::INT_REG_1].uQuad = ABI::ERR_BAD_SIZE;
+        }
+    } else {
+        aoGPR[ABI::INT_REG_0].uQuad = 0;
+        aoGPR[ABI::INT_REG_1].uQuad = ABI::ERR_NULL_PTR;
+    }
+}
+
+/**
+ * Seek in a stream. Split out of hook().
+ *
+ * @param Machine::GPRegister* aoGPR
+ */
+void seekStream(Machine::GPRegister* aoGPR) {
+    std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny;
+    if (!pStream) {
+        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
+    } else {
+        int64      iOffset = aoGPR[ABI::INT_REG_0].iQuad;
+        unsigned   iMode   = aoGPR[ABI::INT_REG_1].uByte;
+
+        if (
+            iMode <= FROM_END &&
+            0 == std::fseek(pStream, iOffset, aSeekModes[iMode])
+        ) {
+            aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
+        } else {
+            aoGPR[ABI::INT_REG_0].uQuad = ERR_FILE;
+        }
+    }
+}
+
+/**
+ * Get location within a stream. Split out of hook().
+ *
+ * @param Machine::GPRegister* aoGPR
+ */
+void tellStream(Machine::GPRegister* aoGPR) {
+    std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny;
+    if (pStream) {
+        aoGPR[ABI::INT_REG_0].iQuad = std::ftell(pStream);
+        aoGPR[ABI::INT_REG_1].uQuad = aoGPR[ABI::INT_REG_0].iQuad >= 0 ?
+            (uint64)ABI::ERR_NONE :
+            (uint64)ERR_FILE;
+    } else {
+        aoGPR[ABI::INT_REG_0].iQuad = -1;
+        aoGPR[ABI::INT_REG_1].uQuad =  ABI::ERR_NULL_PTR;
+    }
+}
+
+
+/**
+ * IO::hostVector()
  *
  * The VM has put the byte value of the enumeration on the stack and triggered our HCF vector.
  *
  */
-Interpreter::Status hook() {
+Interpreter::Status hostVector() {
 
     Machine::GPRegister* aoGPR = Interpreter::gpr();
 
@@ -140,28 +215,28 @@ Interpreter::Status hook() {
             break;
 
         case PRINT_STRING:
-            std::fputs(aoGPR[Machine::GPRegister::R8].sString, stdout);
+            std::fputs(aoGPR[ABI::PTR_REG_0].sString, stdout);
             break;
 
         case PRINT_BYTE:
-            std::printf(sByteFormat, aoGPR[Machine::GPRegister::R8].iByte);
+            std::printf(sByteFormat, aoGPR[ABI::PTR_REG_0].iByte);
             break;
 
         case PRINT_WORD:
-            std::printf(sWordFormat, aoGPR[Machine::GPRegister::R0].iWord);
+            std::printf(sWordFormat, aoGPR[ABI::INT_REG_0].iWord);
             break;
 
         case PRINT_LONG:
-            std::printf(sLongFormat, aoGPR[Machine::GPRegister::R0].iLong);
+            std::printf(sLongFormat, aoGPR[ABI::INT_REG_0].iLong);
             break;
 
         case PRINT_QUAD:
-            std::printf(sQuadFormat, aoGPR[Machine::GPRegister::R0].iQuad);
+            std::printf(sQuadFormat, aoGPR[ABI::INT_REG_0].iQuad);
             break;
 
         case PRINT_SINGLE: {
                 Machine::FPRegister* aoFPR = Interpreter::fpr();
-                std::printf(sSingleFormat, (double)aoFPR[Machine::FPRegister::FP0].fSingle);
+                std::printf(sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle);
             }
             break;
 
@@ -172,27 +247,27 @@ Interpreter::Status hook() {
             break;
 
         case SET_FMT_BYTE:
-            sByteFormat = aoGPR[Machine::GPRegister::R8].sString;
+            sByteFormat = aoGPR[ABI::PTR_REG_0].sString;
             break;
 
         case SET_FMT_WORD:
-            sWordFormat = aoGPR[Machine::GPRegister::R8].sString;
+            sWordFormat = aoGPR[ABI::PTR_REG_0].sString;
             break;
 
         case SET_FMT_LONG:
-            sLongFormat = aoGPR[Machine::GPRegister::R8].sString;
+            sLongFormat = aoGPR[ABI::PTR_REG_0].sString;
             break;
 
         case SET_FMT_QUAD:
-            sQuadFormat = aoGPR[Machine::GPRegister::R8].sString;
+            sQuadFormat = aoGPR[ABI::PTR_REG_0].sString;
             break;
 
         case SET_FMT_SINGLE:
-            sSingleFormat = aoGPR[Machine::GPRegister::R8].sString;
+            sSingleFormat = aoGPR[ABI::PTR_REG_0].sString;
             break;
 
         case SET_FMT_DOUBLE:
-            sDoubleFormat = aoGPR[Machine::GPRegister::R8].sString;
+            sDoubleFormat = aoGPR[ABI::PTR_REG_0].sString;
             break;
 
         case CLR_FMT_BYTE:
@@ -219,16 +294,17 @@ Interpreter::Status hook() {
             sDoubleFormat = sDefaultDoubleFormat;
             break;
 
-
         case FILE_OPEN:
             openStream(aoGPR);
             break;
 
-//         case FILE_SEEK:
-//             break;
-//
-//         case FILE_TELL:
-//             break;
+        case FILE_SEEK:
+            seekStream(aoGPR);
+            break;
+
+        case FILE_TELL:
+            tellStream(aoGPR);
+            break;
 
         case FILE_READ:
             readStream(aoGPR);

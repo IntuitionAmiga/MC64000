@@ -17,114 +17,52 @@
 #include "definition.hpp"
 
 using MC64K::Machine::Interpreter;
+using MC64K::Machine::GPRegister;
+using MC64K::Machine::FPRegister;
 
 namespace MC64K {
 namespace StandardTestHost {
+namespace ABI {
 
+/**
+ * Enumeration of entry points the host expects to find in the loaded binary.
+ */
 typedef enum {
     MAIN = 0,
     EXIT = 1
 } EntryPoint;
 
 /**
- * IO routines callable from the VM via hcf
- */
-namespace IO {
-
-/**
- * Call
- *
- * Enumeration of calls in the IO namespace
+ * ABI. Define the registers used for param/return before stack spillage
  */
 typedef enum {
-    INIT = 0,
-    DONE,
+    // r0-r2 (d0-d2) reserved for the first 3 integer parameter/return
+    INT_REG_0 = GPRegister::R0,
+    INT_REG_1 = GPRegister::R1,
+    INT_REG_2 = GPRegister::R2,
 
-    /**
-     * void io_print_string r8/a0 [char const*]
-     *
-     * Print the string pointed to by (r8/a0)
-     */
-    PRINT_STRING,
+    // r8-r10 (a0-a2) reserved for the first 3 pointer parameter/return
+    PTR_REG_0 = GPRegister::R8,
+    PTR_REG_1 = GPRegister::R9,
+    PTR_REG_2 = GPRegister::R10,
 
-    /**
-     * void io_print_<type> r0 [byte, word, long, quad]
-     *
-     * Print the the integer type in r0 using the current format template for the integer type.
-     */
-    PRINT_BYTE,
-    PRINT_WORD,
-    PRINT_LONG,
-    PRINT_QUAD,
+    // fp0-fp2 reserved for the first 3 floating point parameter/return
+    FLT_REG_0 = FPRegister::FP0,
+    FLT_REG_1 = FPRegister::FP1,
+    FLT_REG_2 = FPRegister::FP2,
 
-    /**
-     * void io_print_<type> fp0 [single, double]
-     *
-     * Print the floating point type in fp0 using the cirrent template for the float type
-     */
-    PRINT_SINGLE,
-    PRINT_DOUBLE,
-
-    /**
-     * void io_setfmt_<type> r8/a0 [char const*]
-     *
-     * Set the format template for the type to the string pointed to by (r8/a0)
-     */
-    SET_FMT_BYTE,
-    SET_FMT_WORD,
-    SET_FMT_LONG,
-    SET_FMT_QUAD,
-    SET_FMT_SINGLE,
-    SET_FMT_DOUBLE,
-
-    /**
-     * void io_clrfmt_<type> [void]
-     *
-     * Revert the format template for the type to the host-specified default.
-     */
-    CLR_FMT_BYTE,
-    CLR_FMT_WORD,
-    CLR_FMT_LONG,
-    CLR_FMT_QUAD,
-    CLR_FMT_SINGLE,
-    CLR_FMT_DOUBLE,
-
-    FILE_OPEN,
-    FILE_SEEK,
-    FILE_TELL,
-    FILE_READ,
-    FILE_WRITE,
-    FILE_CLOSE,
-} Call;
+} Register;
 
 /**
- * Allowed modes for file opening
- */
-typedef enum {
-    MODE_READ = 0,
-    MODE_WRITE,
-    MODE_APPEND,
-    MODE_READ_UPDATE,
-    MODE_WRITE_UPDATE,
-    MODE_APPEND_UPDATE
-} OpenMode;
-
-/**
- * Error return values
+ * Common Error codes
  */
 typedef enum {
     ERR_NONE = 0,
-    ERR_EOF,
-    ERR_OPEN,
-    ERR_CREATE,
-    ERR_READ,
-    ERR_WRITE,
-    ERR_CLOSE
-} Error;
+    ERR_NULL_PTR,
+    ERR_BAD_SIZE,
+} Result;
 
-Interpreter::Status hook();
-
-};
+} // namespace ABI
 
 extern MC64K::Host::Definition instance;
 

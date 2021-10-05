@@ -15,7 +15,8 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "host/standard_test_host.hpp"
+#include "host/standard_test_host_io.hpp"
+#include "host/standard_test_host_mem.hpp"
 #include "loader/symbol.hpp"
 #include "host/macros.hpp"
 #include "machine/register.hpp"
@@ -26,28 +27,6 @@ using MC64K::Misc::Version;
 
 namespace MC64K {
 namespace StandardTestHost {
-
-/**
- *  hcf allocate r0 => r0
- */
-Machine::Interpreter::Status allocate() {
-    uint64 uSize = Interpreter::gpr(0).uQuad;
-    void *p = std::malloc(uSize);
-    if (!p) {
-        throw MC64K::OutOfMemoryException();
-    }
-    Interpreter::gpr(0).pAny = p;
-    return Interpreter::RUNNING;
-}
-
-/**
- *  hcf free r0
- */
-Machine::Interpreter::Status release() {
-    void* p = Interpreter::gpr(0).pAny;
-    std::free(p);
-    return Interpreter::RUNNING;
-}
 
 /**
  * Example host provided global data
@@ -65,11 +44,10 @@ Host::Definition instance(
     "Standard Test Host",
     Version(1, 0, 0),
 
-    // Host Vectors
+    // Host ABI Vectors
     {
-        IO::hook,
-        allocate,
-        release
+        IO::hostVector,
+        Mem::hostVector,
     },
 
     // Symbols this host exports to the virtual code.
