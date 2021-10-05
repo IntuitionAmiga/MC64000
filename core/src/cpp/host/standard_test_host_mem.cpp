@@ -37,74 +37,73 @@ Interpreter::Status hostVector() {
             break;
 
         case ALLOC: {
-                uint64 uSize = aoGPR[ABI::INT_REG_0].uQuad;
-                if (uSize) {
-                    void *pBuffer = std::malloc(uSize);
-                    aoGPR[ABI::PTR_REG_0].pAny  = pBuffer;
-                    aoGPR[ABI::INT_REG_0].uQuad = pBuffer ?
-                        (uint64)ABI::ERR_NONE :
-                        (uint64)ERR_NO_MEM;
-                } else {
-                    aoGPR[ABI::PTR_REG_0].pAny  = 0;
-                    aoGPR[ABI::INT_REG_0].uQuad = ERR_MEM;
-                }
+            uint64 uSize = aoGPR[ABI::INT_REG_0].uQuad;
+            if (uSize) {
+                void *pBuffer = std::malloc(uSize);
+                aoGPR[ABI::PTR_REG_0].pAny  = pBuffer;
+                aoGPR[ABI::INT_REG_0].uQuad = pBuffer ?
+                    (uint64)ABI::ERR_NONE :
+                    (uint64)ERR_NO_MEM;
+            } else {
+                aoGPR[ABI::PTR_REG_0].pAny  = 0;
+                aoGPR[ABI::INT_REG_0].uQuad = ERR_MEM;
             }
             break;
+        }
 
         case FREE: {
-                std::free(aoGPR[ABI::PTR_REG_0].pAny);
-                aoGPR[ABI::PTR_REG_0].pAny = 0;
-            }
+            std::free(aoGPR[ABI::PTR_REG_0].pAny);
+            aoGPR[ABI::PTR_REG_0].pAny = 0;
             break;
+        }
+
 
         case COPY: {
-                uint64 uSize = aoGPR[ABI::INT_REG_0].uQuad;
-                if (uSize) {
-                    void* pFrom = aoGPR[ABI::PTR_REG_0].pAny;
-                    void* pTo   = aoGPR[ABI::PTR_REG_1].pAny;
-                    if (pFrom && pTo) {
-                        std::memcpy(pTo, pFrom, uSize);
-                        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
-                    } else {
-                        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
-                    }
+            uint64 uSize = aoGPR[ABI::INT_REG_0].uQuad;
+            if (uSize) {
+                void* pFrom = aoGPR[ABI::PTR_REG_0].pAny;
+                void* pTo   = aoGPR[ABI::PTR_REG_1].pAny;
+                if (pFrom && pTo) {
+                    std::memcpy(pTo, pFrom, uSize);
+                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
                 } else {
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
+                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
                 }
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
             }
             break;
+        }
 
         case FILL_BYTE: {
-                uint64 uSize = aoGPR[ABI::INT_REG_0].uQuad;
-                if (uSize) {
-                    void* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
-                    if (pBuffer) {
-                        std::memset(pBuffer, aoGPR[ABI::INT_REG_0].uByte, uSize);
-                        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
-                    } else {
-                        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
-                    }
+            uint64 uSize = aoGPR[ABI::INT_REG_0].uQuad;
+            if (uSize) {
+                void* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
+                if (pBuffer) {
+                    std::memset(pBuffer, aoGPR[ABI::INT_REG_0].uByte, uSize);
+                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
                 } else {
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
+                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
                 }
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
             }
             break;
+        }
+
 
 // TODO
 //         case FILL_WORD: {
-//
-//             }
 //             break;
+//         }
 //
 //         case FILL_LONG: {
-//
-//             }
 //             break;
+//         }
 //
 //         case FILL_QUAD: {
-//
-//             }
 //             break;
+//         }
         default:
             std::fprintf(stderr, "Unknown Mem operation %d\n", iOperation);
             return Interpreter::UNKNOWN_HOST_CALL;
