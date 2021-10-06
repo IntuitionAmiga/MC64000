@@ -31,7 +31,7 @@ use function \preg_match, \rtrim;
  */
 class Export implements Directive\IProcessor {
 
-    const
+    private const
         EXTRACT_MATCH = '/^\s+@export\s+(' . Defs\ILabel::BASIC_MATCH . ')' . Defs\ILabel::IE_SUFFIX_MATCH . '/',
         KEYWORDS      = [
             'export'

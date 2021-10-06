@@ -34,7 +34,7 @@ use function \preg_match, \rtrim;
  */
 class Undefine implements Directive\IProcessor {
 
-    const
+    private const
         EXTRACT_MATCH = '/^\s+@(?:undef|undefine)\s+([a-zA-Z_]{1}[a-zA-Z0-9_]*)/',
         KEYWORDS      = [
             'undef',

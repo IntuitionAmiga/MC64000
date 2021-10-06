@@ -29,7 +29,7 @@ use function \preg_match, \strtolower;
  */
 class Statement implements SourceLine\IParser {
 
-    const
+    private const
         BASIC_LINE_MATCH = '/^\s+@([a-zA-Z_]+)\s+/'
     ;
 
