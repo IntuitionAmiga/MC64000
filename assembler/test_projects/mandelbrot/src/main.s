@@ -26,6 +26,9 @@ main:
 ; a5 : output file handle
 ; d7 : num pixels
 
+
+    move.q  #IO_OPEN_READ, d0
+
     ; save the pixel count in d7
     move.q  #1, d7
     lsl.q   #IMAGE_AREA_DIM, d7
