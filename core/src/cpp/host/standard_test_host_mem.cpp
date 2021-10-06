@@ -80,7 +80,7 @@ Interpreter::Status hostVector() {
             if (uSize) {
                 void* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
                 if (pBuffer) {
-                    std::memset(pBuffer, aoGPR[ABI::INT_REG_0].uByte, uSize);
+                    std::memset(pBuffer, aoGPR[ABI::INT_REG_1].uByte, uSize);
                     aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
                 } else {
                     aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;

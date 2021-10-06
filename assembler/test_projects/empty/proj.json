@@ -16,6 +16,7 @@
         "log_label_resolve": false
     },
     "sources": [
+        "lib:standard_test_host/v1.0.0/host.s",
         "src/main.s"
     ],
     "defines": {

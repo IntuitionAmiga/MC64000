@@ -1,0 +1,27 @@
+{
+    "target": {
+        "name": "Mandelbrot",
+        "version": "1.0.0",
+        "description": "Mandelbrot test",
+        "output": "bin/mandelbrot.mc64k",
+        "host": {
+            "name": "Standard Test Host",
+            "version": "1.0.0"
+        }
+    },
+    "options": {
+        "log_code_folds": true,
+        "log_label_add": true,
+        "log_label_ref": false,
+        "log_label_resolve": false,
+        "log_chunk_info": true
+    },
+    "sources": [
+        "lib:standard_test_host/v1.0.0/host.s",
+        "lib:standard_test_host/v1.0.0/mem.s",
+        "lib:standard_test_host/v1.0.0/io.s",
+        "src/main.s"
+    ],
+    "defines": {
+    }
+}
