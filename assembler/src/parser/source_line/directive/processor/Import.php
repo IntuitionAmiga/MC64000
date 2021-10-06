@@ -29,7 +29,7 @@ use function \preg_match, \rtrim;
  */
 class Import implements Directive\IProcessor {
 
-    const
+    private const
         EXTRACT_MATCH = '/^\s+@import\s+(' . Defs\ILabel::BASIC_MATCH .  ')' . Defs\ILabel::IE_SUFFIX_MATCH . '/',
         KEYWORDS      = [
             'import'

@@ -32,13 +32,10 @@ use function \preg_match, \pack;
  */
 class BranchDisplacement implements MC64K\IParser {
 
-    const
-        MATCH_NUMERIC = '/^#' . Parser\EffectiveAddress\IParser::D32 . '$/',
+    private const
         MATCH_LABEL   = '/^(\.){0,1}[a-zA-Z_]{1}[0-9a-zA-Z_]{0,}$/',
         MATCHED_LABEL = 0,
-        MATCHED_LOCAL = 1,
-        MATCHED_DISP  = 1,
-        MATCHED_HEX   = 2
+        MATCHED_LOCAL = 1
     ;
 
     private int $iLastDisplacement = Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT;
