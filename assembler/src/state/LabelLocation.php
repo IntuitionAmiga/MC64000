@@ -61,15 +61,16 @@ class LabelLocation {
     /** @var int[] $aLabelIEQualification */
     private array $aLabelIEQualification = [];
 
+    /** @const string[] IE_MODES */
     const IE_MODES = [
-        '---',
+        '---', // Not really valid.
         'r--',
         '-w-',
         'rw-',
         '--x',
         'r-x',
-        '-wx',
-        'rwx'
+        '-wx', // Danger!
+        'rwx'  // Danger!
     ];
 
     /**
@@ -86,7 +87,7 @@ class LabelLocation {
     public function registerExport(string $sLabel, string $sIEQualification): self {
         $this->assertLabel($sLabel);
         if (isset($this->aImportedLabels[$sLabel])) {
-            throw new \Exception("Label " . $sLabel . " is already registered as an import");
+            throw new \Exception("Label '" . $sLabel . "' is already registered as an import");
         }
         $this->aExportedLabels[$sLabel] = $sLabel;
         $this->addIEQualification($sLabel, $this->parseIEQualification($sIEQualification));
@@ -107,7 +108,7 @@ class LabelLocation {
     public function registerImport(string $sLabel, string $sIEQualification): self {
         $this->assertLabel($sLabel);
         if (isset($this->aExportedLabels[$sLabel])) {
-            throw new \Exception("Label " . $sLabel . " is already registered as an export");
+            throw new \Exception("Label '" . $sLabel . "' is already registered as an export");
         }
         if (!isset($this->aImportedLabels[$sLabel])) {
             $this->aImportedLabels[$sLabel] = [];
@@ -136,8 +137,8 @@ class LabelLocation {
         $this->assertLabel($sLabel);
         if (isset($this->aGlobalLabels[$sLabel])) {
             throw new \Exception(
-                'Duplicate global: '    . $sLabel .
-                ' already declared in ' . $this->aGlobalLabels[$sLabel][self::I_FILE] .
+                "Duplicate global: '"    . $sLabel .
+                "' already declared in " . IO\SourceFile::shortenFilename($this->aGlobalLabels[$sLabel][self::I_FILE]) .
                 ' on line ' . $this->aGlobalLabels[$sLabel][self::I_LINE]
             );
         }
@@ -149,10 +150,10 @@ class LabelLocation {
         ];
         if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_ADD)) {
             Log::printf(
-                "Added global label '%s' on line %d of %s, code position %d",
+                "Added global label '%s' on line %d of %s, BCP #%d",
                 $sLabel,
                 $iLine,
-                $oFile->getFilename(),
+                $oFile->getShortFilename(),
                 $iOffset
             );
         }
@@ -173,9 +174,9 @@ class LabelLocation {
         $sCurrentFile = $oFile->getFilename();
         if (isset($this->aLocalLabels[$sCurrentFile][$sLabel])) {
             throw new \Exception(
-                'Duplicate local: '     . $sLabel .
-                ' already declared in ' . $sCurrentFile .
-                ' on line '             . $this->aLocalLabels[$sCurrentFile][$sLabel][self::I_LINE]
+                "Duplicate local: '"     . $sLabel .
+                "' already declared in " . IO\SourceFile::shortenFilename($sCurrentFile) .
+                ' on line '              . $this->aLocalLabels[$sCurrentFile][$sLabel][self::I_LINE]
             );
         }
         $iLine = $oFile->getLineNumber();
@@ -185,7 +186,7 @@ class LabelLocation {
         ];
         if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_ADD)) {
             Log::printf(
-                "Added local label '%s' on line %d, code position %d",
+                "Added local label '%s' on line %d, BCP #%d",
                 $sLabel,
                 $iLine,
                 $iOffset
@@ -225,7 +226,7 @@ class LabelLocation {
         if (isset($this->aLocalLabels[$sFile][$sLabel])) {
             if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_RESOLVE)) {
                 Log::printf(
-                    "Resolved local label '%s' to bytecode position %d",
+                    "Resolved local label '%s' to BCP #%d",
                     $sLabel,
                     $this->aLocalLabels[$sFile][$sLabel][self::I_OFST]
                 );
@@ -245,7 +246,7 @@ class LabelLocation {
         if (isset($this->aGlobalLabels[$sLabel])) {
             if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_RESOLVE)) {
                 Log::printf(
-                    "Resolved label '%s' to bytecode position %d",
+                    "Resolved label '%s' to BCP #%d",
                     $sLabel,
                     $this->aGlobalLabels[$sLabel][self::I_OFST]
                 );
@@ -272,7 +273,7 @@ class LabelLocation {
         }
         if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_ADD)) {
             Log::printf(
-                "Recorded reference to unresolved label '%s' at bytecode position %d",
+                "Recorded reference to unresolved label '%s' at BCP #%d",
                 $sLabel,
                 $iLocation
             );
@@ -302,7 +303,7 @@ class LabelLocation {
         $iCurrentLineNumber = $oFile->getLineNumber();
         if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_ADD)) {
             Log::printf(
-                "Recorded reference to imported label '%s' at bytecode position %d",
+                "Recorded reference to imported label '%s' at BCP #%d",
                 $sLabel,
                 $iLocation
             );
@@ -448,6 +449,8 @@ class LabelLocation {
     }
 
     /**
+     * Return the integer bitmask representation of the import/export qualification string.
+     *
      * @param  string $sIEQualification
      * @return int
      */

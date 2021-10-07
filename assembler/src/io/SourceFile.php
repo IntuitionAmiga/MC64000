@@ -17,7 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\IO;
 
-use function \file_exists, \is_readable, \fopen, \fclose, \fgets;
+use function \file_exists, \is_readable, \fopen, \fclose, \fgets, \strlen, \substr;
 
 /**
  * SourceFile
@@ -25,6 +25,9 @@ use function \file_exists, \is_readable, \fopen, \fclose, \fgets;
  * Primary implementation of the ISourceFile interface for reading source files from disk.
  */
 final class SourceFile implements ISourceFile {
+
+    const SHORT_LENGTH = 48;
+
     /** @var resource $rSource */
     private        $rSource;
     private string $sFilename;
@@ -56,7 +59,7 @@ final class SourceFile implements ISourceFile {
     }
 
     /**
-     * @return string|null
+     * @inheritDoc
      */
     public function readLine(): ?string {
         $sLine = fgets($this->rSource);
@@ -70,38 +73,48 @@ final class SourceFile implements ISourceFile {
     }
 
     /**
-     * Get the name of the file
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getFilename(): string {
         return $this->sFilename;
     }
 
     /**
-     * Get the current line number
-     *
-     * @return int
+     * @inheritDoc
+     */
+    public function getShortFilename(): string {
+        return self::shortenFilename($this->sFilename);
+    }
+
+    /**
+     * @inheritDoc
      */
     public function getLineNumber(): int {
         return $this->iLineNumber;
     }
 
     /**
-     * Get the current line content
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getLine(): string {
         return $this->sCurrentLine;
     }
 
     /**
-     * Get the preceding line content
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getPrecedingLine(): string {
         return $this->sLastLine;
+    }
+
+    /**
+     * @param  string
+     * @return string
+     */
+    public static function shortenFilename(string $sFilename): string {
+        return strlen($sFilename) > self::SHORT_LENGTH ?
+            '...' . substr($sFilename, 3 - self::SHORT_LENGTH) :
+            $sFilename
+        ;
     }
 }

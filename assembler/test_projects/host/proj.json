@@ -3,7 +3,7 @@
         "name": "Host",
         "version": "1.0.0",
         "description": "Simple tests for the Standard Test Host",
-        "output": "bin/host.mc64k",
+        "output": "bin/host.64x",
         "host": {
             "name": "Standard Test Host",
             "version": "1.0.0"
@@ -11,9 +11,9 @@
     },
     "options": {
         "log_code_folds": false,
-        "log_label_add": false,
-        "log_label_ref": false,
-        "log_label_resolve": false,
+        "log_label_add": true,
+        "log_label_ref": true,
+        "log_label_resolve": true,
         "log_chunk_info": true
     },
     "sources": [

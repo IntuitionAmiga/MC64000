@@ -1,8 +1,8 @@
 {
     "target": {
-        "name": "Folding",
+        "name": "First",
         "version": "1.0.0",
-        "description": "Tests code fold optimisation in assembler",
+        "description": "The DIY Hello World",
         "output": "bin/first.64x",
         "host": {
             "name": "Standard Test Host",
@@ -16,13 +16,8 @@
         "log_label_resolve": false
     },
     "sources": [
-        "src/main.s",
-        "src/fold_to_empty.s",
-        "src/fold_to_fixed.s",
-        "src/fold_to_clear.s"
+        "src/main.s"
     ],
     "defines": {
-        "F_PI": "#3.1415926535898",
-        "get_to_the_chopper": "rts"
     }
 }
