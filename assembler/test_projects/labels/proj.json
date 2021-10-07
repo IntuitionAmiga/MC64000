@@ -3,7 +3,7 @@
         "name": "Labels",
         "version": "1.0.0",
         "description": "Test for labels",
-        "output": "bin/labels.mc64k",
+        "output": "bin/labels.64x",
         "host": {
             "name": "Standard Test Host",
             "version": "1.0.0"

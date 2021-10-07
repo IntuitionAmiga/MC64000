@@ -3,7 +3,7 @@
         "name": "Empty",
         "version": "1.0.0",
         "description": "Empty prototype",
-        "output": "bin/empty.mc64k",
+        "output": "bin/empty.64x",
         "host": {
             "name": "Standard Test Host",
             "version": "1.0.0"

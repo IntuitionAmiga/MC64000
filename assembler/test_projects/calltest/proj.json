@@ -3,7 +3,7 @@
         "name": "Call test",
         "version": "1.0.0",
         "description": "Function Call Test",
-        "output": "bin/calltest.mc64k",
+        "output": "bin/calltest.64x",
         "host": {
             "name": "Standard Test Host",
             "version": "1.0.0"

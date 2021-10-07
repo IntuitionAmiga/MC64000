@@ -3,7 +3,7 @@
         "name": "Host",
         "version": "1.0.0",
         "description": "Simple tests for the Standard Test Host",
-        "output": "bin/host.mc64k",
+        "output": "bin/host.64x",
         "host": {
             "name": "Standard Test Host",
             "version": "1.0.0"
