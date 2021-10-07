@@ -25,41 +25,50 @@ The entire assembler sourcecode is located under the `./assembler` in the source
 
 At the time of writing, usage of _masm_ amounts to:
 ```
-./masm <path to project file>
+./masm <path to project file> [library path]
 ```
+The libary path tells masm where common shared code libraries exist. The default location is ./libs.
 
 ### Project Files
 
-The key to assembling with _masm_ is to define the project file. This is a JSON document. A minimum example might be:
+The key to assembling with _masm_ is to define the project file. This is a JSON document. A minimalist example:
 
-```
+```json
 {
-    "name": "Example",
-    "description": "Optional description here.",
-    "output": "bin/example.mc64k",
-    "options": {
-        "log_code_folds": true
+    "target": {
+        "name": "Minimal",
+        "version": "1.0.0",
+        "description": "Bare bones",
+        "output": "bin/minimal.64x",
+        "host": {
+            "name": "Standard Test Host",
+            "version": "1.0.0"
+        }
     },
-    "defines": {
-        "F_PI": "#3.1415926535898"
-    }
+    "options": {
+        "log_code_folds": false,
+        "log_label_add": false,
+        "log_label_ref": false,
+        "log_label_resolve": false
+    },
     "sources": [
-        "src/example.s"
-    ]
+        "src/main.s"
+    ],
+    "defines": {
+    }
 }
-
 ```
 
 Note that all paths are relative to the location of the project file itself. The following sections are mandatory:
 
-* _name_
-    * Short name of the project.
-* _output_
-    * Location of the output binary,
+* _target_
+    * Defines the name, version and expectd host attributes of the binary.
+    * Semantic versioning is used by the host to see if it meets the requirements specified in this section when loading,
 * _sources_
     * List of sources to assemble.
     * Sources are assembled in the strict order given.
     * Files declared here must exist when _masm_ is invoked.
+    * Paths beginning with `lib:` are accepted. These refer to shared source in the library path.
 
 The optional _options_ section is a key-value set of options for the assembler. All values are scalar. Non-scalar values will be ignored. Currently, the following are defined:
 
@@ -95,13 +104,16 @@ Directives are instructions for the assembler that are embedded within a source 
 The following directives exist:
 
 * define
-    * Defines a string substitution.
+    * Defines a local source string substitution, file scope only.
     * `@define <name> <value>`
     * `@def` accepted as short form.
 * undefine
     * Removes a string substitution.
     * `@undefine <name>`
     * `@undef` accepted as short form.
+* equ
+    * Similar to define but has global scope. Can be undefined, with current file-scope effect only.
+    * `@equ <name> <value>`
 * enable
     * Turns on a switch _option_.
     * `@enable <option>`
@@ -112,6 +124,19 @@ The following directives exist:
     * `@dis` accepted as short form.
 * export
     * Indicates that a global label is to be exported.
-    * `@export <label>`
+    * `@export <label> [access flags]`
     * As the label to export must be global, the directive does not have to be in the same file as the definition.
     * Only exported labels are visible to code outside the assembled binary.
+    * Access flags are any comination of rwx:
+        * r indicates that the label is readable.
+        * w indicates that the label is writeable.
+        * x indicates that the label is executable.
+* import
+    * Declares the name of a global label that is to be imported.
+    * `@import <label> [access flags]`
+    * Imported labels refer to entities that are expected to be exposed to the binary by the host environment.
+    * Access flags are the same as for export.
+* align
+    * Aligns whatever follows the directive to a chosen boundary by padding.
+    * `@align <pad byte>, <alignment>`
+  
