@@ -37,7 +37,7 @@ class GlobalReference implements IParser, EffectiveAddress\IOther {
     /**
      * Required match
      */
-    const MATCH = '/^[a-zA-Z_]{1}[0-9a-zA-Z_]{0,}$/';
+    const MATCH = '/^(\.){0,1}[a-zA-Z_]{1}[0-9a-zA-Z_]{0,}$/';
 
     const EA_SIZE = 5;
 

@@ -46,7 +46,7 @@ class SourceString implements ISourceFile {
     }
 
     /**
-     * @return string|null
+     * @inheritDoc
      */
     public function readLine(): ?string {
         if ($this->iLineNumber < $this->iCount) {
@@ -56,27 +56,28 @@ class SourceString implements ISourceFile {
     }
 
     /**
-     * Get the name of the file
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getFilename(): string {
         return $this->sFilename;
     }
 
     /**
-     * Get the current line number
-     *
-     * @return int
+     * @inheritDoc
+     */
+    public function getShortFilename(): string {
+        return $this->sFilename;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function getLineNumber(): int {
         return $this->iLineNumber + 1;
     }
 
     /**
-     * Get the current line content
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getLine(): string {
         return $this->aLines[$this->iLineNumber];

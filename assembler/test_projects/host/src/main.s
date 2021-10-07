@@ -15,11 +15,12 @@
     @export main x
 main:
     ; set up how we want our countdown number to look
-    lea     count_fmt, a0
+    lea     .count_fmt, a0
     bsr     io_set_fmt_long
 
-    lea     hello_string, a1
+    lea     .hello_string, a1
     move.l  #10, d1
+
 .loop:
     move.q  d1, d0
     bsr     io_print_long
@@ -32,10 +33,9 @@ exit:
     rts
 
     @align 0, 8
-
-hello_string:
+.hello_string:
     dc.b " >>>> Hello real world!\n\0"
 
-count_fmt:
+.count_fmt:
     dc.b "\t%3d\0"
 

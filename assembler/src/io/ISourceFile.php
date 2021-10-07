@@ -37,6 +37,13 @@ interface ISourceFile {
     public function getFilename(): string;
 
     /**
+     * Get the length-trunated right justified of the file
+     *
+     * @return string
+     */
+    public function getShortFilename(): string;
+
+    /**
      * Get the current line number
      *
      * @return int
