@@ -19,6 +19,7 @@ namespace ABadCafe\MC64K\Process;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Utils\Log;
+use ABadCafe\MC64K\IO;
 
 use function \count, \pack;
 
@@ -51,9 +52,9 @@ class SecondPass {
             $iDisplacement = $iTargetOffset - $iReferenceOffset - Defs\IBranchLimits::DISPLACEMENT_SIZE;
             $bLogResolution &&
             Log::printf(
-                "\tReference to %s (%s@%d) at offset %d points to offset %d, displacement size is %d",
+                "\tReference to '%s' (%s@%d) at BCP #%d points to BCP #%d, displacement size is %d",
                 $oResolved->sLabel,
-                $oResolved->sFilename,
+                IO\SourceFile::shortenFilename($oResolved->sFilename),
                 $oResolved->iLineNumber,
                 $iReferenceOffset,
                 $iTargetOffset,
@@ -105,7 +106,7 @@ class SecondPass {
                 $bLogResolution &&
                 Log::printf(
                     "\t\tReference (%s@%d) at offset %d",
-                    $oReference->sFilename,
+                    IO\SourceFile::shortenFilename($oReference->sFilename),
                     $oReference->iLineNumber,
                     $oReference->iLocation
                 );

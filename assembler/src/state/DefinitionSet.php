@@ -102,9 +102,4 @@ class DefinitionSet {
         $aDefinitions = $this->getDefinitions();
         return str_replace(array_keys($aDefinitions), array_values($aDefinitions), $sInput);
     }
-
-    public function debug() {
-        print_r($this->aDefinitions);
-        return $this;
-    }
 }

@@ -23,7 +23,7 @@ use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\IO;
 use ABadCafe\MC64K\Utils\Log;
 
-use function \is_dir, \is_readable;
+use function \is_dir, \is_readable, \realpath;
 
 /**
  * Assembler

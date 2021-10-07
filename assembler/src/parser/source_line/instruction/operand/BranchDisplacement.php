@@ -60,7 +60,6 @@ class BranchDisplacement implements MC64K\IParser {
             return pack(Defs\IIntLimits::LONG_BIN_FORMAT, $this->iLastDisplacement);
         }
 
-        // TODO - handle labels
         if (preg_match(self::MATCH_LABEL, $sSource, $aMatches)) {
             $this->iLastDisplacement = State\Coordinator::get()
                ->getBranchDisplacementForLabel($aMatches[self::MATCHED_LABEL]);
