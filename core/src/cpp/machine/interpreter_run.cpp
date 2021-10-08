@@ -283,8 +283,8 @@ void Interpreter::run() {
             case Opcode::FMOVED_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asDouble(pSrcEA); break;
 
             // FPR save/restore
-            case Opcode::FMOVE_S:  dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asSingle(pSrcEA);  break;
-            case Opcode::FMOVE_D:  dyadic(SIZE_QUAD); asDouble(pDstEA) = (float64)asDouble(pSrcEA);  break;
+            case Opcode::FMOVE_S:  dyadic(SIZE_LONG); asLong(pDstEA) = asLong(pSrcEA);  break;
+            case Opcode::FMOVE_D:  dyadic(SIZE_QUAD); asQuad(pDstEA) = asQuad(pSrcEA);  break;
 
             // DataMove - clr
             case Opcode::CLR_B:    monadic(SIZE_BYTE); asUByte(pDstEA) = 0; break;
