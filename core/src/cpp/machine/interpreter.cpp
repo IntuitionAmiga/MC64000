@@ -169,22 +169,47 @@ void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
     }
     if (uFlags & STATE_GPR) {
         std::fprintf(poStream, "GP Registers (%p)\n", aoGPR);
+            std::fprintf(
+                poStream,
+                "\tRn : %18s | %20s | %12s | %6s | %4s\n",
+                "Raw Data",
+                "Quad",
+                "Long",
+                "Word",
+                "Byte"
+            );
+
         for (unsigned u = 0; u < GPRegister::MAX; ++u) {
             std::fprintf(
                 poStream,
-                "\t%2u : 0x%016lX\n",
+                "\t%2u : 0x%016lX | %20" PFS64
+                " | %12" PFS32
+                " | %6"  PFS32
+                " | %4"  PFS32 "\n",
                 u,
-                aoGPR[u].uQuad
+                aoGPR[u].uQuad,
+                aoGPR[u].iQuad,
+                aoGPR[u].iLong,
+                (int)aoGPR[u].iWord,
+                (int)aoGPR[u].iByte
             );
         }
         std::fprintf(poStream, "\n");
     }
     if (uFlags & STATE_FPR) {
         std::fprintf(poStream, "FP Registers (%p)\n", aoFPR);
+        std::fprintf(
+            poStream,
+            "\tRn : %18s | %25s | %14s\n",
+            "Raw Data",
+            "Double",
+            "Single"
+        );
+
         for (unsigned u = 0; u < FPRegister::MAX; ++u) {
             std::fprintf(
                 poStream,
-                "\t%2u : 0x%016lX %.15e %.7e\n",
+                "\t%2u : 0x%016lX | %25.17e | %14.7e\n",
                 u,
                 aoFPR[u].uBinary,
                 aoFPR[u].fDouble,

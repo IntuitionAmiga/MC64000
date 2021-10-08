@@ -26,11 +26,11 @@ use function \rtrim, \preg_match, \stripcslashes, \pack, \array_map, \explode;
 /**
  * Declaration
  *
- * Handles in-line constant data declarations.
+ * Handles in-line constant/mutable data declarations.
  */
 class Declaration implements SourceLine\IParser {
 
-    const BASIC_LINE_MATCH  = '/^\s+dc\.([bwlqsd])\s+(.*?)$/';
+    const BASIC_LINE_MATCH  = '/^\s+d[cm]\.([bwlqsd])\s+(.*?)$/';
     const IDX_TYPE = 1;
     const IDX_DATA = 2;
 
