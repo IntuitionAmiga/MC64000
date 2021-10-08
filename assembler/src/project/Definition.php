@@ -22,7 +22,7 @@ use ABadCafe\MC64K\Utils\Log;
 
 use function \file_exists, \is_readable, \count, \array_map, \is_object, \is_array;
 use function \json_decode, \file_get_contents, \is_countable, \realpath, \dirname;
-
+use function \preg_match, \substr;
 /**
  * Definition
  *

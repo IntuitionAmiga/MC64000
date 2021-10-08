@@ -64,13 +64,21 @@ void openStream(Machine::GPRegister* aoGPR) {
     if (iMode > OPEN_APPEND_UPDATE) {
         aoGPR[ABI::PTR_REG_0].sString = 0;
     } else {
+
+        printf("\nAttempting to open file %s in %s\n", aoGPR[ABI::PTR_REG_0].sString, aOpenModes[iMode]);
+
         std::FILE* pStream = std::fopen(
             aoGPR[ABI::PTR_REG_0].sString,
             aOpenModes[iMode]
         );
         if (pStream) {
+
+            printf("\nOpened file %s in %s\n", aoGPR[ABI::PTR_REG_0].sString, aOpenModes[iMode]);
+
             aoGPR[ABI::PTR_REG_0].pAny  = pStream;
             aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
+        } else {
+            aoGPR[ABI::PTR_REG_0].pAny  = 0;
         }
     }
 };
@@ -219,7 +227,7 @@ Interpreter::Status hostVector() {
             break;
 
         case PRINT_BYTE:
-            std::printf(sByteFormat, aoGPR[ABI::PTR_REG_0].iByte);
+            std::printf(sByteFormat, aoGPR[ABI::INT_REG_0].iByte);
             break;
 
         case PRINT_WORD:
@@ -316,6 +324,50 @@ Interpreter::Status hostVector() {
 
         case FILE_CLOSE:
             closeStream(aoGPR);
+            break;
+
+        case FILE_PRINT_STRING:
+            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
+                std::fputs(aoGPR[ABI::PTR_REG_1].sString, pStream);
+            }
+            break;
+
+        case FILE_PRINT_BYTE:
+            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
+                std::fprintf(pStream, sByteFormat, aoGPR[ABI::INT_REG_0].iByte);
+            }
+            break;
+
+        case FILE_PRINT_WORD:
+            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
+                std::fprintf(pStream, sWordFormat, aoGPR[ABI::INT_REG_0].iWord);
+            }
+            break;
+
+        case FILE_PRINT_LONG:
+            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
+                std::fprintf(pStream, sLongFormat, aoGPR[ABI::INT_REG_0].iLong);
+            }
+            break;
+
+        case FILE_PRINT_QUAD:
+            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
+                std::fprintf(pStream, sQuadFormat, aoGPR[ABI::INT_REG_0].iQuad);
+            }
+            break;
+
+        case FILE_PRINT_SINGLE:
+            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
+                Machine::FPRegister* aoFPR = Interpreter::fpr();
+                std::fprintf(pStream, sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle);
+            }
+            break;
+
+        case FILE_PRINT_DOUBLE:
+            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
+                Machine::FPRegister* aoFPR = Interpreter::fpr();
+                std::fprintf(pStream, sDoubleFormat, (double)aoFPR[ABI::FLT_REG_0].fDouble);
+            }
             break;
 
         default:

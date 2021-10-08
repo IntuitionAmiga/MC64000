@@ -142,6 +142,33 @@ typedef enum {
      * On failure, returns the error code in r0/d0.
      */
     FILE_CLOSE,
+
+    /**
+     * func io_print_string(r8/a0 FILE* file, r9/a1 [char const*] string) => void
+     *
+     * Print the string pointed to by (r9/a1) to the file pointed to by (r8/a0)
+     */
+    FILE_PRINT_STRING,
+
+    /**
+     * func io_print_<byte:word:long:quad>(r8/a0 FILE* file, r0/d0 <type> value) => void
+     *
+     * Print the the integer type in r0/d0 using the current format template for the integer type to the
+     * file pointed to by (r8/r0)
+     */
+    FILE_PRINT_BYTE,
+    FILE_PRINT_WORD,
+    FILE_PRINT_LONG,
+    FILE_PRINT_QUAD,
+
+    /**
+     * func io_print_<single:double>(r8/a0 FILE* file, fp0 <type> value) => void
+     *
+     * Print the floating point type in fp0 using the current template for the float type to the
+     * file pointed to by (r8/r0)
+     */
+    FILE_PRINT_SINGLE,
+    FILE_PRINT_DOUBLE,
 } Call;
 
 /**

@@ -29,7 +29,7 @@ use function \preg_match, \rtrim;
  */
 class Flag implements Directive\IProcessor {
 
-    const
+    private const
         EXTRACT_MATCH = '/^\s+@(en|dis)(?:able){0,1}\s+([a-zA-Z0-9_]+)/',
         KEYWORDS      = [
             'en',
