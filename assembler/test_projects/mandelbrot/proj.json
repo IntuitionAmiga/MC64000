@@ -3,7 +3,7 @@
         "name": "Mandelbrot",
         "version": "1.0.0",
         "description": "Mandelbrot test",
-        "output": "bin/mandelbrot.mc64k",
+        "output": "bin/mandelbrot.64x",
         "host": {
             "name": "Standard Test Host",
             "version": "1.0.0"
