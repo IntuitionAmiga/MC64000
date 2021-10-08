@@ -98,7 +98,7 @@ main:
     fmul.s      fp7,    fp7         ; fZRealSquares = fZReal * fZReal
     fmove.s     fp11,   fp6         ; fNewZReal     = fCurrReal
     fadd.s      fp7,    fp6         ; fNewZReal    += fZRSquared
-    fsub.s      fp8,    fp6         ; fNewZReak    -= fZISquared
+    fsub.s      fp8,    fp6         ; fNewZReal    -= fZISquared
     fadd.s      fp7,    fp8         ; fZRealSquared + fZImaginarySquared (for bailout test)
 
     ; fp5 fTemp

@@ -38,6 +38,11 @@ enum Group {
     OFS_MAX        = 255
 };
 
+enum Prefix {
+    INT_R2R = 254,
+    FLT_R2R = 255
+};
+
 /**
  * Control
  *
