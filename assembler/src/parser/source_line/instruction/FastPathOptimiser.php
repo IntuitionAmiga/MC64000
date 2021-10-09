@@ -44,6 +44,12 @@ class FastPathOptimiser {
         IDataMove::MOVE_L   => self::FAST_INT_PREFIX,
         IDataMove::MOVE_Q   => self::FAST_INT_PREFIX,
 
+        IArithmetic::ADD_L   => self::FAST_INT_PREFIX, // 0xB0
+        IArithmetic::ADD_Q   => self::FAST_INT_PREFIX,
+        IArithmetic::SUB_L   => self::FAST_INT_PREFIX, // 0xB0
+        IArithmetic::SUB_Q   => self::FAST_INT_PREFIX,
+
+
         IDataMove::FMOVE_S  => self::FAST_FLOAT_PREFIX,
         IDataMove::FMOVE_D  => self::FAST_FLOAT_PREFIX,
         IArithmetic::FADD_S => self::FAST_FLOAT_PREFIX,

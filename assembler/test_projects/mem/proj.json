@@ -1,9 +1,9 @@
 {
     "target": {
-        "name": "Mandelbrot",
+        "name": "Empty",
         "version": "1.0.0",
-        "description": "Mandelbrot test",
-        "output": "bin/mandelbrot.64x",
+        "description": "Host Memory Function Test",
+        "output": "bin/mem.64x",
         "host": {
             "name": "Standard Test Host",
             "version": "1.0.0"
@@ -13,8 +13,7 @@
         "log_code_folds": true,
         "log_label_add": false,
         "log_label_ref": false,
-        "log_label_resolve": false,
-        "log_chunk_info": true
+        "log_label_resolve": false
     },
     "sources": [
         "lib:standard_test_host/v1.0.0/host.s",

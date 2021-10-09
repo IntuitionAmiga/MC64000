@@ -24,6 +24,72 @@ namespace StandardTestHost {
 namespace Mem {
 
 /**
+ * Fill a word aligned block with words. If the base adddess is not aligned, filling starts from the next aligned
+ * address with one fewer element.
+ *
+ * @todo - explicit vectorisation of larger blocks
+ *
+ * @param void*  pBuffer
+ * @param uint64 uValue
+ * @param uint64 uSize
+ */
+void fillWord(void* pBuffer, uint64 uValue, uint64 uSize) {
+    uint64 uRawAddress = (uint64)pBuffer;
+    if (uRawAddress & 1) {
+        --uSize;
+        ++uRawAddress;
+    }
+    uint16 *p = (uint16*)uRawAddress;
+    while (uSize--) {
+        *p++ = (uint16)uValue;
+    }
+}
+
+/**
+ * Fill a long aligned block with longs. If the base adddess is not aligned, filling starts from the next aligned
+ * address with one fewer element.
+ *
+ * @todo - explicit vectorisation of larger blocks
+ *
+ * @param void*  pBuffer
+ * @param uint64 uValue
+ * @param uint64 uSize
+ */
+void fillLong(void* pBuffer, uint64 uValue, uint64 uSize) {
+    uint64 uRawAddress = (uint64)pBuffer;
+    if (uRawAddress & 3) {
+        --uSize;
+        uRawAddress = (uRawAddress + 3) & 3ULL;
+    }
+    uint32 *p = (uint32*)uRawAddress;
+    while (uSize--) {
+        *p++ = (uint32)uValue;
+    }
+}
+
+/**
+ * Fill a word aligned block with words. If the base adddess is not aligned, filling starts from the next aligned
+ * address with one fewer element.
+ *
+ * @todo - explicit vectorisation of larger blocks
+ *
+ * @param void*  pBuffer
+ * @param uint64 uValue
+ * @param uint64 uSize
+ */
+void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
+    uint64 uRawAddress = (uint64)pBuffer;
+    if (uRawAddress & 7) {
+        --uSize;
+        ++uRawAddress;
+    }
+    uint64 *p = (uint64*)uRawAddress;
+    while (uSize--) {
+        *p++ = uValue;
+    }
+}
+
+/**
  * Mem::hostVector()
  */
 Interpreter::Status hostVector() {
@@ -91,19 +157,56 @@ Interpreter::Status hostVector() {
             break;
         }
 
+        case FILL_WORD: {
+            uint64 uSize = aoGPR[ABI::INT_REG_0].uQuad;
+            if (uSize) {
+                void* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
+                if (pBuffer) {
+                    fillWord(pBuffer, aoGPR[ABI::INT_REG_1].uWord, uSize);
+                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
+                } else {
+                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
+                }
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
+            }
 
-// TODO
-//         case FILL_WORD: {
-//             break;
-//         }
-//
-//         case FILL_LONG: {
-//             break;
-//         }
-//
-//         case FILL_QUAD: {
-//             break;
-//         }
+            break;
+        }
+
+        case FILL_LONG: {
+            uint64 uSize = aoGPR[ABI::INT_REG_0].uQuad;
+            if (uSize) {
+                void* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
+                if (pBuffer) {
+                    fillLong(pBuffer, aoGPR[ABI::INT_REG_1].uLong, uSize);
+                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
+                } else {
+                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
+                }
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
+            }
+
+            break;
+        }
+
+        case FILL_QUAD: {
+            uint64 uSize = aoGPR[ABI::INT_REG_0].uQuad;
+            if (uSize) {
+                void* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
+                if (pBuffer) {
+                    fillQuad(pBuffer, aoGPR[ABI::INT_REG_1].uQuad, uSize);
+                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
+                } else {
+                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
+                }
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
+            }
+
+            break;
+        }
         default:
             std::fprintf(stderr, "Unknown Mem operation %d\n", iOperation);
             return Interpreter::UNKNOWN_HOST_CALL;
