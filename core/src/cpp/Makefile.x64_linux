@@ -4,7 +4,7 @@
 BIN      = bin/interpreter_x64
 
 # Compiler settings
-CXXFLAGS = -std=c++17 -Wall -W -Werror -Ofast -march=native -mavx -fPIC -fexpensive-optimizations -Iinclude
+CXXFLAGS = -std=c++17 -Wall -W -Werror -flto -Ofast -march=native -mavx -fPIC -fexpensive-optimizations -Iinclude
 
 # Makefile settings
 ARCH     = x64_linux
