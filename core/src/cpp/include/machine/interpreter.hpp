@@ -25,7 +25,7 @@ namespace MC64K {
  */
 namespace Loader {
     class Executable;
-    class Symbol;
+    struct Symbol;
 }
 
 namespace Machine {
