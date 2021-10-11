@@ -5,7 +5,7 @@ BIN      = bin/interpreter_x64
 
 # Compiler settings
 CXXFLAGS = -Ofast -Wall -Wextra -Ofast -march=native -mtune=native -mavx2 -fPIC -pipe -Iinclude
-GCC_CXXFLAGS = -Werror -fexpensive-optimizations -funroll-all-loops -DMESSAGE='"Compiled with GCC"'
+GCC_CXXFLAGS = -flto -Werror -fexpensive-optimizations -funroll-all-loops -DMESSAGE='"Compiled with GCC"'
 CLANG_CXXFLAGS = -funroll-loops -DMESSAGE='"Compiled with Clang"'
 UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'
 
@@ -22,4 +22,3 @@ ARCH     = x64_linux
 MEXT     = $(ARCH)
 
 include mc64k.make
-

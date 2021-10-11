@@ -23,9 +23,11 @@
 namespace MC64K {
 namespace Machine {
 
+register uint8 const* puProgramCounter asm("r12");
+
 GPRegister      Interpreter::aoGPR[GPRegister::MAX] = {};
 FPRegister      Interpreter::aoFPR[FPRegister::MAX] = {};
-uint8 const*    Interpreter::puProgramCounter       = 0;
+//uint8 const*    Interpreter::puProgramCounter       = 0;
 void*           Interpreter::pDstEA                 = 0;
 void*           Interpreter::pSrcEA                 = 0;
 void*           Interpreter::pTmpEA                 = 0;
@@ -39,6 +41,7 @@ uint32          Interpreter::uNumImportSymbols      = 0;
 Interpreter::HCFVector const* Interpreter::pcHCFVectors   = 0;
 Interpreter::OperationSize    Interpreter::eOperationSize = Interpreter::SIZE_BYTE;
 Interpreter::Status           Interpreter::eStatus        = Interpreter::UNINITIALISED;
+
 
 /**
  * Human readable names for Interpreter::eStatus
@@ -237,3 +240,6 @@ void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
 }
 
 }} // namespace
+
+#include "interpreter_ea.cpp"
+#include "interpreter_run.cpp"

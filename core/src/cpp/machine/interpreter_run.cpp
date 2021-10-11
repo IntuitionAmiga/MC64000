@@ -94,6 +94,55 @@ void Interpreter::run() {
         ++uInstructionCount;
         switch (*puProgramCounter++) {
 
+            // Integer register to register fast path prefix
+            case Opcode::INT_R2R: {
+                uint8 uRegPair = *puProgramCounter++;
+                pDstEA = &aoGPR[uRegPair & 0xF];
+                pSrcEA = &aoGPR[uRegPair >> 4];
+
+                switch (*puProgramCounter++) {
+                    case Opcode::DBNZ:   readDisplacement(); bcc(--asULong(pDstEA)); break;
+                    case Opcode::MOVE_L: asULong(pDstEA) = asULong(pSrcEA); break;
+                    case Opcode::MOVE_Q: asUQuad(pDstEA) = asUQuad(pSrcEA); break;
+                    case Opcode::ADD_L:  asLong(pDstEA) += asLong(pSrcEA); break;
+                    case Opcode::ADD_Q:  asQuad(pDstEA) += asQuad(pSrcEA); break;
+                    case Opcode::SUB_L:  asLong(pDstEA) -= asLong(pSrcEA); break;
+                    case Opcode::SUB_Q:  asQuad(pDstEA) -= asQuad(pSrcEA); break;
+
+                    default:
+                        todo();
+                        return;
+                        break;
+                }
+
+                break;
+            }
+
+            // Float register to register fast path prefix
+            case Opcode::FLT_R2R: {
+                uint8 uRegPair = *puProgramCounter++;
+                pDstEA = &aoFPR[uRegPair & 0xF];
+                pSrcEA = &aoFPR[uRegPair >> 4];
+
+                switch (*puProgramCounter++) {
+                    case Opcode::FMOVE_S:   asLong(pDstEA)    = asLong(pSrcEA);     break;
+                    case Opcode::FMOVE_D:   asQuad(pDstEA)    = asQuad(pSrcEA);     break;
+                    case Opcode::FNEG_S:    asSingle(pDstEA)  = -asSingle(pSrcEA);  break;
+                    case Opcode::FNEG_D:    asDouble(pDstEA)  = -asDouble(pSrcEA);  break;
+                    case Opcode::FADD_S:    asSingle(pDstEA) += asSingle(pSrcEA);   break;
+                    case Opcode::FADD_D:    asDouble(pDstEA) += asDouble(pSrcEA);   break;
+                    case Opcode::FSUB_S:    asSingle(pDstEA) -= asSingle(pSrcEA);   break;
+                    case Opcode::FSUB_D:    asDouble(pDstEA) -= asDouble(pSrcEA);   break;
+                    case Opcode::FMUL_S:    asSingle(pDstEA) *= asSingle(pSrcEA);   break;
+                    case Opcode::FMUL_D:    asDouble(pDstEA) *= asDouble(pSrcEA);   break;
+                    case Opcode::FDIV_S:    asSingle(pDstEA) /= asSingle(pSrcEA);   break;
+                    case Opcode::FDIV_D:    asDouble(pDstEA) /= asDouble(pSrcEA);   break;
+                    default:
+                        break;
+                }
+                break;
+            }
+
             // Control
             case Opcode::HCF: {
                 // This opcode expects 0xFF followed by a byte indicating which function to call.
@@ -477,49 +526,6 @@ void Interpreter::run() {
                 todo();
                 return;
                 break;
-            // Integer register to register fast path prefix
-            case Opcode::INT_R2R: {
-                uint8 uRegPair = *puProgramCounter++;
-                pDstEA = &aoGPR[uRegPair & 0xF];
-                pSrcEA = &aoGPR[uRegPair >> 4];
-
-                switch (*puProgramCounter++) {
-                    //case Opcode::MOVE_B: asUByte(pDstEA) = asUByte(pSrcEA); break;
-                    //case Opcode::MOVE_W: asUWord(pDstEA) = asUWord(pSrcEA); break;
-                    case Opcode::MOVE_L: asULong(pDstEA) = asULong(pSrcEA); break;
-                    case Opcode::MOVE_Q: asUQuad(pDstEA) = asUQuad(pSrcEA); break;
-                    default:
-                        break;
-                }
-
-                break;
-            }
-
-            // Float register to register fast path prefix
-            case Opcode::FLT_R2R: {
-                uint8 uRegPair = *puProgramCounter++;
-                pDstEA = &aoFPR[uRegPair & 0xF];
-                pSrcEA = &aoFPR[uRegPair >> 4];
-
-                switch (*puProgramCounter++) {
-                    case Opcode::FMOVE_S:   asLong(pDstEA)    = asLong(pSrcEA);     break;
-                    case Opcode::FMOVE_D:   asQuad(pDstEA)    = asQuad(pSrcEA);     break;
-                    case Opcode::FNEG_S:    asSingle(pDstEA)  = -asSingle(pSrcEA);  break;
-                    case Opcode::FNEG_D:    asDouble(pDstEA)  = -asDouble(pSrcEA);  break;
-                    case Opcode::FADD_S:    asSingle(pDstEA) += asSingle(pSrcEA);   break;
-                    case Opcode::FADD_D:    asDouble(pDstEA) += asDouble(pSrcEA);   break;
-                    case Opcode::FSUB_S:    asSingle(pDstEA) -= asSingle(pSrcEA);   break;
-                    case Opcode::FSUB_D:    asDouble(pDstEA) -= asDouble(pSrcEA);   break;
-                    case Opcode::FMUL_S:    asSingle(pDstEA) *= asSingle(pSrcEA);   break;
-                    case Opcode::FMUL_D:    asDouble(pDstEA) *= asDouble(pSrcEA);   break;
-                    case Opcode::FDIV_S:    asSingle(pDstEA) /= asSingle(pSrcEA);   break;
-                    case Opcode::FDIV_D:    asDouble(pDstEA) /= asDouble(pSrcEA);   break;
-                    default:
-                        break;
-                }
-                break;
-            }
-
 
             default:
                 todo();
