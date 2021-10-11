@@ -55,8 +55,12 @@ interface IOptions {
         self::APP_STACK_SIZE    => self::TYPE_INT
     ];
 
+    const
+        DEF_STACK_SIZE = 256
+    ;
+
     const DEFAULTS = [
         self::OPT_USE_FAST_PATH => true,
-        self::APP_STACK_SIZE    => 256
+        self::APP_STACK_SIZE    => self::DEF_STACK_SIZE
     ];
 }

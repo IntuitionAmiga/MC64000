@@ -22,6 +22,7 @@ use ABadCafe\MC64K\Process;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\IO;
 use ABadCafe\MC64K\Utils\Log;
+use ABadCafe\MC64K\Defs;
 
 use function \is_dir, \is_readable, \realpath;
 
@@ -110,7 +111,15 @@ class Assembler {
         );
 
         $oState = State\Coordinator::get();
-        $oTargetChunk = new IO\Output\TargetInfo($this->oProject->getTarget());
+
+        $oTarget = $this->oProject->getTarget();
+
+        $oTarget->setStackSize(
+            $oState->getGlobalOptions()
+                ->get(Defs\Project\IOptions::APP_STACK_SIZE)
+        );
+
+        $oTargetChunk = new IO\Output\TargetInfo($oTarget);
         $oImportChunk = new IO\Output\ImportList($oState->getLabelLocation());
         $oExportChunk = new IO\Output\ExportList($oState->getLabelLocation());
         $oCodeChunk   = $oState->getOutput();

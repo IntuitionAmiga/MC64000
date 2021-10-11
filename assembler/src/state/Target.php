@@ -26,9 +26,13 @@ class Target {
 
     const F_EXECUTABLE = 1;
 
+    const MIN_STACK_SIZE = 32;
+
     private DependencySet $oDependencySet;
 
     private int $iFlags = 0;
+
+    private int $iStackSize = Defs\Project\IOptions::DEF_STACK_SIZE;
 
     /**
      * Constructor. Accepts the build target name and version as parameters and declares them as the first
@@ -71,6 +75,33 @@ class Target {
      */
     public function getFlags(): int {
         return $this->iFlags;
+    }
+
+    /**
+     * Set the target stack size.
+     *
+     * @param  int  $iSize
+     * @return self fluent
+     * @throws \RangeException
+     */
+    public function setStackSize(int $iSize): self {
+        if ($iSize <= self::MIN_STACK_SIZE) {
+            throw new \RangeException(
+                'Specified stack size of #'       . $iSize .
+                ' is below the legal minimum of ' . self::MIN_STACK_SIZE
+            );
+        }
+        $this->iStackSize = $iSize;
+        return $this;
+    }
+
+    /**
+     * Obtain the target stack size.
+     *
+     * @return int
+     */
+    public function getStackSize(): int {
+        return $this->iStackSize;
     }
 
     /**
