@@ -41,6 +41,12 @@ class Executable {
         uint8 const* puTargetData;
         uint8 const* puByteCode;
 
+        enum {
+            TD_OFFSET_FLAGS    = 0,
+            TD_OFFSET_STACK    = 4,
+            TD_OFFSET_NUM_DEPS = 8
+        };
+
     public:
 
         /**
@@ -64,9 +70,7 @@ class Executable {
         /**
          * Get the stack size indicated by the executable
          */
-        uint32 getStackSize() const {
-            return Machine::Limits::MIN_STACK_SIZE;
-        }
+        uint32 getStackSize() const;
 
         /**
          * Destructor

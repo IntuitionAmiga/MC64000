@@ -182,6 +182,7 @@ uint8* Binary::readChunkData(uint64 const uChunkID) {
  *
  * The raw chunk body data format is:
  *     Flags             uint32
+ *     Stack Size        uint32
  *     Number of entries uint32
  *     Version table     uint32[Number of entries]
  *     Dependency names  char[] (null terminated)
@@ -189,6 +190,9 @@ uint8* Binary::readChunkData(uint64 const uChunkID) {
  * The first entry in the version table is the target.
  * For executable targets, the second entry in the version table is the host.
  */
+
+
+
 bool Binary::validateTarget(uint8 const* puRawTarget) {
     uint32 uTargetFlags = *(uint32 const*)puRawTarget;
 
@@ -197,14 +201,30 @@ bool Binary::validateTarget(uint8 const* puRawTarget) {
 
         // Initial version check is cheap. If the version number is compatible we can then check that we are
         // talking about the same thing.
-        const Misc::Version* poVersionTable = (const Misc::Version*)(puRawTarget + sizeof(uint32) * 2);
+        const Misc::Version* poVersionTable = (const Misc::Version*)(puRawTarget + sizeof(uint32) * 3);
 
         if (roHostDefinition.getVersion().isCompatible(poVersionTable[HOST_VERSION_ENTRY])) {
 
+            uint32 uStackSize = *(uint32 const*)(puRawTarget + sizeof(uint32));
+            if (
+                uStackSize < Machine::Limits::MIN_STACK_SIZE ||
+                uStackSize > Machine::Limits::MAX_STACK_SIZE
+            ) {
+                std::fprintf(
+                    stderr,
+                    "Invalid stack size %" PFU32 ", legal range is %" PFU32 " to %" PFU32 "\n",
+                    uStackSize,
+                    Machine::Limits::MIN_STACK_SIZE,
+                    Machine::Limits::MAX_STACK_SIZE
+                );
+                return false;
+            }
+
+
             // We need to compare the dependency name now. This involves locating the entry in the names
             // section that follows the version table. The host is always the second entry.
-            uint32 uNumEntries = *(uint32 const*)(puRawTarget + sizeof(uint32));
-            char const* sName  = (char const*)(puRawTarget + sizeof(uint32) * (2 + uNumEntries));
+            uint32 uNumEntries = *(uint32 const*)(puRawTarget + 2 * sizeof(uint32));
+            char const* sName  = (char const*)(puRawTarget + sizeof(uint32) * (3 + uNumEntries));
 
             // Skip over the target name to the next entry, which is expected to be the host.
             // Since all names are null terminated, we skip onwards into buffer overrun oblivion...

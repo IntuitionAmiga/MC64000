@@ -26,7 +26,7 @@ class Target {
 
     const F_EXECUTABLE = 1;
 
-    const MIN_STACK_SIZE = 32;
+    const MIN_STACK_SIZE = 64;
 
     private DependencySet $oDependencySet;
 
