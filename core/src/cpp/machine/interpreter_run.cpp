@@ -91,6 +91,9 @@ void Interpreter::run() {
     Nanoseconds::Value uStart = Nanoseconds::mark();
 
     while (RUNNING == eStatus) {
+
+        fast:
+
         ++uInstructionCount;
         switch (*puProgramCounter++) {
 
@@ -101,17 +104,16 @@ void Interpreter::run() {
                 pSrcEA = &aoGPR[uRegPair >> 4];
 
                 switch (*puProgramCounter++) {
-                    case Opcode::DBNZ:   readDisplacement(); bcc(--asULong(pDstEA)); break;
-                    case Opcode::MOVE_L: asULong(pDstEA) = asULong(pSrcEA); break;
-                    case Opcode::MOVE_Q: asUQuad(pDstEA) = asUQuad(pSrcEA); break;
-                    case Opcode::ADD_L:  asLong(pDstEA) += asLong(pSrcEA); break;
-                    case Opcode::ADD_Q:  asQuad(pDstEA) += asQuad(pSrcEA); break;
-                    case Opcode::SUB_L:  asLong(pDstEA) -= asLong(pSrcEA); break;
-                    case Opcode::SUB_Q:  asQuad(pDstEA) -= asQuad(pSrcEA); break;
+                    case Opcode::DBNZ:   readDisplacement(); bcc(--asULong(pDstEA)); goto fast;
+                    case Opcode::MOVE_L: asULong(pDstEA) = asULong(pSrcEA);          goto fast;
+                    case Opcode::MOVE_Q: asUQuad(pDstEA) = asUQuad(pSrcEA);          goto fast;
+                    case Opcode::ADD_L:  asLong(pDstEA) += asLong(pSrcEA);           goto fast;
+                    case Opcode::ADD_Q:  asQuad(pDstEA) += asQuad(pSrcEA);           goto fast;
+                    case Opcode::SUB_L:  asLong(pDstEA) -= asLong(pSrcEA);           goto fast;
+                    case Opcode::SUB_Q:  asQuad(pDstEA) -= asQuad(pSrcEA);           goto fast;
 
                     default:
                         todo();
-                        return;
                         break;
                 }
 
@@ -125,19 +127,20 @@ void Interpreter::run() {
                 pSrcEA = &aoFPR[uRegPair >> 4];
 
                 switch (*puProgramCounter++) {
-                    case Opcode::FMOVE_S:   asLong(pDstEA)    = asLong(pSrcEA);     break;
-                    case Opcode::FMOVE_D:   asQuad(pDstEA)    = asQuad(pSrcEA);     break;
-                    case Opcode::FNEG_S:    asSingle(pDstEA)  = -asSingle(pSrcEA);  break;
-                    case Opcode::FNEG_D:    asDouble(pDstEA)  = -asDouble(pSrcEA);  break;
-                    case Opcode::FADD_S:    asSingle(pDstEA) += asSingle(pSrcEA);   break;
-                    case Opcode::FADD_D:    asDouble(pDstEA) += asDouble(pSrcEA);   break;
-                    case Opcode::FSUB_S:    asSingle(pDstEA) -= asSingle(pSrcEA);   break;
-                    case Opcode::FSUB_D:    asDouble(pDstEA) -= asDouble(pSrcEA);   break;
-                    case Opcode::FMUL_S:    asSingle(pDstEA) *= asSingle(pSrcEA);   break;
-                    case Opcode::FMUL_D:    asDouble(pDstEA) *= asDouble(pSrcEA);   break;
-                    case Opcode::FDIV_S:    asSingle(pDstEA) /= asSingle(pSrcEA);   break;
-                    case Opcode::FDIV_D:    asDouble(pDstEA) /= asDouble(pSrcEA);   break;
+                    case Opcode::FMOVE_S:   asLong(pDstEA)    = asLong(pSrcEA);     goto fast;
+                    case Opcode::FMOVE_D:   asQuad(pDstEA)    = asQuad(pSrcEA);     goto fast;
+                    case Opcode::FNEG_S:    asSingle(pDstEA)  = -asSingle(pSrcEA);  goto fast;
+                    case Opcode::FNEG_D:    asDouble(pDstEA)  = -asDouble(pSrcEA);  goto fast;
+                    case Opcode::FADD_S:    asSingle(pDstEA) += asSingle(pSrcEA);   goto fast;
+                    case Opcode::FADD_D:    asDouble(pDstEA) += asDouble(pSrcEA);   goto fast;
+                    case Opcode::FSUB_S:    asSingle(pDstEA) -= asSingle(pSrcEA);   goto fast;
+                    case Opcode::FSUB_D:    asDouble(pDstEA) -= asDouble(pSrcEA);   goto fast;
+                    case Opcode::FMUL_S:    asSingle(pDstEA) *= asSingle(pSrcEA);   goto fast;
+                    case Opcode::FMUL_D:    asDouble(pDstEA) *= asDouble(pSrcEA);   goto fast;
+                    case Opcode::FDIV_S:    asSingle(pDstEA) /= asSingle(pSrcEA);   goto fast;
+                    case Opcode::FDIV_D:    asDouble(pDstEA) /= asDouble(pSrcEA);   goto fast;
                     default:
+                        todo();
                         break;
                 }
                 break;
