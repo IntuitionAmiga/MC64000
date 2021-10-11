@@ -152,3 +152,31 @@ io_file_write:
 io_file_close:
     move.b #26, -(sp)
     bra.b .invoke_1
+
+io_file_print_string:
+    move.b #27, -(sp)
+    bra.b .invoke_1
+
+io_file_print_byte:
+    move.b #28, -(sp)
+    bra.b .invoke_1
+
+io_file_print_word:
+    move.b #29, -(sp)
+    bra.b .invoke_1
+
+io_file_print_long:
+    move.b #30, -(sp)
+    bra.b .invoke_1
+
+io_file_print_quad:
+    move.b #31, -(sp)
+    bra.b .invoke_1
+
+io_file_print_single:
+    move.b #32, -(sp)
+    bra.b .invoke_1
+
+io_file_print_double:
+    move.b #33, -(sp)
+    bra.b .invoke_1
