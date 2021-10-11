@@ -29,7 +29,7 @@ use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Utils\Binary;
 use ABadCafe\MC64K\State;
 
-use function \chr, \array_flip, \explode, \get_class, \end, \ksort;
+use function \chr, \array_flip, \explode, \get_class, \end, \ksort, \trim;
 
 /**
  * Statement
@@ -166,8 +166,8 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
             } catch (CodeFoldException $oFold) {
                 if (State\Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_CODE_FOLD)) {
                     Log::printf(
-                        'Folding %s to \'%s\' (%s)',
-                        $sSource,
+                        'Folding \'%s\' to \'%s\' (%s)',
+                        trim($sSource),
                         Binary::format($oFold->getAlternativeBytecode()),
                         $oFold->getMessage()
                     );

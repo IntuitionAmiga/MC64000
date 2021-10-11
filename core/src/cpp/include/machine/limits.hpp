@@ -25,7 +25,8 @@ namespace Limits {
 enum {
     MAX_HCF_VECTORS = 256,
     STACK_ALIGN     = 32,
-    MIN_STACK_SIZE  = 256
+    MIN_STACK_SIZE  = 64,
+    MAX_STACK_SIZE  = 1 << 23
 };
 
 }}} // namespace

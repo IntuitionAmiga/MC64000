@@ -18,6 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction;
 
 use ABadCafe\MC64K;
+use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\Defs\Mnemonic\ILogical;
@@ -27,9 +28,16 @@ use ABadCafe\MC64K\Tokeniser;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Defs\EffectiveAddress\IRegisterDirect;
-use function \strlen, \ord, \chr;
+
+use function \strlen, \ord, \chr, \substr, \reset, \unpack, \pack;
 
 /**
+ * FastPathOptimiser
+ *
+ * Identifies fast path replacements for selected bytecode sequences. Fast path replacements rearrange the opcode
+ * for selected instructions that have an alternative representation in the runtime interpreter, typically skipping
+ * unnecessary steps, e.g. effective address decoding, etc. A limited number of intructions support such fast path
+ * optimisation, generally for dyadic register to register oeprations.
  */
 class FastPathOptimiser {
 
@@ -38,11 +46,15 @@ class FastPathOptimiser {
         FAST_FLOAT_PREFIX = 255
     ;
 
-    const FAST_PATH = [
-        //IDataMove::MOVE_B   => self::FAST_INT_PREFIX,
-        //IDataMove::MOVE_W   => self::FAST_INT_PREFIX,
+    const DYADIC_FAST_PATH = [
         IDataMove::MOVE_L   => self::FAST_INT_PREFIX,
         IDataMove::MOVE_Q   => self::FAST_INT_PREFIX,
+
+        IArithmetic::ADD_L   => self::FAST_INT_PREFIX, // 0xB0
+        IArithmetic::ADD_Q   => self::FAST_INT_PREFIX,
+        IArithmetic::SUB_L   => self::FAST_INT_PREFIX, // 0xB0
+        IArithmetic::SUB_Q   => self::FAST_INT_PREFIX,
+
 
         IDataMove::FMOVE_S  => self::FAST_FLOAT_PREFIX,
         IDataMove::FMOVE_D  => self::FAST_FLOAT_PREFIX,
@@ -56,6 +68,10 @@ class FastPathOptimiser {
         IArithmetic::FMUL_D => self::FAST_FLOAT_PREFIX,
         IArithmetic::FDIV_S => self::FAST_FLOAT_PREFIX,
         IArithmetic::FDIV_D => self::FAST_FLOAT_PREFIX,
+    ];
+
+    const SPECIAL_CASES = [
+        IControl::DBNZ => 'handleDBNZ',
     ];
 
     const OPERANDS = [
@@ -94,26 +110,56 @@ class FastPathOptimiser {
     ];
 
     /**
+     * Attempt to find a fast path code fold option for the current opcode / encoded operand string. If a code fold is
+     * found, a CodeFoldException for the complete statement is raised. Otheriwise the vanilla bytecode is returned.
+     *
      * @param  int    $iOpcode
      * @param  string $sOperandByteCode
      * @return string
      */
     public function attempt(int $iOpcode, string $sOperandByteCode): string {
-        if (
-            isset(self::FAST_PATH[$iOpcode])
-            && 2 == strlen($sOperandByteCode)
-            && isset(self::OPERANDS[ord($sOperandByteCode[0])])
-            && isset(self::OPERANDS[ord($sOperandByteCode[1])])
-        ) {
-            // We could just return the code, but throwing as a code fold allows us to log it
-            throw new CodeFoldException(
-                "Fast path",
-                chr(self::FAST_PATH[$iOpcode]) .
-                chr((ord($sOperandByteCode[0]) & 0x0F) | ((ord($sOperandByteCode[1]) & 0x0F) << 4)) .
-                chr($iOpcode)
-            );
+        if (State\Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::OPT_USE_FAST_PATH)) {
+            if (
+                isset(self::DYADIC_FAST_PATH[$iOpcode])
+                && 2 == strlen($sOperandByteCode)
+                && isset(self::OPERANDS[ord($sOperandByteCode[0])])
+                && isset(self::OPERANDS[ord($sOperandByteCode[1])])
+            ) {
+                // We could just return the code, but throwing as a code fold allows us to log it
+                throw new CodeFoldException(
+                    "Register to register dyadic fast path",
+                    chr(self::DYADIC_FAST_PATH[$iOpcode]) .
+                    chr((ord($sOperandByteCode[0]) & 0x0F) | ((ord($sOperandByteCode[1]) & 0x0F) << 4)) .
+                    chr($iOpcode)
+                );
+            } else if (isset(self::SPECIAL_CASES[$iOpcode])) {
+                $cHandler = [$this, self::SPECIAL_CASES[$iOpcode]];
+                $cHandler($iOpcode, $sOperandByteCode);
+            }
+        }
+        return chr($iOpcode) . $sOperandByteCode;
+    }
+
+    /**
+     * Special case handler for dbnz rX, #displacement
+     *
+     * Fast path prefixed code is 1 byte longer so backwards displacements require an adjustment.
+     */
+    private function handleDBNZ(int $iOpcode, string $sOperandByteCode): void {
+        $aDisplacement = unpack(Defs\IIntLimits::LONG_BIN_FORMAT, substr($sOperandByteCode, 1));
+        $iDisplacement = reset($aDisplacement);
+
+        if ($iDisplacement > Defs\IIntLimits::LONG_MAX_SIGNED) {
+            $iDisplacement -= (Defs\IIntLimits::LONG_MAX_UNSIGNED + 2);
         }
 
-        return chr($iOpcode) . $sOperandByteCode;
+        // We could just return the code, but throwing as a code fold allows us to log it
+        throw new CodeFoldException(
+            "dbnz register decrement fast path",
+            chr(self::FAST_INT_PREFIX) .
+            chr(ord($sOperandByteCode[0]) & 0x0F) .
+            chr($iOpcode) .
+            pack(Defs\IIntLimits::LONG_BIN_FORMAT, $iDisplacement)
+        );
     }
 }
