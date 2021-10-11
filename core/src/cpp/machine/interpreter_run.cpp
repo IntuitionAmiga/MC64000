@@ -101,16 +101,17 @@ void Interpreter::run() {
                 pSrcEA = &aoGPR[uRegPair >> 4];
 
                 switch (*puProgramCounter++) {
-                    //case Opcode::MOVE_B: asUByte(pDstEA) = asUByte(pSrcEA); break;
-                    //case Opcode::MOVE_W: asUWord(pDstEA) = asUWord(pSrcEA); break;
+                    case Opcode::DBNZ:   readDisplacement(); bcc(--asULong(pDstEA)); break;
                     case Opcode::MOVE_L: asULong(pDstEA) = asULong(pSrcEA); break;
                     case Opcode::MOVE_Q: asUQuad(pDstEA) = asUQuad(pSrcEA); break;
-                    case Opcode::ADD_L: asLong(pDstEA) += asLong(pSrcEA); break;
-                    case Opcode::ADD_Q: asQuad(pDstEA) += asQuad(pSrcEA); break;
-                    case Opcode::SUB_L: asLong(pDstEA) -= asLong(pSrcEA); break;
-                    case Opcode::SUB_Q: asQuad(pDstEA) -= asQuad(pSrcEA); break;
+                    case Opcode::ADD_L:  asLong(pDstEA) += asLong(pSrcEA); break;
+                    case Opcode::ADD_Q:  asQuad(pDstEA) += asQuad(pSrcEA); break;
+                    case Opcode::SUB_L:  asLong(pDstEA) -= asLong(pSrcEA); break;
+                    case Opcode::SUB_Q:  asQuad(pDstEA) -= asQuad(pSrcEA); break;
 
                     default:
+                        todo();
+                        return;
                         break;
                 }
 
