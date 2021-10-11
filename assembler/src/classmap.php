@@ -13,6 +13,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Statement' => '/parser/source_line/directive/Statement.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\Export' => '/parser/source_line/directive/processor/Export.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\Align' => '/parser/source_line/directive/processor/Align.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\StackSize' => '/parser/source_line/directive/processor/StackSize.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\Flag' => '/parser/source_line/directive/processor/Flag.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\Undefine' => '/parser/source_line/directive/processor/Undefine.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\Define' => '/parser/source_line/directive/processor/Define.php',

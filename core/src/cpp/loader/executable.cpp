@@ -91,6 +91,13 @@ Executable::Executable(
 /**
  * @inheritDoc
  */
+uint32 Executable::getStackSize() const {
+    return *((const uint32*)(puTargetData + TD_OFFSET_STACK));
+}
+
+/**
+ * @inheritDoc
+ */
 Executable::~Executable() {
     std::free((void*)puByteCode);
     std::free((void*)puTargetData);

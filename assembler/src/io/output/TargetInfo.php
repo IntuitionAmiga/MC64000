@@ -33,6 +33,7 @@ use function \count, \strlen, \pack, \chr;
  *
  * The raw chunk body data format is:
  *     Flags             uint32
+ *     Stack Size        uint32
  *     Number of entries uint32
  *     Version table     uint32[Number of Labels]
  *     Dependency names  char[]
@@ -59,6 +60,7 @@ class TargetInfo implements IBinaryChunk {
         $this->sBinary = pack(
             'V*',
             $oTarget->getFlags(),
+            $oTarget->getStackSize(),
             count($aDependencies),
             ...array_column($aDependencies, 'iVersion')
         ) . implode(chr(0), array_column($aDependencies, 'sName')) . chr(0);

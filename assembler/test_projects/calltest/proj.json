@@ -13,7 +13,8 @@
         "log_code_folds": true,
         "log_label_add": false,
         "log_label_ref": false,
-        "log_label_resolve": false
+        "log_label_resolve": false,
+        "app_stack_size": 64
     },
     "sources": [
         "src/main.s"

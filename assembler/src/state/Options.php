@@ -24,6 +24,13 @@ use ABadCafe\MC64K\Defs;
  */
 class Options {
 
+    private const TYPE_COERCE = [
+        Defs\Project\IOptions::TYPE_BOOL   => '\boolval',
+        Defs\Project\IOptions::TYPE_INT    => '\intval',
+        Defs\Project\IOptions::TYPE_FLOAT  => '\floatval',
+        Defs\Project\IOptions::TYPE_STRING => '\strval'
+    ];
+
     /**
      * @var bool[] $aBoolOptions
      */
@@ -35,6 +42,13 @@ class Options {
     private array $aAllOptions = [];
 
     /**
+     * Constructor. Ensures the statically declared defaults in IOptions are set.
+     */
+    public function __construct() {
+        $this->import(Defs\Project\IOptions::DEFAULTS);
+    }
+
+    /**
      * Import a key-value set of options
      *
      * @param  mixed[] $aOptions
@@ -42,15 +56,7 @@ class Options {
      */
     public function import(array $aOptions): self {
         foreach ($aOptions as $sOption => $mValue) {
-            $iKind = Defs\Project\IOptions::TYPE_MAP[$sOption] ?? -1;
-            switch ($iKind) {
-                case Defs\Project\IOptions::TYPE_BOOL:
-                    $this->aBoolOptions[$sOption] = (bool)$mValue;
-                    // fall through
-                default:
-                    $this->aAllOptions[$sOption] = $mValue;
-                    break;
-            }
+            $this->set($sOption, $mValue);
         }
         return $this;
     }
@@ -98,5 +104,26 @@ class Options {
      */
     public function get(string $sOption, $mDefault = null) {
         return $this->aAllOptions[$sOption] ?? $mDefault;
+    }
+
+    /**
+     * Set an option. If the option has a known type associated with the key, the corresponding value
+     * will be coerced using a cast.
+     *
+     * @param  string $sOption
+     * @param  mixed  $mValue
+     * @return self   fluent
+     */
+    public function set(string $sOption, $mValue): self {
+        $iType = Defs\Project\IOptions::TYPE_MAP[$sOption] ?? -1;
+        if (isset(self::TYPE_COERCE[$iType])) {
+            $cCast = self::TYPE_COERCE[$iType];
+            $mValue = $cCast($mValue);
+        }
+        if (Defs\Project\IOptions::TYPE_BOOL === $iType) {
+            $this->aBoolOptions[$sOption] = $mValue;
+        }
+        $this->aAllOptions[$sOption] = $mValue;
+        return $this;
     }
 }
