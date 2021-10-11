@@ -21,6 +21,7 @@ use ABadCafe\MC64K;
 use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\Defs\Mnemonic\ILogical;
+use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Tokeniser;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
@@ -49,11 +50,14 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
     /** @var string[][] $aCoverage */
     private array $aCoverage = [];
 
+    private FastPathOptimiser $oOptimiser;
+
     /**
      * Constructor
      */
     public function __construct() {
         $this->oTokeniser = new Tokeniser\Instruction();
+        $this->oOptimiser = new FastPathOptimiser();
         $this->addOperandSetParser(new OperandSet\None());
         $this->addOperandSetParser(new OperandSet\BranchDisplacementOnly());
         $this->addOperandSetParser(new OperandSet\IntegerMonadicAddress());
@@ -133,10 +137,12 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
 
     }
 
+
     /**
      * @inheritDoc
      */
     public function parse(string $sSource): ?string {
+
         $oToken = $this->oTokeniser->tokenise($sSource);
         if ($oToken) {
             if (!isset(self::MATCHES[$oToken->sMnemonic])) {
@@ -149,16 +155,19 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
 
             $aSizes = Defs\Mnemonic\IOperandSizes::MAP[$iOpcode] ?? [];
             try {
-                return chr($iOpcode) . $this->aOperandParsers[$iOpcode]->parse(
+                return $this->oOptimiser->attempt(
                     $iOpcode,
-                    $oToken->aOperands,
-                    $aSizes
+                    $this->aOperandParsers[$iOpcode]->parse(
+                        $iOpcode,
+                        $oToken->aOperands,
+                        $aSizes
+                    )
                 );
             } catch (CodeFoldException $oFold) {
                 if (State\Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_CODE_FOLD)) {
                     Log::printf(
-                        'Folding %s to \'%s\' (%s)',
-                        $sSource,
+                        'Folding \'%s\' to \'%s\' (%s)',
+                        trim($sSource),
                         Binary::format($oFold->getAlternativeBytecode()),
                         $oFold->getMessage()
                     );

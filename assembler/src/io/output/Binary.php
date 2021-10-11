@@ -16,6 +16,8 @@
 declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\IO\Output;
+use ABadCafe\MC64K\Defs;
+use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs\IIntLimits;
 use ABadCafe\MC64K\Utils\Log;
 
@@ -34,6 +36,8 @@ class Binary {
     /** @var resource $rOutput */
     private        $rOutput;
     private int    $iChunkNumber = 0, $iLoadSize = 0;
+
+    private bool   $bLogInfo = false;
 
     const
         HEADER_MAGIC = "MC64000X\0\0\0\0\0\0\0\0",
@@ -68,6 +72,9 @@ class Binary {
         $this->rOutput = $rOutput;
         $this->writeHeader();
         $this->sFilename = $sFilename;
+        $this->bLogInfo  = State\Coordinator::get()
+            ->getOptions()
+            ->isEnabled(Defs\Project\IOptions::LOG_CHUNK_INFO);
     }
 
     /**
@@ -128,7 +135,7 @@ class Binary {
         if (fwrite($this->rOutput, $sChunkHeader) !== $iWriteSize) {
             throw new \Exception("Unexpected write length for chunk header writing to " . $this->sFilename);
         }
-        Log::printf("Wrote chunk %s header %d bytes", $oChunk->getChunkType(), $iWriteSize);
+        $this->bLogInfo && Log::printf("Wrote chunk %s header %d bytes", $oChunk->getChunkType(), $iWriteSize);
         return $iWriteSize;
     }
 
@@ -145,7 +152,7 @@ class Binary {
         if ($iWriteSize !== fwrite($this->rOutput, $oChunk->getChunkData())) {
             throw new \Exception("Unexpected write length for chunk data writing to " . $this->sFilename);
         }
-        Log::printf("Wrote chunk %s body %d bytes", $oChunk->getChunkType(), $iWriteSize);
+        $this->bLogInfo && Log::printf("Wrote chunk %s body %d bytes", $oChunk->getChunkType(), $iWriteSize);
         return $iWriteSize;
     }
 
@@ -165,7 +172,7 @@ class Binary {
             if ($iAlignment !== fwrite($this->rOutput, $sAlignPads)) {
                 throw new \Exception("Unexpected write length chunk padding writing to " . $this->sFilename);
             }
-            Log::printf("Wrote chunk %s padding %d bytes", $oChunk->getChunkType(), $iAlignment);
+            $this->bLogInfo && Log::printf("Wrote chunk %s padding %d bytes", $oChunk->getChunkType(), $iAlignment);
         }
         return $iAlignment;
     }

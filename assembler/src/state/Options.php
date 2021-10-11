@@ -34,6 +34,10 @@ class Options {
      */
     private array $aAllOptions = [];
 
+    public function __construct() {
+        $this->import(Defs\Project\IOptions::DEFAULTS);
+    }
+
     /**
      * Import a key-value set of options
      *

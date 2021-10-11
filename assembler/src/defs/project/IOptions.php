@@ -38,7 +38,9 @@ interface IOptions {
         LOG_LABEL_REF     = 'log_label_ref',
         LOG_LABEL_RESOLVE = 'log_label_resolve',
         LOG_LABEL_IMPORT  = 'log_label_import',
-        LOG_LABEL_IEMODE  = 'log_label_iemode'
+        LOG_LABEL_IEMODE  = 'log_label_iemode',
+        LOG_CHUNK_INFO    = 'log_chunk_info',
+        OPT_USE_FAST_PATH = 'opt_use_fast_path'
     ;
 
     const TYPE_MAP = [
@@ -48,5 +50,10 @@ interface IOptions {
         self::LOG_LABEL_RESOLVE => self::TYPE_BOOL,
         self::LOG_LABEL_IMPORT  => self::TYPE_BOOL,
         self::LOG_LABEL_IEMODE  => self::TYPE_BOOL,
+        self::OPT_USE_FAST_PATH => self::TYPE_BOOL
+    ];
+
+    const DEFAULTS = [
+        self::OPT_USE_FAST_PATH => true
     ];
 }
