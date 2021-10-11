@@ -101,6 +101,15 @@ class Coordinator {
     }
 
     /**
+     * Get the global options.
+     *
+     * @return  Options $oOptions
+     */
+    public function getGlobalOptions(): Options {
+        return $this->oGlobalOptions;
+    }
+
+    /**
      * Set the global options. Used during Project import.
      *
      * @param  Options $oOptions

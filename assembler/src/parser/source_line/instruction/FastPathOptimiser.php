@@ -28,7 +28,8 @@ use ABadCafe\MC64K\Tokeniser;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Defs\EffectiveAddress\IRegisterDirect;
-use function \strlen, \ord, \chr;
+
+use function \strlen, \ord, \chr, \substr, \reset, \unpack, \pack;
 
 /**
  * FastPathOptimiser

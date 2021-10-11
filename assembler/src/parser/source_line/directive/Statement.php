@@ -20,7 +20,7 @@ use ABadCafe\MC64K\Parser\SourceLine;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 
-use function \preg_match, \strtolower;
+use function \preg_match, \strtolower, \trim;
 
 /**
  * Statement
@@ -48,6 +48,7 @@ class Statement implements SourceLine\IParser {
         $this->addDirective(new Processor\Export());
         $this->addDirective(new Processor\Import());
         $this->addDirective(new Processor\Align());
+        $this->addDirective(new Processor\StackSize());
     }
 
     /**
