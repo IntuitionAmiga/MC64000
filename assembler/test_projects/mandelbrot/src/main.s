@@ -14,8 +14,8 @@
 ;   rather it is designed to measure execution throughput for a compute
 ;   intensive workload.
 
-    @def IMAGE_SIZE_DIM 10      ; Edge size, as a power of 2, e.g. 1024
-    @def IMAGE_AREA_DIM 20      ; Area size for square output
+    @def IMAGE_SIZE_DIM 11      ; Edge size, as a power of 2, e.g. 1024
+    @def IMAGE_AREA_DIM 22      ; Area size for square output
     @def MAX_ORDINATE   1.6     ; imaginary axis extents
     @def REAL_OFFSET    -0.75   ; adjustment along real axis for better centering
     @def MAX_ITERATION  256     ; maximum iterations per pixel

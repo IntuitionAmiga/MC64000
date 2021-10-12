@@ -153,9 +153,9 @@ class Interpreter {
         static GPRegister       aoGPR[GPRegister::MAX];
         static FPRegister       aoFPR[FPRegister::MAX];
 //        static uint8 const*     puProgramCounter;
-       static void*            pDstEA;
-       static void*            pSrcEA;
-       static void*            pTmpEA;
+        static void*            pDstEA;
+        static void*            pSrcEA;
+        static void*            pTmpEA;
         static uint8*           puStackTop;
         static uint8*           puStackBase;
         static HCFVector const* pcHCFVectors;

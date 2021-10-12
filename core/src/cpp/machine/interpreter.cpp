@@ -23,7 +23,7 @@
 namespace MC64K {
 namespace Machine {
 
-register uint8 const* puProgramCounter asm("r12");
+register uint8 const* puProgramCounter __asm__("r12");
 
 GPRegister      Interpreter::aoGPR[GPRegister::MAX] = {};
 FPRegister      Interpreter::aoFPR[FPRegister::MAX] = {};
@@ -41,7 +41,6 @@ uint32          Interpreter::uNumImportSymbols      = 0;
 Interpreter::HCFVector const* Interpreter::pcHCFVectors   = 0;
 Interpreter::OperationSize    Interpreter::eOperationSize = Interpreter::SIZE_BYTE;
 Interpreter::Status           Interpreter::eStatus        = Interpreter::UNINITIALISED;
-
 
 /**
  * Human readable names for Interpreter::eStatus

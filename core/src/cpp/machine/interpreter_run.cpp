@@ -17,9 +17,11 @@
 #include "machine/gnarly.hpp"
 #include <cstdio>
 #include <cmath>
+#include <csetjmp>
 
 namespace MC64K {
 namespace Machine {
+
 
 inline void rolByte(uint8* puValue, uint8 uSize) {
     uSize &= 7;
@@ -91,6 +93,9 @@ void Interpreter::run() {
     Nanoseconds::Value uStart = Nanoseconds::mark();
 
     while (RUNNING == eStatus) {
+
+        skipstatus:
+
         ++uInstructionCount;
         switch (*puProgramCounter++) {
 
@@ -101,17 +106,16 @@ void Interpreter::run() {
                 pSrcEA = &aoGPR[uRegPair >> 4];
 
                 switch (*puProgramCounter++) {
-                    case Opcode::DBNZ:   readDisplacement(); bcc(--asULong(pDstEA)); break;
-                    case Opcode::MOVE_L: asULong(pDstEA) = asULong(pSrcEA); break;
-                    case Opcode::MOVE_Q: asUQuad(pDstEA) = asUQuad(pSrcEA); break;
-                    case Opcode::ADD_L:  asLong(pDstEA) += asLong(pSrcEA); break;
-                    case Opcode::ADD_Q:  asQuad(pDstEA) += asQuad(pSrcEA); break;
-                    case Opcode::SUB_L:  asLong(pDstEA) -= asLong(pSrcEA); break;
-                    case Opcode::SUB_Q:  asQuad(pDstEA) -= asQuad(pSrcEA); break;
+                    case Opcode::DBNZ:   readDisplacement(); bcc(--asULong(pDstEA)); goto skipstatus;
+                    case Opcode::MOVE_L: asULong(pDstEA) = asULong(pSrcEA);          goto skipstatus;
+                    case Opcode::MOVE_Q: asUQuad(pDstEA) = asUQuad(pSrcEA);          goto skipstatus;
+                    case Opcode::ADD_L:  asLong(pDstEA) += asLong(pSrcEA);           goto skipstatus;
+                    case Opcode::ADD_Q:  asQuad(pDstEA) += asQuad(pSrcEA);           goto skipstatus;
+                    case Opcode::SUB_L:  asLong(pDstEA) -= asLong(pSrcEA);           goto skipstatus;
+                    case Opcode::SUB_Q:  asQuad(pDstEA) -= asQuad(pSrcEA);           goto skipstatus;
 
                     default:
                         todo();
-                        return;
                         break;
                 }
 
@@ -125,19 +129,20 @@ void Interpreter::run() {
                 pSrcEA = &aoFPR[uRegPair >> 4];
 
                 switch (*puProgramCounter++) {
-                    case Opcode::FMOVE_S:   asLong(pDstEA)    = asLong(pSrcEA);     break;
-                    case Opcode::FMOVE_D:   asQuad(pDstEA)    = asQuad(pSrcEA);     break;
-                    case Opcode::FNEG_S:    asSingle(pDstEA)  = -asSingle(pSrcEA);  break;
-                    case Opcode::FNEG_D:    asDouble(pDstEA)  = -asDouble(pSrcEA);  break;
-                    case Opcode::FADD_S:    asSingle(pDstEA) += asSingle(pSrcEA);   break;
-                    case Opcode::FADD_D:    asDouble(pDstEA) += asDouble(pSrcEA);   break;
-                    case Opcode::FSUB_S:    asSingle(pDstEA) -= asSingle(pSrcEA);   break;
-                    case Opcode::FSUB_D:    asDouble(pDstEA) -= asDouble(pSrcEA);   break;
-                    case Opcode::FMUL_S:    asSingle(pDstEA) *= asSingle(pSrcEA);   break;
-                    case Opcode::FMUL_D:    asDouble(pDstEA) *= asDouble(pSrcEA);   break;
-                    case Opcode::FDIV_S:    asSingle(pDstEA) /= asSingle(pSrcEA);   break;
-                    case Opcode::FDIV_D:    asDouble(pDstEA) /= asDouble(pSrcEA);   break;
+                    case Opcode::FMOVE_S:   asLong(pDstEA)    = asLong(pSrcEA);     goto skipstatus;
+                    case Opcode::FMOVE_D:   asQuad(pDstEA)    = asQuad(pSrcEA);     goto skipstatus;
+                    case Opcode::FNEG_S:    asSingle(pDstEA)  = -asSingle(pSrcEA);  goto skipstatus;
+                    case Opcode::FNEG_D:    asDouble(pDstEA)  = -asDouble(pSrcEA);  goto skipstatus;
+                    case Opcode::FADD_S:    asSingle(pDstEA) += asSingle(pSrcEA);   goto skipstatus;
+                    case Opcode::FADD_D:    asDouble(pDstEA) += asDouble(pSrcEA);   goto skipstatus;
+                    case Opcode::FSUB_S:    asSingle(pDstEA) -= asSingle(pSrcEA);   goto skipstatus;
+                    case Opcode::FSUB_D:    asDouble(pDstEA) -= asDouble(pSrcEA);   goto skipstatus;
+                    case Opcode::FMUL_S:    asSingle(pDstEA) *= asSingle(pSrcEA);   goto skipstatus;
+                    case Opcode::FMUL_D:    asDouble(pDstEA) *= asDouble(pSrcEA);   goto skipstatus;
+                    case Opcode::FDIV_S:    asSingle(pDstEA) /= asSingle(pSrcEA);   goto skipstatus;
+                    case Opcode::FDIV_D:    asDouble(pDstEA) /= asDouble(pSrcEA);   goto skipstatus;
                     default:
+                        todo();
                         break;
                 }
                 break;
@@ -164,43 +169,48 @@ void Interpreter::run() {
                 break;
             }
 
-            case Opcode::BRA_B: branchByte(); break;
-            case Opcode::BRA:   branchLong(); break;
+            case Opcode::BRA_B: branchByte(); goto skipstatus;
+            case Opcode::BRA:   branchLong(); goto skipstatus;
 
             case Opcode::BSR_B: {
                 int8 iShortDisplacement = (int8)*puProgramCounter++;
                 pushProgramCounter();
                 puProgramCounter += iShortDisplacement;
                 ++iCallDepth;
-                break;
+                goto skipstatus;
             }
 
-            case Opcode::BSR:
+            case Opcode::BSR: {
                 readDisplacement();
                 pushProgramCounter();
                 puProgramCounter += iDisplacement;
                 ++iCallDepth;
-                break;
+                goto skipstatus;
+            }
 
-            case Opcode::JMP:
+            case Opcode::JMP: {
                 monadic(SIZE_QUAD);
                 puProgramCounter = (uint8 const*)pDstEA;
                 break;
+            }
 
-            case Opcode::JSR:
+            case Opcode::JSR: {
                 monadic(SIZE_QUAD);
                 pushProgramCounter();
                 puProgramCounter = (uint8 const*)pDstEA;
                 ++iCallDepth;
                 break;
+            }
 
-            case Opcode::RTS:
+            case Opcode::RTS: {
                 if (0 == --iCallDepth) {
                     eStatus = COMPLETED;
                 } else {
                     popProgramCounter();
+                    goto skipstatus;
                 }
                 break;
+            }
 
             // Branch if zero
             case Opcode::BIZ_B:  monadic(SIZE_BYTE); readDisplacement(); bcc(!asByte(pDstEA));       break;
@@ -310,6 +320,7 @@ void Interpreter::run() {
                 saveRegisters(uMask, uEAMode);
                 break;
             }
+
             case Opcode::LOADM: {
                 readMask();
                 uint8 uEAMode = *puProgramCounter++;
@@ -481,6 +492,7 @@ void Interpreter::run() {
             case Opcode::DIVU_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA)  /=   asUQuad(pSrcEA);       break;
             case Opcode::FDIV_S: dyadic(SIZE_LONG); asSingle(pDstEA) /=   asSingle(pSrcEA);      break;
             case Opcode::FDIV_D: dyadic(SIZE_QUAD); asDouble(pDstEA) /=   asDouble(pSrcEA);      break;
+
             case Opcode::FMOD_S: {
                 dyadic(SIZE_LONG);
                 float32 f = asSingle(pDstEA);
@@ -493,6 +505,7 @@ void Interpreter::run() {
                 asDouble(pDstEA) = std::fmod(f, asDouble(pSrcEA));
                 break;
             }
+
             case Opcode::FABS_S:    dyadic(SIZE_LONG); asSingle(pDstEA) = std::fabs(asSingle(pSrcEA)); break;
             case Opcode::FABS_D:    dyadic(SIZE_QUAD); asDouble(pDstEA) = std::fabs(asDouble(pSrcEA)); break;
             case Opcode::FSQRT_S:   dyadic(SIZE_LONG); asSingle(pDstEA) = std::sqrt(asSingle(pSrcEA)); break;
@@ -523,13 +536,8 @@ void Interpreter::run() {
             case Opcode::FGETEXP_D:
             case Opcode::FGETMAN_S:
             case Opcode::FGETMAN_D:
-                todo();
-                return;
-                break;
-
             default:
                 todo();
-                return;
         }
     }
 
