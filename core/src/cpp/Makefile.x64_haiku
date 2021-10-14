@@ -1,0 +1,25 @@
+# Project: MC64000
+
+# Target
+BIN      = bin/interpreter_x64
+
+
+# Compiler settings
+CXXFLAGS = -Wall -Werror -Ofast -march=native -mtune=native -mavx2 -fPIC -pipe -Iinclude
+GCC_CXXFLAGS = -fexpensive-optimizations -funroll-all-loops -DMESSAGE='"Compiled with GCC"'
+CLANG_CXXFLAGS = -v -funroll-loops -DMESSAGE='"Compiled with Clang"'
+UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'
+
+ifeq ($(CXX),g++)
+  CXXFLAGS += $(GCC_CXXFLAGS)
+else ifeq ($(CXX),clang++)
+  CXXFLAGS += $(CLANG_CXXFLAGS)
+else
+  CXXFLAGS += $(UNKNOWN_CXXFLAGS)
+endif
+
+# Makefile settings
+ARCH     = x64_haiku
+MEXT     = $(ARCH)
+
+include mc64k.make
