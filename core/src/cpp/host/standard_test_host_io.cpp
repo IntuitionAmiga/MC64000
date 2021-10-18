@@ -51,6 +51,8 @@ char const* aOpenModes[6] = {"r", "w", "a", "r+", "w+", "a+"};
  */
 int aSeekModes[3] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
+#define setIOWriteResult(iResult, iReg) aoGPR[(iReg)].uQuad = (iResult) >= 0 ? (unsigned)ABI::ERR_NONE : (unsigned)ERR_WRITE;
+
 /**
  * Open a stream. Split out of hook().
  *
@@ -199,7 +201,6 @@ void tellStream(Machine::GPRegister* aoGPR) {
     }
 }
 
-
 /**
  * IO::hostVector()
  *
@@ -219,42 +220,42 @@ Interpreter::Status hostVector() {
         case PRINT_STRING: {
             const char *pText = aoGPR[ABI::PTR_REG_0].sString;
             if (pText) {
-                if (std::fputs(pText, stdout) >= 0) {
-                    aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NONE;
-                } else {
-                    aoGPR[ABI::INT_REG_0].uQuad =  ERR_WRITE;
-                }
+                setIOWriteResult(std::fputs(pText, stdout), ABI::INT_REG_0);
             } else {
                 aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
             }
             break;
         }
 
-        case PRINT_BYTE:
-            std::printf(sByteFormat, aoGPR[ABI::INT_REG_0].iByte);
+        case PRINT_BYTE: {
+            setIOWriteResult(std::printf(sByteFormat, aoGPR[ABI::INT_REG_0].iByte), ABI::INT_REG_0);
             break;
+        }
 
-        case PRINT_WORD:
-            std::printf(sWordFormat, aoGPR[ABI::INT_REG_0].iWord);
+        case PRINT_WORD: {
+            setIOWriteResult(std::printf(sWordFormat, aoGPR[ABI::INT_REG_0].iWord), ABI::INT_REG_0);
             break;
+        }
 
-        case PRINT_LONG:
-            std::printf(sLongFormat, aoGPR[ABI::INT_REG_0].iLong);
+        case PRINT_LONG: {
+            setIOWriteResult(std::printf(sLongFormat, aoGPR[ABI::INT_REG_0].iLong), ABI::INT_REG_0);
             break;
+        }
 
-        case PRINT_QUAD:
-            std::printf(sQuadFormat, aoGPR[ABI::INT_REG_0].iQuad);
+        case PRINT_QUAD: {
+            setIOWriteResult(std::printf(sQuadFormat, aoGPR[ABI::INT_REG_0].iQuad), ABI::INT_REG_0);
             break;
+        }
 
         case PRINT_SINGLE: {
             Machine::FPRegister* aoFPR = Interpreter::fpr();
-            std::printf(sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle);
+            setIOWriteResult(std::printf(sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle), ABI::INT_REG_0);
             break;
         }
 
         case PRINT_DOUBLE: {
             Machine::FPRegister* aoFPR = Interpreter::fpr();
-            std::printf(sDoubleFormat, (double)aoFPR[ABI::FLT_REG_0].fDouble);
+            setIOWriteResult(std::printf(sDoubleFormat, (double)aoFPR[ABI::FLT_REG_0].fDouble), ABI::INT_REG_0);
             break;
         }
 
