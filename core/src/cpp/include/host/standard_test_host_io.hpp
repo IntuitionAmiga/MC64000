@@ -72,18 +72,6 @@ typedef enum {
     SET_FMT_DOUBLE,
 
     /**
-     * func io_clr_fmt_<byte:word:long:quad:single:double>() => void
-     *
-     * Revert the format template for the type to the host-specified default.
-     */
-    CLR_FMT_BYTE,
-    CLR_FMT_WORD,
-    CLR_FMT_LONG,
-    CLR_FMT_QUAD,
-    CLR_FMT_SINGLE,
-    CLR_FMT_DOUBLE,
-
-    /**
      * funct io_file_open(r8/a0 char const* name, r0/d0 uint8 mode) => r8/a0 FILE* file, r0/d0 uint64 error
      *
      * Attempts to open the file pointed to by (r8/a0) in the mode indicated by the value in r0/d0.

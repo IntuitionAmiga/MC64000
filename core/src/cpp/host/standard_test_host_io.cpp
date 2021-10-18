@@ -64,17 +64,11 @@ void openStream(Machine::GPRegister* aoGPR) {
     if (iMode > OPEN_APPEND_UPDATE) {
         aoGPR[ABI::PTR_REG_0].sString = 0;
     } else {
-
-        printf("\nAttempting to open file %s in %s\n", aoGPR[ABI::PTR_REG_0].sString, aOpenModes[iMode]);
-
         std::FILE* pStream = std::fopen(
             aoGPR[ABI::PTR_REG_0].sString,
             aOpenModes[iMode]
         );
         if (pStream) {
-
-            printf("\nOpened file %s in %s\n", aoGPR[ABI::PTR_REG_0].sString, aOpenModes[iMode]);
-
             aoGPR[ABI::PTR_REG_0].pAny  = pStream;
             aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
         } else {
@@ -222,9 +216,19 @@ Interpreter::Status hostVector() {
         case DONE:
             break;
 
-        case PRINT_STRING:
-            std::fputs(aoGPR[ABI::PTR_REG_0].sString, stdout);
+        case PRINT_STRING: {
+            const char *pText = aoGPR[ABI::PTR_REG_0].sString;
+            if (pText) {
+                if (std::fputs(pText, stdout) >= 0) {
+                    aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NONE;
+                } else {
+                    aoGPR[ABI::INT_REG_0].uQuad =  ERR_WRITE;
+                }
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
+            }
             break;
+        }
 
         case PRINT_BYTE:
             std::printf(sByteFormat, aoGPR[ABI::INT_REG_0].iByte);
@@ -255,51 +259,27 @@ Interpreter::Status hostVector() {
         }
 
         case SET_FMT_BYTE:
-            sByteFormat = aoGPR[ABI::PTR_REG_0].sString;
+            sByteFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultByteFormat;
             break;
 
         case SET_FMT_WORD:
-            sWordFormat = aoGPR[ABI::PTR_REG_0].sString;
+            sWordFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultWordFormat;
             break;
 
         case SET_FMT_LONG:
-            sLongFormat = aoGPR[ABI::PTR_REG_0].sString;
+            sLongFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultLongFormat;
             break;
 
         case SET_FMT_QUAD:
-            sQuadFormat = aoGPR[ABI::PTR_REG_0].sString;
+            sQuadFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultQuadFormat;
             break;
 
         case SET_FMT_SINGLE:
-            sSingleFormat = aoGPR[ABI::PTR_REG_0].sString;
+            sSingleFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultSingleFormat;
             break;
 
         case SET_FMT_DOUBLE:
-            sDoubleFormat = aoGPR[ABI::PTR_REG_0].sString;
-            break;
-
-        case CLR_FMT_BYTE:
-            sByteFormat = sDefaultByteFormat;
-            break;
-
-        case CLR_FMT_WORD:
-            sWordFormat = sDefaultWordFormat;
-            break;
-
-        case CLR_FMT_LONG:
-            sLongFormat = sDefaultLongFormat;
-            break;
-
-        case CLR_FMT_QUAD:
-            sQuadFormat = sDefaultQuadFormat;
-            break;
-
-        case CLR_FMT_SINGLE:
-            sSingleFormat = sDefaultSingleFormat;
-            break;
-
-        case CLR_FMT_DOUBLE:
-            sDoubleFormat = sDefaultDoubleFormat;
+            sDoubleFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultDoubleFormat;
             break;
 
         case FILE_OPEN:
