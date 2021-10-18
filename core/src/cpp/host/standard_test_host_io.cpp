@@ -228,34 +228,52 @@ Interpreter::Status hostVector() {
         }
 
         case PRINT_BYTE: {
-            setIOWriteResult(std::printf(sByteFormat, aoGPR[ABI::INT_REG_0].iByte), ABI::INT_REG_0);
+            setIOWriteResult(std::printf(
+                sByteFormat, aoGPR[ABI::INT_REG_0].iByte),
+                ABI::INT_REG_0
+            );
             break;
         }
 
         case PRINT_WORD: {
-            setIOWriteResult(std::printf(sWordFormat, aoGPR[ABI::INT_REG_0].iWord), ABI::INT_REG_0);
+            setIOWriteResult(
+                std::printf(sWordFormat, aoGPR[ABI::INT_REG_0].iWord),
+                ABI::INT_REG_0
+            );
             break;
         }
 
         case PRINT_LONG: {
-            setIOWriteResult(std::printf(sLongFormat, aoGPR[ABI::INT_REG_0].iLong), ABI::INT_REG_0);
+            setIOWriteResult(
+                std::printf(sLongFormat, aoGPR[ABI::INT_REG_0].iLong),
+                ABI::INT_REG_0
+            );
             break;
         }
 
         case PRINT_QUAD: {
-            setIOWriteResult(std::printf(sQuadFormat, aoGPR[ABI::INT_REG_0].iQuad), ABI::INT_REG_0);
+            setIOWriteResult(
+                std::printf(sQuadFormat, aoGPR[ABI::INT_REG_0].iQuad),
+                ABI::INT_REG_0
+            );
             break;
         }
 
         case PRINT_SINGLE: {
             Machine::FPRegister* aoFPR = Interpreter::fpr();
-            setIOWriteResult(std::printf(sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle), ABI::INT_REG_0);
+            setIOWriteResult(
+                std::printf(sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle),
+                ABI::INT_REG_0
+            );
             break;
         }
 
         case PRINT_DOUBLE: {
             Machine::FPRegister* aoFPR = Interpreter::fpr();
-            setIOWriteResult(std::printf(sDoubleFormat, (double)aoFPR[ABI::FLT_REG_0].fDouble), ABI::INT_REG_0);
+            setIOWriteResult(
+                std::printf(sDoubleFormat, (double)aoFPR[ABI::FLT_REG_0].fDouble),
+                ABI::INT_REG_0
+            );
             break;
         }
 
@@ -307,47 +325,85 @@ Interpreter::Status hostVector() {
             closeStream(aoGPR);
             break;
 
-        case FILE_PRINT_STRING:
-            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
-                std::fputs(aoGPR[ABI::PTR_REG_1].sString, pStream);
+        case FILE_PRINT_STRING: {
+            std::FILE*  pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny;
+            const char* pText   = aoGPR[ABI::PTR_REG_1].sString;
+            if (pStream && pText) {
+                setIOWriteResult(
+                    std::fputs(pText, pStream),
+                    ABI::INT_REG_0
+                );
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
             }
             break;
+        }
 
         case FILE_PRINT_BYTE:
             if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
-                std::fprintf(pStream, sByteFormat, aoGPR[ABI::INT_REG_0].iByte);
+                setIOWriteResult(
+                    std::fprintf(pStream, sByteFormat, aoGPR[ABI::INT_REG_0].iByte),
+                    ABI::INT_REG_0
+                );
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
             }
             break;
 
         case FILE_PRINT_WORD:
             if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
-                std::fprintf(pStream, sWordFormat, aoGPR[ABI::INT_REG_0].iWord);
+                setIOWriteResult(
+                    std::fprintf(pStream, sWordFormat, aoGPR[ABI::INT_REG_0].iWord),
+                    ABI::INT_REG_0
+                );
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
             }
             break;
 
         case FILE_PRINT_LONG:
             if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
-                std::fprintf(pStream, sLongFormat, aoGPR[ABI::INT_REG_0].iLong);
+                setIOWriteResult(
+                    std::fprintf(pStream, sLongFormat, aoGPR[ABI::INT_REG_0].iLong),
+                    ABI::INT_REG_0
+                );
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
             }
             break;
 
         case FILE_PRINT_QUAD:
             if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
-                std::fprintf(pStream, sQuadFormat, aoGPR[ABI::INT_REG_0].iQuad);
+                setIOWriteResult(
+                    std::fprintf(pStream, sQuadFormat, aoGPR[ABI::INT_REG_0].iQuad),
+                    ABI::INT_REG_0
+                );
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
             }
             break;
 
         case FILE_PRINT_SINGLE:
             if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
                 Machine::FPRegister* aoFPR = Interpreter::fpr();
-                std::fprintf(pStream, sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle);
+                setIOWriteResult(
+                    std::fprintf(pStream, sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle),
+                    ABI::INT_REG_0
+                );
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
             }
             break;
 
         case FILE_PRINT_DOUBLE:
             if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
                 Machine::FPRegister* aoFPR = Interpreter::fpr();
-                std::fprintf(pStream, sDoubleFormat, (double)aoFPR[ABI::FLT_REG_0].fDouble);
+                setIOWriteResult(
+                    std::fprintf(pStream, sDoubleFormat, (double)aoFPR[ABI::FLT_REG_0].fDouble),
+                    ABI::INT_REG_0
+                );
+            } else {
+                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
             }
             break;
 
