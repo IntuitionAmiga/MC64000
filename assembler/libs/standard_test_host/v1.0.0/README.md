@@ -33,11 +33,12 @@ Simplistic semantic version is used to check the requirements between the applic
 ### ABI Behaviour
 
 The Host ABI reserves a number of registers for parameters and return.
+
 - r0 and r1 for the first two integer values.
 - r8 and r9 for the first two pointer values.
 - fp0, fp1 for the first two floating point values.
 
-These are used so that the aliases d0, d1, a0 and a1 retain their historic 680x0 meaning.
+These are used so that the aliases d0, d1, a0 and a1 retain their historic 680x0 meaning. Generally a host native call does not clobber any registers, however, since the same registers are typically used for return values, these registers should be considered volatile.
 
 ## Document Example Layout
 Each function described is presented in the format shown below.
@@ -51,7 +52,7 @@ Each function described is presented in the format shown below.
 Description of operation.
 
 - Noteworthy point.
-
+- Since <version>
 
 ## Function Reference
 

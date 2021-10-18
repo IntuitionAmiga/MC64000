@@ -204,9 +204,9 @@ Sets the default output formatting template for double precision floating point 
 ___
 ### io_file_open
 ```
-    ; io_file_xxx
+    ; r8|a0:FILE* stream, r0|d0:uint64 error io_file_open(r8|a0:const char* name, r0|d0:uint8 mode)
 
-    bsr io_file_xxx
+    bsr io_file_open
 ```
 Description.
 
@@ -214,9 +214,9 @@ Description.
 ___
 ### io_file_seek
 ```
-    ; io_file_xxx
+    ; io_file_seek()
 
-    bsr io_file_xxx
+    bsr io_file_seek
 ```
 Description.
 
@@ -224,9 +224,9 @@ Description.
 ___
 ### io_file_tell
 ```
-    ; io_file_xxx
+    ; io_file_tell()
 
-    bsr io_file_xxx
+    bsr io_file_tell
 ```
 Description.
 
@@ -234,9 +234,9 @@ Description.
 ___
 ### io_file_read
 ```
-    ; io_file_xxx
+    ; io_file_read()
 
-    bsr io_file_xxx
+    bsr io_file_read
 ```
 Description.
 
@@ -244,9 +244,9 @@ Description.
 ___
 ### io_file_write
 ```
-    ; io_file_xxx
+    ; io_file_write()
 
-    bsr io_file_xxx
+    bsr io_file_write
 ```
 Description.
 
@@ -254,9 +254,9 @@ Description.
 ___
 ### io_file_close
 ```
-    ; io_file_xxx
+    ; io_file_close()
 
-    bsr io_file_xxx
+    bsr io_file_close
 ```
 Description.
 
