@@ -319,10 +319,7 @@ interface IOperandSizes {
         IArithmetic::FLOG2_D   => [8, 8],
         IArithmetic::FTWOTOX_S => [4, 4],
         IArithmetic::FTWOTOX_D => [8, 8],
-        IArithmetic::FGETEXP_S => [4, 4],
-        IArithmetic::FGETEXP_D => [8, 8],
-        IArithmetic::FGETMAN_S => [4, 4],
-        IArithmetic::FGETMAN_D => [8, 8],
+
 /*
         'reserved0',
         'reserved1',

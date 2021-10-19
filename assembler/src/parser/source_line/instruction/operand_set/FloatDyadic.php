@@ -72,11 +72,7 @@ class FloatDyadic extends Dyadic {
         IArithmetic::FLOG2_S,
         IArithmetic::FLOG2_D,
         IArithmetic::FTWOTOX_S,
-        IArithmetic::FTWOTOX_D,
-        IArithmetic::FGETEXP_S,
-        IArithmetic::FGETEXP_D,
-        IArithmetic::FGETMAN_S,
-        IArithmetic::FGETMAN_D,
+        IArithmetic::FTWOTOX_D
     ];
 
     /**

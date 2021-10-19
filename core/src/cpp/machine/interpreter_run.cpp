@@ -429,15 +429,14 @@ void Interpreter::run() {
             case Opcode::BSET_W: dyadic(SIZE_WORD); asUWord(pDstEA) |=  (1 << (asUByte(pSrcEA) & 15)); break;
             case Opcode::BSET_L: dyadic(SIZE_LONG); asULong(pDstEA) |=  (1 << (asUByte(pSrcEA) & 31)); break;
             case Opcode::BSET_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA) |=  (1 << (asUByte(pSrcEA) & 63)); break;
-
-            case Opcode::BFCLR:
-            case Opcode::BFSET:
-            case Opcode::BFINS:
-            case Opcode::BFEXTS:
-            case Opcode::BFEXTU:
-            case Opcode::BFFFO:
-            case Opcode::BFCNT:
-            case Opcode::BFXXX: todo();
+            case Opcode::BFFFO: {
+                dyadic(SIZE_QUAD);
+                break;
+            }
+            case Opcode::BFCNT: {
+                dyadic(SIZE_QUAD);
+                break;
+            }
 
             // Arithmetic
             case Opcode::EXTB_W: dyadic(SIZE_WORD); asWord(pDstEA)    = (int16)asByte(pSrcEA);   break;
@@ -532,10 +531,10 @@ void Interpreter::run() {
             case Opcode::FLOG2_D:   dyadic(SIZE_QUAD); asDouble(pDstEA) = std::log2(asDouble(pSrcEA)); break;
             case Opcode::FTWOTOX_S: dyadic(SIZE_LONG); asSingle(pDstEA) = std::exp2(asSingle(pSrcEA)); break;
             case Opcode::FTWOTOX_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = std::exp2(asDouble(pSrcEA)); break;
-            case Opcode::FGETEXP_S:
-            case Opcode::FGETEXP_D:
-            case Opcode::FGETMAN_S:
-            case Opcode::FGETMAN_D:
+
+            case Opcode::FBIF_S:
+            case Opcode::FBIF_D: // todo
+
             default:
                 todo();
         }

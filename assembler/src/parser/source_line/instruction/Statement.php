@@ -122,14 +122,8 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
         // Todo - this probably isn't ideal.
         $this->addOperandSetParser(new OperandSet\CustomDyadic(
             [
-                ILogical::BFCLR,
-                ILogical::BFSET,
-                ILogical::BFINS,
-                ILogical::BFEXTS,
-                ILogical::BFEXTU,
                 ILogical::BFFFO,
                 ILogical::BFCNT,
-                ILogical::BFXXX,
             ],
             new EffectiveAddress\GPRDirect(),
             new EffectiveAddress\GPRDirect()
