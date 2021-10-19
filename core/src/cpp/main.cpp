@@ -21,7 +21,7 @@
 /**
  * Entry point
  */
-int main(int iArgN, const char** aArgV) {
+int main(int iArgN, char const** aArgV) {
 
     if (iArgN < 2) {
         std::puts("Missing required parameter");
@@ -31,6 +31,7 @@ int main(int iArgN, const char** aArgV) {
     try {
         const char* sExecutableName = aArgV[1];
 
+        MC64K::StandardTestHost::setCLIParameters(iArgN, aArgV);
         MC64K::Host::Runtime oRuntime(MC64K::StandardTestHost::instance, sExecutableName);
 
         oRuntime.invoke(MC64K::StandardTestHost::ABI::MAIN);

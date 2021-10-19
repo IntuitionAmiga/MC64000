@@ -34,149 +34,125 @@
     @equ ERR_WRITE             203
 
 ; Break out to the host, reset the stack and return.
-.invoke:
+.invoke_0:
     hcf #0
     add.q #1, sp
     rts
 
 io_init:
     move.b #0, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_done:
     move.b #1, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_print_string:
     move.b #2, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_print_byte:
     move.b #3, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_print_word:
     move.b #4, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_print_long:
     move.b #5, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_print_quad:
     move.b #6, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_print_single:
     move.b #7, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_print_double:
     move.b #8, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_set_fmt_byte:
     move.b #9, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_set_fmt_word:
     move.b #10, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_set_fmt_long:
     move.b #11, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_set_fmt_quad:
     move.b #12, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_set_fmt_single:
     move.b #13, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
 io_set_fmt_double:
     move.b #14, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
-io_clr_fmt_byte:
+io_file_open:
     move.b #15, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
-io_clr_fmt_word:
+io_file_seek:
     move.b #16, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
-io_clr_fmt_long:
+io_file_tell:
     move.b #17, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
-io_clr_fmt_quad:
+io_file_read:
     move.b #18, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
-io_clr_fmt_single:
+io_file_write:
     move.b #19, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
-io_clr_fmt_double:
+io_file_close:
     move.b #20, -(sp)
-    bra.b .invoke
+    bra.b .invoke_0
 
-; Repeat invoke here to keep branches short
+; We run out of short branch distance after the first 20 stubs.
 .invoke_1:
     hcf #0
     add.q #1, sp
     rts
 
-io_file_open:
+io_file_print_string:
     move.b #21, -(sp)
     bra.b .invoke_1
 
-io_file_seek:
+io_file_print_byte:
     move.b #22, -(sp)
     bra.b .invoke_1
 
-io_file_tell:
+io_file_print_word:
     move.b #23, -(sp)
     bra.b .invoke_1
 
-io_file_read:
+io_file_print_long:
     move.b #24, -(sp)
     bra.b .invoke_1
 
-io_file_write:
+io_file_print_quad:
     move.b #25, -(sp)
     bra.b .invoke_1
 
-io_file_close:
+io_file_print_single:
     move.b #26, -(sp)
     bra.b .invoke_1
 
-io_file_print_string:
-    move.b #27, -(sp)
-    bra.b .invoke_1
-
-io_file_print_byte:
-    move.b #28, -(sp)
-    bra.b .invoke_1
-
-io_file_print_word:
-    move.b #29, -(sp)
-    bra.b .invoke_1
-
-io_file_print_long:
-    move.b #30, -(sp)
-    bra.b .invoke_1
-
-io_file_print_quad:
-    move.b #31, -(sp)
-    bra.b .invoke_1
-
-io_file_print_single:
-    move.b #32, -(sp)
-    bra.b .invoke_1
-
 io_file_print_double:
-    move.b #33, -(sp)
+    move.b #27, -(sp)
     bra.b .invoke_1
