@@ -18,7 +18,7 @@
     @def IMAGE_AREA_DIM 22      ; Area size for square output
     @def MAX_ORDINATE   1.6     ; imaginary axis extents
     @def REAL_OFFSET    -0.75   ; adjustment along real axis for better centering
-    @def MAX_ITERATION  256     ; maximum iterations per pixel
+    @def MAX_ITERATION  255     ; maximum iterations per pixel
     @def BAILOUT        16.0    ; bailout value, > 4 chosen for better bifurcations
 
 main:
