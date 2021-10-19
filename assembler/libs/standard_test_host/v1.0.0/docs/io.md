@@ -1,13 +1,13 @@
 
 # Standard Test Host Library
 
-[Main Imdex](../README.md)
+[Main Index](../README.md)
 
 ## io.s
 Provides functions for basic stream IO.
 
 ### io_init
-```
+```asm
     ; void io_init()
 
     bsr io_init
@@ -18,7 +18,7 @@ Initialises the host stream IO subsystem. Should be called from _main_ before an
 ___
 
 ### io_done
-```
+```asm
     ; void io_done()
 
     bsr io_done
@@ -29,7 +29,7 @@ Finalises the host stream IO subsytem. Should be called from _exit_ after all ot
 ___
 
 ### io_print_string
-```
+```asm
     ; r0|d0:uint64 result io_print_string(r8|a0:const char* string)
 
     lea message, a0
@@ -43,7 +43,7 @@ Writes the string pointed to by r8|a0 to standard output. No newline is added.
 - Since v1.0.0
 ___
 ### io_print_byte
-```
+```asm
     ; r0|d0:uint64 result io_print_byte(r0|d0:uint8 value)
 
     move.b  value, d0
@@ -57,7 +57,7 @@ Writes the byte integer in r0|d0 to standard output, applying the global formatt
 - Since v1.0.0
 ___
 ### io_print_word
-```
+```asm
     ; r0|d0:uint64 result io_print_word(r0|d0:uint16 word)
 
     move.w  value, d0
@@ -71,7 +71,7 @@ Writes the word integer in r0|d0 to standard output, applying the global formatt
 - Since v1.0.0
 ___
 ### io_print_long
-```
+```asm
     ; r0|d0:uint64 result io_print_long(r0|d0:uint32 long)
 
     move.l  value, d0
@@ -85,7 +85,7 @@ Writes the long integer in r0|d0 to standard output, applying the global formatt
 - Since v1.0.0
 ___
 ### io_print_quad
-```
+```asm
     ; r0|d0:uint64 result io_print_quad(r0|d0:uint64 quad)
 
     move.q  value, d0
@@ -98,7 +98,7 @@ Writes the quad integer in r0|d0 to standard output, applying the global formatt
 - Since v1.0.0
 ___
 ### io_print_single
-```
+```asm
     ; r0|d0:uint64 result io_print_single(fp0:float32 single)
 
     fmove.s value, fp0
@@ -112,7 +112,7 @@ Writes the single precision float in fp0 to standard output, applying the global
 - Since v1.0.0
 ___
 ### io_print_double
-```
+```asm
     ; r0|d0:uint64 result io_print_double(fp0:float64 double)
 
     fmove.d value, fp0
@@ -125,7 +125,7 @@ Writes the double precision float in fp0 to standard output, applying the global
 - Since v1.0.0
 ___
 ### io_set_fmt_byte
-```
+```asm
     ; void io_set_fmt_byte(r8|a0:const char* format)
 
     lea format, a0
@@ -138,7 +138,7 @@ Sets the default output formatting template for byte integer values. The formatt
 - Since v1.0.0
 ___
 ### io_set_fmt_word
-```
+```asm
     ; void io_set_fmt_word(r8|a0:const char* format)
 
     lea format, a0
@@ -151,7 +151,7 @@ Sets the default output formatting template for word integer values. The formatt
 - Since v1.0.0
 ___
 ### io_set_fmt_long
-```
+```asm
     ; void io_set_fmt_long(r8|a0:const char* format)
 
     lea format, a0
@@ -164,7 +164,7 @@ Sets the default output formatting template for long integer values. The formatt
 - Since v1.0.0
 ___
 ### io_set_fmt_quad
-```
+```asm
     ; void io_set_fmt_quad(r8|a0:const char* format)
 
     lea format, a0
@@ -177,7 +177,7 @@ Sets the default output formatting template for quad integer values. The formatt
 - Since v1.0.0
 ___
 ### io_set_fmt_single
-```
+```asm
     ; void io_set_fmt_single(r8|a0:const char* format)
 
     lea format, a0
@@ -190,7 +190,7 @@ Sets the default output formatting template for single precision floating point 
 - Since v1.0.0
 ___
 ### io_set_fmt_double
-```
+```asm
     ; void io_set_fmt_double(r8|a0:const char* format)
 
     lea format, a0
@@ -203,7 +203,7 @@ Sets the default output formatting template for double precision floating point 
 - Since v1.0.0
 ___
 ### io_file_open
-```
+```asm
     ; r8|a0:FILE* stream, r0|d0:uint64 error io_file_open(r8|a0:const char* name, r0|d0:uint8 mode)
 
     bsr io_file_open
@@ -213,7 +213,7 @@ Description.
 - Since v1.0.0
 ___
 ### io_file_seek
-```
+```asm
     ; io_file_seek()
 
     bsr io_file_seek
@@ -223,7 +223,7 @@ Description.
 - Since v1.0.0
 ___
 ### io_file_tell
-```
+```asm
     ; io_file_tell()
 
     bsr io_file_tell
@@ -233,7 +233,7 @@ Description.
 - Since v1.0.0
 ___
 ### io_file_read
-```
+```asm
     ; io_file_read()
 
     bsr io_file_read
@@ -243,7 +243,7 @@ Description.
 - Since v1.0.0
 ___
 ### io_file_write
-```
+```asm
     ; io_file_write()
 
     bsr io_file_write
@@ -253,7 +253,7 @@ Description.
 - Since v1.0.0
 ___
 ### io_file_close
-```
+```asm
     ; io_file_close()
 
     bsr io_file_close
@@ -263,7 +263,7 @@ Description.
 - Since v1.0.0
 ___
 ### io_file_print_string
-```
+```asm
     ; r0|d0:uint64 result io_file_print_string(r8|a0:FILE* stream, r9|a1:const char* string)
 
     move.q  stream, a0
@@ -278,7 +278,7 @@ Writes the string pointed to by r9|a1 to the open stream pointed to by r8|a0. No
 - Since v1.0.0
 ___
 ### io_file_print_byte
-```
+```asm
     ; r0|d0:uint64 result io_file_print_byte(r8|a0:FILE* stream, r0|d0:uint8 value)
 
     move.q  stream, a0
@@ -294,7 +294,7 @@ Writes the byte integer in r0|d0 to the stream output pointed to by r8|a0, apply
 - Since v1.0.0
 ___
 ### io_file_print_word
-```
+```asm
     ; r0|d0:uint64 result io_file_print_word(r8|a0:FILE* stream, r0|d0:uint16 value)
 
     move.q  stream, a0
@@ -310,7 +310,7 @@ Writes the word integer in r0|d0 to the stream output pointed to by r8|a0, apply
 - Since v1.0.0
 ___
 ### io_file_print_long
-```
+```asm
     ; r0|d0:uint64 result io_file_print_long(r8|a0:FILE* stream, r0|d0:uint32 value)
 
     move.q  stream, a0
@@ -326,7 +326,7 @@ Writes the long integer in r0|d0 to the stream output pointed to by r8|a0, apply
 - Since v1.0.0
 ___
 ### io_file_print_quad
-```
+```asm
     ; r0|d0:uint64 result io_file_print_quad(r8|a0:FILE* stream, r0|d0:uint64 value)
 
     move.q  stream, a0
@@ -341,7 +341,7 @@ Writes the quad integer in r0|d0 to the stream output pointed to by r8|a0, apply
 - Since v1.0.0
 ___
 ### io_file_print_single
-```
+```asm
     ; r0|d0:uint64 result io_file_print_single(r8|a0:FILE* stream, fp0:float32 value)
 
     move.q  stream, a0
@@ -357,7 +357,7 @@ Writes the single precision floating point value in fp0 to the stream output poi
 - Since v1.0.0
 ___
 ### io_file_print_double
-```
+```asm
     ; r0|d0:uint64 result io_file_print_double(r8|a0:FILE* stream, fp0:float64 value)
 
     move.q  stream, a0

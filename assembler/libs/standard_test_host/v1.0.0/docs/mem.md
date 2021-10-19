@@ -1,12 +1,12 @@
 # Standard Test Host Library
 
-[Main Imdex](../README.md)
+[Main Index](../README.md)
 
 ## mem.s
 Provides functions for memory allocation, copying, filling etc.
 
 ### mem_init
-```
+```asm
     ; void mem_init()
 
     bsr mem_init
@@ -17,7 +17,7 @@ Initialises the host memory subsystem. Should be called from _main_ before any o
 ___
 
 ### mem_done
-```
+```asm
     ; void mem_done()
 
     bsr mem_done
@@ -27,7 +27,7 @@ Finalises the host memory subsytem. Should be called from _exit_ after all other
 - Since v1.0.0
 ___
 ### mem_alloc
-```
+```asm
     ; r8|a0:void* address, r0|d0:uint64 error mem_alloc(r0|d0:uint64 size)
 
     move.q  size, d0
@@ -42,7 +42,7 @@ Attempts to allocate _size_ bytes of memory as indicated by the value in r0|d0.
 - Since v1.0.0
 ___
 ### mem_free
-```
+```asm
     ; mem_free(r8|a0:void* address)
 
     move.q  address, a0
@@ -75,7 +75,7 @@ Attempts to copy the block of memory of length _size_ bytes held in r0|d0 and po
 
 ___
 ### mem_fill_byte
-```
+```asm
     ; r0|d0:uint64 result mem_fill_byte(r8|a0:void* address, r0|d0:uint8 value, r1|d1:uint64 count)
 
     move.b  value, d0
@@ -92,7 +92,7 @@ Attempts to fill the memory block of _count_ bytes in length, held in r1|d1 and 
 - Since v1.0.0
 ___
 ### mem_fill_word
-```
+```asm
     ; r0|d0:uint64 result mem_fill_word(r8|a0:void* address, r0|d0:uint16 value, r1|d1:uint64 count)
 
     move.w  value, d0
@@ -110,7 +110,7 @@ Attempts to fill the memory block of up to _count_ words in length, held in r1|d
 - Since v1.0.0
 ___
 ### mem_fill_long
-```
+```asm
     ; r0|d0:uint64 result mem_fill_long(r8|a0:void* address, r0|d0:uint32 value, r1|d1:uint64 count)
 
     move.l  value, d0
@@ -128,7 +128,7 @@ Attempts to fill the memory block of up to _count_ longs in length, held in r1|d
 - Since v1.0.0
 ___
 ### mem_fill_quad
-```
+```asm
     ; r0|d0:uint64 result mem_fill_quad(r8|a0:void* address, r0|d0:uint64 value, r1|d1:uint64 count)
 
     move.q  value, d0
