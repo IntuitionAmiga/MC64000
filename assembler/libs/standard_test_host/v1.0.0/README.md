@@ -7,7 +7,7 @@ This directory contains the stub library includes for the Standard Test Host.
 
 In order to use these libraries, you must specify the Standard Test Host version information in the target section of your project and then include the desired stubs in the sources section of your project file before any files that refer to them:
 
-```json
+```javascript
     "target": {
         ...
         "host": {
