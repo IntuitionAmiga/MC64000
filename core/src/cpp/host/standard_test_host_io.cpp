@@ -51,8 +51,6 @@ char const* aOpenModes[6] = {"r", "w", "a", "r+", "w+", "a+"};
  */
 int aSeekModes[3] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
-#define setIOWriteResult(iResult, iReg) aoGPR[(iReg)].uQuad = (iResult) >= 0 ? (unsigned)ABI::ERR_NONE : (unsigned)ERR_WRITE;
-
 /**
  * Open a stream. Split out of hook().
  *

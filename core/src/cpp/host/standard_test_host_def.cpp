@@ -28,12 +28,18 @@ using MC64K::Misc::Version;
 namespace MC64K {
 namespace StandardTestHost {
 
+char const*  sHostInfo         = "Standard Test Host";
+char const** pHostCLIParams    = 0;
+uint64       uHostNumCLIParams = 0;
+
 /**
- * Example host provided global data
+ * @inheritDoc
  */
-uint64        testGlobalU = 0xABADCAFE;
-float64 const testConstPi = M_PI;
-char const*   testString  = "Hello";
+void setCLIParameters(unsigned const uArgC, char const** pArgV) {
+    uHostNumCLIParams = uArgC;
+    pHostCLIParams    = pArgV;
+}
+
 
 /**
  * Declare the Standard Test Host
@@ -41,7 +47,7 @@ char const*   testString  = "Hello";
 Host::Definition instance(
 
     // Host name and version
-    "Standard Test Host",
+    sHostInfo,
     Version(1, 0, 0),
 
     // Host ABI Vectors
@@ -52,9 +58,9 @@ Host::Definition instance(
 
     // Symbols this host exports to the virtual code.
     {
-        EXPORT_SYMBOL("abadcafe", Symbol::READ|Symbol::WRITE, &testGlobalU),
-        EXPORT_SYMBOL("M_PI_f64", Symbol::READ, &testConstPi),
-        EXPORT_SYMBOL("my_external_reference", Symbol::READ, testString)
+        EXPORT_SYMBOL("host_info", Symbol::READ, sHostInfo),
+        EXPORT_SYMBOL("host_cli_num_params", Symbol::READ, &uHostNumCLIParams),
+        EXPORT_SYMBOL("host_cli_params",  Symbol::READ, &pHostCLIParams)
     },
 
     // Symbols this host expects to be able to access from the virtual code

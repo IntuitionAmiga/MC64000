@@ -21,8 +21,9 @@
     @def MAX_ITERATION  256     ; maximum iterations per pixel
     @def BAILOUT        16.0    ; bailout value, > 4 chosen for better bifurcations
 
-    @export main x
 main:
+    bsr     mem_init
+    bsr     io_init
     ; a6 : pixel buffer
     ; a5 : output file handle
     ; d7 : total number of pixels
@@ -149,9 +150,9 @@ main:
     move.q      a5,     a0
     lea         .pgm_head, a1
     bsr         io_file_print_string
-    move.l      #1,     d0
-    lsl.l       #IMAGE_SIZE_DIM, d0
+    move.l      d6,     d0
     bsr         io_file_print_long
+    move.l      d6,     d0
     bsr         io_file_print_long
     move.l      #255,   d0
     bsr         io_file_print_long
@@ -161,7 +162,6 @@ main:
     move.q      d7,     d0
     bsr         io_file_write
 
-    @export exit x
 exit:
     ; free buffer (null safe)
     move.q      a6,     a0
@@ -170,6 +170,9 @@ exit:
     ; close file (null safe)
     move.q      a5,     a0
     bsr         io_file_close
+
+    bsr     io_done
+    bsr     mem_done
     rts
 
 .file_name:

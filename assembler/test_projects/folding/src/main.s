@@ -12,20 +12,9 @@
 ;
 ; My first project - main.s
 
-    ; Testing directives
-    @enable log_label_add          ; turns on logging of newly encountered labels in this file
-    @define ENTRY_FUNCTION main    ; defines ENTRY_FUNCTION as a substitution for main
-    @export ENTRY_FUNCTION x       ; indicate that ENTRY_FUNCTION (main) is to be exported
-    @export exit x
-ENTRY_FUNCTION:                    ; should be handled as main:
-
-    ; Using position independent calls for now
+main:
     bsr fold_to_empty_source_matches_destination
     bsr fold_to_empty_immediate_zero
     bsr fold_to_empty_conditional_always_taken_to_next_position
-
-    ; this has been defined as rts globally so should not trigger an error
-    get_to_the_chopper
-
 exit:
     rts

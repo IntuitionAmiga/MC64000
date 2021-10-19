@@ -193,6 +193,11 @@ typedef enum {
 
 Interpreter::Status hostVector();
 
+/**
+ * Gnarly
+ */
+#define setIOWriteResult(iResult, iReg) aoGPR[(iReg)].uQuad = (iResult) >= 0 ? (unsigned)ABI::ERR_NONE : (unsigned)ERR_WRITE;
+
 }}} // namespace
 
 #endif

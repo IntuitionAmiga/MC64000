@@ -1,3 +1,6 @@
+#ifndef __MC64K_MACHINE_GNARLY_HPP__
+#   define __MC64K_MACHINE_GNARLY_HPP__
+
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
  *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
@@ -105,3 +108,5 @@
 #define popProgramCounter() \
     puProgramCounter = (uint8 const*)(*(aoGPR[GPRegister::SP].puQuad)); \
     aoGPR[GPRegister::SP].puByte += 8;
+
+#endif

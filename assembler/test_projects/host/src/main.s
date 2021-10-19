@@ -12,30 +12,21 @@
 ;
 ;   Hello world.
 
-    @export main x
 main:
-    ; set up how we want our countdown number to look
-    lea     .count_fmt, a0
-    bsr     io_set_fmt_long
-
-    lea     .hello_string, a1
-    move.l  #10, d1
-
+    bsr     io_init
+    move.q  host_cli_num_params, d2
+    move.q  host_cli_params, a2
 .loop:
-    move.q  d1, d0
-    bsr     io_print_long
-    move.q  a1, a0
+    move.q  (a2)+, a0
     bsr     io_print_string
-    dbnz    d1, .loop
+    lea     .newline, a0
+    bsr     io_print_string
+    dbnz    d2, .loop
 
-    @export exit x
 exit:
+    bsr io_done
     rts
 
-    @align 0, 8
-.hello_string:
-    dc.b " >>>> Hello real world!\n\0"
-
-.count_fmt:
-    dc.b "\t%3d\0"
+.newline:
+    dc.b "\n\0"
 
