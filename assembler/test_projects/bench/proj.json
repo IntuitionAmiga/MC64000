@@ -1,0 +1,25 @@
+{
+    "target": {
+        "name": "Bench",
+        "version": "1.0.0",
+        "description": "Misc performance testing",
+        "output": "bin/bench.64x",
+        "host": {
+            "name": "Standard Test Host",
+            "version": "1.0.0"
+        }
+    },
+    "options": {
+        "log_code_folds": true,
+        "log_label_add": false,
+        "log_label_ref": false,
+        "log_label_resolve": false,
+        "opt_use_fast_path": true
+    },
+    "sources": [
+        "lib:standard_test_host/v1.0.0/host.s",
+        "src/main.s"
+    ],
+    "defines": {
+    }
+}

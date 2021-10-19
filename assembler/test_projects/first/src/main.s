@@ -10,7 +10,7 @@
 ;
 ;   - 64-bit 680x0-inspired Virtual Machine and assembler -
 ;
-; Full-On DIY Hello World. No stubs. Just for IntutionAmiga.
+; Full-On DIY Hello World. No stubs. Just for IntuitionAmiga.
 
     ; Define some names to make the code easier to read. Constants declared with @def have file scope only.
 

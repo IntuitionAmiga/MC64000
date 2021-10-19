@@ -64,6 +64,8 @@ typedef enum {
 
 } // namespace ABI
 
+void setCLIParameters(unsigned const uArgC, char const** pArgV);
+
 extern MC64K::Host::Definition instance;
 
 }} // namespace

@@ -12,8 +12,19 @@
 ;
 ; Stub library for the standard test host ABI routines
 
-; Returns
+; Standard return values
+
     @equ ERR_NONE     0
     @equ ERR_NULL_PTR 1
     @equ ERR_BAD_SIZE 2
 
+; Imported symbols from this host
+
+    @import host_info r             ; Host information string.
+    @import host_cli_num_params r   ; Number of commandline parameters on startup (argc)
+    @import host_cli_params r       ; List of commandline parameters on startup (argv)
+
+; Exported symbols that are mandatory for this host
+
+    @export main x                  ; Main entry point on execution.
+    @export exit x                  ; Main exit point to ensure any cleanup.

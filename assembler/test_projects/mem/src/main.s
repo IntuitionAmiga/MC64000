@@ -14,9 +14,7 @@
 
     @def MEM_BUFFER_SIZE 16777216
 
-    @export main x
 main:
-
     move.q  #MEM_BUFFER_SIZE, d7
     move.q  d7, d0
     bsr     mem_alloc
@@ -39,7 +37,6 @@ main:
     bsr     mem_fill_byte
     dbnz    d6,     .loop
 
-    @export exit x
 exit:
     ; free buffer (null safe)
     move.q      a6,     a0

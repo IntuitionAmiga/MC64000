@@ -12,9 +12,7 @@
 ;
 ; Empty project - main.s
 
-    @export main x
 main:
 
-    @export exit x
 exit:
     rts
