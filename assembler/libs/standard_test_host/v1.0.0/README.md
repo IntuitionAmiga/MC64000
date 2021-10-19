@@ -8,8 +8,9 @@ This directory contains the stub library includes for the Standard Test Host.
 In order to use these libraries, you must specify the Standard Test Host version information in the target section of your project and then include the desired stubs in the sources section of your project file before any files that refer to them:
 
 ```javascript
+{
     "target": {
-        ...
+        // ...
         "host": {
             "name": "Standard Test Host",
             "version": "<version>"
@@ -20,9 +21,10 @@ In order to use these libraries, you must specify the Standard Test Host version
         "lib:standard_test_host/<version>/host.s", // This line is mandatory
         "lib:standard_test_host/<version>/mem.s",  // Include as needed
         "lib:standard_test_host/<version>/io.s",   // Include as needed
-        ...
+        // ...
         // your sources follow
     ]
+}
 ```
 
 ### Versioning
