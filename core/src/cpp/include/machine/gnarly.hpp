@@ -90,6 +90,18 @@
 #define asDouble(ea) *((float64*)(ea))
 #define asBitPos(ea, m) (1 << (asUByte(ea) & m))
 
+#define unpackGPRPair() { \
+    uint8 uRegPair  = *puProgramCounter++; \
+    pDstEA          = &aoGPR[uRegPair & 0xF]; \
+    pSrcEA          = &aoGPR[uRegPair >> 4]; \
+}
+
+#define unpackFPRPair() { \
+    uint8 uRegPair  = *puProgramCounter++; \
+    pDstEA          = &aoFPR[uRegPair & 0xF]; \
+    pSrcEA          = &aoFPR[uRegPair >> 4]; \
+}
+
 /**
  * Exit triger for unimplemented instructions.
  */

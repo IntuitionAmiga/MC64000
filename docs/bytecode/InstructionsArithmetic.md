@@ -292,15 +292,6 @@ Floating Point 2 to x
 
 ___
 
-### FGETEXP
-
-Get Floating Point Exponent.
-
-___
-
-### FGETMAN
-
-Get Floating Point Mantissa
 
 <!--
         MULS_B    = self::OFS_ARITHMETIC + 32, // 0xC0

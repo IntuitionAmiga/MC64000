@@ -132,6 +132,9 @@ interface IMatches {
         // Go on, why not?
         'dbnz'    => IControl::DBNZ,
 
+        'fbif.s'   => IControl::FBIF_S,
+        'fbif.d'   => IControl::FBIF_D,
+
         // Data Movement
         'move.b'   => IDataMove::MOVE_B,
         'move.w'   => IDataMove::MOVE_W,
@@ -213,14 +216,8 @@ interface IMatches {
         'bset.w'   => ILogical::BSET_W,
         'bset.l'   => ILogical::BSET_L,
         'bset.q'   => ILogical::BSET_Q,
-        'bfclr'    => ILogical::BFCLR,
-        'bfset'    => ILogical::BFSET,
-        'bfins'    => ILogical::BFINS,
-        'bfexts'   => ILogical::BFEXTS,
-        'bfextu'   => ILogical::BFEXTU,
         'bfffo'    => ILogical::BFFFO,
         'bfcnt'    => ILogical::BFCNT,
-        'bfxxx'    => ILogical::BFXXX,
 
 // Arithmetic
         'extb.w'    => IArithmetic::EXTB_W,
@@ -303,10 +300,6 @@ interface IMatches {
         'flog2.d'   => IArithmetic::FLOG2_D,
         'ftwotox.s' => IArithmetic::FTWOTOX_S,
         'ftwotox.d' => IArithmetic::FTWOTOX_D,
-        'fgetexp.s' => IArithmetic::FGETEXP_S,
-        'fgetexp.d' => IArithmetic::FGETEXP_D,
-        'fgetman.s' => IArithmetic::FGETMAN_S,
-        'fgetman.d' => IArithmetic::FGETMAN_D,
 /*
         'reserved0',
         'reserved1',

@@ -212,83 +212,7 @@ General syntax:
 
 ___
 
-### BFCLR
-
-Reserved
-
-Clear Bitfield.
-
-        0 -> r<D>[ Bitfield ]
-
-General syntax:
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `<bfclr>` | 0x98 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### BFSET
-
-Reserved
-
-Set Bitfield.
-
-        1 -> r<D>[ Bitfield ]
-
-General syntax:
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `<bfset>` | 0x99 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### BFEXTS
-
-Reserved
-
-Extract Bitfield as Signed.
-
-General syntax:
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `<bfexts>` | 0x9A | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-Reserved
-
-___
-
-### BFEXTU
-
-Extract Bitfield as Unsigned.
-
-General syntax:
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `<bfextu>` | 0x9B | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### BFINS
-
-Reserved
-
-Insert Bitfield.
-
-General syntax:
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `<bfins>` | 0x9C | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
 ### BFFFO
-
-Reserved
 
 Find First One in Bitfield.
 
@@ -296,13 +220,11 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `<bfffo>` | 0x9D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `<bfffo>` | 0x98 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
 ### BFCNT
-
-Reserved
 
 Count number of set bits.
 
@@ -314,14 +236,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `bfcnt.b <ea(s)>, <ea(d)>` | 0x9E | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `bfcnt <ea(s)>, <ea(d)>` | 0x99 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
-### BFXXX
 
-Reserved
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `<bfxxx>` | 0x9F | 0x*EA*(d) | ... | 0x*EA*(s) | ... |

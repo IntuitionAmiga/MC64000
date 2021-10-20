@@ -32,9 +32,9 @@ namespace Opcode {
  */
 enum Group {
     OFS_CONTROL    = 0,
-    OFS_DATA_MOVE  = 77,
-    OFS_LOGICAL    = 112,
-    OFS_ARITHMETIC = 160,
+    OFS_DATA_MOVE  = 79,
+    OFS_LOGICAL    = 114,
+    OFS_ARITHMETIC = 156,
     OFS_MAX        = 255
 };
 
@@ -49,7 +49,7 @@ enum Prefix {
  * Enumerates control flow opcodes
  */
 enum Control {
-    HCF    = OFS_CONTROL +  0, // 0x00
+    HCF    = OFS_CONTROL +  0,
     BRA_B  = OFS_CONTROL +  1,
     BRA    = OFS_CONTROL +  2,
     BSR_B  = OFS_CONTROL +  3,
@@ -65,8 +65,7 @@ enum Control {
     FBIZ_D = OFS_CONTROL + 13,
     BNZ_B  = OFS_CONTROL + 14,
     BNZ_W  = OFS_CONTROL + 15,
-
-    BNZ_L  = OFS_CONTROL + 16, // 0x10
+    BNZ_L  = OFS_CONTROL + 16,
     BNZ_Q  = OFS_CONTROL + 17,
     FBNZ_S = OFS_CONTROL + 18,
     FBNZ_D = OFS_CONTROL + 19,
@@ -82,8 +81,7 @@ enum Control {
     BPL_Q  = OFS_CONTROL + 29,
     FBPL_S = OFS_CONTROL + 30,
     FBPL_D = OFS_CONTROL + 31,
-
-    BLT_B  = OFS_CONTROL + 32, // 0x20
+    BLT_B  = OFS_CONTROL + 32,
     BLT_W  = OFS_CONTROL + 33,
     BLT_L  = OFS_CONTROL + 34,
     BLT_Q  = OFS_CONTROL + 35,
@@ -99,8 +97,7 @@ enum Control {
     BEQ_W  = OFS_CONTROL + 45,
     BEQ_L  = OFS_CONTROL + 46,
     BEQ_Q  = OFS_CONTROL + 47,
-
-    FBEQ_S = OFS_CONTROL + 48, // 0x30
+    FBEQ_S = OFS_CONTROL + 48,
     FBEQ_D = OFS_CONTROL + 49,
     BGE_B  = OFS_CONTROL + 50,
     BGE_W  = OFS_CONTROL + 51,
@@ -116,8 +113,7 @@ enum Control {
     FBGT_D = OFS_CONTROL + 61,
     BNE_B  = OFS_CONTROL + 62,
     BNE_W  = OFS_CONTROL + 63,
-
-    BNE_L  = OFS_CONTROL + 64, // 0x40
+    BNE_L  = OFS_CONTROL + 64,
     BNE_Q  = OFS_CONTROL + 65,
     FBNE_S = OFS_CONTROL + 66,
     FBNE_D = OFS_CONTROL + 67,
@@ -129,7 +125,9 @@ enum Control {
     BBC_W  = OFS_CONTROL + 73,
     BBC_L  = OFS_CONTROL + 74,
     BBC_Q  = OFS_CONTROL + 75,
-    DBNZ   = OFS_CONTROL + 76
+    DBNZ   = OFS_CONTROL + 76,
+    FBIF_S = OFS_CONTROL + 77,
+    FBIF_D = OFS_CONTROL + 78
 };
 
 /**
@@ -138,11 +136,10 @@ enum Control {
  * Enumerates data movement/conversion opcodes
  */
 enum DataMove {
-    MOVE_B   = OFS_DATA_MOVE +  0, // 0x4D
+    MOVE_B   = OFS_DATA_MOVE +  0,
     MOVE_W   = OFS_DATA_MOVE +  1,
     MOVE_L   = OFS_DATA_MOVE +  2,
-
-    MOVE_Q   = OFS_DATA_MOVE +  3, // 0x50
+    MOVE_Q   = OFS_DATA_MOVE +  3,
     SAVEM    = OFS_DATA_MOVE +  4,
     LOADM    = OFS_DATA_MOVE +  5,
     FMOVEB_S = OFS_DATA_MOVE +  6,
@@ -158,8 +155,7 @@ enum DataMove {
     FMOVES_D = OFS_DATA_MOVE + 16,
     FMOVED_L = OFS_DATA_MOVE + 17,
     FMOVED_Q = OFS_DATA_MOVE + 18,
-
-    FMOVED_S = OFS_DATA_MOVE + 19, // 0x60
+    FMOVED_S = OFS_DATA_MOVE + 19,
     FMOVE_S  = OFS_DATA_MOVE + 20,
     FMOVE_D  = OFS_DATA_MOVE + 21,
     CLR_B    = OFS_DATA_MOVE + 22,
@@ -174,7 +170,7 @@ enum DataMove {
     LINK     = OFS_DATA_MOVE + 31,
     UNLK     = OFS_DATA_MOVE + 32,
     LEA      = OFS_DATA_MOVE + 33,
-    PEA      = OFS_DATA_MOVE + 34 // 0x6F
+    PEA      = OFS_DATA_MOVE + 34
 };
 
 /**
@@ -183,7 +179,7 @@ enum DataMove {
  * Enumerates bitwise logical opcodes
  */
 enum Logical {
-    AND_B    = OFS_LOGICAL +  0, // 0x70
+    AND_B    = OFS_LOGICAL +  0,
     AND_W    = OFS_LOGICAL +  1,
     AND_L    = OFS_LOGICAL +  2,
     AND_Q    = OFS_LOGICAL +  3,
@@ -199,8 +195,7 @@ enum Logical {
     NOT_W    = OFS_LOGICAL + 13,
     NOT_L    = OFS_LOGICAL + 14,
     NOT_Q    = OFS_LOGICAL + 15,
-
-    LSL_B    = OFS_LOGICAL + 16, // 0x80
+    LSL_B    = OFS_LOGICAL + 16,
     LSL_W    = OFS_LOGICAL + 17,
     LSL_L    = OFS_LOGICAL + 18,
     LSL_Q    = OFS_LOGICAL + 19,
@@ -216,8 +211,7 @@ enum Logical {
     ROR_W    = OFS_LOGICAL + 29,
     ROR_L    = OFS_LOGICAL + 30,
     ROR_Q    = OFS_LOGICAL + 31,
-
-    BCLR_B   = OFS_LOGICAL + 32, // 0x90
+    BCLR_B   = OFS_LOGICAL + 32,
     BCLR_W   = OFS_LOGICAL + 33,
     BCLR_L   = OFS_LOGICAL + 34,
     BCLR_Q   = OFS_LOGICAL + 35,
@@ -225,14 +219,8 @@ enum Logical {
     BSET_W   = OFS_LOGICAL + 37,
     BSET_L   = OFS_LOGICAL + 38,
     BSET_Q   = OFS_LOGICAL + 39,
-    BFCLR    = OFS_LOGICAL + 40,
-    BFSET    = OFS_LOGICAL + 41,
-    BFINS    = OFS_LOGICAL + 42,
-    BFEXTS   = OFS_LOGICAL + 43,
-    BFEXTU   = OFS_LOGICAL + 44,
-    BFFFO    = OFS_LOGICAL + 45,
-    BFCNT    = OFS_LOGICAL + 46,
-    BFXXX    = OFS_LOGICAL + 47
+    BFFFO    = OFS_LOGICAL + 40,
+    BFCNT    = OFS_LOGICAL + 41,
 };
 
 /**
@@ -241,7 +229,7 @@ enum Logical {
  * Enumerates arithmetic (integer and floating point) operations.
  */
 enum Arithmetic {
-    EXTB_W    = OFS_ARITHMETIC +  0, // 0xA0
+    EXTB_W    = OFS_ARITHMETIC +  0,
     EXTB_L    = OFS_ARITHMETIC +  1,
     EXTB_Q    = OFS_ARITHMETIC +  2,
     EXTW_L    = OFS_ARITHMETIC +  3,
@@ -257,8 +245,7 @@ enum Arithmetic {
     ASR_Q     = OFS_ARITHMETIC + 13,
     ADD_B     = OFS_ARITHMETIC + 14,
     ADD_W     = OFS_ARITHMETIC + 15,
-
-    ADD_L     = OFS_ARITHMETIC + 16, // 0xB0
+    ADD_L     = OFS_ARITHMETIC + 16,
     ADD_Q     = OFS_ARITHMETIC + 17,
     FADD_S    = OFS_ARITHMETIC + 18,
     FADD_D    = OFS_ARITHMETIC + 19,
@@ -274,8 +261,7 @@ enum Arithmetic {
     NEG_Q     = OFS_ARITHMETIC + 29,
     FNEG_S    = OFS_ARITHMETIC + 30,
     FNEG_D    = OFS_ARITHMETIC + 31,
-
-    MULS_B    = OFS_ARITHMETIC + 32, // 0xC0
+    MULS_B    = OFS_ARITHMETIC + 32,
     MULS_W    = OFS_ARITHMETIC + 33,
     MULS_L    = OFS_ARITHMETIC + 34,
     MULS_Q    = OFS_ARITHMETIC + 35,
@@ -291,8 +277,7 @@ enum Arithmetic {
     DIVS_Q    = OFS_ARITHMETIC + 45,
     DIVU_B    = OFS_ARITHMETIC + 46,
     DIVU_W    = OFS_ARITHMETIC + 47,
-
-    DIVU_L    = OFS_ARITHMETIC + 48, // 0xD0
+    DIVU_L    = OFS_ARITHMETIC + 48,
     DIVU_Q    = OFS_ARITHMETIC + 49,
     FDIV_S    = OFS_ARITHMETIC + 50,
     FDIV_D    = OFS_ARITHMETIC + 51,
@@ -308,8 +293,7 @@ enum Arithmetic {
     FASIN_D   = OFS_ARITHMETIC + 61,
     FATAN_S   = OFS_ARITHMETIC + 62,
     FATAN_D   = OFS_ARITHMETIC + 63,
-
-    FCOS_S    = OFS_ARITHMETIC + 64, // 0xE0
+    FCOS_S    = OFS_ARITHMETIC + 64,
     FCOS_D    = OFS_ARITHMETIC + 65,
     FSIN_S    = OFS_ARITHMETIC + 66,
     FSIN_D    = OFS_ARITHMETIC + 67,
@@ -325,11 +309,6 @@ enum Arithmetic {
     FLOG2_D   = OFS_ARITHMETIC + 77,
     FTWOTOX_S = OFS_ARITHMETIC + 78,
     FTWOTOX_D = OFS_ARITHMETIC + 79,
-
-    FGETEXP_S = OFS_ARITHMETIC + 80, // 0xF0
-    FGETEXP_D = OFS_ARITHMETIC + 81,
-    FGETMAN_S = OFS_ARITHMETIC + 82,
-    FGETMAN_D = OFS_ARITHMETIC + 83
 };
 
 }}} // namespace
