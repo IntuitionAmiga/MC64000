@@ -2,8 +2,8 @@
     "target": {
         "name": "Mandelbrot",
         "version": "1.0.0",
-        "description": "Mandelbrot test",
-        "output": "bin/mandelbrot.64x",
+        "description": "Mandelbrot test: Single Precision, register to register",
+        "output": "bin/sp_regonly.64x",
         "host": {
             "name": "Standard Test Host",
             "version": "1.0.0"
