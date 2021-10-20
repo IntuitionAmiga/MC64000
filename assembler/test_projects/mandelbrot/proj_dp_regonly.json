@@ -2,8 +2,8 @@
     "target": {
         "name": "Mandelbrot",
         "version": "1.0.0",
-        "description": "Mandelbrot test",
-        "output": "bin/mandelbrot.64x",
+        "description": "Mandelbrot test: Double Precision, register to register",
+        "output": "bin/dp_regonly.64x",
         "host": {
             "name": "Standard Test Host",
             "version": "1.0.0"
@@ -21,7 +21,7 @@
         "lib:standard_test_host/v1.0.0/mem.s",
         "lib:standard_test_host/v1.0.0/io.s",
         "src/main.s",
-        "src/sp_register.s"
+        "src/dp_register.s"
     ],
     "defines": {
     }
