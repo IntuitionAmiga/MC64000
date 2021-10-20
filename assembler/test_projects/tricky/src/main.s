@@ -20,12 +20,24 @@ main:
     swap.l  d3, d5                 ; d5 = #$0000000010325476
     swap    d5, d6                 ; d6 = #$0000000054761032
 
+    fmove.s #1.0, fp0
+    fmove.s #2.0, fp1
+    fexg    fp0, fp1               ; fp0.s = 2.0, fp1.s = 1.0
+    fmove.d #3.0, fp2
+    fmove.d #4.0, fp3
+    fexg    fp2, fp3               ; fp2.d = 4.0, fp3.d = 3.0
+    fexg    fp0, fp2               ; fp0.d = 4.0, fp2.s = 1.0
+
     ; assertions
     bne.q   #0, d2,                 .error
     bne.q   #$FEDCBA9876543210, d3, .error
     bne.q   #$1032547698BADCFE, d4, .error
     bne.q   #$0000000010325476, d5, .error
     bne.q   #$0000000054761032, d6, .error
+    fbne.d  #4.0, fp0,              .error
+    fbne.d  #3.0, fp3,              .error
+    fbne.s  #1.0, fp1,              .error
+    fbne.s  #2.0, fp2,              .error
 
     ; find first one.
     move.q  #0, d2                  ; d2 = 1
