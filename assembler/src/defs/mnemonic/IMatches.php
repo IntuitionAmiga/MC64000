@@ -132,6 +132,9 @@ interface IMatches {
         // Go on, why not?
         'dbnz'    => IControl::DBNZ,
 
+        'fbif.s'   => IControl::FBIF_S,
+        'fbif.d'   => IControl::FBIF_D,
+
         // Data Movement
         'move.b'   => IDataMove::MOVE_B,
         'move.w'   => IDataMove::MOVE_W,

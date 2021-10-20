@@ -119,16 +119,6 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
             [IControl::HCF => chr(0xFF)]
         ));
 
-        // Todo - this probably isn't ideal.
-        $this->addOperandSetParser(new OperandSet\CustomDyadic(
-            [
-                ILogical::BFFFO,
-                ILogical::BFCNT,
-            ],
-            new EffectiveAddress\GPRDirect(),
-            new EffectiveAddress\GPRDirect()
-        ));
-
     }
 
 

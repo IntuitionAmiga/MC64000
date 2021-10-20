@@ -101,9 +101,7 @@ void Interpreter::run() {
 
             // Integer register to register fast path prefix
             case Opcode::INT_R2R: {
-                uint8 uRegPair = *puProgramCounter++;
-                pDstEA = &aoGPR[uRegPair & 0xF];
-                pSrcEA = &aoGPR[uRegPair >> 4];
+                unpackGPRPair();
 
                 switch (*puProgramCounter++) {
                     case Opcode::DBNZ:   readDisplacement(); bcc(--asULong(pDstEA)); goto skipstatus;
@@ -124,9 +122,7 @@ void Interpreter::run() {
 
             // Float register to register fast path prefix
             case Opcode::FLT_R2R: {
-                uint8 uRegPair = *puProgramCounter++;
-                pDstEA = &aoFPR[uRegPair & 0xF];
-                pSrcEA = &aoFPR[uRegPair >> 4];
+                unpackFPRPair();
 
                 switch (*puProgramCounter++) {
                     case Opcode::FMOVE_S:   asLong(pDstEA)    = asLong(pSrcEA);     goto skipstatus;
@@ -327,6 +323,7 @@ void Interpreter::run() {
                 restoreRegisters(uMask, uEAMode);
                 break;
             }
+
             // Integer/Float interconversion
             case Opcode::FMOVEB_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asByte(pSrcEA);   break;
             case Opcode::FMOVEB_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = (float64)asByte(pSrcEA);   break;
@@ -354,36 +351,49 @@ void Interpreter::run() {
             case Opcode::CLR_Q:    monadic(SIZE_QUAD); asUQuad(pDstEA) = 0; break;
 
             case Opcode::EXG: {
-                dyadic(SIZE_QUAD);
-                int64 iTemp    = asQuad(pSrcEA);
-                asQuad(pSrcEA) = asQuad(pDstEA);
-                asQuad(pDstEA) = iTemp;
+                unpackGPRPair();
+                uint64 uTemp    = asUQuad(pSrcEA);
+                asUQuad(pSrcEA) = asUQuad(pDstEA);
+                asUQuad(pDstEA) = uTemp;
                 break;
             }
 
             case Opcode::FEXG: {
-                dyadic(SIZE_QUAD);
-                float64 fTemp    = asDouble(pSrcEA);
-                asDouble(pSrcEA) = asDouble(pDstEA);
-                asDouble(pDstEA) = fTemp;
+                unpackFPRPair();
+                uint64 uTemp    = asUQuad(pSrcEA);
+                asUQuad(pSrcEA) = asUQuad(pDstEA);
+                asUQuad(pDstEA) = uTemp;
                 break;
             }
 
             case Opcode::SWAP: {
-                dyadic(SIZE_LONG);
+                unpackGPRPair();
                 uint32 uTemp    = (uint32)asLong(pSrcEA);
                 asULong(pDstEA) = uTemp >> 16 | uTemp << 16;
                 break;
             }
 
-            case Opcode::SWAP_L: dyadic(SIZE_LONG); asULong(pDstEA) = __builtin_bswap32(asULong(pSrcEA)); break;
-            case Opcode::SWAP_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA) = __builtin_bswap64(asUQuad(pSrcEA)); break;
+            case Opcode::SWAP_L: {
+                unpackGPRPair();
+                asULong(pDstEA) = __builtin_bswap32(asULong(pSrcEA));
+                break;
+            }
+            case Opcode::SWAP_Q: {
+                unpackGPRPair();
+                asUQuad(pDstEA) = __builtin_bswap64(asUQuad(pSrcEA));
+                break;
+            }
+
             case Opcode::LINK:
             case Opcode::UNLK:   todo();
-            case Opcode::LEA:    dyadic(SIZE_QUAD); asUQuad(pDstEA) = (uint64)pSrcEA;           break;
+            case Opcode::LEA: {
+                dyadic(SIZE_QUAD);
+                asUQuad(pDstEA) = (uint64)pSrcEA;
+                break;
+            }
             case Opcode::PEA: {
                 monadic(SIZE_QUAD);
-                aoGPR[GPRegister::SP].puByte -= 8;
+                aoGPR[GPRegister::SP].puByte -= sizeof(uint64);
                 *(aoGPR[GPRegister::SP].puQuad) = (uint64)pSrcEA;
                 break;
             }
@@ -429,12 +439,16 @@ void Interpreter::run() {
             case Opcode::BSET_W: dyadic(SIZE_WORD); asUWord(pDstEA) |=  (1 << (asUByte(pSrcEA) & 15)); break;
             case Opcode::BSET_L: dyadic(SIZE_LONG); asULong(pDstEA) |=  (1 << (asUByte(pSrcEA) & 31)); break;
             case Opcode::BSET_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA) |=  (1 << (asUByte(pSrcEA) & 63)); break;
+
             case Opcode::BFFFO: {
-                dyadic(SIZE_QUAD);
+                unpackGPRPair();
+                uint64 pTemp = asUQuad(pSrcEA);
+                asUQuad(pDstEA) = pTemp ? (63 - __builtin_clzll(pTemp)) : ~pTemp;
                 break;
             }
             case Opcode::BFCNT: {
-                dyadic(SIZE_QUAD);
+                unpackGPRPair();
+                asUQuad(pDstEA) = __builtin_popcountll(asUQuad(pSrcEA));
                 break;
             }
 
