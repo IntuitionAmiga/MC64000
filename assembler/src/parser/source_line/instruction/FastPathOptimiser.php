@@ -49,12 +49,22 @@ class FastPathOptimiser {
     const DYADIC_FAST_PATH = [
         IDataMove::MOVE_L   => self::FAST_INT_PREFIX,
         IDataMove::MOVE_Q   => self::FAST_INT_PREFIX,
-
-        IArithmetic::ADD_L   => self::FAST_INT_PREFIX, // 0xB0
-        IArithmetic::ADD_Q   => self::FAST_INT_PREFIX,
-        IArithmetic::SUB_L   => self::FAST_INT_PREFIX, // 0xB0
-        IArithmetic::SUB_Q   => self::FAST_INT_PREFIX,
-
+        ILogic::AND_L       => self::FAST_INT_PREFIX,
+        ILogic::AND_Q       => self::FAST_INT_PREFIX,
+        ILogic::OR_L        => self::FAST_INT_PREFIX,
+        ILogic::OR_Q        => self::FAST_INT_PREFIX,
+        IArithmetic::EXTB_L => self::FAST_INT_PREFIX,
+        IArithmetic::EXTB_Q => self::FAST_INT_PREFIX,
+        IArithmetic::EXTW_L => self::FAST_INT_PREFIX,
+        IArithmetic::EXTW_Q => self::FAST_INT_PREFIX,
+        IArithmetic::ADD_L  => self::FAST_INT_PREFIX,
+        IArithmetic::ADD_Q  => self::FAST_INT_PREFIX,
+        IArithmetic::SUB_L  => self::FAST_INT_PREFIX,
+        IArithmetic::SUB_Q  => self::FAST_INT_PREFIX,
+        IArithmetic::MULS_L => self::FAST_INT_PREFIX,
+        IArithmetic::MULS_Q => self::FAST_INT_PREFIX,
+        IArithmetic::MULU_L => self::FAST_INT_PREFIX,
+        IArithmetic::MULU_Q => self::FAST_INT_PREFIX,
 
         IDataMove::FMOVE_S  => self::FAST_FLOAT_PREFIX,
         IDataMove::FMOVE_D  => self::FAST_FLOAT_PREFIX,
