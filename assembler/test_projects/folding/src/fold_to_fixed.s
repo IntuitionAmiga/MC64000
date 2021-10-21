@@ -16,6 +16,8 @@
 .locally_always_get_here:
     rts
 
+    dc.b "< fold to fix <"
+
 fold_to_fixed_conditional_always_taken:
 ; Conditional branch always taken, short branch outcome to local label
     biz.b  #0, .locally_always_get_here
@@ -102,14 +104,6 @@ fold_to_fixed_conditional_always_taken:
     beq.w 8(pc), 8(pc), .locally_always_get_here
     beq.l 8(pc), 8(pc), .locally_always_get_here
     beq.q 8(pc), 8(pc), .locally_always_get_here
-    beq.b (pc, d0.b), (pc, d0.b), .locally_always_get_here
-    beq.w (pc, d0.w * 2), (pc, d0.w * 2), .locally_always_get_here
-    beq.l (pc, d0.l * 4), (pc, d0.l * 4), .locally_always_get_here
-    beq.q (pc, d0.q * 8), (pc, d0.q * 8), .locally_always_get_here
-    beq.b 1(pc, d0.b), 1(pc, d0.b), .locally_always_get_here
-    beq.w 2(pc, d0.w * 2), 2(pc, d0.w * 2), .locally_always_get_here
-    beq.l 4(pc, d0.l * 4), 4(pc, d0.l * 4), .locally_always_get_here
-    beq.q 8(pc, d0.q * 8), 8(pc, d0.q * 8), .locally_always_get_here
     fbeq.s fp0, fp0, .locally_always_get_here
     fbeq.d fp0, fp0, .locally_always_get_here
     fbeq.s (r0), (r0), .locally_always_get_here
@@ -122,9 +116,7 @@ fold_to_fixed_conditional_always_taken:
     fbeq.d 8(r0, d1.q * 8), 8(r0, d1.q * 8), .locally_always_get_here
     fbeq.s 8(pc), 8(pc), .locally_always_get_here
     fbeq.d 8(pc), 8(pc), .locally_always_get_here
-    fbeq.s (pc, d0.l * 4), (pc, d0.l * 4), .locally_always_get_here
-    fbeq.d (pc, d0.q * 8), (pc, d0.q * 8), .locally_always_get_here
-    fbeq.s 4(pc, d0.l * 4), 4(pc, d0.l * 4), .locally_always_get_here
-    fbeq.d 8(pc, d0.q * 8), 8(pc, d0.q * 8), .locally_always_get_here
 
     rts ;
+
+    dc.b "> fold to fixed >"

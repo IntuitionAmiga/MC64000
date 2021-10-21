@@ -126,12 +126,12 @@ class IntegerDyadic extends Dyadic {
         IArithmetic::MULU_Q => [0 => 'foldClearDestinationQuad', 1 => 'foldEmpty'],
         IArithmetic::DIVS_L => [0 => 'trapIllegal', 1 => 'foldEmpty'],
         IArithmetic::DIVS_Q => [0 => 'trapIllegal', 1 => 'foldEmpty'],
-        IArithmetic::MODS_L => [0 => 'trapIllegal', 1 => 'foldEmpty'],
-        IArithmetic::MODS_Q => [0 => 'trapIllegal', 1 => 'foldEmpty'],
+        IArithmetic::MODS_L => [0 => 'trapIllegal', 1 => 'foldClearDestinationLong'],
+        IArithmetic::MODS_Q => [0 => 'trapIllegal', 1 => 'foldClearDestinationQuad'],
         IArithmetic::DIVU_L => [0 => 'trapIllegal', 1 => 'foldEmpty'],
         IArithmetic::DIVU_Q => [0 => 'trapIllegal', 1 => 'foldEmpty'],
-        IArithmetic::MODU_L => [0 => 'trapIllegal', 1 => 'foldEmpty'],
-        IArithmetic::MODU_Q => [0 => 'trapIllegal', 1 => 'foldEmpty'],
+        IArithmetic::MODU_L => [0 => 'trapIllegal', 1 => 'foldClearDestinationLong'],
+        IArithmetic::MODU_Q => [0 => 'trapIllegal', 1 => 'foldClearDestinationQuad'],
     ];
 
     const SKIP_IF_OPERANDS_SAME = [

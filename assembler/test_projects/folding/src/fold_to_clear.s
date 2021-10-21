@@ -13,6 +13,8 @@
 ;
 ; Functions that are full of fold-to-clear operations
 
+    dc.b "< fold to clear <"
+
 fold_to_clear:
     and.b    #0, d0
     and.w    #0, d0
@@ -27,6 +29,14 @@ fold_to_clear:
     mulu.l   #0, d0
     mulu.q   #0, d0
 
+    @enable log_code_folds
+    mods.l   #1, d0
+    mods.q   #1, d0
+    modu.l   #1, d0
+    modu.q   #1, d0
+
+    @disable log_code_folds
+
     and.b    #0, (a0)
     and.w    #0, (a0)
     and.l    #0, (a0)
@@ -39,6 +49,10 @@ fold_to_clear:
     mulu.w   #0, (a0)
     mulu.l   #0, (a0)
     mulu.q   #0, (a0)
+    mods.l   #1, (a0)
+    mods.q   #1, (a0)
+    modu.l   #1, (a0)
+    modu.q   #1, (a0)
 
     and.b    #0, (a0)+
     and.w    #0, (a0)+
@@ -52,6 +66,10 @@ fold_to_clear:
     mulu.w   #0, (a0)+
     mulu.l   #0, (a0)+
     mulu.q   #0, (a0)+
+    mods.l   #1, (a0)+
+    mods.q   #1, (a0)+
+    modu.l   #1, (a0)+
+    modu.q   #1, (a0)+
 
     and.b    #0, -(a0)
     and.w    #0, -(a0)
@@ -65,3 +83,9 @@ fold_to_clear:
     mulu.w   #0, -(a0)
     mulu.l   #0, -(a0)
     mulu.q   #0, -(a0)
+    mods.l   #1, -(a0)
+    mods.q   #1, -(a0)
+    modu.l   #1, -(a0)
+    modu.q   #1, -(a0)
+
+    dc.b "> fold to clear >"
