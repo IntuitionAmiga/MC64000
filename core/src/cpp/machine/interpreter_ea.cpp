@@ -121,16 +121,6 @@ void* Interpreter::decodeEffectiveAddress() {
             break;
         }
 
-        // Program Counter Indirect with scaled index
-        case EffectiveAddress::OFS_PC_IND_IDX:
-            eStatus = UNIMPLEMENTED_EAMODE;
-            return 0;
-
-        // Program Counter Indirect with 8-bit scaled index and displacement
-        case EffectiveAddress::OFS_PC_IND_IDX_DSP:
-            eStatus = UNIMPLEMENTED_EAMODE;
-            return 0;
-
         case EffectiveAddress::OFS_OTHER: {
             if (uEALower <= EffectiveAddress::Other::INT_SMALL_8) {
                 oImmediate.iQuad = uEALower;

@@ -246,107 +246,6 @@ Examples:
 | `<D>(r<A>, r<I>.q * 8)` | 0x9F | 0x*AI* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
 ___
 
-### Program Counter Indirect with (Scaled) Index
-
-The contents of the program counter, plus an optionally scaled index value taken from a second register are used as the address of the operand in memory. The index size and scale factor are selectable.
-
-General syntax: `(pc, r<I>.<b|w|l|q> [* <2|4|8>])`
-
-Examples:
-
-        (pc, r1.w)
-        (pc, d1.l * 2)
-        (pc, r5.b * 8)
-        (pc, a0.l * 4)
-
-* Allowed index register names: r0 ... r15, d0 ... d7, a0 ... a7, sp
-* All bits of the base register are used.
-* For .b, .w and .l sized indexes, the register fragment is treated as a signed value:
-    - For a .b index, a register value of 0x00000000000000FF is interpreted as -1, not 255.
-* Cannot be used for destination operands.
-
-| Mode | Bytecode | Ext 0 |
-| - | - | - |
-| `(pc, r<I>.b)` | 0xA0 | 0x0*I* |
-| `(pc, r<I>.w)` | 0xA1 | 0x0*I* |
-| `(pc, r<I>.l)` | 0xA2 | 0x0*I* |
-| `(pc, r<I>.q)` | 0xA3 | 0x0*I* |
-| `(pc, r<I>.b * 2)` | 0xA4 | 0x0*I* |
-| `(pc, r<I>.w * 2)` | 0xA5 | 0x0*I* |
-| `(pc, r<I>.l * 2)` | 0xA6 | 0x0*I* |
-| `(pc, r<I>.q * 2)` | 0xA7 | 0x0*I* |
-| `(pc, r<I>.b * 4)` | 0xA8 | 0x0*I* |
-| `(pc, r<I>.w * 4)` | 0xA9 | 0x0*I* |
-| `(pc, r<I>.l * 4)` | 0xAA | 0x0*I* |
-| `(pc, r<I>.q * 4)` | 0xAB | 0x0*I* |
-| `(pc, r<I>.b * 8)` | 0xAC | 0x0*I* |
-| `(pc, r<I>.w * 8)` | 0xAD | 0x0*I* |
-| `(pc, r<I>.l * 8)` | 0xAE | 0x0*I* |
-| `(pc, r<I>.q * 8)` | 0xAF | 0x0*I* |
-
-___
-
-### Program Counter Indirect with (Scaled) Index and Displacement
-
-The contents of the program counter, plus an optionally scaled index value taken from a second register, plus the signed 32-bit displacement are used as the address of the operand in memory. The index size and scale factor are selectable.
-
-General syntax: `<D>(pc, r<I>.<b|w|l|q> [* <2|4|8>])` or `(<D>, pc, r<I>.<b|w|l|q> [* <2|4|8>])`
-
-Examples:
-
-        8(pc, r1.w)
-        -4(pc, d1.l * 2)
-        (32, pc, r5.b * 8)
-        (-10, pc, a0.l * 4)
-
-* Allowed index register names: r0 ... r15, d0 ... d7, a0 ... a7, sp
-* All bits of the base register are used.
-* For .b, .w and .l sized indexes, the register fragment is treated as a signed value:
-    - For a .b index, a register value of 0x00000000000000FF is interpreted as -1, not 255.
-* D = -2147483648 ... 2147483647
-* Cannot be used for destination operands.
-
-| Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 | Ext 4 |
-| - | - | - | - | - | - | - |
-| `<D>(pc, r<I>.b)` | 0xB0 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.w)` | 0xB1 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.l)` | 0xB2 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.q)` | 0xB3 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.b * 2)` | 0xB4 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.w * 2)` | 0xB5 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.l * 2)` | 0xB6 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.q * 2)` | 0xB7 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.b * 4)` | 0xB8 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.w * 4)` | 0xB9 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.l * 4)` | 0xBA | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.q * 4)` | 0xBB | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.b * 8)` | 0xBC | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.w * 8)` | 0xBD | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.l * 8)` | 0xBE | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-| `<D>(pc, r<I>.q * 8)` | 0xBF | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-
-___
-
-### Program Indirect Counter with Displacement
-
-The contents of the program counter, plus the signed 32-bit displacement are used as the address of the operand data in memory.
-
-General syntax: `<D>(pc)` or `(<D>, pc)`
-
-Examples:
-
-        8(pc)
-        0xA(pc)
-        (10, pc)
-
-* D = -2147483648 ... 2147483647
-* Cannot be used for destination operands.
-
-| Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 |
-| - | - | - | - | - | - |
-| `<D>(pc)` | 0xCF | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
-
-___
 
 ### Integer Immediate
 
@@ -366,19 +265,19 @@ General syntax: `#<D>`
 
 | Mode | Bytecode | Ext 0 | Ext 1 | ... | Ext (size-1) |
 | - | - | - | - | - | - |
-| `#0` | 0xC0 | N/A | ... | ... | ... |
-| `#1` | 0xC1 | N/A | ... | ... | ... |
-| `#2` | 0xC2 | N/A | ... | ... | ... |
-| `#3` | 0xC3 | N/A | ... | ... | ... |
-| `#4` | 0xC4 | N/A | ... | ... | ... |
-| `#5` | 0xC5 | N/A | ... | ... | ... |
-| `#6` | 0xC6 | N/A | ... | ... | ... |
-| `#7` | 0xC7 | N/A | ... | ... | ... |
-| `#8` | 0xC8 | N/A | ... | ... | ... |
-| `#<D.b>` | 0xC9 | 0x*DD* | N/A | ... | ... |
-| `#<D.w>` | 0xCA | 0x*DD* | 0x*DD* | N/A | ... |
-| `#<D.l>` | 0xCB | 0x*DD* | 0x*DD* | ... | 0x*DD* |
-| `#<D.q>` | 0xCC | 0x*DD* | 0x*DD* | ... | 0x*DD* |
+| `#0` | 0xA0 | N/A | ... | ... | ... |
+| `#1` | 0xA1 | N/A | ... | ... | ... |
+| `#2` | 0xA2 | N/A | ... | ... | ... |
+| `#3` | 0xA3 | N/A | ... | ... | ... |
+| `#4` | 0xA4 | N/A | ... | ... | ... |
+| `#5` | 0xA5 | N/A | ... | ... | ... |
+| `#6` | 0xA6 | N/A | ... | ... | ... |
+| `#7` | 0xA7 | N/A | ... | ... | ... |
+| `#8` | 0xA8 | N/A | ... | ... | ... |
+| `#<D.b>` | 0xA9 | 0x*DD* | N/A | ... | ... |
+| `#<D.w>` | 0xAA | 0x*DD* | 0x*DD* | N/A | ... |
+| `#<D.l>` | 0xAB | 0x*DD* | 0x*DD* | ... | 0x*DD* |
+| `#<D.q>` | 0xAC | 0x*DD* | 0x*DD* | ... | 0x*DD* |
 
 ___
 
@@ -406,9 +305,28 @@ Examples:
 
 | Mode | Bytecode | Ext 0 | ... | Ext (size-1) |
 | - | - | - | - | - |
-| `#<F.s>` | 0xCD | 0x*FF* | ... | 0x*FF* |
-| `#<F.d>` | 0xCE | 0x*FF* | ... | 0x*FF* |
+| `#<F.s>` | 0xAD | 0x*FF* | ... | 0x*FF* |
+| `#<F.d>` | 0xAE | 0x*FF* | ... | 0x*FF* |
 
+___
+### Program Indirect Counter with Displacement
+
+The contents of the program counter, plus the signed 32-bit displacement are used as the address of the operand data in memory.
+
+General syntax: `<D>(pc)` or `(<D>, pc)`
+
+Examples:
+
+        8(pc)
+        0xA(pc)
+        (10, pc)
+
+* D = -2147483648 ... 2147483647
+* Cannot be used for destination operands.
+
+| Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 |
+| - | - | - | - | - | - |
+| `<D>(pc)` | 0xAF | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
 ___
 
 ### Same As Destination
@@ -421,4 +339,94 @@ The fully evaluated destination operand address is used for the source operand i
 
 | Mode | Bytecode |
 | - | - |
-|   | 0xD0 |
+|   | 0xB0 |
+___
+### Import Index
+
+Enumerated index for imported symbol reference.
+
+| Mode | Bytecode |
+| - | - |
+|   | 0xB1 |
+___
+### Program Counter Indirect with (Scaled) Index (currently unsupported)
+
+The contents of the program counter, plus an optionally scaled index value taken from a second register are used as the address of the operand in memory. The index size and scale factor are selectable.
+
+General syntax: `(pc, r<I>.<b|w|l|q> [* <2|4|8>])`
+
+Examples:
+
+        (pc, r1.w)
+        (pc, d1.l * 2)
+        (pc, r5.b * 8)
+        (pc, a0.l * 4)
+
+* Allowed index register names: r0 ... r15, d0 ... d7, a0 ... a7, sp
+* All bits of the base register are used.
+* For .b, .w and .l sized indexes, the register fragment is treated as a signed value:
+    - For a .b index, a register value of 0x00000000000000FF is interpreted as -1, not 255.
+* Cannot be used for destination operands.
+
+| Mode | Bytecode | Ext 0 |
+| - | - | - |
+| `(pc, r<I>.b)` | 0xC0 | 0x0*I* |
+| `(pc, r<I>.w)` | 0xC1 | 0x0*I* |
+| `(pc, r<I>.l)` | 0xC2 | 0x0*I* |
+| `(pc, r<I>.q)` | 0xC3 | 0x0*I* |
+| `(pc, r<I>.b * 2)` | 0xC4 | 0x0*I* |
+| `(pc, r<I>.w * 2)` | 0xC5 | 0x0*I* |
+| `(pc, r<I>.l * 2)` | 0xC6 | 0x0*I* |
+| `(pc, r<I>.q * 2)` | 0xC7 | 0x0*I* |
+| `(pc, r<I>.b * 4)` | 0xC8 | 0x0*I* |
+| `(pc, r<I>.w * 4)` | 0xC9 | 0x0*I* |
+| `(pc, r<I>.l * 4)` | 0xCA | 0x0*I* |
+| `(pc, r<I>.q * 4)` | 0xCB | 0x0*I* |
+| `(pc, r<I>.b * 8)` | 0xCC | 0x0*I* |
+| `(pc, r<I>.w * 8)` | 0xCD | 0x0*I* |
+| `(pc, r<I>.l * 8)` | 0xCE | 0x0*I* |
+| `(pc, r<I>.q * 8)` | 0xCF | 0x0*I* |
+
+___
+
+### Program Counter Indirect with (Scaled) Index and Displacement (currently unsupported)
+
+The contents of the program counter, plus an optionally scaled index value taken from a second register, plus the signed 32-bit displacement are used as the address of the operand in memory. The index size and scale factor are selectable.
+
+General syntax: `<D>(pc, r<I>.<b|w|l|q> [* <2|4|8>])` or `(<D>, pc, r<I>.<b|w|l|q> [* <2|4|8>])`
+
+Examples:
+
+        8(pc, r1.w)
+        -4(pc, d1.l * 2)
+        (32, pc, r5.b * 8)
+        (-10, pc, a0.l * 4)
+
+* Allowed index register names: r0 ... r15, d0 ... d7, a0 ... a7, sp
+* All bits of the base register are used.
+* For .b, .w and .l sized indexes, the register fragment is treated as a signed value:
+    - For a .b index, a register value of 0x00000000000000FF is interpreted as -1, not 255.
+* D = -2147483648 ... 2147483647
+* Cannot be used for destination operands.
+
+| Mode | Bytecode | Ext 0 | Ext 1  | Ext 2 | Ext 3 | Ext 4 |
+| - | - | - | - | - | - | - |
+| `<D>(pc, r<I>.b)` | 0xD0 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.w)` | 0xD1 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.l)` | 0xD2 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.q)` | 0xD3 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.b * 2)` | 0xD4 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.w * 2)` | 0xD5 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.l * 2)` | 0xD6 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.q * 2)` | 0xD7 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.b * 4)` | 0xD8 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.w * 4)` | 0xD9 | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.l * 4)` | 0xDA | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.q * 4)` | 0xDB | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.b * 8)` | 0xDC | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.w * 8)` | 0xDD | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.l * 8)` | 0xDE | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+| `<D>(pc, r<I>.q * 8)` | 0xDF | 0x0*I* | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* |
+
+___
+
