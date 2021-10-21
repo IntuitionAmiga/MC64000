@@ -71,7 +71,7 @@ void* Interpreter::decodeEffectiveAddress() {
             return p;
         }
 
-        // Register Indirect, Post Decrement (r<N>)-
+        // Register Indirect, Pre Increment +(r<N>)
         case EffectiveAddress::OFS_GPR_IND_PRE_INC:
             aoGPR[uEALower].piByte += eOperationSize;
             return aoGPR[uEALower].pAny;
