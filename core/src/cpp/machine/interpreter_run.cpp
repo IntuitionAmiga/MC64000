@@ -94,6 +94,7 @@ void Interpreter::run() {
 
     while (RUNNING == eStatus) {
 
+        // Fast branch back location for operations that don't change the status
         skipstatus:
 
         ++uInstructionCount;
@@ -105,12 +106,28 @@ void Interpreter::run() {
 
                 switch (*puProgramCounter++) {
                     case Opcode::DBNZ:   readDisplacement(); bcc(--asULong(pDstEA)); goto skipstatus;
-                    case Opcode::MOVE_L: asULong(pDstEA) = asULong(pSrcEA);          goto skipstatus;
-                    case Opcode::MOVE_Q: asUQuad(pDstEA) = asUQuad(pSrcEA);          goto skipstatus;
-                    case Opcode::ADD_L:  asLong(pDstEA) += asLong(pSrcEA);           goto skipstatus;
-                    case Opcode::ADD_Q:  asQuad(pDstEA) += asQuad(pSrcEA);           goto skipstatus;
-                    case Opcode::SUB_L:  asLong(pDstEA) -= asLong(pSrcEA);           goto skipstatus;
-                    case Opcode::SUB_Q:  asQuad(pDstEA) -= asQuad(pSrcEA);           goto skipstatus;
+                    case Opcode::MOVE_L: asULong(pDstEA)  = asULong(pSrcEA);         goto skipstatus;
+                    case Opcode::MOVE_Q: asUQuad(pDstEA)  = asUQuad(pSrcEA);         goto skipstatus;
+
+                    // Logic
+                    case Opcode::AND_L:  asULong(pDstEA) &= asULong(pSrcEA);         goto skipstatus;
+                    case Opcode::AND_Q:  asUQuad(pDstEA) &= asUQuad(pSrcEA);         goto skipstatus;
+                    case Opcode::OR_L:   asULong(pDstEA) |= asULong(pSrcEA);         goto skipstatus;
+                    case Opcode::OR_Q:   asUQuad(pDstEA) |= asUQuad(pSrcEA);         goto skipstatus;
+
+                    // Arithmetic
+                    case Opcode::EXTB_L: asLong(pDstEA)   = (int32)asByte(pSrcEA);   goto skipstatus;
+                    case Opcode::EXTB_Q: asQuad(pDstEA)   = (int64)asByte(pSrcEA);   goto skipstatus;
+                    case Opcode::EXTW_L: asLong(pDstEA)   = (int32)asByte(pSrcEA);   goto skipstatus;
+                    case Opcode::EXTW_Q: asQuad(pDstEA)   = (int64)asWord(pSrcEA);   goto skipstatus;
+                    case Opcode::ADD_L:  asLong(pDstEA)  += asLong(pSrcEA);          goto skipstatus;
+                    case Opcode::ADD_Q:  asQuad(pDstEA)  += asQuad(pSrcEA);          goto skipstatus;
+                    case Opcode::SUB_L:  asLong(pDstEA)  -= asLong(pSrcEA);          goto skipstatus;
+                    case Opcode::SUB_Q:  asQuad(pDstEA)  -= asQuad(pSrcEA);          goto skipstatus;
+                    case Opcode::MULS_L: asLong(pDstEA)  *= asLong(pSrcEA);          goto skipstatus;
+                    case Opcode::MULS_Q: asQuad(pDstEA)  *= asQuad(pSrcEA);          goto skipstatus;
+                    case Opcode::MULU_L: asULong(pDstEA) *= asULong(pSrcEA);         goto skipstatus;
+                    case Opcode::MULU_Q: asUQuad(pDstEA) *= asUQuad(pSrcEA);         goto skipstatus;
 
                     default:
                         todo();
@@ -495,14 +512,16 @@ void Interpreter::run() {
             case Opcode::MULU_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA)  *=   asUQuad(pSrcEA);       break;
             case Opcode::FMUL_S: dyadic(SIZE_LONG); asSingle(pDstEA) *=   asSingle(pSrcEA);      break;
             case Opcode::FMUL_D: dyadic(SIZE_QUAD); asDouble(pDstEA) *=   asDouble(pSrcEA);      break;
-            case Opcode::DIVS_B: dyadic(SIZE_BYTE); asByte(pDstEA)   /=   asByte(pSrcEA);        break;
-            case Opcode::DIVS_W: dyadic(SIZE_WORD); asWord(pDstEA)   /=   asWord(pSrcEA);        break;
-            case Opcode::DIVS_L: dyadic(SIZE_LONG); asLong(pDstEA)   /=   asLong(pSrcEA);        break;
-            case Opcode::DIVS_Q: dyadic(SIZE_QUAD); asQuad(pDstEA)   /=   asQuad(pSrcEA);        break;
-            case Opcode::DIVU_B: dyadic(SIZE_BYTE); asUByte(pDstEA)  /=   asUByte(pSrcEA);       break;
-            case Opcode::DIVU_W: dyadic(SIZE_WORD); asUWord(pDstEA)  /=   asUWord(pSrcEA);       break;
-            case Opcode::DIVU_L: dyadic(SIZE_LONG); asULong(pDstEA)  /=   asULong(pSrcEA);       break;
-            case Opcode::DIVU_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA)  /=   asUQuad(pSrcEA);       break;
+
+            case Opcode::DIVS_L: dyadic(SIZE_BYTE); asLong(pDstEA)   /=   asLong(pSrcEA);        break;
+            case Opcode::DIVS_Q: dyadic(SIZE_WORD); asQuad(pDstEA)   /=   asQuad(pSrcEA);        break;
+            case Opcode::MODS_L: dyadic(SIZE_LONG); asLong(pDstEA)   %=   asLong(pSrcEA);        break;
+            case Opcode::MODS_Q: dyadic(SIZE_QUAD); asQuad(pDstEA)   %=   asQuad(pSrcEA);        break;
+            case Opcode::DIVU_L: dyadic(SIZE_BYTE); asULong(pDstEA)  /=   asULong(pSrcEA);       break;
+            case Opcode::DIVU_Q: dyadic(SIZE_WORD); asUQuad(pDstEA)  /=   asUQuad(pSrcEA);       break;
+            case Opcode::MODU_L: dyadic(SIZE_LONG); asULong(pDstEA)  %=   asULong(pSrcEA);       break;
+            case Opcode::MODU_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA)  %=   asUQuad(pSrcEA);       break;
+
             case Opcode::FDIV_S: dyadic(SIZE_LONG); asSingle(pDstEA) /=   asSingle(pSrcEA);      break;
             case Opcode::FDIV_D: dyadic(SIZE_QUAD); asDouble(pDstEA) /=   asDouble(pSrcEA);      break;
 
@@ -533,8 +552,22 @@ void Interpreter::run() {
             case Opcode::FCOS_D:    dyadic(SIZE_QUAD); asDouble(pDstEA) = std::cos(asDouble(pSrcEA));  break;
             case Opcode::FSIN_S:    dyadic(SIZE_LONG); asSingle(pDstEA) = std::sin(asSingle(pSrcEA));  break;
             case Opcode::FSIN_D:    dyadic(SIZE_QUAD); asDouble(pDstEA) = std::sin(asDouble(pSrcEA));  break;
-            case Opcode::FSINCOS_S:
-            case Opcode::FSINCOS_D: todo();
+
+            case Opcode::FSINCOS_S: {
+                dyadic(SIZE_LONG);
+                float32 f = asSingle(pSrcEA);
+                asSingle(pDstEA) = std::sin(f);
+                asSingle(pSrcEA) = std::cos(f);
+                break;
+            }
+            case Opcode::FSINCOS_D: {
+                dyadic(SIZE_QUAD);
+                float64 f = asDouble(pSrcEA);
+                asDouble(pDstEA) = std::sin(f);
+                asDouble(pSrcEA) = std::cos(f);
+                break;
+            }
+
             case Opcode::FTAN_S:    dyadic(SIZE_LONG); asSingle(pDstEA) = std::tan(asSingle(pSrcEA));  break;
             case Opcode::FTAN_D:    dyadic(SIZE_QUAD); asDouble(pDstEA) = std::tan(asDouble(pSrcEA));  break;
             case Opcode::FETOX_S:   dyadic(SIZE_LONG); asSingle(pDstEA) = std::exp(asSingle(pSrcEA));  break;
@@ -568,3 +601,4 @@ void Interpreter::run() {
 }
 
 }}
+

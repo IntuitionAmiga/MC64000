@@ -279,14 +279,14 @@ interface IOperandSizes {
         IArithmetic::FMUL_D => [8, 8],
 
         // Division
-        IArithmetic::DIVS_B => [1, 1],
-        IArithmetic::DIVS_W => [2, 2],
         IArithmetic::DIVS_L => [4, 4],
         IArithmetic::DIVS_Q => [8, 8],
-        IArithmetic::DIVU_B => [1, 1],
-        IArithmetic::DIVU_W => [2, 2],
+        IArithmetic::MODS_L => [4, 4],
+        IArithmetic::MODS_Q => [8, 8],
         IArithmetic::DIVU_L => [4, 4],
         IArithmetic::DIVU_Q => [8, 8],
+        IArithmetic::MODU_L => [4, 4],
+        IArithmetic::MODU_Q => [8, 8],
         IArithmetic::FDIV_S => [4, 4],
         IArithmetic::FDIV_D => [8, 8],
         IArithmetic::FMOD_S => [4, 4],

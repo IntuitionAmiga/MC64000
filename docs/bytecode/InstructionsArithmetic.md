@@ -176,177 +176,358 @@ ___
 
 Integer Signed Multiply.
 
+        <ea(d)> * <ea(s)> -> <ea(d)>
+
+General syntax:
+
+        muls.<b|w|l|q> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `muls.b <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `muls.w <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `muls.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `muls.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+
 ___
 
 ### MULU
 
 Integer Unsigned Multiply.
 
+        <ea(d)> * <ea(s)> -> <ea(d)>
+
+General syntax:
+
+        muls.<b|w|l|q> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `mulu.b <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `mulu.w <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `mulu.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `mulu.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FMUL
 
 Floating Point Multiply.
 
+        <ea(d)> * <ea(s)> -> <ea(d)>
+
+General syntax:
+
+        fmul.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `fmul.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmul.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### DIVS
 
 Integer Signed Divide.
 
+        <ea(d)> / <ea(s)> -> <ea(d)>
+
+General syntax:
+
+        divs.<l|q> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `divs.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `divs.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+
+___
+
+### MODS
+
+Integer Signed Modulus.
+
+        <ea(d)> % <ea(s)> -> <ea(d)>
+
+General syntax:
+
+        mods.<l|q> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `divs.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `divs.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### DIVU
 
 Integer Unsigned Divide.
 
+        <ea(d)> / <ea(s)> -> <ea(d)>
+
+General syntax:
+
+        divu.<l|q> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `divu.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `divu.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+___
+
+### MODU
+
+Integer Unsigned Modulus.
+
+        <ea(d)> % <ea(s)> -> <ea(d)>
+
+General syntax:
+
+        modu.<l|q> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `modu.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `modu.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FDIV
 
 Floating Point Divide.
 
+        <ea(d)> / <ea(s)> -> <ea(d)>
+
+General syntax:
+
+        fdiv.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `fdiv.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fdiv.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FMOD
 
 Floating Point Modulus.
 
+        <ea(d)> % <ea(s)> -> <ea(d)>
+
+General syntax:
+
+        fmod.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `fmod.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmod.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FABS
 
 Floating Point Absolute.
 
+        abs(<ea(s)>) -> <ea(d)>
+
+General syntax:
+
+        fabs.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `fabs.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fabs.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FSQRT
 
 Floating Point Square Root.
 
+        sqrt(<ea(s)>) -> <ea(d)>
+
+General syntax:
+
+        fqrt.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `fsqrt.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fsqrt.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FACOS
 
 Floating Point Arccosine.
 
+        acos(<ea(s)>) -> <ea(d)>
+
+General syntax:
+
+        facos.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `facos.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `facos.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FASIN
 
 Floating Point Arcsine.
 
+        asin(<ea(s)>) -> <ea(d)>
+
+General syntax:
+
+        fasin.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `fasin.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fasin.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FATAN
 
 Floating Point Arctangent.
 
+        atan(<ea(s)>) -> <ea(d)>
+
+General syntax:
+
+        fatan.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `fatan.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fatan.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FCOS
 
 Floating Point Cosine.
 
+        cos(<ea(s)>) -> <ea(d)>
+
+General syntax:
+
+        fcos.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `fcos.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fcos.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FSIN
 
 Floating Point Sine.
 
+        sin(<ea(s)>) -> <ea(d)>
+
+General syntax:
+
+        fsin.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `fsin.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fsin.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FSINCOS
 
 Floating Point Sine and Cosine.
 
+        sin(<ea(s)>) -> <ea(d)>, cos(<ea(s)>) -> <ea(s)>
+
+General syntax:
+
+        fsin.<s|d> <ea(s)>, <ea(d)>
+
+* The source operand is also used as a destination, therefore cannot be immediate.
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `fsincos.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fsincos.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FTAN
 
 Floating Point Tangent.
 
+        tan(<ea(s)>) -> <ea(d)>
+
+General syntax:
+
+        ftan.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `ftan.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `ftan.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FETOX
 
 Floating Point e to x.
 
+        e^<ea(s)> -> <ea(d)>
+
+General syntax:
+
+        fetox.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `fetox.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fetox.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FLOGN
 
 Floating Point Natural Logarithm.
 
+        ln(<ea(s)>) -> <ea(d)>
+
+General syntax:
+
+        flogn.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `flogn.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `flogn.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FLOG2
 
 Floating Point Base-2 Logarithm.
 
+        log2(<ea(s)>) -> <ea(d)>
+
+General syntax:
+
+        flog2.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `flog2.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `flog2.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FTWOTOX
 
 Floating Point 2 to x
 
+        2.0^<ea(s)> -> <ea(d)>
+
+General syntax:
+
+        ftwotox.<s|d> <ea(s)>, <ea(d)>
+
+| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
+| - | - | - | - | - | - |
+| `ftwotox.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `ftwotox.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
-
-
-<!--
-        MULS_B    = self::OFS_ARITHMETIC + 32, // 0xC0
-        MULS_W    = self::OFS_ARITHMETIC + 33,
-        MULS_L    = self::OFS_ARITHMETIC + 34,
-        MULS_Q    = self::OFS_ARITHMETIC + 35,
-        MULU_B    = self::OFS_ARITHMETIC + 36,
-        MULU_W    = self::OFS_ARITHMETIC + 37,
-        MULU_L    = self::OFS_ARITHMETIC + 38,
-        MULU_Q    = self::OFS_ARITHMETIC + 39,
-        FMUL_S    = self::OFS_ARITHMETIC + 40,
-        FMUL_D    = self::OFS_ARITHMETIC + 41,
-        DIVS_B    = self::OFS_ARITHMETIC + 42,
-        DIVS_W    = self::OFS_ARITHMETIC + 43,
-        DIVS_L    = self::OFS_ARITHMETIC + 44,
-        DIVS_Q    = self::OFS_ARITHMETIC + 45,
-        DIVU_B    = self::OFS_ARITHMETIC + 46,
-        DIVU_W    = self::OFS_ARITHMETIC + 47,
-
-        DIVU_L    = self::OFS_ARITHMETIC + 48, // 0xD0
-        DIVU_Q    = self::OFS_ARITHMETIC + 49,
-        FDIV_S    = self::OFS_ARITHMETIC + 50,
-        FDIV_D    = self::OFS_ARITHMETIC + 51,
-        FMOD_S    = self::OFS_ARITHMETIC + 52,
-        FMOD_D    = self::OFS_ARITHMETIC + 53,
-        FABS_S    = self::OFS_ARITHMETIC + 54,
-        FABS_D    = self::OFS_ARITHMETIC + 55,
-        FSQRT_S   = self::OFS_ARITHMETIC + 56,
-        FRQRT_D   = self::OFS_ARITHMETIC + 57,
-        FACOS_S   = self::OFS_ARITHMETIC + 58,
-        FACOS_D   = self::OFS_ARITHMETIC + 59,
-        FASIN_S   = self::OFS_ARITHMETIC + 60,
-        FASIN_D   = self::OFS_ARITHMETIC + 61,
-        FATAN_S   = self::OFS_ARITHMETIC + 62,
-        FATAN_D   = self::OFS_ARITHMETIC + 63,
-
-        FCOS_S    = self::OFS_ARITHMETIC + 64, 0xE0
-        FCOS_D    = self::OFS_ARITHMETIC + 65,
-        FSIN_S    = self::OFS_ARITHMETIC + 66,
-        FSIN_D    = self::OFS_ARITHMETIC + 67,
-        FSINCOS_S = self::OFS_ARITHMETIC + 68,
-        FSINCOS_D = self::OFS_ARITHMETIC + 69,
-        FTAN_S    = self::OFS_ARITHMETIC + 70,
-        FTAN_D    = self::OFS_ARITHMETIC + 71,
-        FETOX_S   = self::OFS_ARITHMETIC + 72,
-        FETOX_D   = self::OFS_ARITHMETIC + 73,
-        FLOGN_S   = self::OFS_ARITHMETIC + 74,
-        FLOGN_D   = self::OFS_ARITHMETIC + 75,
-        FLOG2_S   = self::OFS_ARITHMETIC + 76,
-        FLOG2_D   = self::OFS_ARITHMETIC + 77,
-        FTWOTOX_S = self::OFS_ARITHMETIC + 78,
-        FTWOTOX_D = self::OFS_ARITHMETIC + 79,
-
-        FGETEXP_S = self::OFS_ARITHMETIC + 80, 0xF0
-        FGETEXP_D = self::OFS_ARITHMETIC + 81,
-        FGETMAN_S = self::OFS_ARITHMETIC + 82,
-        FGETMAN_D = self::OFS_ARITHMETIC + 83
--->

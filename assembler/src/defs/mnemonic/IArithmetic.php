@@ -73,17 +73,17 @@ interface IArithmetic extends IByteCodeGroups {
         FMUL_S    = self::OFS_ARITHMETIC + 40,
         FMUL_D    = self::OFS_ARITHMETIC + 41,
 
-        DIVS_B    = self::OFS_ARITHMETIC + 42,
-        DIVS_W    = self::OFS_ARITHMETIC + 43,
-        DIVS_L    = self::OFS_ARITHMETIC + 44,
-        DIVS_Q    = self::OFS_ARITHMETIC + 45,
-        DIVU_B    = self::OFS_ARITHMETIC + 46,
-        DIVU_W    = self::OFS_ARITHMETIC + 47,
-        DIVU_L    = self::OFS_ARITHMETIC + 48,
-        DIVU_Q    = self::OFS_ARITHMETIC + 49,
+        DIVS_L    = self::OFS_ARITHMETIC + 42,
+        DIVS_Q    = self::OFS_ARITHMETIC + 43,
+        MODS_L    = self::OFS_ARITHMETIC + 44,
+        MODS_Q    = self::OFS_ARITHMETIC + 45,
+        DIVU_L    = self::OFS_ARITHMETIC + 46,
+        DIVU_Q    = self::OFS_ARITHMETIC + 47,
+        MODU_L    = self::OFS_ARITHMETIC + 48,
+        MODU_Q    = self::OFS_ARITHMETIC + 49,
+
         FDIV_S    = self::OFS_ARITHMETIC + 50,
         FDIV_D    = self::OFS_ARITHMETIC + 51,
-
         FMOD_S    = self::OFS_ARITHMETIC + 52,
         FMOD_D    = self::OFS_ARITHMETIC + 53,
 
