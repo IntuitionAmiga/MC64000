@@ -16,7 +16,7 @@
 .locally_always_get_here:
     rts
 
-    dc.b "< fold to fix <"
+    dc.b "< fold to fixed A <"
 
 fold_to_fixed_conditional_always_taken:
 ; Conditional branch always taken, short branch outcome to local label
@@ -119,4 +119,19 @@ fold_to_fixed_conditional_always_taken:
 
     rts ;
 
-    dc.b "> fold to fixed >"
+    dc.b "> fold to fixed A >"
+
+    dc.b "< fold to fixed B <"
+
+fold_to_fixed_const_expression:
+
+    @enable log_code_folds
+
+    fsqrt.s #2.0, fp0
+    fsqrt.d #2.0, fp1
+
+    @disable log_code_folds
+
+    rts
+
+    dc.b "< fold to fixed B <"
