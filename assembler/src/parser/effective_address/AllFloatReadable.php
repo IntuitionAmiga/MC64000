@@ -38,8 +38,10 @@ class AllFloatReadable extends Composite {
             new GPRIndirectIndexed(),
             new GPRIndirectIndexedDisplacement(),
             new PCIndirectDisplacement(),
-            new PCIndirectIndexed(),
-            new PCIndirectIndexedDisplacement(),
+
+            // Removed support for PC indirect indexed modes for now
+            //new PCIndirectIndexed(),
+            //new PCIndirectIndexedDisplacement(),
             new GlobalReference()
         ];
     }

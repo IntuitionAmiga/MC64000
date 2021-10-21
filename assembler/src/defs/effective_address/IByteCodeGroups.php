@@ -38,8 +38,10 @@ interface IByteCodeGroups {
         OFS_FPR_DIR          = 112, // FPR Direct fp<N>
         OFS_GPR_IDX          = 128, // GPR Indexed (r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
         OFS_GPR_IDX_DSP      = 144, // GPR Indexed with Displacement <d32>(r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
-        OFS_PC_IND_IDX       = 160, // PC Indirect, indexed  (pc, r<N>.<b|w|l|q> [ * <2|4|8>])
-        OFS_PC_IND_IDX_DSP   = 176, // PC Indirect, indeced with displacement  <d32>(pc, r<N>.<b|w|l|q> [ * <2|4|8>])
-        OFS_OTHER            = 192  // All other modes
+        OFS_OTHER            = 160, // Sundry modes (space for 32 of them)
+
+        // Re-enumerated these but we aren't supporting them for the time being.
+        OFS_PC_IND_IDX       = 192, // PC Indirect, indexed  (pc, r<N>.<b|w|l|q> [ * <2|4|8>])
+        OFS_PC_IND_IDX_DSP   = 208  // PC Indirect, indeced with displacement  <d32>(pc, r<N>.<b|w|l|q> [ * <2|4|8>])
     ;
 }
