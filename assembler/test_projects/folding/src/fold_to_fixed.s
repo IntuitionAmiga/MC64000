@@ -16,6 +16,8 @@
 .locally_always_get_here:
     rts
 
+    dc.b "< fold to fixed A <"
+
 fold_to_fixed_conditional_always_taken:
 ; Conditional branch always taken, short branch outcome to local label
     biz.b  #0, .locally_always_get_here
@@ -102,14 +104,6 @@ fold_to_fixed_conditional_always_taken:
     beq.w 8(pc), 8(pc), .locally_always_get_here
     beq.l 8(pc), 8(pc), .locally_always_get_here
     beq.q 8(pc), 8(pc), .locally_always_get_here
-    beq.b (pc, d0.b), (pc, d0.b), .locally_always_get_here
-    beq.w (pc, d0.w * 2), (pc, d0.w * 2), .locally_always_get_here
-    beq.l (pc, d0.l * 4), (pc, d0.l * 4), .locally_always_get_here
-    beq.q (pc, d0.q * 8), (pc, d0.q * 8), .locally_always_get_here
-    beq.b 1(pc, d0.b), 1(pc, d0.b), .locally_always_get_here
-    beq.w 2(pc, d0.w * 2), 2(pc, d0.w * 2), .locally_always_get_here
-    beq.l 4(pc, d0.l * 4), 4(pc, d0.l * 4), .locally_always_get_here
-    beq.q 8(pc, d0.q * 8), 8(pc, d0.q * 8), .locally_always_get_here
     fbeq.s fp0, fp0, .locally_always_get_here
     fbeq.d fp0, fp0, .locally_always_get_here
     fbeq.s (r0), (r0), .locally_always_get_here
@@ -122,9 +116,48 @@ fold_to_fixed_conditional_always_taken:
     fbeq.d 8(r0, d1.q * 8), 8(r0, d1.q * 8), .locally_always_get_here
     fbeq.s 8(pc), 8(pc), .locally_always_get_here
     fbeq.d 8(pc), 8(pc), .locally_always_get_here
-    fbeq.s (pc, d0.l * 4), (pc, d0.l * 4), .locally_always_get_here
-    fbeq.d (pc, d0.q * 8), (pc, d0.q * 8), .locally_always_get_here
-    fbeq.s 4(pc, d0.l * 4), 4(pc, d0.l * 4), .locally_always_get_here
-    fbeq.d 8(pc, d0.q * 8), 8(pc, d0.q * 8), .locally_always_get_here
 
     rts ;
+
+    dc.b "> fold to fixed A >"
+
+    dc.b "< fold to fixed B <"
+
+fold_to_fixed_const_expression:
+
+    @enable log_code_folds
+
+    fabs.s  #1.25, fp2
+    fabs.d  #1.25, fp5
+    fsqrt.s  #1.25, fp2
+    fsqrt.d  #1.25, fp5
+
+    facos.s  #0.25, fp2
+    facos.d  #0.25, fp5
+    fasin.s  #0.25, fp2
+    fasin.d  #0.25, fp5
+    fatan.s  #0.25, fp2
+    fatan.d  #0.25, fp5
+
+    fcos.s  #1.25, fp2
+    fcos.d  #1.25, fp5
+    fsin.s  #1.25, fp2
+    fsin.d  #1.25, fp5
+    ftan.s  #1.25, fp2
+    ftan.d  #1.25, fp5
+
+    fetox.s  #1.25, fp2
+    fetox.d  #1.25, fp5
+    flogn.s  #1.25, fp2
+    flogn.d  #1.25, fp5
+    flog2.s  #1.25, fp2
+    flog2.d  #1.25, fp5
+
+    ftwotox.s  #1.25, fp2
+    ftwotox.d  #1.25, fp5
+
+    @disable log_code_folds
+
+    rts
+
+    dc.b "< fold to fixed B <"

@@ -277,7 +277,7 @@ interface IMatches {
         'fabs.s'    => IArithmetic::FABS_S,
         'fabs.d'    => IArithmetic::FABS_D,
         'fsqrt.s'   => IArithmetic::FSQRT_S,
-        'frqrt.d'   => IArithmetic::FSQRT_D,
+        'fsqrt.d'   => IArithmetic::FSQRT_D,
         'facos.s'   => IArithmetic::FACOS_S,
         'facos.d'   => IArithmetic::FACOS_D,
         'fasin.s'   => IArithmetic::FASIN_S,
