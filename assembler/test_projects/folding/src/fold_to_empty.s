@@ -19,6 +19,8 @@
     ; Just for fun
     @def ONE  1
 
+    dc.b "< fold to empty A <"
+
 fold_to_empty_source_matches_destination:
     ; These fold because the source and destination are the same
     exg    r0, r0
@@ -35,7 +37,38 @@ fold_to_empty_source_matches_destination:
     move.w 2(r0, d1.w * 2), 2(r0, d1.w * 2)
     move.l 4(r0, d1.l * 4), 4(r0, d1.l * 4)
     move.q 8(r0, d1.q * 8), 8(r0, d1.q * 8)
+
+    @enable log_code_folds
+
+    fmove.s fp0, fp0
+    fmove.s (a0), (a0)
+    fmove.s (r0, d1.b), (r0, d1.b)
+    fmove.s (r0, d1.w * 2), (r0, d1.w * 2)
+    fmove.s (r0, d1.l * 4), (r0, d1.l * 4)
+    fmove.s (r0, d1.q * 8), (r0, d1.q * 8)
+    fmove.s 4(r0, d1.b), 4(r0, d1.b)
+    fmove.s 8(r0, d1.w * 2), 8(r0, d1.w * 2)
+    fmove.s 12(r0, d1.l * 4), 12(r0, d1.l * 4)
+    fmove.s 16(r0, d1.q * 8), 16(r0, d1.q * 8)
+
+    fmove.d fp0, fp0
+    fmove.d (a0), (a0)
+    fmove.d (r0, d1.b), (r0, d1.b)
+    fmove.d (r0, d1.w * 2), (r0, d1.w * 2)
+    fmove.d (r0, d1.l * 4), (r0, d1.l * 4)
+    fmove.d (r0, d1.q * 8), (r0, d1.q * 8)
+    fmove.d 4(r0, d1.b), 4(r0, d1.b)
+    fmove.d 8(r0, d1.w * 2), 8(r0, d1.w * 2)
+    fmove.d 12(r0, d1.l * 4), 12(r0, d1.l * 4)
+    fmove.d 16(r0, d1.q * 8), 16(r0, d1.q * 8)
+
+    @disable log_code_folds
+
     rts ; return will not fold - check the bytecode for the 0x07 return opcode
+
+    dc.b "> fold to empty A >"
+
+    dc.b "< fold to empty B <"
 
 fold_to_empty_immediate_zero:
     ; These fold because the immediate zero source operand results in no change
@@ -78,6 +111,10 @@ fold_to_empty_immediate_zero:
 
     rts ; return will not fold - check the bytecode for the 0x07 return opcode
 
+    dc.b "> fold to empty B >"
+
+    dc.b "< fold to empty C <"
+
 fold_to_empty_immediate_one:
     muls.b #ONE, r0
     muls.w #ONE, r1
@@ -87,15 +124,10 @@ fold_to_empty_immediate_one:
     mulu.w #ONE, r5
     mulu.l #ONE, r6
     mulu.q #ONE, r7
-    divs.b #ONE, r8
-    divs.w #ONE, r9
-    divs.l #ONE, r10
-    divs.q #ONE, r11
-    divu.b #ONE, r12
-    divu.w #ONE, r13
-    divu.l #ONE, r14
-    divu.q #ONE, r15
-
+    divs.l #ONE, r8
+    divs.q #ONE, r9
+    divu.l #ONE, r12
+    divu.q #ONE, r13
     muls.b #ONE, (r0)
     muls.w #ONE, (r1)
     muls.l #ONE, (r2)
@@ -104,14 +136,10 @@ fold_to_empty_immediate_one:
     mulu.w #ONE, (r5)
     mulu.l #ONE, (r6)
     mulu.q #ONE, (r7)
-    divs.b #ONE, (r8)
-    divs.w #ONE, (r9)
-    divs.l #ONE, (r10)
-    divs.q #ONE, (r11)
-    divu.b #ONE, (r12)
-    divu.w #ONE, (r13)
-    divu.l #ONE, (r14)
-    divu.q #ONE, (r15)
+    divs.l #ONE, (r8)
+    divs.q #ONE, (r9)
+    divu.l #ONE, (r12)
+    divu.q #ONE, (r13)
     muls.b #ONE, 1(r0)
     muls.w #ONE, 2(r1)
     muls.l #ONE, 3(r2)
@@ -120,19 +148,20 @@ fold_to_empty_immediate_one:
     mulu.w #ONE, 2(r5)
     mulu.l #ONE, 4(r6)
     mulu.q #ONE, 8(r7)
-    divs.b #ONE, 1(r8)
-    divs.w #ONE, 2(r9)
     divs.l #ONE, 4(r10)
     divs.q #ONE, 9(r11)
-    divu.b #ONE, 1(r12)
-    divu.w #ONE, 2(r13)
-    divu.l #ONE, 4(r14)
+    divu.l #ONE, 4(r10)
+    divu.q #ONE, 9(r11)
 
     @enable log_code_folds
     divu.q #ONE, 8(r15)
     @disable log_code_folds
 
     rts ; return will not fold - check the bytecode for the 0x07 return opcode
+
+    dc.b "> fold to empty C >"
+
+    dc.b "< fold to empty D <"
 
 fold_to_empty_conditional_never_taken:
     biz.b  #ONE, .locally_never_get_here
@@ -197,6 +226,8 @@ fold_to_empty_conditional_never_taken:
     fbgt.d #ONE., #2., .locally_never_get_here
 
     rts ; return will not fold - check the bytecode for the 0x07 return opcode
+
+    dc.b "< fold to empty D <"
 
 fold_to_empty_conditional_always_taken_to_next_position:
     biz.b  #0, #0
@@ -287,14 +318,6 @@ fold_to_empty_conditional_always_taken_to_next_position:
     beq.w 8(pc), 8(pc), #0
     beq.l 8(pc), 8(pc), #0
     beq.q 8(pc), 8(pc), #0
-    beq.b (pc, d0.b), (pc, d0.b), #0
-    beq.w (pc, d0.w * 2), (pc, d0.w * 2), #0
-    beq.l (pc, d0.l * 4), (pc, d0.l * 4), #0
-    beq.q (pc, d0.q * 8), (pc, d0.q * 8), #0
-    beq.b 1(pc, d0.b), 1(pc, d0.b), #0
-    beq.w 2(pc, d0.w * 2), 2(pc, d0.w * 2), #0
-    beq.l 4(pc, d0.l * 4), 4(pc, d0.l * 4), #0
-    beq.q 8(pc, d0.q * 8), 8(pc, d0.q * 8), #0
     fbeq.s fp0, fp0, #0
     fbeq.d fp0, fp0, #0
     fbeq.s (r0), (r0), #0
@@ -307,9 +330,7 @@ fold_to_empty_conditional_always_taken_to_next_position:
     fbeq.d 8(r0, d1.q * 8), 8(r0, d1.q * 8), #0
     fbeq.s 8(pc), 8(pc), #0
     fbeq.d 8(pc), 8(pc), #0
-    fbeq.s (pc, d0.l * 4), (pc, d0.l * 4), #0
-    fbeq.d (pc, d0.q * 8), (pc, d0.q * 8), #0
-    fbeq.s 4(pc, d0.l * 4), 4(pc, d0.l * 4), #0
-    fbeq.d 8(pc, d0.q * 8), 8(pc, d0.q * 8), #0
 
     rts ; return will not fold - check the bytecode for the 0x07 return opcode
+
+    dc.b "> fold to empty E >"
