@@ -127,8 +127,34 @@ fold_to_fixed_const_expression:
 
     @enable log_code_folds
 
-    fsqrt.s #2.0, fp0
-    fsqrt.d #2.0, fp1
+    fabs.s  #1.25, fp2
+    fabs.d  #1.25, fp5
+    fsqrt.s  #1.25, fp2
+    fsqrt.d  #1.25, fp5
+
+    facos.s  #0.25, fp2
+    facos.d  #0.25, fp5
+    fasin.s  #0.25, fp2
+    fasin.d  #0.25, fp5
+    fatan.s  #0.25, fp2
+    fatan.d  #0.25, fp5
+
+    fcos.s  #1.25, fp2
+    fcos.d  #1.25, fp5
+    fsin.s  #1.25, fp2
+    fsin.d  #1.25, fp5
+    ftan.s  #1.25, fp2
+    ftan.d  #1.25, fp5
+
+    fetox.s  #1.25, fp2
+    fetox.d  #1.25, fp5
+    flogn.s  #1.25, fp2
+    flogn.d  #1.25, fp5
+    flog2.s  #1.25, fp2
+    flog2.d  #1.25, fp5
+
+    ftwotox.s  #1.25, fp2
+    ftwotox.d  #1.25, fp5
 
     @disable log_code_folds
 

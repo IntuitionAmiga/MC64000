@@ -16,9 +16,14 @@
 declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\SourceLine\Instruction\OperandSet;
+use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
+use ABadCafe\MC64K\Defs\EffectiveAddress\IOther;
+
+use function \chr, \pack, \array_keys;
+use function \abs, \sqrt, \exp, \log, \sin, \cos, \tan, \asin, \acos, \atan;
 
 /**
  * FloatDyadic
@@ -27,52 +32,60 @@ use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
  */
 class FloatDyadic extends Dyadic {
 
+
+
     /**
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IDataMove::FMOVES_D,
-        IDataMove::FMOVED_S,
-        IDataMove::FMOVE_S,
-        IDataMove::FMOVE_D,
-        IArithmetic::FADD_S,
-        IArithmetic::FADD_D,
-        IArithmetic::FSUB_S,
-        IArithmetic::FSUB_D,
-        IArithmetic::FNEG_S,
-        IArithmetic::FNEG_D,
-        IArithmetic::FMUL_S,
-        IArithmetic::FMUL_D,
-        IArithmetic::FDIV_S,
-        IArithmetic::FDIV_D,
-        IArithmetic::FMOD_S,
-        IArithmetic::FMOD_D,
-        IArithmetic::FABS_S,
-        IArithmetic::FABS_D,
-        IArithmetic::FSQRT_S,
-        IArithmetic::FSQRT_D,
-        IArithmetic::FACOS_S,
-        IArithmetic::FACOS_D,
-        IArithmetic::FASIN_S,
-        IArithmetic::FASIN_D,
-        IArithmetic::FATAN_S,
-        IArithmetic::FATAN_D,
-        IArithmetic::FCOS_S,
-        IArithmetic::FCOS_D,
-        IArithmetic::FSIN_S,
-        IArithmetic::FSIN_D,
-        IArithmetic::FSINCOS_S,
-        IArithmetic::FSINCOS_D,
-        IArithmetic::FTAN_S,
-        IArithmetic::FTAN_D,
-        IArithmetic::FETOX_S,
-        IArithmetic::FETOX_D,
-        IArithmetic::FLOGN_S,
-        IArithmetic::FLOGN_D,
-        IArithmetic::FLOG2_S,
-        IArithmetic::FLOG2_D,
-        IArithmetic::FTWOTOX_S,
-        IArithmetic::FTWOTOX_D
+        IDataMove::FMOVES_D    => false,
+        IDataMove::FMOVED_S    => false,
+        IDataMove::FMOVE_S     => false,
+        IDataMove::FMOVE_D     => false,
+        IArithmetic::FADD_S    => false,
+        IArithmetic::FADD_D    => false,
+        IArithmetic::FSUB_S    => false,
+        IArithmetic::FSUB_D    => false,
+        IArithmetic::FNEG_S    => false,
+        IArithmetic::FNEG_D    => false,
+        IArithmetic::FMUL_S    => false,
+        IArithmetic::FMUL_D    => false,
+        IArithmetic::FDIV_S    => false,
+        IArithmetic::FDIV_D    => false,
+        IArithmetic::FMOD_S    => false,
+        IArithmetic::FMOD_D    => false,
+        IArithmetic::FSINCOS_S => false,
+        IArithmetic::FSINCOS_D => false,
+        IArithmetic::FABS_S    => [0, 'abs'],
+        IArithmetic::FABS_D    => [1, 'abs'],
+        IArithmetic::FSQRT_S   => [0, 'sqrt'],
+        IArithmetic::FSQRT_D   => [1, 'sqrt'],
+        IArithmetic::FACOS_S   => [0, 'acos'],
+        IArithmetic::FACOS_D   => [1, 'acos'],
+        IArithmetic::FASIN_S   => [0, 'asin'],
+        IArithmetic::FASIN_D   => [1, 'asin'],
+        IArithmetic::FATAN_S   => [0, 'atan'],
+        IArithmetic::FATAN_D   => [1, 'atan'],
+        IArithmetic::FCOS_S    => [0, 'cos'],
+        IArithmetic::FCOS_D    => [1, 'cos'],
+        IArithmetic::FSIN_S    => [0, 'sin'],
+        IArithmetic::FSIN_D    => [1, 'sin'],
+        IArithmetic::FTAN_S    => [0, 'tan'],
+        IArithmetic::FTAN_D    => [1, 'tan'],
+        IArithmetic::FETOX_S   => [0, 'exp'],
+        IArithmetic::FETOX_D   => [1, 'exp'],
+        IArithmetic::FLOGN_S   => [0, 'log'],
+        IArithmetic::FLOGN_D   => [1, 'log'],
+        IArithmetic::FLOG2_S   => [0, self::class . '::immediateLog2'],
+        IArithmetic::FLOG2_D   => [1, self::class . '::immediateLog2'],
+        IArithmetic::FTWOTOX_S => [0, self::class . '::immediate2ToX'],
+        IArithmetic::FTWOTOX_D => [1, self::class . '::immediate2ToX'],
+    ];
+
+
+    const SKIP_IF_OPERANDS_SAME = [
+        IDataMove::FMOVE_S   => 1,
+        IDataMove::FMOVE_D   => 1,
     ];
 
     /**
@@ -88,6 +101,77 @@ class FloatDyadic extends Dyadic {
      * @inheritDoc
      */
     public function getOpcodes(): array {
-        return self::OPCODES;
+        return array_keys(self::OPCODES);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
+        $sFullByteCode = parent::parse($iOpcode, $aOperands, $aSizes);
+
+        if (
+            isset(self::SKIP_IF_OPERANDS_SAME[$iOpcode]) &&
+            $this->sourceOperandWasOptimised()
+        ) {
+            throw new CodeFoldException(
+                'Operation has no effect'
+            );
+        }
+
+        if ( ( $aConversion = self::OPCODES[$iOpcode]) && $this->oSrcParser->wasImmediate()) {
+            $fImmediate = (float)$this->oSrcParser->getImmediate();
+            $cConstExp = $aConversion[1];
+            $fConstant = $cConstExp($fImmediate);
+
+            if (is_nan($fConstant)) {
+                throw new \Exception(
+                    'Constant evaluation of ' . $cConstExp .
+                    '(' . $fImmediate . ') results in NaN'
+                );
+            }
+
+            throw new CodeFoldException(
+                'Const expression ' . $cConstExp .
+                '(' . $fImmediate . ') replaced by ' . $fConstant,
+                $aConversion[0] ?
+                    $this->emitMoveConstDouble($fConstant) :
+                    $this->emitMoveConstSingle($fConstant)
+            );
+        }
+
+        return $sFullByteCode;
+    }
+
+    private static function immediateLog2(float $fValue): float {
+        return log($fValue, 2.0);
+    }
+
+    private static function immediate2ToX(float $fValue): float {
+        return 2.0 ** $fValue;
+    }
+
+    /**
+     * Emit the bytecode to load an immediate double precision float to the destination.
+     *
+     * @param  float $fValue
+     * @return string
+     */
+    private function emitMoveConstDouble(float $fValue): string {
+        return
+            chr(IDataMove::FMOVE_D)     . $this->sDstBytecode .
+            chr(IOther::FLT_IMM_DOUBLE) . pack('e', $fValue);
+    }
+
+    /**
+     * Emit the bytecode to load an immediate single precision float to the destination.
+     *
+     * @param  float $fValue
+     * @return string
+     */
+    private function emitMoveConstSingle(float $fValue): string {
+        return
+            chr(IDataMove::FMOVE_S)     . $this->sDstBytecode .
+            chr(IOther::FLT_IMM_SINGLE) . pack('g', $fValue);
     }
 }

@@ -37,6 +37,33 @@ fold_to_empty_source_matches_destination:
     move.w 2(r0, d1.w * 2), 2(r0, d1.w * 2)
     move.l 4(r0, d1.l * 4), 4(r0, d1.l * 4)
     move.q 8(r0, d1.q * 8), 8(r0, d1.q * 8)
+
+    @enable log_code_folds
+
+    fmove.s fp0, fp0
+    fmove.s (a0), (a0)
+    fmove.s (r0, d1.b), (r0, d1.b)
+    fmove.s (r0, d1.w * 2), (r0, d1.w * 2)
+    fmove.s (r0, d1.l * 4), (r0, d1.l * 4)
+    fmove.s (r0, d1.q * 8), (r0, d1.q * 8)
+    fmove.s 4(r0, d1.b), 4(r0, d1.b)
+    fmove.s 8(r0, d1.w * 2), 8(r0, d1.w * 2)
+    fmove.s 12(r0, d1.l * 4), 12(r0, d1.l * 4)
+    fmove.s 16(r0, d1.q * 8), 16(r0, d1.q * 8)
+
+    fmove.d fp0, fp0
+    fmove.d (a0), (a0)
+    fmove.d (r0, d1.b), (r0, d1.b)
+    fmove.d (r0, d1.w * 2), (r0, d1.w * 2)
+    fmove.d (r0, d1.l * 4), (r0, d1.l * 4)
+    fmove.d (r0, d1.q * 8), (r0, d1.q * 8)
+    fmove.d 4(r0, d1.b), 4(r0, d1.b)
+    fmove.d 8(r0, d1.w * 2), 8(r0, d1.w * 2)
+    fmove.d 12(r0, d1.l * 4), 12(r0, d1.l * 4)
+    fmove.d 16(r0, d1.q * 8), 16(r0, d1.q * 8)
+
+    @disable log_code_folds
+
     rts ; return will not fold - check the bytecode for the 0x07 return opcode
 
     dc.b "> fold to empty A >"
