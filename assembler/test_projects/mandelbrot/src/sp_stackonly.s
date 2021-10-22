@@ -89,7 +89,7 @@ calculate:
     ; Calculate the iteration count and square for better gradients
     neg.l       d2,     d2
     add.l       d3,     d2          ; iteration count = max iterations - iteration countdown
-    mulu.w      d2,     d2
+    mulu.l      d2,     d2
     move.b      d2,     (a0)+
 
     dbnz        d4,     .xloop      ; while --iX
