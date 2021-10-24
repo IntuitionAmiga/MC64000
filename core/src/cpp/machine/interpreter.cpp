@@ -23,7 +23,11 @@
 namespace MC64K {
 namespace Machine {
 
+#ifdef USE_GLOBAL_REGISTER
 register uint8 const* puProgramCounter __asm__("r12");
+#else
+uint8 const* puProgramCounter;
+#endif
 
 GPRegister      Interpreter::aoGPR[GPRegister::MAX] = {};
 FPRegister      Interpreter::aoFPR[FPRegister::MAX] = {};
