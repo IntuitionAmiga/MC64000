@@ -32,11 +32,17 @@
 /**
  * Reads a 4 byte displacement value from the opcode stream into the initialised temporary.
  */
+#ifdef ALLOW_MISALIGNED_IMMEDIATE
+#define readDisplacement() \
+    iDisplacement = *((int32*)puProgramCounter); puProgramCounter+=4;
+
+#else
 #define readDisplacement() \
     auBytes[0] = *puProgramCounter++; \
     auBytes[1] = *puProgramCounter++; \
     auBytes[2] = *puProgramCounter++; \
     auBytes[3] = *puProgramCounter++;
+#endif
 
 /**
  * Alias of readDisplacment() for when the value represents a mask value and not a displacement.
