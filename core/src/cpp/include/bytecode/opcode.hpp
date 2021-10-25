@@ -32,12 +32,18 @@ namespace Opcode {
  */
 enum Group {
     OFS_CONTROL    = 0,
-    OFS_DATA_MOVE  = 79,
+    OFS_DATA_MOVE  = 77,
     OFS_LOGICAL    = 114,
     OFS_ARITHMETIC = 156,
     OFS_MAX        = 255
 };
 
+/**
+ * Prefix
+ *
+ * Enumerates special prefix conditions that usually signify some alternative bytecode representation or
+ * instruction set extension.
+ */
 enum Prefix {
     INT_R2R = 254,
     FLT_R2R = 255
@@ -125,9 +131,7 @@ enum Control {
     BBC_W  = OFS_CONTROL + 73,
     BBC_L  = OFS_CONTROL + 74,
     BBC_Q  = OFS_CONTROL + 75,
-    DBNZ   = OFS_CONTROL + 76,
-    FBIF_S = OFS_CONTROL + 77,
-    FBIF_D = OFS_CONTROL + 78
+    DBNZ   = OFS_CONTROL + 76
 };
 
 /**
@@ -158,19 +162,21 @@ enum DataMove {
     FMOVED_S = OFS_DATA_MOVE + 19,
     FMOVE_S  = OFS_DATA_MOVE + 20,
     FMOVE_D  = OFS_DATA_MOVE + 21,
-    CLR_B    = OFS_DATA_MOVE + 22,
-    CLR_W    = OFS_DATA_MOVE + 23,
-    CLR_L    = OFS_DATA_MOVE + 24,
-    CLR_Q    = OFS_DATA_MOVE + 25,
-    EXG      = OFS_DATA_MOVE + 26,
-    FEXG     = OFS_DATA_MOVE + 27,
-    SWAP     = OFS_DATA_MOVE + 28,
-    SWAP_L   = OFS_DATA_MOVE + 29,
-    SWAP_Q   = OFS_DATA_MOVE + 30,
-    LINK     = OFS_DATA_MOVE + 31,
-    UNLK     = OFS_DATA_MOVE + 32,
-    LEA      = OFS_DATA_MOVE + 33,
-    PEA      = OFS_DATA_MOVE + 34
+    FINFO_S  = OFS_DATA_MOVE + 22,
+    FINFO_D  = OFS_DATA_MOVE + 23,
+    CLR_B    = OFS_DATA_MOVE + 24,
+    CLR_W    = OFS_DATA_MOVE + 25,
+    CLR_L    = OFS_DATA_MOVE + 26,
+    CLR_Q    = OFS_DATA_MOVE + 27,
+    EXG      = OFS_DATA_MOVE + 28,
+    FEXG     = OFS_DATA_MOVE + 29,
+    SWAP     = OFS_DATA_MOVE + 30,
+    SWAP_L   = OFS_DATA_MOVE + 31,
+    SWAP_Q   = OFS_DATA_MOVE + 32,
+    LINK     = OFS_DATA_MOVE + 33,
+    UNLK     = OFS_DATA_MOVE + 34,
+    LEA      = OFS_DATA_MOVE + 35,
+    PEA      = OFS_DATA_MOVE + 36
 };
 
 /**
@@ -271,7 +277,6 @@ enum Arithmetic {
     MULU_Q    = OFS_ARITHMETIC + 39,
     FMUL_S    = OFS_ARITHMETIC + 40,
     FMUL_D    = OFS_ARITHMETIC + 41,
-
     DIVS_L    = OFS_ARITHMETIC + 42,
     DIVS_Q    = OFS_ARITHMETIC + 43,
     MODS_L    = OFS_ARITHMETIC + 44,
@@ -280,7 +285,6 @@ enum Arithmetic {
     DIVU_Q    = OFS_ARITHMETIC + 47,
     MODU_L    = OFS_ARITHMETIC + 48,
     MODU_Q    = OFS_ARITHMETIC + 49,
-
     FDIV_S    = OFS_ARITHMETIC + 50,
     FDIV_D    = OFS_ARITHMETIC + 51,
     FMOD_S    = OFS_ARITHMETIC + 52,

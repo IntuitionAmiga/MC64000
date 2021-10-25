@@ -89,7 +89,11 @@ abstract class Dyadic extends Monadic {
 
         $this->sSrcBytecode = $this->optimiseSourceOperandBytecode($sSrcBytecode, $this->sDstBytecode);
 
-        $oState->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE + strlen($this->sDstBytecode) + strlen($this->sSrcBytecode));
+        $oState->setCurrentStatementLength(
+            Defs\IOpcodeLimits::SIZE +
+            strlen($this->sDstBytecode) +
+            strlen($this->sSrcBytecode)
+        );
 
         return $this->sDstBytecode . $this->sSrcBytecode;
     }

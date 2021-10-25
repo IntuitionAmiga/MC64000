@@ -112,9 +112,6 @@ interface IControl extends IByteCodeGroups {
         BBC_W  = self::OFS_CONTROL + 73,
         BBC_L  = self::OFS_CONTROL + 74,
         BBC_Q  = self::OFS_CONTROL + 75,
-        DBNZ   = self::OFS_CONTROL + 76,
-
-        FBIF_S = self::OFS_CONTROL + 77,
-        FBIF_D = self::OFS_CONTROL + 78
+        DBNZ   = self::OFS_CONTROL + 76
     ;
 }

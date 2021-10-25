@@ -72,6 +72,11 @@ class Assembler {
      * @throws \Exception
      */
     public function firstPass(): self {
+        $oGlobalDefinitions = State\Coordinator::get()
+            ->getGlobalDefinitionSet();
+        foreach (Defs\IStandardGlobals::MATCHES as $sDefine => $sValue) {
+            $oGlobalDefinitions->add($sDefine, $sValue);
+        }
         foreach ($this->oProject->getSourceList() as $sSourceFile) {
             $this->processSourceFile(new IO\SourceFile($sSourceFile));
         }

@@ -25,9 +25,9 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `extb.w <ea(s)>, <ea(d)>` | 0xA0 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `extb.l <ea(s)>, <ea(d)>` | 0xA1 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `extb.q <ea(s)>, <ea(d)>` | 0xA2 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `extb.w <ea(s)>, <ea(d)>` | 0x9C | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `extb.l <ea(s)>, <ea(d)>` | 0x9D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `extb.q <ea(s)>, <ea(d)>` | 0x9E | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -43,8 +43,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `extw.l <ea(s)>, <ea(d)>` | 0xA3 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `extw.q <ea(s)>, <ea(d)>` | 0xA4 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `extw.l <ea(s)>, <ea(d)>` | 0x9F | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `extw.q <ea(s)>, <ea(d)>` | 0xA0 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -60,7 +60,7 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `extl.q <ea(s)>, <ea(d)>` | 0xA5 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `extl.q <ea(s)>, <ea(d)>` | 0xA1 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -78,10 +78,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `asl.b <ea(s)>, <ea(d)>` | 0xA6 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `asl.w <ea(s)>, <ea(d)>` | 0xA7 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `asl.l <ea(s)>, <ea(d)>` | 0xA8 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `asl.q <ea(s)>, <ea(d)>` | 0xA9 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `asl.b <ea(s)>, <ea(d)>` | 0xA2 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `asl.w <ea(s)>, <ea(d)>` | 0xA3 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `asl.l <ea(s)>, <ea(d)>` | 0xA4 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `asl.q <ea(s)>, <ea(d)>` | 0xA5 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -99,10 +99,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `asr.b <ea(s)>, <ea(d)>` | 0xAA | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `asr.w <ea(s)>, <ea(d)>` | 0xAB | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `asr.l <ea(s)>, <ea(d)>` | 0xAC | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `asr.q <ea(s)>, <ea(d)>` | 0xAD | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `asr.b <ea(s)>, <ea(d)>` | 0xA6 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `asr.w <ea(s)>, <ea(d)>` | 0xA7 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `asr.l <ea(s)>, <ea(d)>` | 0xA8 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `asr.q <ea(s)>, <ea(d)>` | 0xA9 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -119,12 +119,12 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `add.b <ea(s)>, <ea(d)>` | 0xAE | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `add.w <ea(s)>, <ea(d)>` | 0xAF | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `add.l <ea(s)>, <ea(d)>` | 0xB0 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `add.q <ea(s)>, <ea(d)>` | 0xB1 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fadd.s <ea(s)>, <ea(d)>` | 0xB2 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fadd.d <ea(s)>, <ea(d)>` | 0xB3 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `add.b <ea(s)>, <ea(d)>` | 0xAA | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `add.w <ea(s)>, <ea(d)>` | 0xAB | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `add.l <ea(s)>, <ea(d)>` | 0xAC | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `add.q <ea(s)>, <ea(d)>` | 0xAD | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fadd.s <ea(s)>, <ea(d)>` | 0xAE | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fadd.d <ea(s)>, <ea(d)>` | 0xAF | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -141,12 +141,12 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `sub.b <ea(s)>, <ea(d)>` | 0xB4 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `sub.w <ea(s)>, <ea(d)>` | 0xB5 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `sub.l <ea(s)>, <ea(d)>` | 0xB6 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `sub.q <ea(s)>, <ea(d)>` | 0xB7 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fsub.s <ea(s)>, <ea(d)>` | 0xB8 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fsub.d <ea(s)>, <ea(d)>` | 0xB9 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `sub.b <ea(s)>, <ea(d)>` | 0xB0 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `sub.w <ea(s)>, <ea(d)>` | 0xB1 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `sub.l <ea(s)>, <ea(d)>` | 0xB2 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `sub.q <ea(s)>, <ea(d)>` | 0xB3 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fsub.s <ea(s)>, <ea(d)>` | 0xB4 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fsub.d <ea(s)>, <ea(d)>` | 0xB5 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -163,12 +163,12 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `neg.b <ea(s)>, <ea(d)>` | 0xBA | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `neg.w <ea(s)>, <ea(d)>` | 0xBB | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `neg.l <ea(s)>, <ea(d)>` | 0xBC | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `neg.q <ea(s)>, <ea(d)>` | 0xBD | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fneg.s <ea(s)>, <ea(d)>` | 0xBE | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fneg.d <ea(s)>, <ea(d)>` | 0xBF | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `neg.b <ea(s)>, <ea(d)>` | 0xB6 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `neg.w <ea(s)>, <ea(d)>` | 0xB7 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `neg.l <ea(s)>, <ea(d)>` | 0xB8 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `neg.q <ea(s)>, <ea(d)>` | 0xB9 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fneg.s <ea(s)>, <ea(d)>` | 0xBA | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fneg.d <ea(s)>, <ea(d)>` | 0xBB | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -184,10 +184,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `muls.b <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `muls.w <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `muls.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `muls.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `muls.b <ea(s)>, <ea(d)>` | 0xBC | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `muls.w <ea(s)>, <ea(d)>` | 0xBD | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `muls.l <ea(s)>, <ea(d)>` | 0xBE | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `muls.q <ea(s)>, <ea(d)>` | 0xBF | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -203,10 +203,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `mulu.b <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `mulu.w <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `mulu.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `mulu.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `mulu.b <ea(s)>, <ea(d)>` | 0xC0 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `mulu.w <ea(s)>, <ea(d)>` | 0xC1 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `mulu.l <ea(s)>, <ea(d)>` | 0xC2 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `mulu.q <ea(s)>, <ea(d)>` | 0xC3 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FMUL
@@ -221,8 +221,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fmul.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmul.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmul.s <ea(s)>, <ea(d)>` | 0xC4 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmul.d <ea(s)>, <ea(d)>` | 0xC5 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### DIVS
@@ -237,8 +237,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `divs.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `divs.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `divs.l <ea(s)>, <ea(d)>` | 0xC6 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `divs.q <ea(s)>, <ea(d)>` | 0xC7 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -254,8 +254,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `divs.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `divs.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `divs.l <ea(s)>, <ea(d)>` | 0xC8 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `divs.q <ea(s)>, <ea(d)>` | 0xC9 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### DIVU
@@ -270,8 +270,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `divu.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `divu.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `divu.l <ea(s)>, <ea(d)>` | 0xCA | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `divu.q <ea(s)>, <ea(d)>` | 0xCB | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### MODU
@@ -286,8 +286,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `modu.l <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `modu.q <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `modu.l <ea(s)>, <ea(d)>` | 0xCC | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `modu.q <ea(s)>, <ea(d)>` | 0xCD | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FDIV
@@ -302,8 +302,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fdiv.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fdiv.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fdiv.s <ea(s)>, <ea(d)>` | 0xCE | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fdiv.d <ea(s)>, <ea(d)>` | 0xCF | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FMOD
@@ -318,8 +318,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fmod.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmod.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmod.s <ea(s)>, <ea(d)>` | 0xD0 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmod.d <ea(s)>, <ea(d)>` | 0xD1 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FABS
@@ -334,8 +334,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fabs.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fabs.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fabs.s <ea(s)>, <ea(d)>` | 0xD2 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fabs.d <ea(s)>, <ea(d)>` | 0xD3 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FSQRT
@@ -350,8 +350,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fsqrt.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fsqrt.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fsqrt.s <ea(s)>, <ea(d)>` | 0xD4 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fsqrt.d <ea(s)>, <ea(d)>` | 0xD5 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FACOS
@@ -366,8 +366,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `facos.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `facos.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `facos.s <ea(s)>, <ea(d)>` | 0xD6 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `facos.d <ea(s)>, <ea(d)>` | 0xD7 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FASIN
@@ -382,8 +382,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fasin.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fasin.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fasin.s <ea(s)>, <ea(d)>` | 0xD8 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fasin.d <ea(s)>, <ea(d)>` | 0xD9 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FATAN
@@ -398,8 +398,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fatan.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fatan.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fatan.s <ea(s)>, <ea(d)>` | 0xDA | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fatan.d <ea(s)>, <ea(d)>` | 0xDB | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FCOS
@@ -414,8 +414,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fcos.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fcos.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fcos.s <ea(s)>, <ea(d)>` | 0xDC | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fcos.d <ea(s)>, <ea(d)>` | 0xDD | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FSIN
@@ -430,8 +430,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fsin.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fsin.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fsin.s <ea(s)>, <ea(d)>` | 0xDE | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fsin.d <ea(s)>, <ea(d)>` | 0xDF | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FSINCOS
@@ -448,8 +448,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fsincos.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fsincos.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fsincos.s <ea(s)>, <ea(d)>` | 0xE0 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fsincos.d <ea(s)>, <ea(d)>` | 0xE1 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FTAN
@@ -464,8 +464,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `ftan.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `ftan.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `ftan.s <ea(s)>, <ea(d)>` | 0xE2 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `ftan.d <ea(s)>, <ea(d)>` | 0xE3 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FETOX
@@ -480,8 +480,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `fetox.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fetox.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fetox.s <ea(s)>, <ea(d)>` | 0xE4 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fetox.d <ea(s)>, <ea(d)>` | 0xE5 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FLOGN
@@ -496,8 +496,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `flogn.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `flogn.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `flogn.s <ea(s)>, <ea(d)>` | 0xE6 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `flogn.d <ea(s)>, <ea(d)>` | 0xE7 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FLOG2
@@ -512,8 +512,8 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `flog2.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `flog2.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `flog2.s <ea(s)>, <ea(d)>` | 0xE8 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `flog2.d <ea(s)>, <ea(d)>` | 0xE9 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___
 
 ### FTWOTOX
@@ -528,6 +528,6 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `ftwotox.s <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `ftwotox.d <ea(s)>, <ea(d)>` | 0x | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `ftwotox.s <ea(s)>, <ea(d)>` | 0xEA | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `ftwotox.d <ea(s)>, <ea(d)>` | 0xEB | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 ___

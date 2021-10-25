@@ -64,21 +64,31 @@
 /**
  * Tests the condition and if true, updates the program counter with the already loaded displacement.
  */
-#define bcc(c) if (c) { puProgramCounter += iDisplacement; }
+#define bcc(c) if ((c)) { puProgramCounter += iDisplacement; }
 
 /**
- * Decodes a single effective address for a monadic operation.
+ * Decodes a single effective address for a monadic operation, updating the destination EA address.
  */
 #define monadic(size) \
-    eOperationSize = size; \
+    eOperationSize = (size); \
     pDstEA = decodeEffectiveAddress();
 
 /**
- * Decodes a pair of effective addresses for a dyadic operation.
+ * Decodes a pair of effective addresses for a dyadic operation, updating source and destination EA addresses.
  */
 #define dyadic(size) \
-    eOperationSize = size; \
+    eOperationSize = (size); \
     pDstEA = decodeEffectiveAddress(); \
+    pSrcEA = decodeEffectiveAddress();
+
+/**
+ * Decodes a pair of effective addresses for a dyadic operation with asymmetric operand sizes, updating the source and
+ * destination EA addresses.
+ */
+#define dyadic2(size_dst, size_src) \
+    eOperationSize = (size_dst); \
+    pDstEA = decodeEffectiveAddress(); \
+    eOperationSize = (size_src); \
     pSrcEA = decodeEffectiveAddress();
 
 /**
@@ -96,12 +106,18 @@
 #define asDouble(ea) *((float64*)(ea))
 #define asBitPos(ea, m) (1 << (asUByte(ea) & m))
 
+/**
+ * Unpack a byte as a dest/src GPR pair and set the EA pointers directly.
+ */
 #define unpackGPRPair() { \
     uint8 uRegPair  = *puProgramCounter++; \
     pDstEA          = &aoGPR[uRegPair & 0xF]; \
     pSrcEA          = &aoGPR[uRegPair >> 4]; \
 }
 
+/**
+ * Unpack a byte as a dest/src FPR pair and set the EA pointers directly.
+ */
 #define unpackFPRPair() { \
     uint8 uRegPair  = *puProgramCounter++; \
     pDstEA          = &aoFPR[uRegPair & 0xF]; \

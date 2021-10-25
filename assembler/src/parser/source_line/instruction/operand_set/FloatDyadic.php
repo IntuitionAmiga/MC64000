@@ -22,7 +22,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
 use ABadCafe\MC64K\Defs\EffectiveAddress\IOther;
 
-use function \chr, \pack, \array_keys;
+use function \chr, \pack, \array_keys, \is_nan;
 use function \abs, \sqrt, \exp, \log, \sin, \cos, \tan, \asin, \acos, \atan;
 
 /**

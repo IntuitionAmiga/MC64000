@@ -24,10 +24,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `and.b <ea(s)>, <ea(d)>` | 0x70 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `and.w <ea(s)>, <ea(d)>` | 0x71 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `and.l <ea(s)>, <ea(d)>` | 0x71 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `and.q <ea(s)>, <ea(d)>` | 0x73 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `and.b <ea(s)>, <ea(d)>` | 0x72 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `and.w <ea(s)>, <ea(d)>` | 0x73 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `and.l <ea(s)>, <ea(d)>` | 0x74 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `and.q <ea(s)>, <ea(d)>` | 0x75 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -43,10 +43,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `or.b <ea(s)>, <ea(d)>` | 0x74 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `or.w <ea(s)>, <ea(d)>` | 0x75 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `or.l <ea(s)>, <ea(d)>` | 0x76 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `or.q <ea(s)>, <ea(d)>` | 0x77 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `or.b <ea(s)>, <ea(d)>` | 0x76 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `or.w <ea(s)>, <ea(d)>` | 0x77 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `or.l <ea(s)>, <ea(d)>` | 0x78 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `or.q <ea(s)>, <ea(d)>` | 0x79 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -60,10 +60,10 @@ Bitwise Exclusive OR.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `eor.b <ea(s)>, <ea(d)>` | 0x78 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `eor.w <ea(s)>, <ea(d)>` | 0x79 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `eor.l <ea(s)>, <ea(d)>` | 0x7A | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `eor.q <ea(s)>, <ea(d)>` | 0x7B | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `eor.b <ea(s)>, <ea(d)>` | 0x7A | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `eor.w <ea(s)>, <ea(d)>` | 0x7B | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `eor.l <ea(s)>, <ea(d)>` | 0x7C | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `eor.q <ea(s)>, <ea(d)>` | 0x7D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -79,10 +79,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `not.b <ea(s)>, <ea(d)>` | 0x7C | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `not.w <ea(s)>, <ea(d)>` | 0x7D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `not.l <ea(s)>, <ea(d)>` | 0x7E | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `not.q <ea(s)>, <ea(d)>` | 0x7F | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `not.b <ea(s)>, <ea(d)>` | 0x7E | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `not.w <ea(s)>, <ea(d)>` | 0x7F | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `not.l <ea(s)>, <ea(d)>` | 0x80 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `not.q <ea(s)>, <ea(d)>` | 0x81 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -100,10 +100,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `lsl.b <ea(s)>, <ea(d)>` | 0x80 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `lsl.w <ea(s)>, <ea(d)>` | 0x81 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `lsl.l <ea(s)>, <ea(d)>` | 0x82 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `lsl.q <ea(s)>, <ea(d)>` | 0x83 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `lsl.b <ea(s)>, <ea(d)>` | 0x82 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `lsl.w <ea(s)>, <ea(d)>` | 0x83 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `lsl.l <ea(s)>, <ea(d)>` | 0x84 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `lsl.q <ea(s)>, <ea(d)>` | 0x85 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -121,10 +121,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `lsr.b <ea(s)>, <ea(d)>` | 0x84 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `lsr.w <ea(s)>, <ea(d)>` | 0x85 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `lsr.l <ea(s)>, <ea(d)>` | 0x86 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `lsr.q <ea(s)>, <ea(d)>` | 0x87 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `lsr.b <ea(s)>, <ea(d)>` | 0x86 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `lsr.w <ea(s)>, <ea(d)>` | 0x87 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `lsr.l <ea(s)>, <ea(d)>` | 0x88 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `lsr.q <ea(s)>, <ea(d)>` | 0x89 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -142,10 +142,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `rol.b <ea(s)>, <ea(d)>` | 0x88 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `rol.w <ea(s)>, <ea(d)>` | 0x89 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `rol.l <ea(s)>, <ea(d)>` | 0x8A | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `rol.q <ea(s)>, <ea(d)>` | 0x8B | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `rol.b <ea(s)>, <ea(d)>` | 0x8A | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `rol.w <ea(s)>, <ea(d)>` | 0x8B | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `rol.l <ea(s)>, <ea(d)>` | 0x8C | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `rol.q <ea(s)>, <ea(d)>` | 0x8D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -163,10 +163,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `ror.b <ea(s)>, <ea(d)>` | 0x8C | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `ror.w <ea(s)>, <ea(d)>` | 0x8D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `ror.l <ea(s)>, <ea(d)>` | 0x8E | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `ror.q <ea(s)>, <ea(d)>` | 0x8F | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `ror.b <ea(s)>, <ea(d)>` | 0x8E | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `ror.w <ea(s)>, <ea(d)>` | 0x8F | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `ror.l <ea(s)>, <ea(d)>` | 0x90 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `ror.q <ea(s)>, <ea(d)>` | 0x91 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -184,10 +184,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `bclr.b <ea(s)>, <ea(d)>` | 0x90 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `bclr.w <ea(s)>, <ea(d)>` | 0x91 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `bclr.l <ea(s)>, <ea(d)>` | 0x92 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `bclr.q <ea(s)>, <ea(d)>` | 0x93 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `bclr.b <ea(s)>, <ea(d)>` | 0x92 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `bclr.w <ea(s)>, <ea(d)>` | 0x93 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `bclr.l <ea(s)>, <ea(d)>` | 0x94 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `bclr.q <ea(s)>, <ea(d)>` | 0x95 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -205,10 +205,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `bset.b <ea(s)>, <ea(d)>` | 0x94 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `bset.w <ea(s)>, <ea(d)>` | 0x95 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `bset.l <ea(s)>, <ea(d)>` | 0x96 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `bset.q <ea(s)>, <ea(d)>` | 0x97 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `bset.b <ea(s)>, <ea(d)>` | 0x96 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `bset.w <ea(s)>, <ea(d)>` | 0x97 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `bset.l <ea(s)>, <ea(d)>` | 0x98 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `bset.q <ea(s)>, <ea(d)>` | 0x99 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -220,7 +220,7 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `<bfffo>` | 0x98 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `<bfffo>` | 0x9A | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -236,7 +236,7 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
-| `bfcnt <ea(s)>, <ea(d)>` | 0x99 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `bfcnt <ea(s)>, <ea(d)>` | 0x9B | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 

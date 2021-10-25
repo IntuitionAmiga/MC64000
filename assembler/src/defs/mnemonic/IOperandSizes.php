@@ -25,16 +25,6 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
 interface IOperandSizes {
     const MAP = [
 
-//         // Flow control group
-//         'hcf'     => IControl::HCF,
-//         'bra.b'   => IControl::BRA_B,
-//         'bra'     => IControl::BRA,
-//         'bsr.b'   => IControl::BSR_B,
-//         'bsr'     => IControl::BSR,
-//         'jmp'     => IControl::JMP,
-//         'jsr'     => IControl::JSR,
-//         'rts'     => IControl::RTS,
-
         // Single operand conditional branches
 
         // Branch if <ea> == 0
@@ -137,8 +127,7 @@ interface IOperandSizes {
         IDataMove::MOVE_W => [2, 2],
         IDataMove::MOVE_L => [4, 4],
         IDataMove::MOVE_Q => [8, 8],
-//         'savem'    => IDataMove::SAVEM,
-//         'loadm'    => IDataMove::LOADM,
+
         IDataMove::FMOVEB_S => [1, 4],
         IDataMove::FMOVEB_D => [1, 8],
         IDataMove::FMOVEW_S => [2, 4],
@@ -155,22 +144,18 @@ interface IOperandSizes {
         IDataMove::FMOVED_S => [8, 4],
         IDataMove::FMOVE_S  => [4, 4],
         IDataMove::FMOVE_D  => [8, 8],
+        IDataMove::FINFO_S  => [4, 1],
+        IDataMove::FINFO_D  => [8, 1],
+        IDataMove::CLR_B    => [1, 1],
+        IDataMove::CLR_W    => [2, 2],
+        IDataMove::CLR_L    => [4, 4],
+        IDataMove::CLR_Q    => [8, 8],
+        IDataMove::LINK     => [8, 4],
+        IDataMove::UNLK     => [8],
 
-        IDataMove::CLR_B => [1, 1],
-        IDataMove::CLR_W => [2, 2],
-        IDataMove::CLR_L => [4, 4],
-        IDataMove::CLR_Q => [8, 8],
-//        'exg'      => IDataMove::EXG,
-//        'fexg'     => IDataMove::FEXG,
-//        'swap'     => IDataMove::SWAP,
-//        'swap.l'   => IDataMove::SWAP_L,
-//        'swap.q'   => IDataMove::SWAP_Q,
-        IDataMove::LINK => [8, 4],
-        IDataMove::UNLK => [8],
-//        'lea'      => IDataMove::LEA,
-//        'pea'      => IDataMove::PEA,
 
-// Logical
+
+        // Logical
         ILogical::AND_B => [1, 1],
         ILogical::AND_W => [2, 2],
         ILogical::AND_L => [4, 4],
@@ -215,14 +200,6 @@ interface IOperandSizes {
         ILogical::BSET_L => [1, 4],
         ILogical::BSET_Q => [1, 8],
 
-//         'bfclr'    => ILogical::BFCLR,
-//         'bfset'    => ILogical::BFSET,
-//         'bfins'    => ILogical::BFINS,
-//         'bfexts'   => ILogical::BFEXTS,
-//         'bfextu'   => ILogical::BFEXTU,
-//         'bfffo'    => ILogical::BFFFO,
-//         'bfcnt'    => ILogical::BFCNT,
-//         'bfxxx'    => ILogical::BFXXX,
 
         // Sign extension
         IArithmetic::EXTB_W => [1, 2],
@@ -319,20 +296,5 @@ interface IOperandSizes {
         IArithmetic::FLOG2_D   => [8, 8],
         IArithmetic::FTWOTOX_S => [4, 4],
         IArithmetic::FTWOTOX_D => [8, 8],
-
-/*
-        'reserved0',
-        'reserved1',
-        'reserved2',
-        'reserved3',
-        'reserved4',
-        'reserved5',
-        'reserved6',
-        'reserved7',
-        'reserved8',
-        'reserved9',
-        'reserved10',
-        'reserved11',
-*/
     ];
 }
