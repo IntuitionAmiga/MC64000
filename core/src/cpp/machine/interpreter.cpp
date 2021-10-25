@@ -61,10 +61,10 @@ const char* asStatusNames[] = {
     "Invalid Entrypoint"
 };
 
+
 /**
  * @inheritDoc
  */
-
 void Interpreter::initHCFVectors(Interpreter::HCFVector const* pcHCFVectors, uint32 const uNumHCFVectors) {
     assert(uNumHCFVectors <= Limits::MAX_HCF_VECTORS);
     Interpreter::pcHCFVectors   = pcHCFVectors;
