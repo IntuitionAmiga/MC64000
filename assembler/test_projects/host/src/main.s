@@ -23,9 +23,15 @@ main:
     bsr     io_print_string
     dbnz    d2, .loop
 
+    fbif.s  #FLOAT_NAN, fp0, .never
+
 exit:
     bsr io_done
     rts
+
+.never:
+    move.q  #1, d0
+    bra.b   exit
 
 .newline:
     dc.b "\n\0"
