@@ -34,6 +34,8 @@ class FloatToIntegerDyadic extends Dyadic {
         IDataMove::FMOVES_Q,
         IDataMove::FMOVED_L,
         IDataMove::FMOVED_Q,
+        IDataMove::FINFO_S,
+        IDataMove::FINFO_D
     ];
 
     /**

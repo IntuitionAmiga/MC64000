@@ -15,19 +15,19 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Defs\Mnemonic;
+namespace ABadCafe\MC64K\Defs;
 
 /**
- * IByteCodeGroups
+ * IStandardGlobals
  *
- * Enumerates the group offsets for different opcode classes.
+ * Defines standard global definitions in the assembler.
  */
-interface IByteCodeGroups {
-    const
-        OFS_CONTROL    = 0,
-        OFS_DATA_MOVE  = 77,
-        OFS_LOGICAL    = 114,
-        OFS_ARITHMETIC = 156,
-        OFS_MAX        = 255
-    ;
+interface IStandardGlobals extends IIdentifier {
+    const MATCHES = [
+        'FLOAT_ZERO'      => '0',
+        'FLOAT_NORMAL'    => '1',
+        'FLOAT_SUBNORMAL' => '2',
+        'FLOAT_INFINITE'  => '3',
+        'FLOAT_NAN'       => '4'
+    ];
 }
