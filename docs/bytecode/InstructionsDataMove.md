@@ -87,8 +87,8 @@ General syntax:
 
         fmoveb.<s|d> <ea(s)>, <ea(d)>
 
-* Operand size refers to destination.
-* Source operand is interpreted as a signed 8-bit value and converted to floating point.
+* Operand size suffix refers to destination.
+* Source operand is interpreted and accessed as a signed 8-bit value and converted to floating point.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
@@ -107,8 +107,8 @@ General syntax:
 
         fmovew.<s|d> <ea(s)>, <ea(d)>
 
-* Operand size refers to destination.
-* Source operand is interpreted as a signed 16-bit value and converted to floating point.
+* Operand size suffix refers to destination.
+* Source operand is interpreted and accessed as a signed 16-bit value and converted to floating point.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
 | - | - | - | - | - | - |
@@ -127,8 +127,8 @@ General syntax:
 
         fmovel.<s|d> <ea(s)>, <ea(d)>
 
-* Operand size refers to destination.
-* Source operand is interpreted as a signed 32-bit value and converted to floating point.
+* Operand size suffix refers to destination.
+* Source operand is interpreted and accessed as a signed 32-bit value and converted to floating point.
 * Loss of precision occurs when destination is 32-bit float.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
@@ -148,8 +148,8 @@ General syntax:
 
         fmoveq.<s|d> <ea(s)>, <ea(d)>
 
-* Operand size refers to destination.
-* Source operand is interpreted as a signed 64-bit value and converted to floating point.
+* Operand size suffix refers to destination.
+* Source operand is interpreted and accessed as a signed 64-bit value and converted to floating point.
 * Loss of precision occurs.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
@@ -169,8 +169,8 @@ General syntax:
 
         fmoves.<l|q|d> <ea(s)>, <ea(d)>
 
-* Operand size refers to destination.
-* Source operand is interpreted as a 32-bit floating point value and converted to target format.
+* Operand size suffix refers to destination.
+* Source operand is interpreted and accessed as a 32-bit floating point value and converted to target format.
 * Loss of precision occurs for long and quad target.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
@@ -191,8 +191,8 @@ General syntax:
 
         fmoved.<l|q|s> <ea(s)>, <ea(d)>
 
-* Operand size refers to destination.
-* Source operand is interpreted as a 64-bit floating point value and converted to target format.
+* Operand size suffix refers to destination.
+* Source operand is interpreted and accessed as a 64-bit floating point value and converted to target format.
 * Loss of precision occurs.
 
 | Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
@@ -223,6 +223,26 @@ General syntax:
 
 ___
 
+### FINFO
+
+Floating point data information.
+
+        <ea(s)> -> <ea(d)>
+
+General syntax:
+
+        finfo.<s|d> <ea(s)>, <ea(d)>
+
+* Classifies the floating point operand as one of zero, normal, subnormal, infinite or not-a-number.
+* Destination operand is always accessed as a byte.
+
+| Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
+| - | - | - | - | - | - |
+| `fmove.s <ea(s)>, <ea(d)>` | 0x63 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `fmove.d <ea(s)>, <ea(d)>` | 0x64 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+
+___
+
 ### CLR
 
 Clear a location.
@@ -236,10 +256,10 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... |
 | - | - | - | - |
-| `clr.b <ea>`| 0x63 | 0x*EA* | ... |
-| `clr.w <ea>`| 0x64 | 0x*EA* | ... |
-| `clr.l <ea>`| 0x65 | 0x*EA* | ... |
-| `clr.q <ea>`| 0x66 | 0x*EA* | ... |
+| `clr.b <ea>`| 0x65 | 0x*EA* | ... |
+| `clr.w <ea>`| 0x66 | 0x*EA* | ... |
+| `clr.l <ea>`| 0x67 | 0x*EA* | ... |
+| `clr.q <ea>`| 0x68 | 0x*EA* | ... |
 
 ___
 
@@ -257,7 +277,7 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 |
 | - | - | - |
-| `exg <S>, r<D>`| 0x67 | 0x*SD* |
+| `exg <S>, r<D>`| 0x69 | 0x*SD* |
 
 ___
 
@@ -273,7 +293,7 @@ Exchange FPR.
 
 | Mnemonic | Bytecode | Ext 0 |
 | - | - | - |
-| `fexg fp<S>, fp<D>`| 0x68 | 0x*SD* |
+| `fexg fp<S>, fp<D>`| 0x6A | 0x*SD* |
 
 ___
 
@@ -295,9 +315,9 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 |
 | - | - | - |
-| `swap r<N>`| 0x69 | 0x0*N* |
-| `swap.l r<N>` | 0x6A | 0x0*N* |
-| `swap.q r<N>` | 0x6B | 0x0*N* |
+| `swap r<N>`| 0x6B | 0x0*N* |
+| `swap.l r<N>` | 0x6C | 0x0*N* |
+| `swap.q r<N>` | 0x6D | 0x0*N* |
 
 ___
 
@@ -317,7 +337,7 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 |
 | - | - | - | - | - | - | - |
-| `link r<N>, #<D>`| 0x6C | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* | 0x0*N* |
+| `link r<N>, #<D>`| 0x6E | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* | 0x0*N* |
 
 ___
 
@@ -333,7 +353,7 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 |
 | - | - | - |
-| `unlk r<N>`| 0x6D | 0x0*N* |
+| `unlk r<N>`| 0x6F | 0x0*N* |
 
 ___
 
@@ -352,7 +372,7 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... | Ext N | ... |
 | - | - | - | - | - | - |
-| `lea <ea>, <ea(d)>` | 0x4D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
+| `lea <ea>, <ea(d)>` | 0x70 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
 
 ___
 
@@ -368,4 +388,4 @@ General syntax:
 
 | Mnemonic | Bytecode | Ext 0 | ... |
 | - | - | - | - |
-| `pea <ea>`| 0x6F | 0x*EA* | ...|
+| `pea <ea>`| 0x71 | 0x*EA* | ...|
