@@ -52,7 +52,7 @@ Most of the commonly used arithmetic and logical instructions tend to be dyadic 
 | Example | 0 | 1 | 2 |
 | - | - | - | - |
 | `add.q r2, r3` | 0xFE | 2:3 | `add.q` |
-| `fmul.d fp5, fp7` | 0xFF | 5:7 | `fmul.d |
+| `fmul.d fp5, fp7` | 0xFF | 5:7 | `fmul.d` |
 
 This alternative encoding allows the regular EA decode cycle to be skipped entirely and the required register pair locations extracted directly, offering significant performance gains.
 
