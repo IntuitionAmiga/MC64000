@@ -31,7 +31,7 @@ if ((int)$_SERVER['argc'] < 2) {
 try {
     $sProjectFile = $_SERVER['argv'][1];
 
-    $sLibraryPath = $_SERVER['argv'][2] ?? 'libs/';
+    $sLibraryPath = $_SERVER['argv'][2] ?? dirname(__FILE__) . '/libs/';
 
     if (is_dir($sProjectFile)) {
         $sProjectFile = rtrim($sProjectFile, '/') . '/proj.json';
