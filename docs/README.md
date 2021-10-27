@@ -1,13 +1,12 @@
 ## Documentation
 
-This is the documentation section. This is still very much work in progress and will be expanded as the project grows.
+This is the main documentation section. This is still very much work in progress and will be expanded as the project grows.
 
-### Tutorials
-* [Tutorial 1](./tutorial/part1.md) : Getting Started 
-
-### Reference Section
+### Reference Sections
 * [Programming](./programming/README.md)
-    - MC64K Machine Programming Model.
+    - [Tutorials](./programming/Tutorials.md)
+    - MC64K Machine [Programming Model](./programming/Model.md)
+    - 68K to MC64K [Migration Tips](./programming/Migration.md)
 * [Instruction Set](./bytecode/README.md)
     - MC64K Instruction and bytecode reference.
 * [MASM](./assembler/README.md)

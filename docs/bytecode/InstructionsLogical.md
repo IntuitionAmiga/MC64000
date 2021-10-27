@@ -29,10 +29,10 @@ One byte is used for the Instruction Opcode:
     - Rotate Right.
 * ### [BCLR](./op/l_09.md)
     - Clear a bit in the destination.
-* ### [BSET](./op/l_20.md)
+* ### [BSET](./op/l_10.md)
     - Set a bit in the destination.
-* ### [BFFFO](./op/l_21.md)
+* ### [BFFFO](./op/l_11.md)
     - Find First One in Bitfield.
-* ### [BFCNT](./op/l_23.md)
+* ### [BFCNT](./op/l_12.md)
     - Count number of set bits.
 
