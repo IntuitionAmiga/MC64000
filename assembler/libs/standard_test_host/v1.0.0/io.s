@@ -181,31 +181,31 @@ io_file_parse_double:
     move.b #33, -(sp)
     bra.b .invoke_1
 
-io_format_byte:
+io_cbuf_format_byte:
     move.b #34, -(sp)
     bra.b .invoke_1
 
-io_format_word:
+io_cbuf_format_word:
     move.b #35, -(sp)
     bra.b .invoke_1
 
-io_format_long:
+io_cbuf_format_long:
     move.b #36, -(sp)
     bra.b .invoke_1
 
-io_format_quad:
+io_cbuf_format_quad:
     move.b #37, -(sp)
     bra.b .invoke_1
 
-io_format_single:
+io_cbuf_format_single:
     move.b #38, -(sp)
     bra.b .invoke_1
 
-io_format_double:
+io_cbuf_format_double:
     move.b #39, -(sp)
     bra.b .invoke_1
 
-io_parse_byte:
+io_cbuf_parse_byte:
     move.b #40, -(sp)
     bra.b .invoke_1
 
@@ -215,22 +215,22 @@ io_parse_byte:
     add.q #1, sp
     rts
 
-io_parse_word:
+io_cbuf_parse_word:
     move.b #41, -(sp)
     bra.b .invoke_2
 
-io_parse_long:
+io_cbuf_parse_long:
     move.b #42, -(sp)
     bra.b .invoke_2
 
-io_parse_quad:
+io_cbuf_parse_quad:
     move.b #43, -(sp)
     bra.b .invoke_2
 
-io_parse_single:
+io_cbuf_parse_single:
     move.b #44, -(sp)
     bra.b .invoke_2
 
-io_parse_double:
+io_cbuf_parse_double:
     move.b #45, -(sp)
     bra.b .invoke_2
