@@ -28,6 +28,9 @@ namespace IO {
 
 #define getFormat(iReg, sDef) aoGPR[(iReg)].sString ? aoGPR[(iReg)].sString : (sDef)
 
+#define setFormat(sFmt, sDef) sFmt = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDef;
+
+
 /**
  * Macro for printing integers to stdout
  */

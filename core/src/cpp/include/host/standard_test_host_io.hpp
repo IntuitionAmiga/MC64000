@@ -173,36 +173,36 @@ typedef enum {
     FILE_PARSE_DOUBLE,
 
     /**
-     * io_format_<i>(r8/a0 char* buffer, r0/d0 <i> value, r9/a1 char const* format)
+     * io_cbuf_format_<i>(r8/a0 char* buffer, r0/d0 <i> value, r9/a1 char const* format)
      *
      */
-    FORMAT_BYTE,
-    FORMAT_WORD,
-    FORMAT_LONG,
-    FORMAT_QUAD,
+    CBUF_FORMAT_BYTE,
+    CBUF_FORMAT_WORD,
+    CBUF_FORMAT_LONG,
+    CBUF_FORMAT_QUAD,
 
     /**
-     * io_format_<f>(r8/a0 char* buffer, fp0 <f> value, r9/a1 char const* format)
+     * io_cbuf_format_<f>(r8/a0 char* buffer, fp0 <f> value, r9/a1 char const* format)
      *
      */
-    FORMAT_SINGLE,
-    FORMAT_DOUBLE,
+    CBUF_FORMAT_SINGLE,
+    CBUF_FORMAT_DOUBLE,
 
     /**
-     * io_parse_<i>(r8/a0 char const* buffer, r9/a1 char const* format)
+     * io_cbuf_parse_<i>(r8/a0 char const* buffer, r9/a1 char const* format)
      *
      */
-    PARSE_BYTE,
-    PARSE_WORD,
-    PARSE_LONG,
-    PARSE_QUAD,
+    CBUF_PARSE_BYTE,
+    CBUF_PARSE_WORD,
+    CBUF_PARSE_LONG,
+    CBUF_PARSE_QUAD,
 
     /**
      * io_parse_<f>(r8/a0 char const* buffer, r9/a1 char const* format)
      *
      */
-    PARSE_SINGLE,
-    PARSE_DOUBLE,
+    CBUF_PARSE_SINGLE,
+    CBUF_PARSE_DOUBLE,
 } Call;
 
 /**
