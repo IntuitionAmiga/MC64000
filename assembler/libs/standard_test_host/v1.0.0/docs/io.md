@@ -30,7 +30,7 @@ ___
 
 ### io_print_string
 ```asm
-    ; r0|d0:uint64 result io_print_string(r8|a0:const char* string)
+    ; r0|d0:uint64 result io_print_string(r8|a0:char const* string)
 
     lea message, a0
     bsr io_print_string
@@ -44,12 +44,12 @@ Writes the string pointed to by r8|a0 to standard output. No newline is added.
 ___
 ### io_print_byte
 ```asm
-    ; r0|d0:uint64 result io_print_byte(r0|d0:uint8 value)
+    ; r0|d0:uint64 result io_print_byte(r0|d0:uint8 value, r8|a0:char const* format)
 
     move.b  value, d0
     bsr     io_print_byte
 ```
-Writes the byte integer in r0|d0 to standard output, applying the global formatting template for bytes.
+Writes the byte integer in r0|d0 to standard output, applying the supplied format pointer in r8|a0. If the supplied format is null, the current global formatting template for bytes is used instead.
 
 - Only the lowest 8 bits of r0|d0 are used, all higher bits are ignored.
 - When successful, #ERR_NONE is returned in r0|d0.
@@ -58,12 +58,12 @@ Writes the byte integer in r0|d0 to standard output, applying the global formatt
 ___
 ### io_print_word
 ```asm
-    ; r0|d0:uint64 result io_print_word(r0|d0:uint16 word)
+    ; r0|d0:uint64 result io_print_word(r0|d0:uint16 word, r8|a0:char const* format)
 
     move.w  value, d0
     bsr     io_print_word
 ```
-Writes the word integer in r0|d0 to standard output, applying the global formatting template for words.
+Writes the word integer in r0|d0 to standard output, applying the supplied format pointer in r8|a0. If the supplied format is null, the current global formatting template for words is used instead.
 
 - Only the lowest 16 bits of r0|d0 are used, all higher bits are ignored.
 - When successful, #ERR_NONE is returned in r0|d0.
@@ -72,12 +72,12 @@ Writes the word integer in r0|d0 to standard output, applying the global formatt
 ___
 ### io_print_long
 ```asm
-    ; r0|d0:uint64 result io_print_long(r0|d0:uint32 long)
+    ; r0|d0:uint64 result io_print_long(r0|d0:uint32 long, r8|a0:char const* format)
 
     move.l  value, d0
     bsr     io_print_long
 ```
-Writes the long integer in r0|d0 to standard output, applying the global formatting template for longs.
+Writes the long integer in r0|d0 to standard output, applying the supplied format pointer in r8|a0. If the supplied format is null, the current global formatting template for longs is used instead.
 
 - Only the lowest 32 bits of r0|d0 are used, all higher bits are ignored.
 - When successful, #ERR_NONE is returned in r0|d0.
@@ -86,12 +86,12 @@ Writes the long integer in r0|d0 to standard output, applying the global formatt
 ___
 ### io_print_quad
 ```asm
-    ; r0|d0:uint64 result io_print_quad(r0|d0:uint64 quad)
+    ; r0|d0:uint64 result io_print_quad(r0|d0:uint64 quad, r8|a0:char const* format)
 
     move.q  value, d0
     bsr     io_print_quad
 ```
-Writes the quad integer in r0|d0 to standard output, applying the global formatting template for quads.
+Writes the quad integer in r0|d0 to standard output, applying the supplied format pointer in r8|a0. If the supplied format is null, the current global formatting template for quads is used instead.
 
 - When successful, #ERR_NONE is returned in r0|d0.
 - If any issue occurs, #ERR_WRITE is returned in r0|d0.
@@ -99,12 +99,12 @@ Writes the quad integer in r0|d0 to standard output, applying the global formatt
 ___
 ### io_print_single
 ```asm
-    ; r0|d0:uint64 result io_print_single(fp0:float32 single)
+    ; r0|d0:uint64 result io_print_single(fp0:float32 single, r8|a0:char const* format)
 
     fmove.s value, fp0
     bsr     io_print_single
 ```
-Writes the single precision float in fp0 to standard output, applying the global formatting template for singles.
+Writes the single precision float in fp0 to standard output, applying the supplied format pointer in r8|a0. If the supplied format is null, the current global formatting template for singles is used instead.
 
 - Only the lowest 32 bits of fp0 are used, all higher bits are ignored.
 - When successful, #ERR_NONE is returned in r0|d0.
@@ -113,12 +113,12 @@ Writes the single precision float in fp0 to standard output, applying the global
 ___
 ### io_print_double
 ```asm
-    ; r0|d0:uint64 result io_print_double(fp0:float64 double)
+    ; r0|d0:uint64 result io_print_double(fp0:float64 double, r8|a0:char const* format)
 
     fmove.d value, fp0
     bsr     io_print_double
 ```
-Writes the double precision float in fp0 to standard output, applying the global formatting template for doubles.
+Writes the double precision float in fp0 to standard output, applying the supplied format pointer in r8|a0. If the supplied format is null, the current global formatting template for doubles is used instead.
 
 - When successful, #ERR_NONE is returned in r0|d0.
 - If any issue occurs, #ERR_WRITE is returned in r0|d0.
@@ -126,7 +126,7 @@ Writes the double precision float in fp0 to standard output, applying the global
 ___
 ### io_set_fmt_byte
 ```asm
-    ; void io_set_fmt_byte(r8|a0:const char* format)
+    ; void io_set_fmt_byte(r8|a0:char const* format)
 
     lea format, a0
     bsr io_set_fmt_byte
@@ -139,7 +139,7 @@ Sets the default output formatting template for byte integer values. The formatt
 ___
 ### io_set_fmt_word
 ```asm
-    ; void io_set_fmt_word(r8|a0:const char* format)
+    ; void io_set_fmt_word(r8|a0:char const* format)
 
     lea format, a0
     bsr io_set_fmt_word
@@ -152,7 +152,7 @@ Sets the default output formatting template for word integer values. The formatt
 ___
 ### io_set_fmt_long
 ```asm
-    ; void io_set_fmt_long(r8|a0:const char* format)
+    ; void io_set_fmt_long(r8|a0:char const* format)
 
     lea format, a0
     bsr io_set_fmt_long
@@ -165,7 +165,7 @@ Sets the default output formatting template for long integer values. The formatt
 ___
 ### io_set_fmt_quad
 ```asm
-    ; void io_set_fmt_quad(r8|a0:const char* format)
+    ; void io_set_fmt_quad(r8|a0:char const* format)
 
     lea format, a0
     bsr io_set_fmt_quad
@@ -178,7 +178,7 @@ Sets the default output formatting template for quad integer values. The formatt
 ___
 ### io_set_fmt_single
 ```asm
-    ; void io_set_fmt_single(r8|a0:const char* format)
+    ; void io_set_fmt_single(r8|a0:char const* format)
 
     lea format, a0
     bsr io_set_fmt_single
@@ -191,7 +191,7 @@ Sets the default output formatting template for single precision floating point 
 ___
 ### io_set_fmt_double
 ```asm
-    ; void io_set_fmt_double(r8|a0:const char* format)
+    ; void io_set_fmt_double(r8|a0:char const* format)
 
     lea format, a0
     bsr io_set_fmt_double
@@ -204,7 +204,7 @@ Sets the default output formatting template for double precision floating point 
 ___
 ### io_file_open
 ```asm
-    ; r8|a0:FILE* stream, r0|d0:uint64 error io_file_open(r8|a0:const char* name, r0|d0:uint8 mode)
+    ; r8|a0:FILE* stream, r0|d0:uint64 error io_file_open(r8|a0:char const* name, r0|d0:uint8 mode)
 
     bsr io_file_open
 ```
@@ -264,7 +264,7 @@ Description.
 ___
 ### io_file_print_string
 ```asm
-    ; r0|d0:uint64 result io_file_print_string(r8|a0:FILE* stream, r9|a1:const char* string)
+    ; r0|d0:uint64 result io_file_print_string(r8|a0:FILE* stream, r9|a1:char const* string)
 
     move.q  stream, a0
     lea     message, a1
@@ -279,7 +279,7 @@ Writes the string pointed to by r9|a1 to the open stream pointed to by r8|a0. No
 ___
 ### io_file_print_byte
 ```asm
-    ; r0|d0:uint64 result io_file_print_byte(r8|a0:FILE* stream, r0|d0:uint8 value)
+    ; r0|d0:uint64 result io_file_print_byte(r8|a0:FILE* stream, r0|d0:uint8 value, r9|a1:char const* format)
 
     move.q  stream, a0
     move.b  value, d0
@@ -295,7 +295,7 @@ Writes the byte integer in r0|d0 to the stream output pointed to by r8|a0, apply
 ___
 ### io_file_print_word
 ```asm
-    ; r0|d0:uint64 result io_file_print_word(r8|a0:FILE* stream, r0|d0:uint16 value)
+    ; r0|d0:uint64 result io_file_print_word(r8|a0:FILE* stream, r0|d0:uint16 value, r9|a1:char const* format)
 
     move.q  stream, a0
     move.w  value, d0
@@ -311,7 +311,7 @@ Writes the word integer in r0|d0 to the stream output pointed to by r8|a0, apply
 ___
 ### io_file_print_long
 ```asm
-    ; r0|d0:uint64 result io_file_print_long(r8|a0:FILE* stream, r0|d0:uint32 value)
+    ; r0|d0:uint64 result io_file_print_long(r8|a0:FILE* stream, r0|d0:uint32 value, r9|a1:char const* format)
 
     move.q  stream, a0
     move.l  value, d0
@@ -327,7 +327,7 @@ Writes the long integer in r0|d0 to the stream output pointed to by r8|a0, apply
 ___
 ### io_file_print_quad
 ```asm
-    ; r0|d0:uint64 result io_file_print_quad(r8|a0:FILE* stream, r0|d0:uint64 value)
+    ; r0|d0:uint64 result io_file_print_quad(r8|a0:FILE* stream, r0|d0:uint64 value, r9|a1:char const* format)
 
     move.q  stream, a0
     move.q  value, d0
@@ -342,7 +342,7 @@ Writes the quad integer in r0|d0 to the stream output pointed to by r8|a0, apply
 ___
 ### io_file_print_single
 ```asm
-    ; r0|d0:uint64 result io_file_print_single(r8|a0:FILE* stream, fp0:float32 value)
+    ; r0|d0:uint64 result io_file_print_single(r8|a0:FILE* stream, fp0:float32 value, r9|a1:char const* format)
 
     move.q  stream, a0
     fmove.s value, fp0
@@ -358,7 +358,7 @@ Writes the single precision floating point value in fp0 to the stream output poi
 ___
 ### io_file_print_double
 ```asm
-    ; r0|d0:uint64 result io_file_print_double(r8|a0:FILE* stream, fp0:float64 value)
+    ; r0|d0:uint64 result io_file_print_double(r8|a0:FILE* stream, fp0:float64 value, r9|a1:char const* format)
 
     move.q  stream, a0
     fmove.d value, fp0
