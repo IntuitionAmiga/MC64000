@@ -156,3 +156,81 @@ io_file_print_single:
 io_file_print_double:
     move.b #27, -(sp)
     bra.b .invoke_1
+
+io_file_parse_byte:
+    move.b #28, -(sp)
+    bra.b .invoke_1
+
+io_file_parse_word:
+    move.b #29, -(sp)
+    bra.b .invoke_1
+
+io_file_parse_long:
+    move.b #30, -(sp)
+    bra.b .invoke_1
+
+io_file_parse_quad:
+    move.b #31, -(sp)
+    bra.b .invoke_1
+
+io_file_parse_single:
+    move.b #32, -(sp)
+    bra.b .invoke_1
+
+io_file_parse_double:
+    move.b #33, -(sp)
+    bra.b .invoke_1
+
+io_format_byte:
+    move.b #34, -(sp)
+    bra.b .invoke_1
+
+io_format_word:
+    move.b #35, -(sp)
+    bra.b .invoke_1
+
+io_format_long:
+    move.b #36, -(sp)
+    bra.b .invoke_1
+
+io_format_quad:
+    move.b #37, -(sp)
+    bra.b .invoke_1
+
+io_format_single:
+    move.b #38, -(sp)
+    bra.b .invoke_1
+
+io_format_double:
+    move.b #39, -(sp)
+    bra.b .invoke_1
+
+io_parse_byte:
+    move.b #40, -(sp)
+    bra.b .invoke_1
+
+; We run out of short branch distance after the first 20 stubs.
+.invoke_2:
+    hcf #0
+    add.q #1, sp
+    rts
+
+io_parse_word:
+    move.b #41, -(sp)
+    bra.b .invoke_2
+
+io_parse_long:
+    move.b #42, -(sp)
+    bra.b .invoke_2
+
+io_parse_quad:
+    move.b #43, -(sp)
+    bra.b .invoke_2
+
+io_parse_single:
+    move.b #44, -(sp)
+    bra.b .invoke_2
+
+io_parse_double:
+    move.b #45, -(sp)
+    bra.b .invoke_2
