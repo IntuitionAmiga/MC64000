@@ -18,7 +18,15 @@
     },
     "sources": [
         "lib:standard_test_host/v1.0.0/host.s",
-        "src/main.s"
+        "lib:standard_test_host/v1.0.0/io.s",
+
+        "src/main.s",
+        "src/calibrate.s",
+        "src/bench_add_reg_to_reg_ind.s",
+        "src/bench_add_reg_ind_to_reg_ind.s",
+        "src/bench_bsr_ret.s",
+        "src/bench_hcf.s"
+
     ],
     "defines": {
     }
