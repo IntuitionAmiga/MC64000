@@ -1,9 +1,6 @@
+[Standard Test Host Library](../README.md) > [IO Functions](./io.md)
 
-# Standard Test Host Library
-
-[IO](./io.md)
-
-## File Input / Output
+# File Input / Output
 
 Library of routines for opening, closing, reading and writing file streams.
 

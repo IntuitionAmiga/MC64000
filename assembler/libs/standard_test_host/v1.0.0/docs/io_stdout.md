@@ -1,16 +1,12 @@
+[Standard Test Host Library](../README.md) > [IO Functions](/io.md)
 
-# Standard Test Host Library
-
-[IO](/io.md)
-
-## Terminal output
+# Terminal output
 
 Basic terminal output functions.
 
 ### io_print_string
+r0|d0:uint64 result io_print_string(r8|a0:char const\* string)
 ```asm
-    ; r0|d0:uint64 result io_print_string(r8|a0:char const* string)
-
     lea message, a0
     bsr io_print_string
 ```
@@ -22,9 +18,8 @@ Writes the string pointed to by r8|a0 to standard output. No newline is added.
 - Since v1.0.0
 ___
 ### io_print_byte
+r0|d0:uint64 result io_print_byte(r0|d0:uint8 value, r8|a0:char const\* format)
 ```asm
-    ; r0|d0:uint64 result io_print_byte(r0|d0:uint8 value, r8|a0:char const* format)
-
     move.b  value, d0
     bsr     io_print_byte
 ```
@@ -36,9 +31,8 @@ Writes the byte integer in r0|d0 to standard output, applying the supplied forma
 - Since v1.0.0
 ___
 ### io_print_word
+r0|d0:uint64 result io_print_word(r0|d0:uint16 word, r8|a0:char const\* format)
 ```asm
-    ; r0|d0:uint64 result io_print_word(r0|d0:uint16 word, r8|a0:char const* format)
-
     move.w  value, d0
     bsr     io_print_word
 ```
@@ -50,9 +44,8 @@ Writes the word integer in r0|d0 to standard output, applying the supplied forma
 - Since v1.0.0
 ___
 ### io_print_long
+r0|d0:uint64 result io_print_long(r0|d0:uint32 long, r8|a0:char const\* format)
 ```asm
-    ; r0|d0:uint64 result io_print_long(r0|d0:uint32 long, r8|a0:char const* format)
-
     move.l  value, d0
     bsr     io_print_long
 ```
@@ -64,9 +57,8 @@ Writes the long integer in r0|d0 to standard output, applying the supplied forma
 - Since v1.0.0
 ___
 ### io_print_quad
+r0|d0:uint64 result io_print_quad(r0|d0:uint64 quad, r8|a0:char const\* format)
 ```asm
-    ; r0|d0:uint64 result io_print_quad(r0|d0:uint64 quad, r8|a0:char const* format)
-
     move.q  value, d0
     bsr     io_print_quad
 ```
@@ -77,9 +69,8 @@ Writes the quad integer in r0|d0 to standard output, applying the supplied forma
 - Since v1.0.0
 ___
 ### io_print_single
+r0|d0:uint64 result io_print_single(fp0:float32 single, r8|a0:char const\* format)
 ```asm
-    ; r0|d0:uint64 result io_print_single(fp0:float32 single, r8|a0:char const* format)
-
     fmove.s value, fp0
     bsr     io_print_single
 ```
@@ -91,9 +82,8 @@ Writes the single precision float in fp0 to standard output, applying the suppli
 - Since v1.0.0
 ___
 ### io_print_double
+r0|d0:uint64 result io_print_double(fp0:float64 double, r8|a0:char const\* format)
 ```asm
-    ; r0|d0:uint64 result io_print_double(fp0:float64 double, r8|a0:char const* format)
-
     fmove.d value, fp0
     bsr     io_print_double
 ```
