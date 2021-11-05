@@ -12,15 +12,16 @@
 ;
 ; Empty project - main.s
 
-    @equ nanotime               dc.b 0xF0 ; super undocumented opcodes ftw
+    @equ nanotime           dc.b 0xF0 ; super undocumented opcodes ftw
 
     @equ max_loops          #20000000
-
+    @equ loop_scale         #10000 ; 10x unroll x 1000 for scale to MIPS from ops/ns
     @equ loop_counter       r2
     @equ time_recorded      r14
     @equ time_started       r13
     @equ calibration_time   r12
     @equ scale_relative     fp15
+    @equ scale_mips         fp13
 
 main:
     bsr         io_init
@@ -32,13 +33,21 @@ main:
     lea         .info_txt_1,        r8
     bsr         io_print_string
 
-    bsr         calibrate_loop
-    bsr         baseline
-    bsr         bench_add_reg_to_reg_ind
+    bsr         calibration
+
+    bsr         bench_add_reg_to_indirect
     bsr         bench_add_reg_ind_to_reg_ind
+    bsr         bench_add_reg_to_label
+    bsr         bench_add_label_to_label
+    bsr         bench_small_imm_to_reg
+
+
+    bsr         bench_biz_int_taken
+    bsr         bench_biz_int_not_taken
+
     bsr         bench_bsr_ret
-    bsr         bench_bsr_b_ret
     bsr         bench_hcf
+    bsr         bench_hcf_stub
 
 
 exit:
@@ -53,6 +62,15 @@ report_elapsed:
     bsr         io_print_quad
     lea         .report_elapsed_txt_1,  r8
     bsr         io_print_string
+
+    fmoveq.d    time_recorded,          fp1
+    fmove.d     scale_mips,             fp0
+    fdiv.d      fp1,                    fp0
+    lea         .report_relative_fmt,   r8
+    bsr         io_print_double
+    lea         .report_mips_txt,       r8
+    bsr         io_print_string
+
     rts
 
 report_relative:
@@ -68,19 +86,6 @@ report_relative:
     dc.b "Benchmarking 10x unrolled using \0"
 .info_txt_1:
     dc.b " iterations\n\0"
-.newline:
-    dc.b "\n\0"
-
-
-.add_ind_dst_txt:
-    dc.b "add.q r1, (r10)\n\0"
-
-.add_ind_dst_disp_txt:
-    dc.b "add.q r1, 8(r10)\n\0"
-
-.add_ind_src_dst_same_txt:
-    dc.b "and.q (r10), (r10)\n\0"
-
 .report_elapsed_txt_0:
     dc.b        "\ttook: \0"
 .report_elapsed_txt_1:
@@ -88,6 +93,8 @@ report_relative:
 .report_elapsed_fmt:
     dc.b        "%12ld\0"
 .report_relative_txt:
-    dc.b        " relative\n\0"
+    dc.b        " relative\n\n\0"
 .report_relative_fmt:
     dc.b        "%6.4f\0"
+.report_mips_txt:
+    dc.b        " MIPS \0"
