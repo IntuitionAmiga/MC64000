@@ -24,6 +24,10 @@
         "src/calibrate.s",
         "src/bench_add_reg_to_reg_ind.s",
         "src/bench_add_reg_ind_to_reg_ind.s",
+        "src/bench_add_reg_to_label.s",
+        "src/bench_add_label_to_label.s",
+        "src/bench_add_imm_to_reg.s",
+        "src/bench_conditional.s",
         "src/bench_bsr_ret.s",
         "src/bench_hcf.s"
 

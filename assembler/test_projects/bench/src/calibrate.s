@@ -1,7 +1,23 @@
+    @align      0,8
+calibration:
+    ; calibration loop is not unrolled
+    move.q      max_loops,          r0
+    muls.q      #1000,              r0
+    fmoveq.d    r0,                 scale_mips
+
+    bsr         .calibrate_loop
+
+    ; all test loops are unrolled
+    move.q      max_loops,          r0
+    muls.q      loop_scale,         r0
+    fmoveq.d    r0,                 scale_mips
+
+    bsr         .baseline
+
+    rts
 
     @align      0,8
-
-calibrate_loop:
+.calibrate_loop:
     ; Calibration time...
     lea         .calibration_txt,   r8
     bsr         io_print_string
@@ -19,8 +35,7 @@ calibrate_loop:
     rts
 
     @align      0,8
-
-baseline:
+.baseline:
 ; Reference instruction, add.q r1, r0
     lea         .baseline_txt,  r8
     bsr         io_print_string
