@@ -67,11 +67,11 @@ main:
 
 .save_file:
     ; write the PGM header
-    lea         .pgm_int_fmt, a0
-    bsr         io_set_fmt_long
     move.q      a5,     a0
     lea         .pgm_head, a1
     bsr         io_file_print_string
+    lea         .pgm_int_fmt, a1
+    bsr         io_set_fmt_long
     move.l      d6,     d0
     bsr         io_file_print_long
     move.l      d6,     d0

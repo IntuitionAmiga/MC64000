@@ -672,6 +672,10 @@ void Interpreter::run() {
             case Opcode::FTWOTOX_S: dyadic(SIZE_LONG); asSingle(pDstEA) = std::exp2(asSingle(pSrcEA)); break;
             case Opcode::FTWOTOX_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = std::exp2(asDouble(pSrcEA)); break;
 
+            case 0xF0:
+                aoGPR[14].uQuad = Nanoseconds::mark();
+                break;
+
             default:
                 todo();
         }

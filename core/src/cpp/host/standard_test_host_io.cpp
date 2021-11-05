@@ -14,6 +14,7 @@
 #include <cstdio>
 #include "host/standard_test_host_io.hpp"
 #include "machine/register.hpp"
+#include "host/standard_test_host_io_macros.hpp"
 
 using MC64K::Machine::Interpreter;
 
@@ -225,103 +226,24 @@ Interpreter::Status hostVector() {
             break;
         }
 
-        case PRINT_BYTE: {
-            setIOWriteResult(std::printf(
-                sByteFormat, aoGPR[ABI::INT_REG_0].iByte),
-                ABI::INT_REG_0
-            );
-            break;
-        }
-
-        case PRINT_WORD: {
-            setIOWriteResult(
-                std::printf(sWordFormat, aoGPR[ABI::INT_REG_0].iWord),
-                ABI::INT_REG_0
-            );
-            break;
-        }
-
-        case PRINT_LONG: {
-            setIOWriteResult(
-                std::printf(sLongFormat, aoGPR[ABI::INT_REG_0].iLong),
-                ABI::INT_REG_0
-            );
-            break;
-        }
-
-        case PRINT_QUAD: {
-            setIOWriteResult(
-                std::printf(sQuadFormat, aoGPR[ABI::INT_REG_0].iQuad),
-                ABI::INT_REG_0
-            );
-            break;
-        }
-
-        case PRINT_SINGLE: {
-            Machine::FPRegister* aoFPR = Interpreter::fpr();
-            setIOWriteResult(
-                std::printf(sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle),
-                ABI::INT_REG_0
-            );
-            break;
-        }
-
-        case PRINT_DOUBLE: {
-            Machine::FPRegister* aoFPR = Interpreter::fpr();
-            setIOWriteResult(
-                std::printf(sDoubleFormat, (double)aoFPR[ABI::FLT_REG_0].fDouble),
-                ABI::INT_REG_0
-            );
-            break;
-        }
-
-        case SET_FMT_BYTE:
-            sByteFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultByteFormat;
-            break;
-
-        case SET_FMT_WORD:
-            sWordFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultWordFormat;
-            break;
-
-        case SET_FMT_LONG:
-            sLongFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultLongFormat;
-            break;
-
-        case SET_FMT_QUAD:
-            sQuadFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultQuadFormat;
-            break;
-
-        case SET_FMT_SINGLE:
-            sSingleFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultSingleFormat;
-            break;
-
-        case SET_FMT_DOUBLE:
-            sDoubleFormat = aoGPR[ABI::PTR_REG_0].sString ? aoGPR[ABI::PTR_REG_0].sString : sDefaultDoubleFormat;
-            break;
-
-        case FILE_OPEN:
-            openStream(aoGPR);
-            break;
-
-        case FILE_SEEK:
-            seekStream(aoGPR);
-            break;
-
-        case FILE_TELL:
-            tellStream(aoGPR);
-            break;
-
-        case FILE_READ:
-            readStream(aoGPR);
-            break;
-
-        case FILE_WRITE:
-            writeStream(aoGPR);
-            break;
-
-        case FILE_CLOSE:
-            closeStream(aoGPR);
-            break;
+        case PRINT_BYTE:        printInt(sByteFormat, iByte);       break;
+        case PRINT_WORD:        printInt(sWordFormat, iWord);       break;
+        case PRINT_LONG:        printInt(sLongFormat, iLong);       break;
+        case PRINT_QUAD:        printInt(sQuadFormat, iQuad);       break;
+        case PRINT_SINGLE:      printFloat(sSingleFormat, fSingle); break;
+        case PRINT_DOUBLE:      printFloat(sDoubleFormat, fDouble); break;
+        case SET_FMT_BYTE:      setFormat(sByteFormat, sDefaultByteFormat);     break;
+        case SET_FMT_WORD:      setFormat(sWordFormat, sDefaultWordFormat);     break;
+        case SET_FMT_LONG:      setFormat(sLongFormat, sDefaultLongFormat);     break;
+        case SET_FMT_QUAD:      setFormat(sQuadFormat, sDefaultQuadFormat);     break;
+        case SET_FMT_SINGLE:    setFormat(sSingleFormat, sDefaultSingleFormat); break;
+        case SET_FMT_DOUBLE:    setFormat(sDoubleFormat, sDefaultDoubleFormat); break;
+        case FILE_OPEN:         openStream(aoGPR);  break;
+        case FILE_SEEK:         seekStream(aoGPR);  break;
+        case FILE_TELL:         tellStream(aoGPR);  break;
+        case FILE_READ:         readStream(aoGPR);  break;
+        case FILE_WRITE:        writeStream(aoGPR); break;
+        case FILE_CLOSE:        closeStream(aoGPR); break;
 
         case FILE_PRINT_STRING: {
             std::FILE*  pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny;
@@ -337,73 +259,30 @@ Interpreter::Status hostVector() {
             break;
         }
 
-        case FILE_PRINT_BYTE:
-            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
-                setIOWriteResult(
-                    std::fprintf(pStream, sByteFormat, aoGPR[ABI::INT_REG_0].iByte),
-                    ABI::INT_REG_0
-                );
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
-            }
-            break;
-
-        case FILE_PRINT_WORD:
-            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
-                setIOWriteResult(
-                    std::fprintf(pStream, sWordFormat, aoGPR[ABI::INT_REG_0].iWord),
-                    ABI::INT_REG_0
-                );
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
-            }
-            break;
-
-        case FILE_PRINT_LONG:
-            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
-                setIOWriteResult(
-                    std::fprintf(pStream, sLongFormat, aoGPR[ABI::INT_REG_0].iLong),
-                    ABI::INT_REG_0
-                );
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
-            }
-            break;
-
-        case FILE_PRINT_QUAD:
-            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
-                setIOWriteResult(
-                    std::fprintf(pStream, sQuadFormat, aoGPR[ABI::INT_REG_0].iQuad),
-                    ABI::INT_REG_0
-                );
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
-            }
-            break;
-
-        case FILE_PRINT_SINGLE:
-            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
-                Machine::FPRegister* aoFPR = Interpreter::fpr();
-                setIOWriteResult(
-                    std::fprintf(pStream, sSingleFormat, (double)aoFPR[ABI::FLT_REG_0].fSingle),
-                    ABI::INT_REG_0
-                );
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
-            }
-            break;
-
-        case FILE_PRINT_DOUBLE:
-            if ( std::FILE* pStream = (std::FILE*)aoGPR[ABI::PTR_REG_0].pAny ) {
-                Machine::FPRegister* aoFPR = Interpreter::fpr();
-                setIOWriteResult(
-                    std::fprintf(pStream, sDoubleFormat, (double)aoFPR[ABI::FLT_REG_0].fDouble),
-                    ABI::INT_REG_0
-                );
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad =  ABI::ERR_NULL_PTR;
-            }
-            break;
+        case FILE_PRINT_BYTE:       filePrintInt(sByteFormat, iByte);       break;
+        case FILE_PRINT_WORD:       filePrintInt(sWordFormat, iWord);       break;
+        case FILE_PRINT_LONG:       filePrintInt(sLongFormat, iLong);       break;
+        case FILE_PRINT_QUAD:       filePrintInt(sQuadFormat, iQuad);       break;
+        case FILE_PRINT_SINGLE:     filePrintFloat(sSingleFormat, fSingle); break;
+        case FILE_PRINT_DOUBLE:     filePrintFloat(sDoubleFormat, fDouble); break;
+        case FILE_PARSE_BYTE:       fileParseInt(sByteFormat, iByte);       break;
+        case FILE_PARSE_WORD:       fileParseInt(sWordFormat, iWord);       break;
+        case FILE_PARSE_LONG:       fileParseInt(sLongFormat, iLong);       break;
+        case FILE_PARSE_QUAD:       fileParseInt(sQuadFormat, iQuad);       break;
+        case FILE_PARSE_SINGLE:     fileParseFloat(sSingleFormat, fSingle); break;
+        case FILE_PARSE_DOUBLE:     fileParseFloat(sDoubleFormat, fDouble); break;
+        case CBUF_FORMAT_BYTE:      formatInt(sByteFormat, iByte);          break;
+        case CBUF_FORMAT_WORD:      formatInt(sWordFormat, iWord);          break;
+        case CBUF_FORMAT_LONG:      formatInt(sLongFormat, iLong);          break;
+        case CBUF_FORMAT_QUAD:      formatInt(sQuadFormat, iQuad);          break;
+        case CBUF_FORMAT_SINGLE:    formatFloat(sSingleFormat, fSingle);    break;
+        case CBUF_FORMAT_DOUBLE:    formatFloat(sDoubleFormat, fDouble);    break;
+        case CBUF_PARSE_BYTE:       parseInt(sByteFormat, iByte);           break;
+        case CBUF_PARSE_WORD:       parseInt(sWordFormat, iWord);           break;
+        case CBUF_PARSE_LONG:       parseInt(sLongFormat, iLong);           break;
+        case CBUF_PARSE_QUAD:       parseInt(sQuadFormat, iQuad);           break;
+        case CBUF_PARSE_SINGLE:     parseFloat(sSingleFormat, fSingle);     break;
+        case CBUF_PARSE_DOUBLE:     parseFloat(sDoubleFormat, fDouble);     break;
 
         default:
             std::fprintf(stderr, "Unknown IO operation %d\n", iOperation);
@@ -415,4 +294,3 @@ Interpreter::Status hostVector() {
 }
 
 }}} // namespace
-
