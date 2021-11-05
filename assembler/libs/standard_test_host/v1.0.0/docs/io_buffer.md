@@ -1,13 +1,10 @@
+[Standard Test Host Library](../README.md) > [IO Functions](./io.md)
 
-# Standard Test Host Library
-
-[IO](./io.md)
-
-## Character Buffer Input/Output
+# Character Buffer Input/Output
 These routines handle conversion between text and scalar values.
 
 ### io_cbuf_format_byte
-r0|d0:uint64 result io_cbuf_format_byte(char* buffer, r0|d0:int8 value, r9|a1:char const* format)
+r0|d0:uint64 result io_cbuf_format_byte(char\* buffer, r0|d0:int8 value, r9|a1:char const\* format)
 ```asm
     move.q  buffer, a0
     move.b  value, d0
@@ -23,7 +20,7 @@ Formats the byte integer in r0|d0 into to the character buffer pointed to by r8|
 ___
 
 ### io_cbuf_format_word
-r0|d0:uint64 result io_cbuf_format_word(char* buffer, r0|d0:int16 value, r9|a1:char const* format)
+r0|d0:uint64 result io_cbuf_format_word(char\* buffer, r0|d0:int16 value, r9|a1:char const\* format)
 ```asm
     move.q  buffer, a0
     move.w  value, d0
@@ -39,7 +36,7 @@ Formats the word integer in r0|d0 into to the character buffer pointed to by r8|
 ___
 
 ### io_cbuf_format_long
-r0|d0:uint64 result io_cbuf_format_long(char* buffer, r0|d0:int32 value, r9|a1:char const* format)
+r0|d0:uint64 result io_cbuf_format_long(char\* buffer, r0|d0:int32 value, r9|a1:char const\* format)
 ```asm
     move.q  buffer, a0
     move.l  value, d0
@@ -55,7 +52,7 @@ Formats the long integer in r0|d0 into to the character buffer pointed to by r8|
 ___
 
 ### io_cbuf_format_quad
-r0|d0:uint64 result io_cbuf_format_quad(char* buffer, r0|d0:int32 value, r9|a1:char const* format)
+r0|d0:uint64 result io_cbuf_format_quad(char\* buffer, r0|d0:int32 value, r9|a1:char const\* format)
 ```asm
     move.q  buffer, a0
     move.l  value, d0
@@ -70,7 +67,7 @@ Formats the quad integer in r0|d0 into to the character buffer pointed to by r8|
 ___
 
 ### io_cbuf_format_single
-r0|d0:uint64 result io_cbuf_format_single(char* buffer, fp0:float32 value, r9|a1:char const* format)
+r0|d0:uint64 result io_cbuf_format_single(char\* buffer, fp0:float32 value, r9|a1:char const\* format)
 ```asm
     move.q  buffer, a0
     fmove.s value, fp0

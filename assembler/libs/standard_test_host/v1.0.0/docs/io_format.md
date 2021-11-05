@@ -1,14 +1,10 @@
+[Standard Test Host Library](../README.md) > [IO Functions](./IO.md)
 
-# Standard Test Host Library
-
-[IO](./IO.md)
-
-## Default Format Control
+# Default Format Control
 
 ### io_set_fmt_byte
+void io_set_fmt_byte(r8|a0:char const\* format)
 ```asm
-    ; void io_set_fmt_byte(r8|a0:char const* format)
-
     lea format, a0
     bsr io_set_fmt_byte
 ```
@@ -19,9 +15,8 @@ Sets the default global formatting template for byte integer values. The formatt
 - Since v1.0.0
 ___
 ### io_set_fmt_word
+void io_set_fmt_word(r8|a0:char const\* format)
 ```asm
-    ; void io_set_fmt_word(r8|a0:char const* format)
-
     lea format, a0
     bsr io_set_fmt_word
 ```
@@ -32,9 +27,8 @@ Sets the default global formatting template for word integer values. The formatt
 - Since v1.0.0
 ___
 ### io_set_fmt_long
+void io_set_fmt_long(r8|a0:char const\* format)
 ```asm
-    ; void io_set_fmt_long(r8|a0:char const* format)
-
     lea format, a0
     bsr io_set_fmt_long
 ```
@@ -45,9 +39,8 @@ Sets the default global formatting template for long integer values. The formatt
 - Since v1.0.0
 ___
 ### io_set_fmt_quad
+void io_set_fmt_quad(r8|a0:char const\* format)
 ```asm
-    ; void io_set_fmt_quad(r8|a0:char const* format)
-
     lea format, a0
     bsr io_set_fmt_quad
 ```
@@ -58,9 +51,8 @@ Sets the default global formatting template for quad integer values. The formatt
 - Since v1.0.0
 ___
 ### io_set_fmt_single
+void io_set_fmt_single(r8|a0:char const\* format)
 ```asm
-    ; void io_set_fmt_single(r8|a0:char const* format)
-
     lea format, a0
     bsr io_set_fmt_single
 ```
@@ -71,9 +63,8 @@ Sets the default global formatting template for single precision floating point 
 - Since v1.0.0
 ___
 ### io_set_fmt_double
+void io_set_fmt_double(r8|a0:char const\* format)
 ```asm
-    ; void io_set_fmt_double(r8|a0:char const* format)
-
     lea format, a0
     bsr io_set_fmt_double
 ```
@@ -83,5 +74,3 @@ Sets the default global formatting template for double precision floating point 
 - When r8|a0 contains zero, formatting is returned to the default for the type.
 - Since v1.0.0
 ___
-
-

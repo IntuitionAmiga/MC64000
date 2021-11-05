@@ -1,7 +1,6 @@
+[Standard Test Host Library](../README.md)
 
-# Standard Test Host Library
-
-[Main Index](../README.md)
+# IO Functions
 
 ## io.s
 Provides functions for basic stream IO.
