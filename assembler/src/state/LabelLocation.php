@@ -20,7 +20,7 @@ use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\IO;
 
-use function \sprintf, \strlen, \array_flip, \str_split;
+use function \sprintf, \strlen, \array_flip, \str_split, \implode, \array_keys;
 
 /**
  * LabelLocation
@@ -445,11 +445,20 @@ class LabelLocation {
      * Asserts if a label is valid. For now this is just a length check.
      *
      * @param   string $sLabel
-     * @@throws \LengthException
+     * @@throws \LengthException|\InvalidArgumentException
      */
     private function assertLabel(string $sLabel): void {
         if (strlen($sLabel) > Defs\ILabel::MAX_LENGTH) {
-            throw new \LengthException();
+            throw new \LengthException("Label identifer '" . $sLabel . "' too long");
+        }
+        if (
+            isset(Defs\Register\INames::GPR_MAP[$sLabel]) ||
+            isset(Defs\Register\INames::FPR_MAP[$sLabel])
+        ) {
+            throw new \InvalidArgumentException(
+                "Register name '" . $sLabel .
+                "' used in a context that expects a label"
+            );
         }
     }
 
