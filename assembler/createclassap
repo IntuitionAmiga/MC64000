@@ -40,11 +40,14 @@ class ClassMapBuilder {
      * Main entry point
      *
      * @param string $sSourceDir
+     * @param string $sNameSpace
+     * @param bool   $bCheckNSOptimisation
      */
-    public function execute(string $sSourceDir, string $sNameSpace) {
+    public function execute(string $sSourceDir, string $sNameSpace, bool $bCheckNSOptimisation): void {
         $this->aFiles = [];
         $this->traverse($sSourceDir);
         $this->aClassMap = [];
+        echo "Building classmap...\n";
         foreach ($this->aFiles as $sSourcePath) {
             $this->processFile($sSourcePath);
         }
@@ -53,10 +56,13 @@ class ClassMapBuilder {
             ";";
         file_put_contents('src/classmap.php', $sCode);
 
-        foreach ($this->aFiles as $sFile) {
-            $sTest = shell_exec('php -dvld.active=1 -dvld.execute=0 ' . $sFile . ' 2>&1 | grep INIT_NS');
-            if (!empty($sTest)) {
-                echo $sFile, ":\n", $sTest, "\n";
+        if ($bCheckNSOptimisation) {
+            echo "Testing for global functions accessed within namespace...\n";
+            foreach ($this->aFiles as $sFile) {
+                $sTest = shell_exec('php -dvld.active=1 -dvld.execute=0 ' . $sFile . ' 2>&1 | grep INIT_NS');
+                if (!empty($sTest)) {
+                    echo $sFile, ":\n", $sTest, "\n";
+                }
             }
         }
     }
@@ -110,4 +116,6 @@ class ClassMapBuilder {
     }
 }
 
-(new ClassMapBuilder)->execute('src/', 'ABadCafe\MC64K');
+$bCheckNSOptimisation = isset($_SERVER['argv'][1]);
+
+(new ClassMapBuilder)->execute('src/', 'ABadCafe\MC64K', $bCheckNSOptimisation);
