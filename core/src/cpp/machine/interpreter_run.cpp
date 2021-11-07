@@ -22,6 +22,7 @@
 namespace MC64K {
 namespace Machine {
 
+namespace {
 
 inline void rolByte(uint8* puValue, uint8 uSize) {
     uSize &= 7;
@@ -70,6 +71,24 @@ inline void rorQuad(uint64* puValue, uint8 uSize) {
     uint64 val = *puValue;
     *puValue = val >> uSize | val << (64 - uSize);
 }
+
+uint8 mapFloatClassification(int iClass) {
+    switch (iClass) {
+        case FP_ZERO:
+            return 0;
+        case FP_NORMAL:
+            return 1;
+        case FP_SUBNORMAL:
+            return 2;
+        case FP_INFINITE:
+            return 3;
+        case FP_NAN:
+        default:
+            return 4;
+    }
+}
+
+} // namespace
 
 /**
  * @inheritDoc
@@ -142,18 +161,18 @@ void Interpreter::run() {
                 unpackFPRPair();
 
                 switch (*puProgramCounter++) {
-                    case Opcode::FMOVE_S:   asLong(pDstEA)    = asLong(pSrcEA);     goto skipstatus;
-                    case Opcode::FMOVE_D:   asQuad(pDstEA)    = asQuad(pSrcEA);     goto skipstatus;
-                    case Opcode::FNEG_S:    asSingle(pDstEA)  = -asSingle(pSrcEA);  goto skipstatus;
-                    case Opcode::FNEG_D:    asDouble(pDstEA)  = -asDouble(pSrcEA);  goto skipstatus;
-                    case Opcode::FADD_S:    asSingle(pDstEA) += asSingle(pSrcEA);   goto skipstatus;
-                    case Opcode::FADD_D:    asDouble(pDstEA) += asDouble(pSrcEA);   goto skipstatus;
-                    case Opcode::FSUB_S:    asSingle(pDstEA) -= asSingle(pSrcEA);   goto skipstatus;
-                    case Opcode::FSUB_D:    asDouble(pDstEA) -= asDouble(pSrcEA);   goto skipstatus;
-                    case Opcode::FMUL_S:    asSingle(pDstEA) *= asSingle(pSrcEA);   goto skipstatus;
-                    case Opcode::FMUL_D:    asDouble(pDstEA) *= asDouble(pSrcEA);   goto skipstatus;
-                    case Opcode::FDIV_S:    asSingle(pDstEA) /= asSingle(pSrcEA);   goto skipstatus;
-                    case Opcode::FDIV_D:    asDouble(pDstEA) /= asDouble(pSrcEA);   goto skipstatus;
+                    case Opcode::FMOVE_S: asLong(pDstEA)    = asLong(pSrcEA);     goto skipstatus;
+                    case Opcode::FMOVE_D: asQuad(pDstEA)    = asQuad(pSrcEA);     goto skipstatus;
+                    case Opcode::FNEG_S:  asSingle(pDstEA)  = -asSingle(pSrcEA);  goto skipstatus;
+                    case Opcode::FNEG_D:  asDouble(pDstEA)  = -asDouble(pSrcEA);  goto skipstatus;
+                    case Opcode::FADD_S:  asSingle(pDstEA) += asSingle(pSrcEA);   goto skipstatus;
+                    case Opcode::FADD_D:  asDouble(pDstEA) += asDouble(pSrcEA);   goto skipstatus;
+                    case Opcode::FSUB_S:  asSingle(pDstEA) -= asSingle(pSrcEA);   goto skipstatus;
+                    case Opcode::FSUB_D:  asDouble(pDstEA) -= asDouble(pSrcEA);   goto skipstatus;
+                    case Opcode::FMUL_S:  asSingle(pDstEA) *= asSingle(pSrcEA);   goto skipstatus;
+                    case Opcode::FMUL_D:  asDouble(pDstEA) *= asDouble(pSrcEA);   goto skipstatus;
+                    case Opcode::FDIV_S:  asSingle(pDstEA) /= asSingle(pSrcEA);   goto skipstatus;
+                    case Opcode::FDIV_D:  asDouble(pDstEA) /= asDouble(pSrcEA);   goto skipstatus;
                     default:
                         todo();
                         break;
@@ -320,6 +339,7 @@ void Interpreter::run() {
             // Decrement and branch if not zero
             case Opcode::DBNZ:   monadic(SIZE_WORD);readDisplacement(); bcc(--asULong(pDstEA)); break;
 
+
             // DataMove - move
             case Opcode::MOVE_B: dyadic(SIZE_BYTE); asUByte(pDstEA) = asUByte(pSrcEA); break;
             case Opcode::MOVE_W: dyadic(SIZE_WORD); asUWord(pDstEA) = asUWord(pSrcEA); break;
@@ -342,24 +362,98 @@ void Interpreter::run() {
             }
 
             // Integer/Float interconversion
-            case Opcode::FMOVEB_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asByte(pSrcEA);   break;
-            case Opcode::FMOVEB_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = (float64)asByte(pSrcEA);   break;
-            case Opcode::FMOVEW_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asWord(pSrcEA);   break;
-            case Opcode::FMOVEW_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = (float64)asWord(pSrcEA);   break;
-            case Opcode::FMOVEL_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asLong(pSrcEA);   break;
-            case Opcode::FMOVEL_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = (float64)asLong(pSrcEA);   break;
-            case Opcode::FMOVEQ_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asQuad(pSrcEA);   break;
-            case Opcode::FMOVEQ_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = (float64)asQuad(pSrcEA);   break;
-            case Opcode::FMOVES_L: dyadic(SIZE_LONG); asLong(pDstEA)   = (int32)asSingle(pSrcEA);   break;
-            case Opcode::FMOVES_Q: dyadic(SIZE_QUAD); asQuad(pDstEA)   = (int64)asSingle(pSrcEA);   break;
-            case Opcode::FMOVES_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = (float64)asSingle(pSrcEA); break;
-            case Opcode::FMOVED_L: dyadic(SIZE_LONG); asLong(pDstEA)   = (int32)asDouble(pSrcEA);   break;
-            case Opcode::FMOVED_Q: dyadic(SIZE_QUAD); asQuad(pDstEA)   = (int64)asDouble(pSrcEA);   break;
-            case Opcode::FMOVED_S: dyadic(SIZE_LONG); asSingle(pDstEA) = (float32)asDouble(pSrcEA); break;
+            case Opcode::FMOVEB_S:
+                dyadic2(SIZE_LONG, SIZE_BYTE);
+                asSingle(pDstEA) = (float32)asByte(pSrcEA);
+                break;
+
+            case Opcode::FMOVEB_D:
+                dyadic2(SIZE_QUAD, SIZE_BYTE);
+                asDouble(pDstEA) = (float64)asByte(pSrcEA);
+                break;
+
+            case Opcode::FMOVEW_S:
+                dyadic2(SIZE_LONG, SIZE_WORD);
+                asSingle(pDstEA) = (float32)asWord(pSrcEA);
+                break;
+
+            case Opcode::FMOVEW_D:
+                dyadic2(SIZE_QUAD, SIZE_WORD);
+                asDouble(pDstEA) = (float64)asWord(pSrcEA);
+                break;
+
+            case Opcode::FMOVEL_S:
+                dyadic(SIZE_LONG);
+                asSingle(pDstEA) = (float32)asLong(pSrcEA);
+                break;
+
+            case Opcode::FMOVEL_D:
+                dyadic2(SIZE_QUAD, SIZE_LONG);
+                asDouble(pDstEA) = (float64)asLong(pSrcEA);
+                break;
+
+            case Opcode::FMOVEQ_S:
+                dyadic2(SIZE_LONG, SIZE_QUAD);
+                asSingle(pDstEA) = (float32)asQuad(pSrcEA);
+                break;
+
+            case Opcode::FMOVEQ_D:
+                dyadic(SIZE_QUAD);
+                asDouble(pDstEA) = (float64)asQuad(pSrcEA);
+                break;
+
+            case Opcode::FMOVES_L:
+                dyadic(SIZE_LONG);
+                asLong(pDstEA)   = (int32)asSingle(pSrcEA);
+                break;
+
+            case Opcode::FMOVES_Q:
+                dyadic2(SIZE_QUAD, SIZE_LONG);
+                asQuad(pDstEA)   = (int64)asSingle(pSrcEA);
+                break;
+
+            case Opcode::FMOVES_D:
+                dyadic(SIZE_QUAD);
+                asDouble(pDstEA) = (float64)asSingle(pSrcEA);
+                break;
+
+            case Opcode::FMOVED_L:
+                dyadic2(SIZE_LONG, SIZE_QUAD);
+                asLong(pDstEA)   = (int32)asDouble(pSrcEA);
+                break;
+
+            case Opcode::FMOVED_Q:
+                dyadic(SIZE_QUAD);
+                asQuad(pDstEA)   = (int64)asDouble(pSrcEA);
+                break;
+
+            case Opcode::FMOVED_S:
+                dyadic2(SIZE_LONG, SIZE_QUAD);
+                asSingle(pDstEA) = (float32)asDouble(pSrcEA);
+                break;
 
             // FPR save/restore
-            case Opcode::FMOVE_S:  dyadic(SIZE_LONG); asLong(pDstEA) = asLong(pSrcEA);  break;
-            case Opcode::FMOVE_D:  dyadic(SIZE_QUAD); asQuad(pDstEA) = asQuad(pSrcEA);  break;
+            case Opcode::FMOVE_S:
+                dyadic(SIZE_LONG);
+                asLong(pDstEA) = asLong(pSrcEA);
+                break;
+
+            case Opcode::FMOVE_D:
+                dyadic(SIZE_QUAD);
+                asQuad(pDstEA) = asQuad(pSrcEA);
+                break;
+
+            case Opcode::FINFO_S: {
+                dyadic2(SIZE_BYTE, SIZE_LONG);
+                asUByte(pDstEA) = mapFloatClassification(std::fpclassify(asSingle(pSrcEA)));
+                break;
+            }
+
+            case Opcode::FINFO_D: {
+                dyadic2(SIZE_BYTE, SIZE_QUAD);
+                asUByte(pDstEA) = mapFloatClassification(std::fpclassify(asDouble(pSrcEA)));
+                break;
+            }
 
             // DataMove - clr
             case Opcode::CLR_B:    monadic(SIZE_BYTE); asUByte(pDstEA) = 0; break;
@@ -463,6 +557,7 @@ void Interpreter::run() {
                 asUQuad(pDstEA) = pTemp ? (63 - __builtin_clzll(pTemp)) : ~pTemp;
                 break;
             }
+
             case Opcode::BFCNT: {
                 unpackGPRPair();
                 asUQuad(pDstEA) = __builtin_popcountll(asUQuad(pSrcEA));
@@ -512,7 +607,6 @@ void Interpreter::run() {
             case Opcode::MULU_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA)  *=   asUQuad(pSrcEA);       break;
             case Opcode::FMUL_S: dyadic(SIZE_LONG); asSingle(pDstEA) *=   asSingle(pSrcEA);      break;
             case Opcode::FMUL_D: dyadic(SIZE_QUAD); asDouble(pDstEA) *=   asDouble(pSrcEA);      break;
-
             case Opcode::DIVS_L: dyadic(SIZE_BYTE); asLong(pDstEA)   /=   asLong(pSrcEA);        break;
             case Opcode::DIVS_Q: dyadic(SIZE_WORD); asQuad(pDstEA)   /=   asQuad(pSrcEA);        break;
             case Opcode::MODS_L: dyadic(SIZE_LONG); asLong(pDstEA)   %=   asLong(pSrcEA);        break;
@@ -521,7 +615,6 @@ void Interpreter::run() {
             case Opcode::DIVU_Q: dyadic(SIZE_WORD); asUQuad(pDstEA)  /=   asUQuad(pSrcEA);       break;
             case Opcode::MODU_L: dyadic(SIZE_LONG); asULong(pDstEA)  %=   asULong(pSrcEA);       break;
             case Opcode::MODU_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA)  %=   asUQuad(pSrcEA);       break;
-
             case Opcode::FDIV_S: dyadic(SIZE_LONG); asSingle(pDstEA) /=   asSingle(pSrcEA);      break;
             case Opcode::FDIV_D: dyadic(SIZE_QUAD); asDouble(pDstEA) /=   asDouble(pSrcEA);      break;
 
@@ -579,8 +672,9 @@ void Interpreter::run() {
             case Opcode::FTWOTOX_S: dyadic(SIZE_LONG); asSingle(pDstEA) = std::exp2(asSingle(pSrcEA)); break;
             case Opcode::FTWOTOX_D: dyadic(SIZE_QUAD); asDouble(pDstEA) = std::exp2(asDouble(pSrcEA)); break;
 
-            case Opcode::FBIF_S:
-            case Opcode::FBIF_D: // todo
+            case 0xF0:
+                aoGPR[14].uQuad = Nanoseconds::mark();
+                break;
 
             default:
                 todo();

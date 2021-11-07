@@ -28,49 +28,39 @@ interface IDataMove extends IByteCodeGroups {
         MOVE_W   = self::OFS_DATA_MOVE +  1,
         MOVE_L   = self::OFS_DATA_MOVE +  2,
         MOVE_Q   = self::OFS_DATA_MOVE +  3,
-
         SAVEM    = self::OFS_DATA_MOVE +  4,
         LOADM    = self::OFS_DATA_MOVE +  5,
-
         FMOVEB_S = self::OFS_DATA_MOVE +  6,
         FMOVEB_D = self::OFS_DATA_MOVE +  7,
-
         FMOVEW_S = self::OFS_DATA_MOVE +  8,
         FMOVEW_D = self::OFS_DATA_MOVE +  9,
-
         FMOVEL_S = self::OFS_DATA_MOVE + 10,
         FMOVEL_D = self::OFS_DATA_MOVE + 11,
-
         FMOVEQ_S = self::OFS_DATA_MOVE + 12,
         FMOVEQ_D = self::OFS_DATA_MOVE + 13,
-
         FMOVES_L = self::OFS_DATA_MOVE + 14,
         FMOVES_Q = self::OFS_DATA_MOVE + 15,
         FMOVES_D = self::OFS_DATA_MOVE + 16,
-
         FMOVED_L = self::OFS_DATA_MOVE + 17,
         FMOVED_Q = self::OFS_DATA_MOVE + 18,
         FMOVED_S = self::OFS_DATA_MOVE + 19,
-
         FMOVE_S  = self::OFS_DATA_MOVE + 20,
         FMOVE_D  = self::OFS_DATA_MOVE + 21,
-
-        CLR_B    = self::OFS_DATA_MOVE + 22,
-        CLR_W    = self::OFS_DATA_MOVE + 23,
-        CLR_L    = self::OFS_DATA_MOVE + 24,
-        CLR_Q    = self::OFS_DATA_MOVE + 25,
-
-        EXG      = self::OFS_DATA_MOVE + 26,
-        FEXG     = self::OFS_DATA_MOVE + 27,
-
-        SWAP     = self::OFS_DATA_MOVE + 28,
-        SWAP_L   = self::OFS_DATA_MOVE + 29,
-        SWAP_Q   = self::OFS_DATA_MOVE + 30,
-
-        LINK     = self::OFS_DATA_MOVE + 31,
-        UNLK     = self::OFS_DATA_MOVE + 32,
-        LEA      = self::OFS_DATA_MOVE + 33,
-        PEA      = self::OFS_DATA_MOVE + 34
+        FINFO_S  = self::OFS_DATA_MOVE + 22,
+        FINFO_D  = self::OFS_DATA_MOVE + 23,
+        CLR_B    = self::OFS_DATA_MOVE + 24,
+        CLR_W    = self::OFS_DATA_MOVE + 25,
+        CLR_L    = self::OFS_DATA_MOVE + 26,
+        CLR_Q    = self::OFS_DATA_MOVE + 27,
+        EXG      = self::OFS_DATA_MOVE + 28,
+        FEXG     = self::OFS_DATA_MOVE + 29,
+        SWAP     = self::OFS_DATA_MOVE + 30,
+        SWAP_L   = self::OFS_DATA_MOVE + 31,
+        SWAP_Q   = self::OFS_DATA_MOVE + 32,
+        LINK     = self::OFS_DATA_MOVE + 33,
+        UNLK     = self::OFS_DATA_MOVE + 34,
+        LEA      = self::OFS_DATA_MOVE + 35,
+        PEA      = self::OFS_DATA_MOVE + 36
     ;
 
 }

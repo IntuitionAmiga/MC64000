@@ -85,10 +85,15 @@ The following differences from the 680x0 assembler programming model are of note
 * Missing Effective Addressing modes:
     - No immediate addressing modes.
     - No memory-indirect addressing modes.
+    - No Indexed PC Relative addressing modes.
+* Other Instruction Differences
+    - Integer division for 32/64-bit operand sizes only. Does not calculate remainder.
+    - Modulo instruction provided for 32/64-bit operand sizes.
 * Simplified Floating Point Unit:
     - No Mode Control.
     - No support for extended precision.
     - No support for integer or packed decimal operands.
+    - Register can contain 32 or 64 bit representations, depending on the last operation performed.
     - Casting instructions for conversion between integer, single and double precision.
     - No special FP Conditions:
         - Same compare and branch model as integer model.

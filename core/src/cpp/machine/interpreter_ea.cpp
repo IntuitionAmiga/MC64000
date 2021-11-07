@@ -28,6 +28,7 @@ namespace {
         float64 fDouble;
         float32 fSingle;
         int64   iQuad;
+        int32   iLong;
         uint8   auBytes[8];
     } oImmediate;
 }
@@ -143,14 +144,26 @@ void* Interpreter::decodeEffectiveAddress() {
                 case EffectiveAddress::Other::INT_IMM_LONG:
                 case EffectiveAddress::Other::FLT_IMM_SINGLE:
                     oImmediate.iQuad = (int8)puProgramCounter[3];
+
+                #ifdef ALLOW_MISALIGNED_IMMEDIATE
+                    oImmediate.iLong = *(int32*)puProgramCounter;
+                    puProgramCounter += 4;
+                #else
                     oImmediate.auBytes[0] = *puProgramCounter++;
                     oImmediate.auBytes[1] = *puProgramCounter++;
                     oImmediate.auBytes[2] = *puProgramCounter++;
                     oImmediate.auBytes[3] = *puProgramCounter++;
+                #endif
+
                     return &oImmediate.iQuad;
 
                 case EffectiveAddress::Other::INT_IMM_QUAD:
                 case EffectiveAddress::Other::FLT_IMM_DOUBLE:
+
+                #ifdef ALLOW_MISALIGNED_IMMEDIATE
+                    oImmediate.iQuad = *(int64*)puProgramCounter;
+                    puProgramCounter += 8;
+                #else
                     oImmediate.auBytes[0] = *puProgramCounter++;
                     oImmediate.auBytes[1] = *puProgramCounter++;
                     oImmediate.auBytes[2] = *puProgramCounter++;
@@ -159,6 +172,8 @@ void* Interpreter::decodeEffectiveAddress() {
                     oImmediate.auBytes[5] = *puProgramCounter++;
                     oImmediate.auBytes[6] = *puProgramCounter++;
                     oImmediate.auBytes[7] = *puProgramCounter++;
+                #endif
+
                     return &oImmediate.iQuad;
 
                 case EffectiveAddress::Other::PC_IND_DSP:

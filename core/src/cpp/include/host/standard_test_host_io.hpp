@@ -35,16 +35,17 @@ typedef enum {
     DONE,
 
     /**
-     * func io_print_string(r8/a0 [char const*] string) => void
+     * io_print_string(r8/a0 [char const*] string)
      *
      * Print the string pointed to by (r8/a0)
      */
     PRINT_STRING,
 
     /**
-     * func io_print_<byte:word:long:quad>(r0/d0 <type> value) => void
+     * func io_print_<i>(r0/d0 <i> value, r8/a0 char const* format)
      *
-     * Print the the integer type in r0/d0 using the current format template for the integer type.
+     * Print the the integer type in r0/d0 using the supplied format in r8/a0, or current format
+     * template for the integer type if none is set.
      */
     PRINT_BYTE,
     PRINT_WORD,
@@ -52,7 +53,7 @@ typedef enum {
     PRINT_QUAD,
 
     /**
-     * func io_print_<single:double>(fp0 <type> value) => void
+     * io_print_<f>(fp0 <f> value)
      *
      * Print the floating point type in fp0 using the current template for the float type.
      */
@@ -60,7 +61,7 @@ typedef enum {
     PRINT_DOUBLE,
 
     /**
-     * func io_set_fmt_<byte:word:long:quad:single:double>(r8/a0 char const* format) => void
+     * io_set_fmt_<t>(r8/a0 char const* format)
      *
      * Set the format template for the type to the string pointed to by (r8/a0)
      */
@@ -72,7 +73,7 @@ typedef enum {
     SET_FMT_DOUBLE,
 
     /**
-     * funct io_file_open(r8/a0 char const* name, r0/d0 uint8 mode) => r8/a0 FILE* file, r0/d0 uint64 error
+     * io_file_open(r8/a0 char const* name, r0/d0 uint8 mode)
      *
      * Attempts to open the file pointed to by (r8/a0) in the mode indicated by the value in r0/d0.
      * On success, returns the address of the file handle in r8/a0 and a success code in r0/d0.
@@ -81,7 +82,7 @@ typedef enum {
     FILE_OPEN,
 
     /**
-     * func io_file_seek(r8/a0 FILE* file, r0/d0 int64 offset, r1/d1 uint8 mode) => r8/a0 FILE* file, r0/d0 uint64 error
+     * io_file_seek(r8/a0 FILE* file, r0/d0 int64 offset, r1/d1 uint8 mode)
      *
      * Attempts to seek withing the file pointed to by (r8/a0) by the offset indicated by the value in r0/d0 using the
      * mode indicated by the value in r1/d1.
@@ -91,7 +92,7 @@ typedef enum {
     FILE_SEEK,
 
     /**
-     * func io_file_tell(r8/a0 FILE* file) => r0/d0 int64 pos, r1/d1 uint64 error
+     * io_file_tell(r8/a0 FILE* file)
      *
      * Attempts to read the current cursor position within the file pointed to by (r8/a0).
      * On success, returns the cursor position in r0/d0 and a success code in r1/d1
@@ -100,7 +101,7 @@ typedef enum {
     FILE_TELL,
 
     /**
-     * func io_file_read(r8/a0 FILE* file, r9/a1 void* buffer, r0/d0 uint64 size) => r0/d0 uint64 size, r1/d1 uint64 error
+     * io_file_read(r8/a0 FILE* file, r9/a1 void* buffer, r0/d0 uint64 size)
      *
      * Attempts to read the number of bytes indicated by the value in r0/d0 of data from the file pointed to by (r8/a0)
      * into the buffer pointed to by (r9/a1).
@@ -111,7 +112,7 @@ typedef enum {
     FILE_READ,
 
     /**
-     * func io_file_write(r8/a0 FILE* file, r9/a1 void* buffer, r0/d0 uint64 size) => r0/d0 uint64 size, r1/d1 uint64 error
+     * io_file_write(r8/a0 FILE* file, r9/a1 void* buffer, r0/d0 uint64 size)
      *
      * Attempts to write the number of bytes indicated by the value in r0/d0 of data to the file pointed to by (r8/a0)
      * from the buffer pointed to by (r9/a1).
@@ -122,7 +123,7 @@ typedef enum {
     FILE_WRITE,
 
     /**
-     * func io_file_close(r8/a0 FILE* file) => r0/d0 uint64 error
+     * io_file_close(r8/a0 FILE* file)
      *
      * Attempts to close the file pointed to by (r8/a0).
      *
@@ -132,17 +133,17 @@ typedef enum {
     FILE_CLOSE,
 
     /**
-     * func io_print_string(r8/a0 FILE* file, r9/a1 [char const*] string) => void
+     * io_file_print_string(r8/a0 FILE* file, r9/a1 char const* string)
      *
      * Print the string pointed to by (r9/a1) to the file pointed to by (r8/a0)
      */
     FILE_PRINT_STRING,
 
     /**
-     * func io_print_<byte:word:long:quad>(r8/a0 FILE* file, r0/d0 <type> value) => void
+     * io_file_print_<i>(r8/a0 FILE* file, r0/d0 <i> value, r9/a1 char const* format)
      *
-     * Print the the integer type in r0/d0 using the current format template for the integer type to the
-     * file pointed to by (r8/r0)
+     * Print the the integer type in r0/d0 using the format template provided in (r9/a1) or the current
+     * format template for the integer type, to the file pointed to by (r8/r0)
      */
     FILE_PRINT_BYTE,
     FILE_PRINT_WORD,
@@ -150,13 +151,58 @@ typedef enum {
     FILE_PRINT_QUAD,
 
     /**
-     * func io_print_<single:double>(r8/a0 FILE* file, fp0 <type> value) => void
+     * io_file_print_<f>(r8/a0 FILE* file, fp0 <f> value)
      *
      * Print the floating point type in fp0 using the current template for the float type to the
      * file pointed to by (r8/r0)
      */
     FILE_PRINT_SINGLE,
     FILE_PRINT_DOUBLE,
+
+    /**
+     * io_file_parse_<t>(r8/a0 FILE* file, r9/a1 char const* format)
+     *
+     * Reads the file stream as text and attempts to parse the value using the format string or the current
+     * format template for the integer type.
+     */
+    FILE_PARSE_BYTE,
+    FILE_PARSE_WORD,
+    FILE_PARSE_LONG,
+    FILE_PARSE_QUAD,
+    FILE_PARSE_SINGLE,
+    FILE_PARSE_DOUBLE,
+
+    /**
+     * io_cbuf_format_<i>(r8/a0 char* buffer, r0/d0 <i> value, r9/a1 char const* format)
+     *
+     */
+    CBUF_FORMAT_BYTE,
+    CBUF_FORMAT_WORD,
+    CBUF_FORMAT_LONG,
+    CBUF_FORMAT_QUAD,
+
+    /**
+     * io_cbuf_format_<f>(r8/a0 char* buffer, fp0 <f> value, r9/a1 char const* format)
+     *
+     */
+    CBUF_FORMAT_SINGLE,
+    CBUF_FORMAT_DOUBLE,
+
+    /**
+     * io_cbuf_parse_<i>(r8/a0 char const* buffer, r9/a1 char const* format)
+     *
+     */
+    CBUF_PARSE_BYTE,
+    CBUF_PARSE_WORD,
+    CBUF_PARSE_LONG,
+    CBUF_PARSE_QUAD,
+
+    /**
+     * io_parse_<f>(r8/a0 char const* buffer, r9/a1 char const* format)
+     *
+     */
+    CBUF_PARSE_SINGLE,
+    CBUF_PARSE_DOUBLE,
 } Call;
 
 /**
@@ -193,11 +239,8 @@ typedef enum {
 
 Interpreter::Status hostVector();
 
-/**
- * Gnarly
- */
-#define setIOWriteResult(iResult, iReg) aoGPR[(iReg)].uQuad = (iResult) >= 0 ? (unsigned)ABI::ERR_NONE : (unsigned)ERR_WRITE;
 
 }}} // namespace
+
 
 #endif

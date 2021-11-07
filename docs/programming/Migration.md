@@ -64,15 +64,18 @@ Until a JIT runtime exists, MC64K runs code _interpretively_. Long established r
 
 * Every interpreted instruction has a significant fetch/decode cost:
     - This is typically the largest part of the execution time, actual operation performed is typically small.
-    - Does not depend on the operation.
+    - Does not significantly depend on the operation.
     - Does depend on the addressing modes in use.
 * Effective Addresses are available for source and destination operands at the same time:
     - Fewer requirements to move operands into registers.
-* Register direct operands are not intrinsically faster than indirect:
-    - MC64K registers are still memory locations.
-    - Access time improvements are still possible due to simpler address calculations.
+* Register direct operands are not intrinsically faster than indirect since both are really just memory locations. However:
+    - A fast decode path exists for a set selected register to register instruction use cases.
+    - These cases are automatically detected by the assembler and an alternative bytecode representation is emitted.
+    - The alternative bytecode stores the packed register pair in a byte and the entire EA decode cycle is skipped at runtime.
 
 The general rules for optimisation can be summerised as:
+* Prefer fast path instructions where possible:
+    - 32/64-bit Register to Register arithmetic/logic.
 * Optimise for fewer instructions.
     - Instruction decode overhead dominates.
 * Where there is a choice between additional instructions or a more complex addressing mode, prefer the addressing mode.
@@ -159,8 +162,8 @@ For the MC64K, the equivalent code becomes:
 _sum_indexed:
     biz.l  d0, .done                      ; branch if zero
 .loop:
-    move.l (a2)+, d0
-    fadd.d (a1, d0.l * 8), (a0, d0.l * 8) ; dual wield EA modes
+    move.l (a2)+, d1
+    fadd.d (a1, d1.l * 8), (a0, d1.l * 8) ; dual wield EA modes
     dbnz   d0, .loop                      ; dbnz decrements uint32 to zero
 .done:
     rts

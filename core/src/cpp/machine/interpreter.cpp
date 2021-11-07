@@ -23,7 +23,11 @@
 namespace MC64K {
 namespace Machine {
 
+#ifdef USE_GLOBAL_REGISTER
 register uint8 const* puProgramCounter __asm__("r12");
+#else
+uint8 const* puProgramCounter;
+#endif
 
 GPRegister      Interpreter::aoGPR[GPRegister::MAX] = {};
 FPRegister      Interpreter::aoFPR[FPRegister::MAX] = {};
@@ -57,10 +61,10 @@ const char* asStatusNames[] = {
     "Invalid Entrypoint"
 };
 
+
 /**
  * @inheritDoc
  */
-
 void Interpreter::initHCFVectors(Interpreter::HCFVector const* pcHCFVectors, uint32 const uNumHCFVectors) {
     assert(uNumHCFVectors <= Limits::MAX_HCF_VECTORS);
     Interpreter::pcHCFVectors   = pcHCFVectors;

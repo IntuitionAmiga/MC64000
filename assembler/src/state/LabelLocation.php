@@ -343,7 +343,12 @@ class LabelLocation {
                 } else {
                     if (!isset($this->aGlobalLabels[$sLabel])) {
                         throw new \Exception(
-                            sprintf("Reference to undeclared global label %s in %s", $sLabel, $sCurrentFilename)
+                            sprintf(
+                                "Reference to undeclared global label %s in %s, line(s): %s",
+                                $sLabel,
+                                $sCurrentFilename,
+                                implode(', ', array_keys($aUnresolvedLocation))
+                            )
                         );
                     }
                     $oTarget = (object)[
