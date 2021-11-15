@@ -29,7 +29,8 @@
         "src/bench_add_imm_to_reg.s",
         "src/bench_conditional.s",
         "src/bench_bsr_ret.s",
-        "src/bench_hcf.s"
+        "src/bench_hcf.s",
+        "src/bench_add_vec3f.s"
 
     ],
     "defines": {
