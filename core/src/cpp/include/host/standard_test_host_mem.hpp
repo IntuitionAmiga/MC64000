@@ -50,12 +50,49 @@ typedef enum {
     COPY,
 
     /**
-     * func mem_fill_<byte:word:long:quad>(r8/a0 void* buffer, r0/d0 uint64 size, r1/d1 uint64 value) => r0/d0 uint64 error
+     * func mem_fill_<itype>(r8/a0 void* buffer, r0/d0 <itype> value, r1/d1 uint64 size) => r0/d0 uint64 error
      */
     FILL_BYTE,
     FILL_WORD,
     FILL_LONG,
-    FILL_QUAD
+    FILL_QUAD,
+
+    /**
+     * func mem_and_<itype>(r8/a0 void* buffer, r0/d0 <itype> value, r1/d1 uint64 size) => r0/d0 uint64 error
+     */
+    AND_BYTE,
+    AND_WORD,
+    AND_LONG,
+    AND_QUAD,
+
+    /**
+     * func mem_or_<itype>(r8/a0 void* buffer, r0/d0 <itype> value, r1/d1 uint64 size) => r0/d0 uint64 error
+     */
+    OR_BYTE,
+    OR_WORD,
+    OR_LONG,
+    OR_QUAD,
+
+
+    /**
+     * func mem_eor_<itype>(r8/a0 void* buffer, r0/d0 <itype> value, r1/d1 uint64 size) => r0/d0 uint64 error
+     */
+    EOR_BYTE,
+    EOR_WORD,
+    EOR_LONG,
+    EOR_QUAD,
+
+    /**
+     * func mem_find_<itype>(r8/a0 void* buffer, r0/d0 <itype> value, r1/d1 uint64 size) => r8/a0 void* result, r0/d0 uint64 error
+     */
+    FIND_BYTE,
+    FIND_WORD,
+    FIND_LONG,
+    FIND_QUAD,
+
+
+    STR_LENGTH,
+    STR_COMPARE,
 } Call;
 
 /**
