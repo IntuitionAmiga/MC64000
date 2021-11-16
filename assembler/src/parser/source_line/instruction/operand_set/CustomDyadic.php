@@ -32,19 +32,25 @@ class CustomDyadic extends Dyadic {
     /** @var int[] $aOpcodes */
     private array $aOpcodes = [];
 
+    /** @var string[] $aPrefix */
+    private array $aPrefix  = [];
+
     /**
      * Constructor
      *
-     * @param int[] $aOpcodes
+     * @param int[]                    $aOpcodes
      * @param EffectiveAddress\IParser $oSrcParser
      * @param EffectiveAddress\IParser $oDstParser
+     * @param string[]                 $aPrefix
      */
     public function __construct(
         array $aOpcodes,
         EffectiveAddress\IParser $oSrcParser,
-        EffectiveAddress\IParser $oDstParser
+        EffectiveAddress\IParser $oDstParser,
+        array                    $aPrefix = []
     ) {
         $this->aOpcodes   = $aOpcodes;
+        $this->aPrefix    = $aPrefix;
         $this->oSrcParser = $oSrcParser;
         $this->oDstParser = $oDstParser;
         parent::__construct();
@@ -57,4 +63,14 @@ class CustomDyadic extends Dyadic {
         return $this->aOpcodes;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
+        $sBytecode = parent::parse($iOpcode, $aOperands, $aSizes);
+        if (isset($this->aPrefix[$iOpcode])) {
+            return $this->aPrefix[$iOpcode] . $sBytecode;
+        }
+        return $sBytecode;
+    }
 }

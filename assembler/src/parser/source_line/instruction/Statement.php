@@ -113,8 +113,9 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
             true
         ));
 
-        $this->addOperandSetParser(new OperandSet\CustomMonadic(
+        $this->addOperandSetParser(new OperandSet\CustomDyadic(
             [IControl::HCF],
+            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::BYTE)),
             new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::BYTE)),
             [IControl::HCF => chr(0xFF)]
         ));
