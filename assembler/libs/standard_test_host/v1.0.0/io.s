@@ -15,17 +15,17 @@
 ; Defines used by the IO ABI
 
     ; file open
-    @equ IO_OPEN_READ          0
-    @equ IO_OPEN_WRITE         1
-    @equ IO_OPEN_APPEND        2
-    @equ IO_OPEN_READ_UPDATE   3
-    @equ IO_OPEN_WRITE_UPDATE  4
-    @equ IO_OPEN_APPEND_UPDATE 5
+    @equ IO_OPEN_READ            0
+    @equ IO_OPEN_WRITE           1
+    @equ IO_OPEN_APPEND          2
+    @equ IO_OPEN_READ_UPDATE     3
+    @equ IO_OPEN_WRITE_UPDATE    4
+    @equ IO_OPEN_APPEND_UPDATE   5
 
     ; file seekmodes
-    @equ IO_SEEK_START         0
-    @equ IO_SEEK_END           1
-    @equ IO_SEEK_CURRENT       2
+    @equ IO_SEEK_START           0
+    @equ IO_SEEK_END             1
+    @equ IO_SEEK_CURRENT         2
 
     ; io specific errors
     @equ ERR_FILE              200
@@ -33,204 +33,50 @@
     @equ ERR_READ              202
     @equ ERR_WRITE             203
 
-; Break out to the host, reset the stack and return.
-.invoke_0:
-    hcf #0
-    add.q #1, sp
-    rts
-
-io_init:
-    move.b #0, -(sp)
-    bra.b .invoke_0
-
-io_done:
-    move.b #1, -(sp)
-    bra.b .invoke_0
-
-io_print_string:
-    move.b #2, -(sp)
-    bra.b .invoke_0
-
-io_print_byte:
-    move.b #3, -(sp)
-    bra.b .invoke_0
-
-io_print_word:
-    move.b #4, -(sp)
-    bra.b .invoke_0
-
-io_print_long:
-    move.b #5, -(sp)
-    bra.b .invoke_0
-
-io_print_quad:
-    move.b #6, -(sp)
-    bra.b .invoke_0
-
-io_print_single:
-    move.b #7, -(sp)
-    bra.b .invoke_0
-
-io_print_double:
-    move.b #8, -(sp)
-    bra.b .invoke_0
-
-io_set_fmt_byte:
-    move.b #9, -(sp)
-    bra.b .invoke_0
-
-io_set_fmt_word:
-    move.b #10, -(sp)
-    bra.b .invoke_0
-
-io_set_fmt_long:
-    move.b #11, -(sp)
-    bra.b .invoke_0
-
-io_set_fmt_quad:
-    move.b #12, -(sp)
-    bra.b .invoke_0
-
-io_set_fmt_single:
-    move.b #13, -(sp)
-    bra.b .invoke_0
-
-io_set_fmt_double:
-    move.b #14, -(sp)
-    bra.b .invoke_0
-
-io_file_open:
-    move.b #15, -(sp)
-    bra.b .invoke_0
-
-io_file_seek:
-    move.b #16, -(sp)
-    bra.b .invoke_0
-
-io_file_tell:
-    move.b #17, -(sp)
-    bra.b .invoke_0
-
-io_file_read:
-    move.b #18, -(sp)
-    bra.b .invoke_0
-
-io_file_write:
-    move.b #19, -(sp)
-    bra.b .invoke_0
-
-io_file_close:
-    move.b #20, -(sp)
-    bra.b .invoke_0
-
-; We run out of short branch distance after the first 20 stubs.
-.invoke_1:
-    hcf #0
-    add.q #1, sp
-    rts
-
-io_file_print_string:
-    move.b #21, -(sp)
-    bra.b .invoke_1
-
-io_file_print_byte:
-    move.b #22, -(sp)
-    bra.b .invoke_1
-
-io_file_print_word:
-    move.b #23, -(sp)
-    bra.b .invoke_1
-
-io_file_print_long:
-    move.b #24, -(sp)
-    bra.b .invoke_1
-
-io_file_print_quad:
-    move.b #25, -(sp)
-    bra.b .invoke_1
-
-io_file_print_single:
-    move.b #26, -(sp)
-    bra.b .invoke_1
-
-io_file_print_double:
-    move.b #27, -(sp)
-    bra.b .invoke_1
-
-io_file_parse_byte:
-    move.b #28, -(sp)
-    bra.b .invoke_1
-
-io_file_parse_word:
-    move.b #29, -(sp)
-    bra.b .invoke_1
-
-io_file_parse_long:
-    move.b #30, -(sp)
-    bra.b .invoke_1
-
-io_file_parse_quad:
-    move.b #31, -(sp)
-    bra.b .invoke_1
-
-io_file_parse_single:
-    move.b #32, -(sp)
-    bra.b .invoke_1
-
-io_file_parse_double:
-    move.b #33, -(sp)
-    bra.b .invoke_1
-
-io_cbuf_format_byte:
-    move.b #34, -(sp)
-    bra.b .invoke_1
-
-io_cbuf_format_word:
-    move.b #35, -(sp)
-    bra.b .invoke_1
-
-io_cbuf_format_long:
-    move.b #36, -(sp)
-    bra.b .invoke_1
-
-io_cbuf_format_quad:
-    move.b #37, -(sp)
-    bra.b .invoke_1
-
-io_cbuf_format_single:
-    move.b #38, -(sp)
-    bra.b .invoke_1
-
-io_cbuf_format_double:
-    move.b #39, -(sp)
-    bra.b .invoke_1
-
-io_cbuf_parse_byte:
-    move.b #40, -(sp)
-    bra.b .invoke_1
-
-; We run out of short branch distance after the first 20 stubs.
-.invoke_2:
-    hcf #0
-    add.q #1, sp
-    rts
-
-io_cbuf_parse_word:
-    move.b #41, -(sp)
-    bra.b .invoke_2
-
-io_cbuf_parse_long:
-    move.b #42, -(sp)
-    bra.b .invoke_2
-
-io_cbuf_parse_quad:
-    move.b #43, -(sp)
-    bra.b .invoke_2
-
-io_cbuf_parse_single:
-    move.b #44, -(sp)
-    bra.b .invoke_2
-
-io_cbuf_parse_double:
-    move.b #45, -(sp)
-    bra.b .invoke_2
+    ; Functions <offset>, <vector>
+    @equ io_init                   #0, #0
+    @equ io_done                   #1, #0
+    @equ io_print_string           #2, #0
+    @equ io_print_byte             #3, #0
+    @equ io_print_word             #4, #0
+    @equ io_print_long             #5, #0
+    @equ io_print_quad             #6, #0
+    @equ io_print_single           #7, #0
+    @equ io_print_double           #8, #0
+    @equ io_set_fmt_byte           #9, #0
+    @equ io_set_fmt_word          #10, #0
+    @equ io_set_fmt_long          #11, #0
+    @equ io_set_fmt_quad          #12, #0
+    @equ io_set_fmt_single        #13, #0
+    @equ io_set_fmt_double        #14, #0
+    @equ io_file_open             #15, #0
+    @equ io_file_seek             #16, #0
+    @equ io_file_tell             #17, #0
+    @equ io_file_read             #18, #0
+    @equ io_file_write            #19, #0
+    @equ io_file_close            #20, #0
+    @equ io_file_print_string     #21, #0
+    @equ io_file_print_byte       #22, #0
+    @equ io_file_print_word       #23, #0
+    @equ io_file_print_long       #24, #0
+    @equ io_file_print_quad       #25, #0
+    @equ io_file_print_single     #26, #0
+    @equ io_file_print_double     #27, #0
+    @equ io_file_parse_byte       #28, #0
+    @equ io_file_parse_word       #29, #0
+    @equ io_file_parse_long       #30, #0
+    @equ io_file_parse_quad       #31, #0
+    @equ io_file_parse_single     #32, #0
+    @equ io_file_parse_double     #33, #0
+    @equ io_cbuf_format_byte      #34, #0
+    @equ io_cbuf_format_word      #35, #0
+    @equ io_cbuf_format_long      #36, #0
+    @equ io_cbuf_format_quad      #37, #0
+    @equ io_cbuf_format_single    #38, #0
+    @equ io_cbuf_format_double    #39, #0
+    @equ io_cbuf_parse_byte       #40, #0
+    @equ io_cbuf_parse_word       #41, #0
+    @equ io_cbuf_parse_long       #42, #0
+    @equ io_cbuf_parse_quad       #43, #0
+    @equ io_cbuf_parse_single     #44, #0
+    @equ io_cbuf_parse_double     #45, #0

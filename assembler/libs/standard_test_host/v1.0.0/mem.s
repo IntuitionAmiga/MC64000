@@ -18,44 +18,12 @@
     @equ ERR_NO_MEM  100
     @equ ERR_MEM     101
 
-; Break out to the host, reset the stack and return.
-.invoke:
-    hcf #1
-    add.q #1, sp
-    rts
-
-mem_init:
-    move.b #0, -(sp)
-    bra.b .invoke
-
-mem_done:
-    move.b #1, -(sp)
-    bra.b .invoke
-
-mem_alloc:
-    move.b #2, -(sp)
-    bra.b .invoke
-
-mem_free:
-    move.b #3, -(sp)
-    bra.b .invoke
-
-mem_copy:
-    move.b #4, -(sp)
-    bra.b .invoke
-
-mem_fill_byte:
-    move.b #5, -(sp)
-    bra.b .invoke
-
-mem_fill_word:
-    move.b #6, -(sp)
-    bra.b .invoke
-
-mem_fill_long:
-    move.b #7, -(sp)
-    bra.b .invoke
-
-mem_fill_quad:
-    move.b #8, -(sp)
-    bra.b .invoke
+    @equ mem_init       #0, #1
+    @equ mem_done       #1, #1
+    @equ mem_alloc      #2, #1
+    @equ mem_free       #3, #1
+    @equ mem_copy       #4, #1
+    @equ mem_fill_byte  #5, #1
+    @equ mem_fill_word  #6, #1
+    @equ mem_fill_long  #7, #1
+    @equ mem_fill_quad  #8, #1

@@ -8,7 +8,7 @@ Provides functions for basic stream IO.
 ### io_init
 void io_init()
 ```asm
-    bsr io_init
+    hcf io_init
 ```
 Initialises the host stream IO subsystem. Should be called from _main_ before any other stream IO functions.
 
@@ -18,7 +18,7 @@ ___
 ### io_done
 void io_done()
 ```asm
-    bsr io_done
+    hcf io_done
 ```
 Finalises the host stream IO subsytem. Should be called from _exit_ after all other stream IO functions.
 
