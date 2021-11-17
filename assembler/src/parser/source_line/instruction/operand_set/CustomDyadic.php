@@ -35,6 +35,8 @@ class CustomDyadic extends Dyadic {
     /** @var string[] $aPrefix */
     private array $aPrefix  = [];
 
+    private bool  $bAllowSameAsDestination = true;
+
     /**
      * Constructor
      *
@@ -47,12 +49,14 @@ class CustomDyadic extends Dyadic {
         array $aOpcodes,
         EffectiveAddress\IParser $oSrcParser,
         EffectiveAddress\IParser $oDstParser,
-        array                    $aPrefix = []
+        array                    $aPrefix = [],
+        bool                     $bAllowSameAsDestination = true
     ) {
         $this->aOpcodes   = $aOpcodes;
         $this->aPrefix    = $aPrefix;
         $this->oSrcParser = $oSrcParser;
         $this->oDstParser = $oDstParser;
+        $this->bAllowSameAsDestination = $bAllowSameAsDestination;
         parent::__construct();
     }
 
@@ -72,5 +76,12 @@ class CustomDyadic extends Dyadic {
             return $this->aPrefix[$iOpcode] . $sBytecode;
         }
         return $sBytecode;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function canOptimiseSourceOperand(string $sSrcBytecode, string $sDstBytecode): bool {
+        return $this->bAllowSameAsDestination && parent::canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode);
     }
 }

@@ -12,27 +12,24 @@
 ;
 ; Full-On DIY Hello World. No stubs. Just for IntuitionAmiga.
 
-    ; Define some names to make the code easier to read. Constants declared with @def have file scope only.
-
-    ; This is the HCF vector for the standard test host IO routines.
-    @def IO_VECTOR    0
-
-    ; This is the function index in the vector for printing null terminated strings to the terminal.
-    @def PRINT_STRING 2
+    ; Define some names to make the code easier to read. Substitutions declared with @def have file scope only.
+    @def io_init         #0, #0
+    @def io_done         #1, #0
+    @def io_print_string #2, #0
 
     ; The standard test host expects main to be exported as executable. This directive can go anywhere
     ; in the code but it makes sense to put it just before the declaration.
     @export main x
 main:
+    hcf     io_init
     ; And off we go!
     lea     .hello_string, a0       ; the print routine expects the string address in a0.
-    move.b  #PRINT_STRING, -(sp)    ; the routine offset is pushed onto the stack.
-    hcf     #IO_VECTOR              ; trigger the vector.
-    add.q   #1, sp                  ; restore the stack.
+    hcf     io_print_string         ; trigger the vector.
 
     ; The standard test host expects exit to be exported as executable.
     @export exit x
 exit:
+    hcf     io_done
     ; We are done.
     rts
 

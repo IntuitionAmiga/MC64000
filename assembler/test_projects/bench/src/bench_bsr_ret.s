@@ -10,7 +10,7 @@ bench_bsr_ret:
 .bench_bsr_ret_fwd:
     ; benchmarks forward branch/return
     lea         .benchmark_info,    r8
-    bsr         io_print_string
+    hcf         io_print_string
 
     move.q      max_loops,          loop_counter
     nanotime
@@ -39,7 +39,7 @@ bench_bsr_ret:
 .bench_bsr_ret_misaligned_fwd:
     ; benchmarks forward branch/return where the stack is misalgined
     lea         .benchmark_info_1,  r8
-    bsr         io_print_string
+    hcf         io_print_string
 
     move.q      max_loops,          loop_counter
     sub.q       #7, sp
@@ -71,7 +71,7 @@ bench_bsr_ret:
 .bench_bsr_b_ret_rev:
     ; benchmarks reverse short branch/return
     lea         .benchmark_info_2,  r8
-    bsr         io_print_string
+    hcf         io_print_string
 
     move.q      max_loops,          loop_counter
     nanotime
@@ -99,7 +99,7 @@ bench_bsr_ret:
 .bench_bsr_b_ret_misaligned_rev:
     ; benchmarks reverse short branch/return where the stack is misaligned
     lea         .benchmark_info_3,  r8
-    bsr         io_print_string
+    hcf         io_print_string
 
     move.q      max_loops,          loop_counter
     sub.q       #7, sp

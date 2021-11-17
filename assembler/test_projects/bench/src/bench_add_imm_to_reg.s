@@ -2,7 +2,7 @@
     @align  0, 8
 bench_small_imm_to_reg:
     lea         .benchmark_info_0, r8
-    bsr         io_print_string
+    hcf         io_print_string
     move.q      #1,     r1
     move.q      max_loops,          loop_counter
     nanotime

@@ -3,7 +3,7 @@
 
 bench_add_reg_to_label:
     lea         .benchmark_info, r8
-    bsr         io_print_string
+    hcf         io_print_string
     move.q      #1,     r1
     move.q      max_loops,          loop_counter
     nanotime

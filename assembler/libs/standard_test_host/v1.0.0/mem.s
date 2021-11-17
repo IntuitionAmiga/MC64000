@@ -18,12 +18,29 @@
     @equ ERR_NO_MEM  100
     @equ ERR_MEM     101
 
-    @equ mem_init       #0, #1
-    @equ mem_done       #1, #1
-    @equ mem_alloc      #2, #1
-    @equ mem_free       #3, #1
-    @equ mem_copy       #4, #1
-    @equ mem_fill_byte  #5, #1
-    @equ mem_fill_word  #6, #1
-    @equ mem_fill_long  #7, #1
-    @equ mem_fill_quad  #8, #1
+    @def mem_vector      #1
+
+    @equ mem_init        #0, mem_vector
+    @equ mem_done        #1, mem_vector
+    @equ mem_alloc       #2, mem_vector
+    @equ mem_free        #3, mem_vector
+    @equ mem_copy        #4, mem_vector
+    @equ mem_fill_byte   #5, mem_vector
+    @equ mem_fill_word   #6, mem_vector
+    @equ mem_fill_long   #7, mem_vector
+    @equ mem_fill_quad   #8, mem_vector
+
+    @equ mem_and_byte   #9,  mem_vector
+    @equ mem_and_word   #10, mem_vector
+    @equ mem_and_long   #11, mem_vector
+    @equ mem_and_quad   #12, mem_vector
+
+    @equ mem_or_byte    #13, mem_vector
+    @equ mem_or_word    #14, mem_vector
+    @equ mem_or_long    #15, mem_vector
+    @equ mem_or_quad    #16, mem_vector
+
+    @equ mem_eor_byte   #17, mem_vector
+    @equ mem_eor_word   #18, mem_vector
+    @equ mem_eor_long   #19, mem_vector
+    @equ mem_eor_quad   #20, mem_vector

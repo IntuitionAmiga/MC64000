@@ -66,17 +66,17 @@ class DefinitionSet {
     }
 
     /**
-     * Returns the set of current definitions. These are sorted value longest first.
-     * The return is associative.
+     * Returns the set of current definitions. These are sorted by decreasing key length as the keys are
+     * used as the search terms for search and replace. We swap out the longest matches first.
      *
      * @return string[]
      */
     public function getDefinitions(): array {
         if (false === $this->bolSorted) {
-            uasort(
+            uksort(
                 $this->aDefinitions,
                 function (string $sA, string $sB) {
-                    return strlen($sA) - strlen($sB);
+                    return strlen($sB) - strlen($sA);
                 }
             );
             $this->bolSorted = true;
@@ -115,6 +115,7 @@ class DefinitionSet {
 
         $aDefinitions = $this->getDefinitions();
         $aDefinitions += $aPlaceholderMap;
+
         return str_replace(array_keys($aDefinitions), array_values($aDefinitions), $sInput);
     }
 }

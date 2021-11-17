@@ -17,14 +17,14 @@
 main:
     move.q  #MEM_BUFFER_SIZE, d7
     move.q  d7, d0
-    bsr     mem_alloc
+    hcf     mem_alloc
     bnz.q   a0, .allocated
     lea     .err_no_memory_1, a0
-    bsr     io_print_string
+    hcf     io_print_string
     move.q  d7, d0
-    bsr     io_print_quad
+    hcf     io_print_quad
     lea     .err_no_memory_2, a0
-    bsr     io_print_string
+    hcf     io_print_string
     bra     exit
 
 .allocated:
@@ -34,13 +34,13 @@ main:
     move.q  a0,     a6
     move.q  d6,     d0
     move.q  d7,     d1
-    bsr     mem_fill_byte
+    hcf     mem_fill_byte
     dbnz    d6,     .loop
 
 exit:
     ; free buffer (null safe)
     move.q      a6,     a0
-    bsr         mem_free
+    hcf         mem_free
 
     rts
 

@@ -9,7 +9,7 @@ bench_add_reg_to_indirect:
     @align  0, 8
 .bench_add_reg_to_reg_ind:
     lea         .benchmark_info_0, r8
-    bsr         io_print_string
+    hcf         io_print_string
     move.q      #1,     r1
     lea         -64(sp), r10
     clr.q       (r10)
@@ -38,7 +38,7 @@ bench_add_reg_to_indirect:
     @align  0, 8
 .bench_add_reg_to_reg_ind_post_mod:
     lea         .benchmark_info_1, r8
-    bsr         io_print_string
+    hcf         io_print_string
     move.q      #1,     r1
     lea         -64(sp), r10
     clr.q       (r10)
@@ -67,7 +67,7 @@ bench_add_reg_to_indirect:
     @align  0, 8
 .bench_add_reg_to_reg_ind_pre_mod:
     lea         .benchmark_info_2, r8
-    bsr         io_print_string
+    hcf         io_print_string
     move.q      #1,     r1
     lea         -64(sp), r10
     clr.q       (r10)
@@ -96,7 +96,7 @@ bench_add_reg_to_indirect:
     @align  0, 8
 .bench_add_reg_to_reg_ind_disp:
     lea         .benchmark_info_3, r8
-    bsr         io_print_string
+    hcf         io_print_string
     move.q      #1,     r1
     lea         -64(sp), r10
     clr.q       (r10)

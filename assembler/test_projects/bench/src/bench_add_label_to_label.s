@@ -6,7 +6,7 @@ bench_add_label_to_label:
     rts ; todo - debug segfault
 
     lea         .benchmark_info, r8
-    bsr         io_print_string
+    hcf         io_print_string
     ;move.q      #1,                 .test_label_src
     move.q      max_loops,          loop_counter
     nanotime

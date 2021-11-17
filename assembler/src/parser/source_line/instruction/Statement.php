@@ -117,7 +117,8 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
             [IControl::HCF],
             new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::BYTE)),
             new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::BYTE)),
-            [IControl::HCF => chr(0xFF)]
+            [IControl::HCF => chr(0xFF)],
+            false
         ));
     }
 

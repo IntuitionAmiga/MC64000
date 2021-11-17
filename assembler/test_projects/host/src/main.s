@@ -13,20 +13,20 @@
 ;   Hello world.
 
 main:
-    bsr     io_init
+    hcf     io_init
     move.q  host_cli_num_params, d2
     move.q  host_cli_params, a2
 .loop:
     move.q  (a2)+, a0
-    bsr     io_print_string
+    hcf     io_print_string
     lea     .newline, a0
-    bsr     io_print_string
+    hcf     io_print_string
     dbnz    d2, .loop
 
     fbif.s  #FLOAT_NAN, fp0, .never
 
 exit:
-    bsr io_done
+    hcf     io_done
     rts
 
 .never:
