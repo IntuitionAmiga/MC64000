@@ -17,6 +17,7 @@
 
 #include "host/standard_test_host_io.hpp"
 #include "host/standard_test_host_mem.hpp"
+#include "host/standard_test_host_simd.hpp"
 #include "loader/symbol.hpp"
 #include "host/macros.hpp"
 #include "machine/register.hpp"
@@ -54,6 +55,7 @@ Host::Definition instance(
     {
         IO::hostVector,
         Mem::hostVector,
+        Simd::hostVector
     },
 
     // Symbols this host exports to the virtual code.

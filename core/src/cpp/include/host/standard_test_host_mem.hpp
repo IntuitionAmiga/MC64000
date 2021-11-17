@@ -103,7 +103,7 @@ typedef enum {
     ERR_MEM
 } Result;
 
-Interpreter::Status hostVector();
+Interpreter::Status hostVector(uint8 uFunctionID);
 
 }}} // namespace
 

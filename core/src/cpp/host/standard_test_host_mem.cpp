@@ -171,13 +171,13 @@ void const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize) {
 }
 
 /**
- * Mem::hostVector()
+ * Mem::hostVector(uint8 uFunctionID)
  */
-Interpreter::Status hostVector() {
+Interpreter::Status hostVector(uint8 uFunctionID) {
 
     Machine::GPRegister* aoGPR = Interpreter::gpr();
 
-    Call iOperation = (Call) *aoGPR[Machine::GPRegister::SP].piByte;
+    Call iOperation = (Call) uFunctionID;
     switch (iOperation) {
         case INIT:
         case DONE:
