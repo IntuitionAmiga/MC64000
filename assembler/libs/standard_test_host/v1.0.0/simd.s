@@ -32,3 +32,21 @@
     @equ vec3f_norm_as   hcf #12, simd_vector
     @equ vec3f_norm      hcf #13, simd_vector
     @equ vec3f_lerp      hcf #14, simd_vector
+    @equ vec3f_xform     hcf #15, simd_vector
+
+    @equ vec3d_splat     hcf #16, simd_vector
+    @equ vec3d_copy      hcf #17, simd_vector
+    @equ vec3d_scale_as  hcf #18, simd_vector
+    @equ vec3d_scale     hcf #19, simd_vector
+    @equ vec3d_add_as    hcf #20, simd_vector
+    @equ vec3d_add       hcf #21, simd_vector
+    @equ vec3d_sub_as    hcf #22, simd_vector
+    @equ vec3d_sub       hcf #23, simd_vector
+    @equ vec3d_dot       hcf #24, simd_vector
+    @equ vec3d_cross_as  hcf #25, simd_vector
+    @equ vec3d_cross     hcf #26, simd_vector
+    @equ vec3d_magn      hcf #27, simd_vector
+    @equ vec3d_norm_as   hcf #28, simd_vector
+    @equ vec3d_norm      hcf #29, simd_vector
+    @equ vec3d_lerp      hcf #30, simd_vector
+    @equ vec3d_xform     hcf #31, simd_vector
