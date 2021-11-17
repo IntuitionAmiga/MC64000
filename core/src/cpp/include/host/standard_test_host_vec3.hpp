@@ -1,5 +1,5 @@
-#ifndef __MC64K_STANDARD_TEST_HOST_SIMD_HPP__
-    #define __MC64K_STANDARD_TEST_HOST_SIMD_HPP__
+#ifndef __MC64K_STANDARD_TEST_HOST_VEC3_HPP__
+    #define __MC64K_STANDARD_TEST_HOST_VEC3_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -20,10 +20,10 @@ namespace MC64K {
 namespace StandardTestHost {
 
 /**
- * Simd namespace. For
+ * Vec3 Namespace, for accelerated operations on 3-component vectors
  *
  */
-namespace Simd {
+namespace Vec3 {
 
 /**
  * Call

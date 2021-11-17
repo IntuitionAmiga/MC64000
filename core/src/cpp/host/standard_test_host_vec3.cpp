@@ -13,14 +13,14 @@
 
 #include <cstdio>
 #include <cmath>
-#include "host/standard_test_host_simd.hpp"
+#include "host/standard_test_host_vec3.hpp"
 #include "machine/register.hpp"
 
 using MC64K::Machine::Interpreter;
 
 namespace MC64K {
 namespace StandardTestHost {
-namespace Simd {
+namespace Vec3 {
 
 /**
  * Mem::hostVector(uint8 uFunctionID)
