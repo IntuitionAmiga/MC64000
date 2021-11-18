@@ -22,8 +22,8 @@
     @equ BAILOUT        4.0     ; bailout value, > 4 chosen for better bifurcations
 
 main:
-    bsr     mem_init
-    bsr     io_init
+    hcf     mem_init
+    hcf     io_init
     ; a6 : pixel buffer
     ; a5 : output file handle
     ; d7 : total number of pixels
@@ -33,14 +33,14 @@ main:
 ; allocate image buffer
 ; strictly, we could just directly output each pixel but it's nice to test allocation routines too.
     move.q  d7, d0
-    bsr     mem_alloc
+    hcf     mem_alloc
     bnz.q   a0, .allocated
     lea     .err_no_memory_1, a0
-    bsr     io_print_string
+    hcf     io_print_string
     move.q  d7, d0
-    bsr     io_print_quad
+    hcf     io_print_quad
     lea     .err_no_memory_2, a0
-    bsr     io_print_string
+    hcf     io_print_string
     bra     exit
 
 .allocated:
@@ -51,14 +51,14 @@ main:
 ; open the output file
     lea         .file_name, a0
     move.b      #IO_OPEN_WRITE, d0
-    bsr         io_file_open
+    hcf         io_file_open
     bnz.q       a0, .opened
     lea         .err_file_open_1, a0
-    bsr         io_print_string
+    hcf         io_print_string
     lea         .file_name, a0
-    bsr         io_print_string
+    hcf         io_print_string
     lea         .err_file_open_2, a0
-    bsr         io_print_string
+    hcf         io_print_string
     bra         exit
 
 .opened:
@@ -69,32 +69,32 @@ main:
     ; write the PGM header
     move.q      a5,     a0
     lea         .pgm_head, a1
-    bsr         io_file_print_string
+    hcf         io_file_print_string
     lea         .pgm_int_fmt, a1
-    bsr         io_set_fmt_long
+    hcf         io_set_fmt_long
     move.l      d6,     d0
-    bsr         io_file_print_long
+    hcf         io_file_print_long
     move.l      d6,     d0
-    bsr         io_file_print_long
+    hcf         io_file_print_long
     move.l      #255,   d0
-    bsr         io_file_print_long
+    hcf         io_file_print_long
 
     ; write the block data
     move.q      a6,     a1
     move.q      d7,     d0
-    bsr         io_file_write
+    hcf         io_file_write
 
 exit:
     ; free buffer (null safe)
     move.q      a6,     a0
-    bsr         mem_free
+    hcf         mem_free
 
     ; close file (null safe)
     move.q      a5,     a0
-    bsr         io_file_close
+    hcf         io_file_close
 
-    bsr     io_done
-    bsr     mem_done
+    hcf     io_done
+    hcf     mem_done
     rts
 
 .file_name:

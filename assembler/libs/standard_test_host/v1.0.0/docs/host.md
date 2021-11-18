@@ -11,7 +11,7 @@ Host specific definitions, imports and exports.
 
     ; example usage, report host information
     lea     host_info, a0
-    bsr     io_print_string
+    hcf     io_print_string
 ```
 Readonly string description of the Host.
 
@@ -24,7 +24,7 @@ ___
 
     ; example usage, display parameter count
     move.q  host_cli_num_params, d0
-    bsr     io_print_quad
+    hcf     io_print_quad
 ```
 Readonly uint64 count of the number of commandline parameters passed to the host on startup.
 
@@ -39,7 +39,7 @@ ___
     ; example usage, display first parameter
     move.q  host_cli_params, a2
     move.q  (a2), a0
-    bsr     io_print_string
+    hcf     io_print_string
 ```
 Readonly char const** list of the commandline parameters passed to the host on startup.
 

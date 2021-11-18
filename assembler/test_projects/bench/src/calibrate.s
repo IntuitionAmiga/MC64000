@@ -20,7 +20,7 @@ calibration:
 .calibrate_loop:
     ; Calibration time...
     lea         .calibration_txt,   r8
-    bsr         io_print_string
+    hcf         io_print_string
     move.q      max_loops,          loop_counter
     nanotime
     move.q      time_recorded,      time_started
@@ -31,14 +31,14 @@ calibration:
     move.q      time_recorded,      calibration_time
     bsr         report_elapsed
     lea         .newline,           r8
-    bsr         io_print_string
+    hcf         io_print_string
     rts
 
     @align      0,8
 .baseline:
 ; Reference instruction, add.q r1, r0
     lea         .baseline_txt,  r8
-    bsr         io_print_string
+    hcf         io_print_string
     move.q      #1,             r1
     clr.q       r0
     move.q      max_loops,      loop_counter
