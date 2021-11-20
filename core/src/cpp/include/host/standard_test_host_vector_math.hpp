@@ -1,5 +1,5 @@
-#ifndef __MC64K_STANDARD_TEST_HOST_VEC3_HPP__
-    #define __MC64K_STANDARD_TEST_HOST_VEC3_HPP__
+#ifndef __MC64K_STANDARD_TEST_HOST_VECTOR_MATH_HPP__
+    #define __MC64K_STANDARD_TEST_HOST_VECTOR_MATH_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -23,15 +23,32 @@ namespace StandardTestHost {
  * Vec3 Namespace, for accelerated operations on 3-component vectors
  *
  */
-namespace Vec3 {
+namespace VectorMath {
 
 /**
  * Call
  *
- * Enumeration of calls in the Simd namespace
+ * Enumeration of calls in the VectorMath namespace
  */
 typedef enum {
-    VEC3F_SPLAT = 0,    // (a0) = fp0
+    // vec2f float32[2]
+    VEC2F_SPLAT = 0,    // (a0) = fp0
+    VEC2F_COPY,         // (a1) = (a0)
+    VEC2F_SCALE_AS,     // (a0) *= fp0
+    VEC2F_SCALE,        // (a1) = (a0) * fp0
+    VEC2F_ADD_AS,       // (a1) += (a0)
+    VEC2F_ADD,          // (a2) = (a1) + (a0)
+    VEC2F_SUB_AS,       // (a1) -= (a0)
+    VEC2F_SUB,          // (a2) = (a1) - (a0)
+    VEC2F_DOT,          // fp0  = (a0) . (a1)
+    VEC2F_MAGN,         // fp0  = |(a0)|
+    VEC2F_NORM_AS,      // (a0) = norm((a0))
+    VEC2F_NORM,         // (a1) = norm((a0))
+    VEC2F_LERP,         // (a2) = lerp((a1) - (a0), fp0)
+    VEC2F_XFORM,        // reserved
+
+    // vec3f float32[3]
+    VEC3F_SPLAT,        // (a0) = fp0
     VEC3F_COPY,         // (a1) = (a0)
     VEC3F_SCALE_AS,     // (a0) *= fp0
     VEC3F_SCALE,        // (a1) = (a0) * fp0
@@ -39,15 +56,33 @@ typedef enum {
     VEC3F_ADD,          // (a2) = (a1) + (a0)
     VEC3F_SUB_AS,       // (a1) -= (a0)
     VEC3F_SUB,          // (a2) = (a1) - (a0)
-    VEC3F_DOT,          // fp0 = (a0) . (a1)
+    VEC3F_DOT,          // fp0  = (a0) . (a1)
     VEC3F_CROSS_AS,     // (a1) = (a1) x (a0)
     VEC3F_CROSS,        // (a2) = (a1) x (a0)
-    VEC3F_MAGN,         // fp0 = |(a0)|
+    VEC3F_MAGN,         // fp0  = |(a0)|
     VEC3F_NORM_AS,      // (a0) = norm((a0))
     VEC3F_NORM,         // (a1) = norm((a0))
     VEC3F_LERP,         // (a2) = lerp((a1) - (a0), fp0)
     VEC3F_XFORM,        // reserved
 
+    // vec2d float64[2]
+    VEC2D_SPLAT,        // (a0) = fp0
+    VEC2D_COPY,         // (a1) = (a0)
+    VEC2D_SCALE_AS,     // (a0) *= fp0
+    VEC2D_SCALE,        // (a1) = (a0) * fp0
+    VEC2D_ADD_AS,       // (a1) += (a0)
+    VEC2D_ADD,          // (a2) = (a1) + (a0)
+    VEC2D_SUB_AS,       // (a1) -= (a0)
+    VEC2D_SUB,          // (a2) = (a1) - (a0)
+    VEC2D_DOT,          // fp0  = (a0) . (a1)
+    VEC2D_MAGN,         // fp0  = |(a0)|
+    VEC2D_NORM_AS,      // (a0) = norm((a0))
+    VEC2D_NORM,         // (a1) = norm((a0))
+    VEC2D_LERP,         // (a2) = lerp((a1) - (a0), fp0)
+    VEC2D_XFORM,        // reserved
+
+
+    // vec3d float64[3]
     VEC3D_SPLAT,        // (a0) = fp0
     VEC3D_COPY,         // (a1) = (a0)
     VEC3D_SCALE_AS,     // (a0) *= fp0
@@ -56,10 +91,10 @@ typedef enum {
     VEC3D_ADD,          // (a2) = (a1) + (a0)
     VEC3D_SUB_AS,       // (a1) -= (a0)
     VEC3D_SUB,          // (a2) = (a1) - (a0)
-    VEC3D_DOT,          // fp0 = (a0) . (a1)
+    VEC3D_DOT,          // fp0  = (a0) . (a1)
     VEC3D_CROSS_AS,     // (a1) = (a1) x (a0)
     VEC3D_CROSS,        // (a2) = (a1) x (a0)
-    VEC3D_MAGN,         // fp0 = |(a0)|
+    VEC3D_MAGN,         // fp0  = |(a0)|
     VEC3D_NORM_AS,      // (a0) = norm((a0))
     VEC3D_NORM,         // (a1) = norm((a0))
     VEC3D_LERP,         // (a2) = lerp((a1) - (a0), fp0)
