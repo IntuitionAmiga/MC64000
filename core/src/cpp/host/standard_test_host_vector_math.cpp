@@ -23,6 +23,8 @@ namespace MC64K {
 namespace StandardTestHost {
 namespace VectorMath {
 
+
+
 /**
  * Mem::hostVector(uint8 uFunctionID)
  */
@@ -45,7 +47,15 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case VEC2F_NORM_AS:     v2_normalise_assign(float32, Single, 1.0f); break;
         case VEC2F_NORM:        v2_normalise(float32, Single, 1.0f);        break;
         case VEC2F_LERP:        v2_interpolate(float32, Single);            break;
-        case VEC2F_XFORM:       break;
+
+        case VEC2F_XFRM_2X2:
+        case VEC2F_TO_VEC3F:
+        case VEC2F_0_XFRM_3X3:
+        case VEC2F_1_XFRM_3X3:
+
+
+
+        //case VEC2F_XFORM:       break;
 
 
         case VEC3F_SPLAT:       v3_splat(float32, Single);                  break;
@@ -63,8 +73,8 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case VEC3F_NORM_AS:     v3_normalise_assign(float32, Single, 1.0f); break;
         case VEC3F_NORM:        v3_normalise(float32, Single, 1.0f);        break;
         case VEC3F_LERP:        v3_interpolate(float32, Single);            break;
-        case VEC3F_XFORM:       break;
-
+        //case VEC3F_XFORM:       break;
+/*
         case VEC2D_SPLAT:       v2_splat(float64, Double);                  break;
         case VEC2D_COPY:        v2_copy(uint64, uQuad);                     break;
         case VEC2D_SCALE_AS:    v2_scale_assign(float64, Double);           break;
@@ -97,7 +107,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case VEC3D_NORM:        v3_normalise(float64, Double, 1.0);         break;
         case VEC3D_LERP:        v3_interpolate(float64, Double);            break;
         case VEC3D_XFORM:       break;
-
+*/
         default:
             std::fprintf(stderr, "Unknown Mem operation %d\n", iOperation);
             return Interpreter::UNKNOWN_HOST_CALL;

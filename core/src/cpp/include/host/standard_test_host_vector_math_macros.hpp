@@ -19,6 +19,87 @@ namespace StandardTestHost {
 namespace VectorMath {
 
 /**
+ * Vec2 to Vec3 expand
+ */
+template<typename T>
+void vec2_expand_vec3(const T* pfSrc, T* pfDst, T fValue, size_t uCount) {
+    while (uCount--) {
+        *pfDst++ = *pfSrc++;
+        *pfDst++ = *pfSrc++;
+        *pfDst++ = fValue;
+    }
+}
+
+/**
+ * Vec3 to Vec4 expand
+ */
+template<typename T>
+void vec3_expand_vec4(const T* pfSrc, T* pfDst, T fValue, size_t uCount) {
+    while (uCount--) {
+        *pfDst++ = *pfSrc++;
+        *pfDst++ = *pfSrc++;
+        *pfDst++ = *pfSrc++;
+        *pfDst++ = fValue;
+    }
+}
+
+/**
+ * Applies a Mat2x2 to an input set of Vec2
+ */
+template<typename T>
+void vec2_transform_2x2(const T* pfMatrix, const T* pfSrc, T* pfDst, size_t uCount) {
+    while (uCount--) {
+        *pfDst++ = pfMatrix[0] * pfSrc[0] + pfMatrix[1] * pfSrc[1];
+        *pfDst++ = pfMatrix[2] * pfSrc[0] + pfMatrix[3] * pfSrc[1];
+        pfSrc += 2;
+    }
+}
+
+/**
+ * Applies a Mat3x3 to a input set of Vec2, substituting zero for the missing 3rd element of each one.
+ * Output is also a set of Vec2.
+ */
+template<typename T>
+void vec2_0_transform_3x3(const T* pfMatrix, const T* pfSrc, T* pfDst, size_t uCount) {
+    while (uCount--) {
+        *pfDst++ = pfMatrix[0] * pfSrc[0] + pfMatrix[1] * pfSrc[1];
+        *pfDst++ = pfMatrix[3] * pfSrc[0] + pfMatrix[4] * pfSrc[1];
+        *pfDst++ = pfMatrix[6] * pfSrc[0] + pfMatrix[7] * pfSrc[1];
+        pfSrc += 2;
+    }
+}
+
+/**
+ * Applies a Mat3x3 to a input set of Vec2, substituting one for the missing 3rd element of each one.
+ * Output is also a set of Vec2.
+ */
+template<typename T>
+void vec3_1_transform_3x3(const T* pfMatrix, const T* pfSrc, T* pfDst, size_t uCount) {
+    while (uCount--) {
+        *pfDst++ = pfMatrix[0] * pfSrc[0] + pfMatrix[1] * pfSrc[1] + pfMatrix[2];
+        *pfDst++ = pfMatrix[3] * pfSrc[0] + pfMatrix[4] * pfSrc[1] + pfMatrix[5];
+        *pfDst++ = pfMatrix[6] * pfSrc[0] + pfMatrix[7] * pfSrc[1] + pfMatrix[8];
+        pfSrc += 2;
+    }
+}
+
+/**
+ * Applies a Mat3x3 to an input set of Vec3
+ */
+template<typename T>
+void vec3_transform_3x3(const T* pfMatrix, const T* pfSrc, T* pfDst, size_t uCount) {
+    while (uCount--) {
+        *pfDst++ = pfMatrix[0] * pfSrc[0] + pfMatrix[1] * pfSrc[1] + pfMatrix[2] * pfSrc[2];
+        *pfDst++ = pfMatrix[3] * pfSrc[0] + pfMatrix[4] * pfSrc[1] + pfMatrix[5] * pfSrc[2];
+        *pfDst++ = pfMatrix[6] * pfSrc[0] + pfMatrix[7] * pfSrc[1] + pfMatrix[8] * pfSrc[2];
+        pfSrc += 3;
+    }
+}
+
+
+
+/**
+ *
  * Gnarly macros for 2-component vectors
  */
 #define dot2(a, b) ((a)[0] * (b)[0] + (a)[1] * (b)[1])
@@ -29,6 +110,15 @@ namespace VectorMath {
     pfDst[0] = f; \
     pfDst[1] = f; \
 }
+
+#define v2_expand_v3(type, alias) \
+vec2_expand_vec3( \
+    aoGPR[ABI::PTR_REG_1].p ## alias, \
+    aoGPR[ABI::PTR_REG_0].p ## alias, \
+    Interpreter::fpr()[ABI::FLT_REG_0].f ## alias, \
+    Interpreter::gpr()[ABI::INT_REG_0].uLong \
+)
+
 
 #define v2_copy(type, alias) { \
     type*       pDst = aoGPR[ABI::PTR_REG_1].p ## alias; \

@@ -20,7 +20,31 @@ namespace MC64K {
 namespace StandardTestHost {
 
 /**
- * Vec3 Namespace, for accelerated operations on 3-component vectors
+ * VectorMath Namespace, for accelerated linear algebra on 2D and 3D vectors.
+ *
+ * Vectors are considered to be columnar with each element arranged sequentially in memory, e.g
+ *
+ * | x |
+ * | y | => { x, y, z }
+ * | z |
+ *
+ * Matrices are 1D memory contiguous blocks of sequential row vectors, e.g.
+ *
+ * | m11 m12 m13 |
+ * | m21 m22 m23 |  => {m11, m12, m13, m21, m22, m23, m31, m32, m33}
+ * | m31 m32 m33 |
+ *
+ * Example Matrices for homogenous 2D
+ *
+ * Scale:
+ *   | Sx  0  0 |   | x |   | Sx * x |
+ *   |  0 Sy  0 | . | y | = | Sy * y |
+ *   |  0  0  1 |   | 1 |   |   1    |
+ *
+ * Translate:
+ *   |  1  0  0 |   | x |   | x + Tx |
+ *   |  0  1  0 | . | y | = | y + Ty |
+ *   | Tx Ty  1 |   | 1 |   |   1    |
  *
  */
 namespace VectorMath {
@@ -28,24 +52,83 @@ namespace VectorMath {
 /**
  * Call
  *
- * Enumeration of calls in the VectorMath namespace
+ * Enumeration of calls in the VectorMath namespace.
+ *
  */
 typedef enum {
-    // vec2f float32[2]
+    /**
+     * Init and copy
+     */
     VEC2F_SPLAT = 0,    // (a0) = fp0
     VEC2F_COPY,         // (a1) = (a0)
+
+    /**
+     * Multiply by scalar
+     */
     VEC2F_SCALE_AS,     // (a0) *= fp0
     VEC2F_SCALE,        // (a1) = (a0) * fp0
+
+    /**
+     * Addition/subtraction
+     */
     VEC2F_ADD_AS,       // (a1) += (a0)
     VEC2F_ADD,          // (a2) = (a1) + (a0)
     VEC2F_SUB_AS,       // (a1) -= (a0)
     VEC2F_SUB,          // (a2) = (a1) - (a0)
+
+    /**
+     * Multiplication
+     */
     VEC2F_DOT,          // fp0  = (a0) . (a1)
+
+    /**
+     * Magnitude / normalisation
+     */
     VEC2F_MAGN,         // fp0  = |(a0)|
     VEC2F_NORM_AS,      // (a0) = norm((a0))
     VEC2F_NORM,         // (a1) = norm((a0))
+
+    /**
+     * Interpolation
+     */
     VEC2F_LERP,         // (a2) = lerp((a1) - (a0), fp0)
-    VEC2F_XFORM,        // reserved
+
+    /**
+     * Transforms a set of Vec2F by a 2x2 matrix.
+     */
+    VEC2F_XFRM_2X2,     // (a2) = (a1)*[(a0)], count in r0
+
+    /**
+     * Expansion
+     *
+     * Converts a set of Vec2F to Vec3F, setting the third component of each to the value in fp0. This can be used
+     * to translate a set of 2D vectors into 3 component variants with the third component indicating direction or
+     * position for use in strictly homogeneous transformations.
+     */
+    VEC2F_TO_VEC3F,       // (a1) = (a0), fp0, count in r0
+
+    /**
+     * Transformation
+     *
+     * Transforms a set of Vec2F by a 3x3 matrix. The vector is interpreted as having three components with the
+     * third set to 0.0. The output continues to be Vec2F, scaled, rotated according to the matrix. Any translation
+     * term of the matrix is omitted, making this suitable for direction vectors.
+     *
+     * If you want a strictly homogeneous coordinate system for 2D, use the Vec3F vector type and M3X3F matrix.
+     */
+    VEC2F_0_XFRM_3X3,     // (a2) = (a1)*[(a0)], count in r0.
+
+    /**
+     * Transformation
+     *
+     * Transforms a set of Vec2F by a 3x3 matrix. The vector is interpreted as having three components with the
+     * third set to 1.0. The output continues to be Vec2F, scaled, rotated and translated according to the matrix.
+     * As all terms of the matrix are applied, this is suitable for position vectors.
+     *
+     * If you want a strictly homogeneous coordinate system for 2D, use the Vec3F vector type and M3X3F matrix.
+     */
+    VEC2F_1_XFRM_3X3,     // (a2) = (a1)*[(a0)], count in r0.
+
 
     // vec3f float32[3]
     VEC3F_SPLAT,        // (a0) = fp0
@@ -63,42 +146,95 @@ typedef enum {
     VEC3F_NORM_AS,      // (a0) = norm((a0))
     VEC3F_NORM,         // (a1) = norm((a0))
     VEC3F_LERP,         // (a2) = lerp((a1) - (a0), fp0)
-    VEC3F_XFORM,        // reserved
 
-    // vec2d float64[2]
-    VEC2D_SPLAT,        // (a0) = fp0
-    VEC2D_COPY,         // (a1) = (a0)
-    VEC2D_SCALE_AS,     // (a0) *= fp0
-    VEC2D_SCALE,        // (a1) = (a0) * fp0
-    VEC2D_ADD_AS,       // (a1) += (a0)
-    VEC2D_ADD,          // (a2) = (a1) + (a0)
-    VEC2D_SUB_AS,       // (a1) -= (a0)
-    VEC2D_SUB,          // (a2) = (a1) - (a0)
-    VEC2D_DOT,          // fp0  = (a0) . (a1)
-    VEC2D_MAGN,         // fp0  = |(a0)|
-    VEC2D_NORM_AS,      // (a0) = norm((a0))
-    VEC2D_NORM,         // (a1) = norm((a0))
-    VEC2D_LERP,         // (a2) = lerp((a1) - (a0), fp0)
-    VEC2D_XFORM,        // reserved
+    /**
+     * Transforms a set of Vec2F by a 2x2 matrix.
+     */
+    VEC3F_XFRM_3X3,     // (a2) = (a1)*[(a0)], count in r0
+
+    /**
+     * Expansion
+     *
+     * Converts a set of Vec3F to Vec4F, setting the third component of each to the value in fp0. This can be used
+     * to translate a set of 2D vectors into 3 component variants with the third component indicating direction or
+     * position for use in strictly homogeneous transformations.
+     */
+    VEC3F_TO_VEC4F,       // (a1) = (a0), fp0, count in r0
+
+    /**
+     * Transformation
+     *
+     * Transforms a set of Vec2F by a 3x3 matrix. The vector is interpreted as having three components with the
+     * third set to 0.0. The output continues to be Vec2F, scaled, rotated according to the matrix. Any translation
+     * term of the matrix is omitted, making this suitable for direction vectors.
+     *
+     * If you want a strictly homogeneous coordinate system for 2D, use the Vec3F vector type and M3X3F matrix.
+     */
+    VEC3F_0_XFRM_4X4,     // (a2) = (a1)*[(a0)], count in r0.
+
+    /**
+     * Transformation
+     *
+     * Transforms a set of Vec2F by a 3x3 matrix. The vector is interpreted as having three components with the
+     * third set to 1.0. The output continues to be Vec2F, scaled, rotated and translated according to the matrix.
+     * As all terms of the matrix are applied, this is suitable for position vectors.
+     *
+     * If you want a strictly homogeneous coordinate system for 2D, use the Vec3F vector type and M3X3F matrix.
+     */
+    VEC3F_1_XFRM_4X4,     // (a2) = (a1)*[(a0)], count in r0.
+
+    // mat2x2f float32[2][2]
+    M2X2F_IDENTITY,     // (a0) = identity
+    M2X2F_COPY,         // (a1) = (a0)
+    M2X2F_SCALE_AS,     // (a0) *= fp0
+    M2X2F_SCALE,        // (a1) = (a0) * fp0
+    M2X2F_ADD_AS,       // (a1) += (a0)
+    M2X2F_ADD,          // (a2) = (a1) + (a0)
+    M2X2F_SUB_AS,       // (a1) -= (a0)
+    M2X2F_SUB,          // (a2) = (a1) - (a0)
+    M2X2F_MULTIPLY_AS,  // (a1) *= (a0)
+    M2X2F_MULTIPLY,     // (a2) = (a1) * (a0)
+    M2X2F_TRANSPOSE_AS, // (a0) = Transpose(a0)
+    M2X2F_TRANSPOSE,    // (a1) = Transpose(a0)
+    M2X2F_INVERSE_AS,   // (a0) = Inverse(a0)
+    M2X2F_INVERSE,      // (a1) = Inverse(a0)
+    M2X2F_DET,          // fp0  = Determinant(a0)
+
+    // mat3x3f float32[3][3]
+    M3X3F_IDENTITY,     // (a0) = identity
+    M3X3F_COPY,         // (a1) = (a0)
+    M3X3F_SCALE_AS,     // (a0) *= fp0
+    M3X3F_SCALE,        // (a1) = (a0) * fp0
+    M3X3F_ADD_AS,       // (a1) += (a0)
+    M3X3F_ADD,          // (a2) = (a1) + (a0)
+    M3X3F_SUB_AS,       // (a1) -= (a0)
+    M3X3F_SUB,          // (a2) = (a1) - (a0)
+    M3X3F_MULTIPLY_AS,  // (a1) *= (a0)
+    M3X3F_MULTIPLY,     // (a2) = (a1) * (a0)
+    M3X3F_TRANSPOSE_AS, // (a0) = Transpose(a0)
+    M3X3F_TRANSPOSE,    // (a1) = Transpose(a0)
+    M3X3F_INVERSE_AS,   // (a0) = Inverse(a0)
+    M3X3F_INVERSE,      // (a1) = Inverse(a0)
+    M3X3F_DET,          // fp0  = Determinant(a0)
+
+    // mat4x4f float32[4][4]
+    M4X4F_IDENTITY,     // (a0) = identity
+    M4X4F_COPY,         // (a1) = (a0)
+    M4X4F_SCALE_AS,     // (a0) *= fp0
+    M4X4F_SCALE,        // (a1) = (a0) * fp0
+    M4X4F_ADD_AS,       // (a1) += (a0)
+    M4X4F_ADD,          // (a2) = (a1) + (a0)
+    M4X4F_SUB_AS,       // (a1) -= (a0)
+    M4X4F_SUB,          // (a2) = (a1) - (a0)
+    M4X4F_MULTIPLY_AS,  // (a1) *= (a0)
+    M4X4F_MULTIPLY,     // (a2) = (a1) * (a0)
+    M4X4F_TRANSPOSE_AS, // (a0) = Transpose(a0)
+    M4X4F_TRANSPOSE,    // (a1) = Transpose(a0)
+    M4X4F_INVERSE_AS,   // (a0) = Inverse(a0)
+    M4X4F_INVERSE,      // (a1) = Inverse(a0)
+    M4X4F_DET,          // fp0  = Determinant(a0)
 
 
-    // vec3d float64[3]
-    VEC3D_SPLAT,        // (a0) = fp0
-    VEC3D_COPY,         // (a1) = (a0)
-    VEC3D_SCALE_AS,     // (a0) *= fp0
-    VEC3D_SCALE,        // (a1) = (a0) * fp0
-    VEC3D_ADD_AS,       // (a1) += (a0)
-    VEC3D_ADD,          // (a2) = (a1) + (a0)
-    VEC3D_SUB_AS,       // (a1) -= (a0)
-    VEC3D_SUB,          // (a2) = (a1) - (a0)
-    VEC3D_DOT,          // fp0  = (a0) . (a1)
-    VEC3D_CROSS_AS,     // (a1) = (a1) x (a0)
-    VEC3D_CROSS,        // (a2) = (a1) x (a0)
-    VEC3D_MAGN,         // fp0  = |(a0)|
-    VEC3D_NORM_AS,      // (a0) = norm((a0))
-    VEC3D_NORM,         // (a1) = norm((a0))
-    VEC3D_LERP,         // (a2) = lerp((a1) - (a0), fp0)
-    VEC3D_XFORM,        // reserved
 } Call;
 
 Interpreter::Status hostVector(uint8 uFunctionID);
