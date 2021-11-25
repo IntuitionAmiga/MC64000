@@ -240,7 +240,6 @@ typedef enum {
     M4X4F_INVERSE,      // (a1) = Inverse(a0)
     M4X4F_DET,          // fp0  = Determinant(a0)
 
-
 } Call;
 
 Interpreter::Status hostVector(uint8 uFunctionID);

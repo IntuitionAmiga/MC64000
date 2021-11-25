@@ -44,6 +44,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
 
     Call iOperation = (Call) uFunctionID;
     switch (iOperation) {
+
         // 2D vectors
         case VEC2F_SPLAT:           v2_splat(float32, Single);                  break;
         case VEC2F_COPY:            v2_copy(uint32, uLong);                     break;
@@ -79,7 +80,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case VEC3F_NORM_AS:         v3_normalise_assign(float32, Single, 1.0f); break;
         case VEC3F_NORM:            v3_normalise(float32, Single, 1.0f);        break;
         case VEC3F_LERP:            v3_interpolate(float32, Single);            break;
-
+/*
         case VEC3F_XFRM_3X3:        v3_transform_3x3(float32, Single);          break;
         case VEC3F_0_XFRM_4X4:      v3_0_transform_4x4(float32, Single);        break;
         case VEC3F_1_XFRM_4X4:      v3_1_transform_4x4(float32, Single);        break;
@@ -136,8 +137,6 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M4X4F_INVERSE:
         case M4X4F_DET:
             break;
-/*
-
 */
         default:
             std::fprintf(stderr, "Unknown Mem operation %d\n", iOperation);

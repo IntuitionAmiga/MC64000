@@ -7,20 +7,23 @@ bench_vec3f_hcf:
     lea         -128(sp),           r8
     lea         12(r8),             r9
 
+    fmove.s     #1.0, fp0
+    hcf         vec3f_splat
+
     move.q      max_loops,          loop_counter
     nanotime
     move.q      time_recorded,      time_started
 .benchmark_loop:
-    vec3f_add_as
-    vec3f_add_as
-    vec3f_add_as
-    vec3f_add_as
-    vec3f_add_as
-    vec3f_add_as
-    vec3f_add_as
-    vec3f_add_as
-    vec3f_add_as
-    vec3f_add_as
+    hcf         vec3f_norm
+    hcf         vec3f_norm
+    hcf         vec3f_norm
+    hcf         vec3f_norm
+    hcf         vec3f_norm
+    hcf         vec3f_norm
+    hcf         vec3f_norm
+    hcf         vec3f_norm
+    hcf         vec3f_norm
+    hcf         vec3f_norm
     dbnz        loop_counter,       .benchmark_loop
     nanotime
     sub.q       calibration_time,   time_recorded
@@ -32,5 +35,5 @@ bench_vec3f_hcf:
     @align  0, 8
 
 .benchmark_info:
-    dc.b "Benchmarking: vec3f_add_as intrinsic\n\0"
+    dc.b "Benchmarking: vec3f_add_assign\n\0"
 
