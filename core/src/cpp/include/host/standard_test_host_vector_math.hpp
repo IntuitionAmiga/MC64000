@@ -99,15 +99,6 @@ typedef enum {
     VEC2F_XFRM_2X2,     // (a2) = (a1)*[(a0)], count in r0
 
     /**
-     * Expansion
-     *
-     * Converts a set of Vec2F to Vec3F, setting the third component of each to the value in fp0. This can be used
-     * to translate a set of 2D vectors into 3 component variants with the third component indicating direction or
-     * position for use in strictly homogeneous transformations.
-     */
-    VEC2F_TO_VEC3F,       // (a1) = (a0), fp0, count in r0
-
-    /**
      * Transformation
      *
      * Transforms a set of Vec2F by a 3x3 matrix. The vector is interpreted as having three components with the
@@ -129,6 +120,14 @@ typedef enum {
      */
     VEC2F_1_XFRM_3X3,     // (a2) = (a1)*[(a0)], count in r0.
 
+    /**
+     * Expansion
+     *
+     * Converts a set of Vec2F to Vec3F, setting the third component of each to the value in fp0. This can be used
+     * to translate a set of 2D vectors into 3 component variants with the third component indicating direction or
+     * position for use in strictly homogeneous transformations.
+     */
+    VEC2F_TO_VEC3F,       // (a1) = (a0), fp0, count in r0
 
     // vec3f float32[3]
     VEC3F_SPLAT,        // (a0) = fp0
@@ -148,9 +147,31 @@ typedef enum {
     VEC3F_LERP,         // (a2) = lerp((a1) - (a0), fp0)
 
     /**
-     * Transforms a set of Vec2F by a 2x2 matrix.
+     * Transforms a set of Vec3F by a 3x3 matrix.
      */
     VEC3F_XFRM_3X3,     // (a2) = (a1)*[(a0)], count in r0
+
+    /**
+     * Transformation
+     *
+     * Transforms a set of Vec3F by a 4x4 matrix. The vector is interpreted as having four components with the
+     * foutth set to 0.0. The output continues to be Vec3F, scaled, rotated according to the matrix. Any translation
+     * term of the matrix is omitted, making this suitable for direction vectors.
+     *
+     * If you want a strictly homogeneous coordinate system for 3D, use the Vec4F vector type and M4X4F matrix.
+     */
+    VEC3F_0_XFRM_4X4,     // (a2) = (a1)*[(a0)], count in r0.
+
+    /**
+     * Transformation
+     *
+     * Transforms a set of Vec3F by a 4x4 matrix. The vector is interpreted as having three components with the
+     * fourth set to 1.0. The output continues to be Vec3F, scaled, rotated and translated according to the matrix.
+     * As all terms of the matrix are applied, this is suitable for position vectors.
+     *
+     * If you want a strictly homogeneous coordinate system for 3D, use the Vec4F vector type and M4X4F matrix.
+     */
+    VEC3F_1_XFRM_4X4,     // (a2) = (a1)*[(a0)], count in r0.
 
     /**
      * Expansion
@@ -164,24 +185,9 @@ typedef enum {
     /**
      * Transformation
      *
-     * Transforms a set of Vec2F by a 3x3 matrix. The vector is interpreted as having three components with the
-     * third set to 0.0. The output continues to be Vec2F, scaled, rotated according to the matrix. Any translation
-     * term of the matrix is omitted, making this suitable for direction vectors.
-     *
-     * If you want a strictly homogeneous coordinate system for 2D, use the Vec3F vector type and M3X3F matrix.
+     * Transforms a set of homogenous coordinate Vec4F by a 4x4 matrix.
      */
-    VEC3F_0_XFRM_4X4,     // (a2) = (a1)*[(a0)], count in r0.
-
-    /**
-     * Transformation
-     *
-     * Transforms a set of Vec2F by a 3x3 matrix. The vector is interpreted as having three components with the
-     * third set to 1.0. The output continues to be Vec2F, scaled, rotated and translated according to the matrix.
-     * As all terms of the matrix are applied, this is suitable for position vectors.
-     *
-     * If you want a strictly homogeneous coordinate system for 2D, use the Vec3F vector type and M3X3F matrix.
-     */
-    VEC3F_1_XFRM_4X4,     // (a2) = (a1)*[(a0)], count in r0.
+    VEC4F_XFORM_4X4,      // (a2) = (a1)*[(a0)], count in r0.
 
     // mat2x2f float32[2][2]
     M2X2F_IDENTITY,     // (a0) = identity
