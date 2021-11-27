@@ -35,5 +35,5 @@ bench_vec3f_hcf:
     @align  0, 8
 
 .benchmark_info:
-    dc.b "Benchmarking: vec3f_add_assign\n\0"
+    dc.b "Benchmarking: vec3f_norm\n\0"
 

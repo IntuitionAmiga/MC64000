@@ -35,8 +35,21 @@ bench_vec3f_func:
 
     @align  0, 8
 
-.vec3fnorm:
-
+.vec3fnorm:                 ; (r8) = &{ x, y, z }
+    fmove.s     (r8)+,  fp1
+    fmul.s      fp1,    fp1 ; fp1 = x*x
+    fmove.s     (r8)+,  fp0
+    fmul.s      fp0,    fp0 ; fp0 = y*y
+    fadd.s      fp0,    fp1 ; fp1 = x*x + y*y
+    fmove.s     (r8)+,  fp0
+    fmul.s      fp0,    fp0 ; fp0 = z*z
+    fadd.s      fp0,    fp1 ; fp1 = x*x + y*y + z*z
+    fsqrt.s     fp1,    fp1 ; fp1 = sqrt(x*x + y*y + z*z)
+    fmove.s     #1.0,   fp0 ;
+    fdiv.s      fp1,    fp0 ; fp0 = 1.0 / sqrt(x*x + y*y + z*z)
+    fmul.s      fp0,    -(r8)
+    fmul.s      fp0,    -(r8)
+    fmul.s      fp0,    -(r8)
     rts
 
 .benchmark_info:
