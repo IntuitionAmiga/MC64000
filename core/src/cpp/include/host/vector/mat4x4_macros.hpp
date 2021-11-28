@@ -78,6 +78,40 @@ namespace VectorMath {
     ); \
 }
 
+#define m4x4_transpose(T, NAME) { \
+    T*       pDst = aoGPR[ABI::PTR_REG_1].p ## NAME; \
+    T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+    pDst[M4_11] = pSrc[M4_11]; \
+    pDst[M4_12] = pSrc[M4_21]; \
+    pDst[M4_13] = pSrc[M4_31]; \
+    pDst[M4_14] = pSrc[M4_41]; \
+    pDst[M4_21] = pSrc[M4_12]; \
+    pDst[M4_22] = pSrc[M4_22]; \
+    pDst[M4_23] = pSrc[M4_32]; \
+    pDst[M4_24] = pSrc[M4_42]; \
+    pDst[M4_31] = pSrc[M4_13]; \
+    pDst[M4_32] = pSrc[M4_23]; \
+    pDst[M4_33] = pSrc[M4_33]; \
+    pDst[M4_34] = pSrc[M4_43]; \
+    pDst[M4_41] = pSrc[M4_14]; \
+    pDst[M4_42] = pSrc[M4_24]; \
+    pDst[M4_43] = pSrc[M4_34]; \
+    pDst[M4_44] = pSrc[M4_44]; \
+}
+
+#define swap_pair(a, b) { t = a; a = b; b = t; }
+
+#define m4x4_transpose_assign(T, NAME) { \
+    T* pDst = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+    T  t; \
+    swap_pair(pDst[M4_12], pDst[M4_21]); \
+    swap_pair(pDst[M4_13], pDst[M4_31]); \
+    swap_pair(pDst[M4_14], pDst[M4_41]); \
+    swap_pair(pDst[M4_23], pDst[M4_32]); \
+    swap_pair(pDst[M4_24], pDst[M4_42]); \
+    swap_pair(pDst[M4_34], pDst[M4_43]); \
+}
+
 #define v4_transform_4x4(T, NAME) \
 vec4_transform_4x4<T>( \
     aoGPR[ABI::PTR_REG_2].pf ## NAME, \
@@ -85,6 +119,7 @@ vec4_transform_4x4<T>( \
     aoGPR[ABI::PTR_REG_0].pf ## NAME, \
     Interpreter::gpr()[ABI::INT_REG_0].uLong \
 )
+
 }}}
 
 #endif

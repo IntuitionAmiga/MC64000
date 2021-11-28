@@ -78,6 +78,30 @@ namespace VectorMath {
     ); \
 }
 
+#define m3x3_transpose(T, NAME) { \
+    T*       pDst = aoGPR[ABI::PTR_REG_1].p ## NAME; \
+    T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+    pDst[M3_11] = pSrc[M3_11]; \
+    pDst[M3_12] = pSrc[M3_21]; \
+    pDst[M3_13] = pSrc[M3_31]; \
+    pDst[M3_21] = pSrc[M3_21]; \
+    pDst[M3_22] = pSrc[M3_22]; \
+    pDst[M3_23] = pSrc[M3_32]; \
+    pDst[M3_31] = pSrc[M3_13]; \
+    pDst[M3_32] = pSrc[M3_23]; \
+    pDst[M3_33] = pSrc[M3_33]; \
+}
+
+#define swap_pair(a, b) { t = a; a = b; b = t; }
+
+#define m3x3_transpose_assign(T, NAME) { \
+    T* pDst = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+    T  t; \
+    swap_pair(pDst[M3_12], pDst[M3_21]); \
+    swap_pair(pDst[M3_13], pDst[M3_31]); \
+    swap_pair(pDst[M3_23], pDst[M3_32]); \
+}
+
 }}}
 
 #endif

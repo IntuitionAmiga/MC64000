@@ -80,7 +80,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case VEC3F_NORM_AS:         v3_normalise_assign(float32, Single, 1.0f); break;
         case VEC3F_NORM:            v3_normalise(float32, Single, 1.0f);        break;
         case VEC3F_LERP:            v3_interpolate(float32, Single);            break;
-/*
+
         case VEC3F_XFRM_3X3:        v3_transform_3x3(float32, Single);          break;
         case VEC3F_0_XFRM_4X4:      v3_0_transform_4x4(float32, Single);        break;
         case VEC3F_1_XFRM_4X4:      v3_1_transform_4x4(float32, Single);        break;
@@ -97,12 +97,11 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M2X2F_SUB:             m2x2_sub(float32, Single);                  break;
         case M2X2F_MULTIPLY_AS:     m2x2_multiply_assign(float32, Single);      break;
         case M2X2F_MULTIPLY:        m2x2_multiply(float32, Single);             break;
-        case M2X2F_TRANSPOSE_AS:
-        case M2X2F_TRANSPOSE:
+        case M2X2F_TRANSPOSE_AS:    m2x2_transpose_assign(uint32, uLong);       break;
+        case M2X2F_TRANSPOSE:       m2x2_transpose(uint32, uLong);              break;
+        case M2X2F_DET:             m2x2_determinant(float32, Single);          break;
         case M2X2F_INVERSE_AS:
         case M2X2F_INVERSE:
-        case M2X2F_DET:
-            break;
 
         case M3X3F_IDENTITY:        m3x3_identity(float32, Single);             break;
         case M3X3F_COPY:            m3x3_copy(uint32, uLong);                   break;
@@ -114,11 +113,11 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M3X3F_SUB:             m3x3_sub(float32, Single);                  break;
         case M3X3F_MULTIPLY_AS:     m3x3_multiply_assign(float32, Single);      break;
         case M3X3F_MULTIPLY:        m3x3_multiply(float32, Single);             break;
-        case M3X3F_TRANSPOSE_AS:
-        case M3X3F_TRANSPOSE:
+        case M3X3F_TRANSPOSE_AS:    m3x3_transpose_assign(uint32, uLong);       break;
+        case M3X3F_TRANSPOSE:       m3x3_transpose(uint32, uLong);              break;
+        case M3X3F_DET:
         case M3X3F_INVERSE_AS:
         case M3X3F_INVERSE:
-        case M3X3F_DET:
             break;
 
         case M4X4F_IDENTITY:        m4x4_identity(float32, Single);             break;
@@ -131,13 +130,13 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M4X4F_SUB:             m4x4_sub(float32, Single);                  break;
         case M4X4F_MULTIPLY_AS:     m4x4_multiply_assign(float32, Single);      break;
         case M4X4F_MULTIPLY:        m4x4_multiply(float32, Single);             break;
-        case M4X4F_TRANSPOSE_AS:
-        case M4X4F_TRANSPOSE:
-        case M4X4F_INVERSE_AS:
-        case M4X4F_INVERSE:
-        case M4X4F_DET:
-            break;
-*/
+        case M4X4F_TRANSPOSE_AS:    m4x4_transpose_assign(uint32, uLong);       break;
+        case M4X4F_TRANSPOSE:       m4x4_transpose_assign(uint32, uLong);       break;
+        //case M4X4F_DET:
+        //case M4X4F_INVERSE_AS:
+        //case M4X4F_INVERSE:
+        //    break;
+
         default:
             std::fprintf(stderr, "Unknown Mem operation %d\n", iOperation);
             return Interpreter::UNKNOWN_HOST_CALL;

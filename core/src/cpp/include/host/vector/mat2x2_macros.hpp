@@ -78,6 +78,27 @@ namespace VectorMath {
     ); \
 }
 
+#define m2x2_transpose(T, NAME) { \
+    T*       pDst = aoGPR[ABI::PTR_REG_1].p ## NAME; \
+    T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+    pDst[M2_11] = pSrc[M2_11]; \
+    pDst[M2_12] = pSrc[M2_21]; \
+    pDst[M2_21] = pSrc[M2_12]; \
+    pDst[M2_22] = pSrc[M2_22]; \
+}
+
+#define m2x2_transpose_assign(T, NAME) { \
+    T* pDst = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+    T  tmp  = pDst[M2_12]; \
+    pDst[M2_12] = pDst[M2_21]; \
+    pDst[M2_21] = tmp; \
+}
+
+#define m2x2_determinant(T, NAME) { \
+    T const* pfMtx = aoGPR[ABI::PTR_REG_0].pf ## NAME; \
+    Interpreter::fpr()[ABI::FLT_REG_0].f ## NAME = pfMtx[M2_11]*pfMtx[M2_22] - pfMtx[M2_12]*pfMtx[M2_21]; \
+}
+
 }}}
 
 #endif

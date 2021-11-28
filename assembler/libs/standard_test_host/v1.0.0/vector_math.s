@@ -68,9 +68,9 @@
     @equ mat2x2f_mul          #46, vecmath_vector
     @equ mat2x2f_trans_assign #47, vecmath_vector
     @equ mat2x2f_trans        #48, vecmath_vector
-    @equ mat2x2f_inv_assign   #49, vecmath_vector
-    @equ mat2x2f_inv          #50, vecmath_vector
-    @equ mat2x2f_det          #51, vecmath_vector
+    @equ mat2x2f_det          #49, vecmath_vector
+    @equ mat2x2f_inv_assign   #50, vecmath_vector
+    @equ mat2x2f_inv          #51, vecmath_vector
 
     @equ mat3x3f_identity     #52, vecmath_vector
     @equ mat3x3f_copy         #53, vecmath_vector
@@ -84,9 +84,9 @@
     @equ mat3x3f_mul          #61, vecmath_vector
     @equ mat3x3f_trans_assign #62, vecmath_vector
     @equ mat3x3f_trans        #63, vecmath_vector
-    @equ mat3x3f_inv_assign   #64, vecmath_vector
-    @equ mat3x3f_inv          #65, vecmath_vector
-    @equ mat3x3f_det          #66, vecmath_vector
+    @equ mat3x3f_det          #64, vecmath_vector
+    @equ mat3x3f_inv_assign   #65, vecmath_vector
+    @equ mat3x3f_inv          #66, vecmath_vector
 
     @equ mat4x4f_identity     #67, vecmath_vector
     @equ mat4x4f_copy         #68, vecmath_vector
@@ -100,7 +100,7 @@
     @equ mat4x4f_mul          #76, vecmath_vector
     @equ mat4x4f_trans_assign #77, vecmath_vector
     @equ mat4x4f_trans        #78, vecmath_vector
-    @equ mat4x4f_inv_assign   #79, vecmath_vector
-    @equ mat4x4f_inv          #80, vecmath_vector
-    @equ mat4x4f_det          #81, vecmath_vector
+    @equ mat4x4f_det          #79, vecmath_vector
+    @equ mat4x4f_inv_assign   #80, vecmath_vector
+    @equ mat4x4f_inv          #81, vecmath_vector
 
