@@ -103,7 +103,7 @@ class DefinitionSet {
         // Protect any string literals or labels
         $iPlaceholderKey = 0;
         $aPlaceholderMap = [];
-        $sInput = preg_replace_callback(
+        $sInput = (string)preg_replace_callback(
             '/".*?"|[a-zA-Z0-9_]+\:$/',
             function(array $aMatches) use (&$iPlaceholderKey, &$aPlaceholderMap): string {
                 $sKey = '{S:' . $iPlaceholderKey++ . '}';

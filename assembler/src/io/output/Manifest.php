@@ -50,7 +50,7 @@ class Manifest implements IBinaryChunk {
         ENTRY = 16
     ;
 
-    /** @var array[] $aChunks */
+    /** @var mixed[][] $aChunks */
     private array $aChunks = [];
     private int   $iLocation;
 

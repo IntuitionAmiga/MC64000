@@ -99,7 +99,7 @@ class Definition {
     }
 
     /**
-     * Return the options (could be empty)#*
+     * Return the options (could be empty)
      *
      * @return State\Options
      */
@@ -141,9 +141,9 @@ class Definition {
     }
 
     /**
-     * @param object $oProjectData
+     * @param \stdClass $oProjectData
      */
-    private function processTarget(object $oProjectData): void {
+    private function processTarget(\stdClass $oProjectData): void {
         $this->oTarget = new State\Target(
             (string)$oProjectData->target->name,
             (string)$oProjectData->target->version
@@ -166,9 +166,9 @@ class Definition {
     }
 
     /**
-     * @param object $oProjectData
+     * @param \stdClass $oProjectData
      */
-    private function processSources(object $oProjectData): void {
+    private function processSources(\stdClass $oProjectData): void {
         $this->aSourceFiles = array_map(
             function(string $sSourcePath) {
 
@@ -190,9 +190,9 @@ class Definition {
     }
 
     /**
-     * @param object $oProjectData
+     * @param \stdClass $oProjectData
      */
-    private function processOptions(object $oProjectData): void {
+    private function processOptions(\stdClass $oProjectData): void {
         if (!empty($oProjectData->options) && (
             is_object($oProjectData->options) ||
             is_array($oProjectData->options)
@@ -202,9 +202,9 @@ class Definition {
     }
 
     /**
-     * @param object $oProjectData
+     * @param \stdClass $oProjectData
      */
-    private function processDefines(object $oProjectData): void {
+    private function processDefines(\stdClass $oProjectData): void {
         if (!empty($oProjectData->defines) && (
             is_object($oProjectData->defines) ||
             is_array($oProjectData->defines)
@@ -217,9 +217,9 @@ class Definition {
 
     /**
      * @param  string $sProjectFile
-     * @return object
+     * @return \stdClass
      */
-    private function loadDefinition(string $sProjectFile): object {
+    private function loadDefinition(string $sProjectFile): \stdClass {
         if (
             empty($sProjectFile) ||
             !file_exists($sProjectFile) ||
@@ -240,7 +240,10 @@ class Definition {
         }
         $this->sBaseDirectory = realpath(dirname($sProjectFile)) . '/';
         $this->sName          = (string)$oProjectData->target->name;
-        $this->sDescription   = (string)($oProjectData->target->description ?? '');
+        $this->sDescription   = (string)(
+            empty($oProjectData->target->description) ?
+            '' : $oProjectData->target->description
+        );
         $this->sOutputBinary  = (string)$oProjectData->target->output;
         return $oProjectData;
     }

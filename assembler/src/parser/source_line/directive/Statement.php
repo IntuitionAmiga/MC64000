@@ -52,7 +52,7 @@ class Statement implements SourceLine\IParser {
     }
 
     /**
-     * @implements SourceLine\IParser::checkLine()
+     * Implements SourceLine\IParser::checkLine()
      */
     public function checkLine(string $sLine): bool {
         if (preg_match(self::BASIC_LINE_MATCH, $sLine, $aMatch)) {

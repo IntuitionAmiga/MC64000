@@ -83,13 +83,13 @@ trait TBranching {
         $iDisplacement = $this->oTgtParser->getLastDisplacement();
         if ($iDisplacement < 0) {
             $iInstructionLength = strlen($sInstructionBytecode) + 1;
-            $iDisplacement      = -$iDisplacement;
+            $iPosDisplacement   = abs($iDisplacement);
             if (
-                $iDisplacement < $iInstructionLength ||
-                ($iDisplacement == $iInstructionLength && false === ($this->bAllowBranchToSelf || $bOperandSideEffects))
+                $iPosDisplacement < $iInstructionLength ||
+                ($iPosDisplacement == $iInstructionLength && false === ($this->bAllowBranchToSelf || $bOperandSideEffects))
             ) {
                 throw new \UnexpectedValueException(
-                    'Invalid branch target -' . $iDisplacement .
+                    'Invalid branch target -' . $iPosDisplacement .
                     '; must be further than -' . $iInstructionLength .
                     ' to avoid infinite loop/corrupted PC'
                 );
@@ -238,4 +238,5 @@ trait TBranching {
     private function generateFixedBranchBytecode(int $iOpcode, int $iDisplacement, string $sFormat): string {
         return chr($iOpcode) . pack($sFormat, $iDisplacement);
     }
+
 }
