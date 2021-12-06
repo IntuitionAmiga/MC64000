@@ -19,7 +19,7 @@
     "sources": [
         "lib:standard_test_host/v1.0.0/host.s",
         "lib:standard_test_host/v1.0.0/io.s",
-
+        "lib:standard_test_host/v1.0.0/vec3.s",
         "src/main.s",
         "src/calibrate.s",
         "src/bench_add_reg_to_reg_ind.s",
@@ -30,8 +30,8 @@
         "src/bench_conditional.s",
         "src/bench_bsr_ret.s",
         "src/bench_hcf.s",
-        "src/bench_add_vec3f.s"
-
+        "src/bench_vec3f_func.s",
+        "src/bench_vec3f_hcf.s"
     ],
     "defines": {
     }

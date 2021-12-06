@@ -193,7 +193,7 @@ void Interpreter::run() {
                     // status code we can set.
                     uNext = *puProgramCounter++;
                     if (uNext < uNumHCFVectors) {
-                        eStatus = pcHCFVectors[uNext]();
+                        eStatus = pcHCFVectors[uNext](*puProgramCounter++);
                     } else {
                         eStatus = UNKNOWN_HOST_CALL;
                     }

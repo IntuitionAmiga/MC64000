@@ -34,8 +34,7 @@ class BranchDisplacement implements MC64K\IParser {
 
     private const
         MATCH_LABEL   = '/^(\.){0,1}[a-zA-Z_]{1}[0-9a-zA-Z_]{0,}$/',
-        MATCHED_LABEL = 0,
-        MATCHED_LOCAL = 1
+        MATCHED_LABEL = 0
     ;
 
     private int $iLastDisplacement = Defs\IBranchLimits::UNRESOLVED_DISPLACEMENT;

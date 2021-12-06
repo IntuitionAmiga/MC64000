@@ -3,7 +3,7 @@
 
 bench_biz_int_taken:
     lea         .benchmark_info,    r8
-    bsr         io_print_string
+    hcf         io_print_string
 
     move.q      max_loops,          loop_counter
     clr.q       r0
@@ -62,7 +62,7 @@ bench_biz_int_taken:
 
 bench_biz_int_not_taken:
     lea         .benchmark_info_1,    r8
-    bsr         io_print_string
+    hcf         io_print_string
 
     move.q      max_loops,          loop_counter
     move.q      #1,                 r0

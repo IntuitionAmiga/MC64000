@@ -201,16 +201,16 @@ void tellStream(Machine::GPRegister* aoGPR) {
 }
 
 /**
- * IO::hostVector()
+ * IO::hostVector(uint8 uFunctionID)
  *
  * The VM has put the byte value of the enumeration on the stack and triggered our HCF vector.
  *
  */
-Interpreter::Status hostVector() {
+Interpreter::Status hostVector(uint8 uFunctionID) {
 
     Machine::GPRegister* aoGPR = Interpreter::gpr();
 
-    Call iOperation = (Call) *aoGPR[Machine::GPRegister::SP].piByte;
+    Call iOperation = (Call) uFunctionID;
     switch (iOperation) {
         case INIT:
         case DONE:

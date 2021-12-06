@@ -24,54 +24,53 @@
     @equ scale_mips         fp13
 
 main:
-    bsr         io_init
+    hcf         io_init
     lea         .info_txt_0,        r8
-    bsr         io_print_string
+    hcf         io_print_string
     clr.q       r8
     move.q      max_loops,          r0
-    bsr         io_print_quad
+    hcf         io_print_quad
     lea         .info_txt_1,        r8
-    bsr         io_print_string
+    hcf         io_print_string
 
     bsr         calibration
 
-    ;bsr         bench_add_reg_to_indirect
-    ;bsr         bench_add_reg_ind_to_reg_ind
-    ;bsr         bench_add_reg_to_label
-    ;bsr         bench_add_label_to_label
-    ;bsr         bench_small_imm_to_reg
+    bsr         bench_add_reg_to_indirect
+    bsr         bench_add_reg_ind_to_reg_ind
+    bsr         bench_add_reg_to_label
+    bsr         bench_add_label_to_label
+    bsr         bench_small_imm_to_reg
 
 
-    ;bsr         bench_biz_int_taken
-    ;bsr         bench_biz_int_not_taken
+    bsr         bench_biz_int_taken
+    bsr         bench_biz_int_not_taken
 
-    ;bsr         bench_bsr_ret
+    bsr         bench_bsr_ret
     bsr         bench_hcf
-    ;bsr         bench_hcf_stub
 
-    bsr         bench_add_vec3f
-
+    bsr         bench_vec3f_func
+    bsr         bench_vec3f_hcf
 
 exit:
-    bsr         io_done
+    hcf         io_done
     rts
 
 report_elapsed:
     lea         .report_elapsed_txt_0,  r8
-    bsr         io_print_string
+    hcf         io_print_string
     move.q      time_recorded,          r0
     lea         .report_elapsed_fmt,    r8
-    bsr         io_print_quad
+    hcf         io_print_quad
     lea         .report_elapsed_txt_1,  r8
-    bsr         io_print_string
+    hcf         io_print_string
 
     fmoveq.d    time_recorded,          fp1
     fmove.d     scale_mips,             fp0
     fdiv.d      fp1,                    fp0
     lea         .report_relative_fmt,   r8
-    bsr         io_print_double
+    hcf         io_print_double
     lea         .report_mips_txt,       r8
-    bsr         io_print_string
+    hcf         io_print_string
 
     rts
 
@@ -79,9 +78,9 @@ report_relative:
     fmoveq.d    time_recorded,          fp0
     fmul.d      scale_relative,         fp0
     lea         .report_relative_fmt,   r8
-    bsr         io_print_double
+    hcf         io_print_double
     lea         .report_relative_txt,   r8
-    bsr         io_print_string
+    hcf         io_print_string
     rts
 
 .info_txt_0:

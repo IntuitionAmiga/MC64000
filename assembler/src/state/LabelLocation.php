@@ -20,7 +20,7 @@ use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\IO;
 
-use function \sprintf, \strlen, \array_flip, \str_split;
+use function \sprintf, \strlen, \array_flip, \str_split, \implode, \array_keys;
 
 /**
  * LabelLocation
@@ -40,19 +40,19 @@ class LabelLocation {
         IE_CALL  = 4
     ;
 
-    /** @var array[] $aGlobalLabels */
+    /** @var mixed[][] $aGlobalLabels */
     private array $aGlobalLabels         = [];
 
-    /** @var array[] $aLocalLabels */
+    /** @var mixed[][] $aLocalLabels */
     private array $aLocalLabels          = [];
 
-    /** @var array[] $aUnresolvedLabels */
+    /** @var mixed[][] $aUnresolvedLabels */
     private array $aUnresolvedLabels     = [];
 
     /** @var string[] $aExportedLabels */
     private array $aExportedLabels       = [];
 
-    /** @var array[] $aImportedLabels */
+    /** @var mixed[][] $aImportedLabels */
     private array $aImportedLabels       = [];
 
     /** @var string[] $aEnumeratedImports */
@@ -198,7 +198,7 @@ class LabelLocation {
     /**
      * Returns the global symbol table.
      *
-     * @return array[] [string => [string, string, int]]
+     * @return mixed[][] [string => [string, string, int]]
      */
     public function getGlobals(): array {
         return $this->aGlobalLabels;
@@ -321,7 +321,7 @@ class LabelLocation {
      *
      * Throws if an unresolved refrence cannot be resolved.
      *
-     * @return object[] {int, string, string, int}[]
+     * @return \stdClass[] {int, string, string, int}[]
      * @throws \Exception
      */
     public function resolveBranchTargetList(): array {
@@ -370,7 +370,7 @@ class LabelLocation {
     /**
      * Returns the set of exported labels.
      *
-     * @return object[] {string, int, string}[]
+     * @return \stdClass[] {string, int, string}[]
      */
     public function resolveExports(): array {
         $aResult = [];
@@ -422,7 +422,7 @@ class LabelLocation {
     /**
      * Returns the (pre-enumerated) set of imports.
      *
-     * @return array[]
+     * @return mixed[][]
      */
     public function getImports(): array {
         return $this->aImportedLabels;
@@ -445,11 +445,20 @@ class LabelLocation {
      * Asserts if a label is valid. For now this is just a length check.
      *
      * @param   string $sLabel
-     * @@throws \LengthException
+     * @@throws \LengthException|\InvalidArgumentException
      */
     private function assertLabel(string $sLabel): void {
         if (strlen($sLabel) > Defs\ILabel::MAX_LENGTH) {
-            throw new \LengthException();
+            throw new \LengthException("Label identifer '" . $sLabel . "' too long");
+        }
+        if (
+            isset(Defs\Register\INames::GPR_MAP[$sLabel]) ||
+            isset(Defs\Register\INames::FPR_MAP[$sLabel])
+        ) {
+            throw new \InvalidArgumentException(
+                "Register name '" . $sLabel .
+                "' used in a context that expects a label"
+            );
         }
     }
 

@@ -75,7 +75,7 @@ union GPRegister {
         uint8*   puByte;
         int8*    piByte;
         float64* pfDouble;
-        float32* pfFloat;
+        float32* pfSingle;
 
         uint64   uQuad;
         int64    iQuad;

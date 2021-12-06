@@ -4,7 +4,7 @@
 bench_add_reg_ind_to_reg_ind:
 ; Instruction, add.q (r11), (r10)
     lea         .benchmark_info,    r8
-    bsr         io_print_string
+    hcf         io_print_string
 
     ; Allocate a non-adjacent pair of locations on the stack in r10/r11
     lea         -128(sp),            r10

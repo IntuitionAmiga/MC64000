@@ -39,9 +39,9 @@ class Instruction {
      * If the input text could not be tokenised, null is returned.
      *
      * @param  string $sInput
-     * @return object|null
+     * @return Token|null
      */
-    public function tokenise(string $sInput): ?object {
+    public function tokenise(string $sInput): ?Token {
         if (preg_match(self::MATCH, $sInput, $aMatches)) {
             $sMnemonic = $aMatches[self::MATCHED_MNEMONIC];
 
@@ -64,9 +64,9 @@ class Instruction {
                 $aMatches[self::MATCHED_OPERANDS]
             );
 
-            return (object)[
-                'sMnemonic' => $sMnemonic,
-                'aOperands' => array_map(
+            return new Token(
+                $sMnemonic,
+                array_map(
                     function(string $sFragment) use (&$aPlaceholderMap) : string {
                         return str_replace(
                             array_keys($aPlaceholderMap),
@@ -76,7 +76,7 @@ class Instruction {
                     },
                     explode(',', $sOperands)
                 )
-            ];
+            );
         }
         return null;
     }
