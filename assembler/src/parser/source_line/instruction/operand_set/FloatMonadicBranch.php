@@ -86,4 +86,11 @@ class FloatMonadicBranch extends MonadicBranch {
     protected function foldIsPlus(float $fImmediate, int $iDisplacement, int $iOriginalSize): string {
         return $this->foldImmediateIsGreaterOrEqual($fImmediate, 0.0, $iDisplacement, $iOriginalSize);
     }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getFoldFunctions(): array {
+        return self::OPCODES;
+    }
 }

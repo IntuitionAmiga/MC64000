@@ -22,7 +22,7 @@ namespace ABadCafe\MC64K\Parser\EffectiveAddress;
  *
  * Meta Parser for integer EA modes that can be read (i.e. suitable for source or comparison).
  */
-class AllIntegerReadable extends Composite {
+class AllIntegerReadable extends Composite implements IPotentiallyFoldableImmediateParser {
 
     /**
      * Constructor
@@ -57,6 +57,8 @@ class AllIntegerReadable extends Composite {
      * @return int|null
      */
     public function getImmediate(): ?int {
-        return $this->wasImmediate() ? $this->oParsedBy->getLastParsed() : null;
+        return $this->oParsedBy instanceof IntegerImmediate ?
+            $this->oParsedBy->getLastParsed() :
+            null;
     }
 }

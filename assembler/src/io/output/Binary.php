@@ -35,7 +35,7 @@ class Binary {
 
     /** @var resource $rOutput */
     private        $rOutput;
-    private int    $iChunkNumber = 0, $iLoadSize = 0;
+    private int    $iLoadSize = 0;
 
     private bool   $bLogInfo = false;
 
@@ -135,7 +135,9 @@ class Binary {
         if (fwrite($this->rOutput, $sChunkHeader) !== $iWriteSize) {
             throw new \Exception("Unexpected write length for chunk header writing to " . $this->sFilename);
         }
-        $this->bLogInfo && Log::printf("Wrote chunk %s header %d bytes", $oChunk->getChunkType(), $iWriteSize);
+        if ($this->bLogInfo) {
+            Log::printf("Wrote chunk %s header %d bytes", $oChunk->getChunkType(), $iWriteSize);
+        }
         return $iWriteSize;
     }
 
@@ -152,7 +154,9 @@ class Binary {
         if ($iWriteSize !== fwrite($this->rOutput, $oChunk->getChunkData())) {
             throw new \Exception("Unexpected write length for chunk data writing to " . $this->sFilename);
         }
-        $this->bLogInfo && Log::printf("Wrote chunk %s body %d bytes", $oChunk->getChunkType(), $iWriteSize);
+        if ($this->bLogInfo) {
+            Log::printf("Wrote chunk %s body %d bytes", $oChunk->getChunkType(), $iWriteSize);
+        }
         return $iWriteSize;
     }
 
@@ -172,7 +176,9 @@ class Binary {
             if ($iAlignment !== fwrite($this->rOutput, $sAlignPads)) {
                 throw new \Exception("Unexpected write length chunk padding writing to " . $this->sFilename);
             }
-            $this->bLogInfo && Log::printf("Wrote chunk %s padding %d bytes", $oChunk->getChunkType(), $iAlignment);
+            if ($this->bLogInfo) {
+                Log::printf("Wrote chunk %s padding %d bytes", $oChunk->getChunkType(), $iAlignment);
+            }
         }
         return $iAlignment;
     }

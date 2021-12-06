@@ -171,6 +171,9 @@ class FastPathOptimiser {
      */
     private function handleDBNZ(int $iOpcode, string $sOperandByteCode): void {
         $aDisplacement = unpack(Defs\IIntLimits::LONG_BIN_FORMAT, substr($sOperandByteCode, 1));
+        if (false === $aDisplacement) {
+            throw new \Exception('Unexpected bytecode during dbnz expansion');
+        }
         $iDisplacement = reset($aDisplacement);
 
         if ($iDisplacement > Defs\IIntLimits::LONG_MAX_SIGNED) {

@@ -22,7 +22,7 @@ namespace ABadCafe\MC64K\Parser\EffectiveAddress;
  *
  * Meta Parser for float EA modes that can be read (i.e. suitable for source or comparison).
  */
-class AllFloatReadable extends Composite {
+class AllFloatReadable extends Composite implements IPotentiallyFoldableImmediateParser {
 
     /**
      * Constructor
@@ -57,6 +57,8 @@ class AllFloatReadable extends Composite {
      * @return float|null
      */
     public function getImmediate(): ?float {
-        return $this->wasImmediate() ? $this->oParsedBy->getLastParsed() : null;
+        return $this->oParsedBy instanceof FloatImmediate ?
+            $this->oParsedBy->getLastParsed() :
+            null;
     }
 }

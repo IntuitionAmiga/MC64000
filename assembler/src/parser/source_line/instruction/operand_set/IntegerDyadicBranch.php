@@ -199,4 +199,15 @@ class IntegerDyadicBranch extends DyadicBranch {
     protected function foldImmediateBitClearQuad($mSrcImmediate, $mDstImmediate, int $iDisplacement, int $iOriginalSize): string {
         return 0 === ((1<<($mSrcImmediate & 63)) & $mDstImmediate) ? $this->encodeFixedBranch($iDisplacement, $iOriginalSize) : '';
     }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getFoldFunctions(): array {
+        return self::OPCODES;
+    }
+
+    protected function getCallbackDefault(): int {
+        return self::CB_DEFAULT;
+    }
 }

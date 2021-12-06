@@ -15,38 +15,27 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Utils;
-
-use function \fprintf;
+namespace ABadCafe\MC64K\Tokeniser;
 
 /**
- * Basic Log Facility
+ * Token
  */
-class Log {
-
-    private static int $iLine  = 0;
-
-    /**
-     * Variadic template string message
-     *
-     * @param string $sFormat
-     * @param mixed  $aVarArgs
-     */
-    public static function printf(string $sFormat, ...$aVarArgs): void {
-        fprintf(
-            STDERR, ('#%d ' . $sFormat . "\n"), self::$iLine++,
-            ...$aVarArgs
-        );
-    }
+class Token {
+    public string $sMnemonic;
 
     /**
-     * Simple direct message
-     *
-     * @param string $sMessage
+     * @var string[] $aOperands
      */
-    public static function write(string $sMessage): void {
-        fprintf(
-            STDERR, "#%d %s\n", self::$iLine++, $sMessage
-        );
+    public array $aOperands;
+
+    /**
+     * Constructor
+     *
+     * @param string   $sMnemonic
+     * @param string[] $aOperands
+     */
+    public function __construct(string $sMnemonic, array $aOperands) {
+        $this->sMnemonic = $sMnemonic;
+        $this->aOperands = $aOperands;
     }
 }

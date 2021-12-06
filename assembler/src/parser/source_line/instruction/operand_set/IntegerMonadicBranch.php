@@ -96,4 +96,11 @@ class IntegerMonadicBranch extends MonadicBranch {
         return $this->foldImmediateIsGreaterOrEqual($iImmediate, 0, $iDisplacement, $iOriginalSize);
     }
 
+    /**
+     * @inheritDoc
+     */
+    protected function getFoldFunctions(): array {
+        return self::OPCODES;
+    }
+
 }
