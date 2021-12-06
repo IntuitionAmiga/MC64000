@@ -40,19 +40,19 @@ class LabelLocation {
         IE_CALL  = 4
     ;
 
-    /** @var array[] $aGlobalLabels */
+    /** @var mixed[][] $aGlobalLabels */
     private array $aGlobalLabels         = [];
 
-    /** @var array[] $aLocalLabels */
+    /** @var mixed[][] $aLocalLabels */
     private array $aLocalLabels          = [];
 
-    /** @var array[] $aUnresolvedLabels */
+    /** @var mixed[][] $aUnresolvedLabels */
     private array $aUnresolvedLabels     = [];
 
     /** @var string[] $aExportedLabels */
     private array $aExportedLabels       = [];
 
-    /** @var array[] $aImportedLabels */
+    /** @var mixed[][] $aImportedLabels */
     private array $aImportedLabels       = [];
 
     /** @var string[] $aEnumeratedImports */
@@ -198,7 +198,7 @@ class LabelLocation {
     /**
      * Returns the global symbol table.
      *
-     * @return array[] [string => [string, string, int]]
+     * @return mixed[][] [string => [string, string, int]]
      */
     public function getGlobals(): array {
         return $this->aGlobalLabels;
@@ -422,7 +422,7 @@ class LabelLocation {
     /**
      * Returns the (pre-enumerated) set of imports.
      *
-     * @return array[]
+     * @return mixed[][]
      */
     public function getImports(): array {
         return $this->aImportedLabels;

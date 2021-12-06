@@ -35,7 +35,7 @@ class Binary {
 
     /** @var resource $rOutput */
     private        $rOutput;
-    private int    $iChunkNumber = 0, $iLoadSize = 0;
+    private int    $iLoadSize = 0;
 
     private bool   $bLogInfo = false;
 
