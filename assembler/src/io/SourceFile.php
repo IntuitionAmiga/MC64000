@@ -108,7 +108,7 @@ final class SourceFile implements ISourceFile {
     }
 
     /**
-     * @param  string
+     * @param  string $sFilename
      * @return string
      */
     public static function shortenFilename(string $sFilename): string {

@@ -321,7 +321,7 @@ class LabelLocation {
      *
      * Throws if an unresolved refrence cannot be resolved.
      *
-     * @return object[] {int, string, string, int}[]
+     * @return \stdClass[] {int, string, string, int}[]
      * @throws \Exception
      */
     public function resolveBranchTargetList(): array {
@@ -370,7 +370,7 @@ class LabelLocation {
     /**
      * Returns the set of exported labels.
      *
-     * @return object[] {string, int, string}[]
+     * @return \stdClass[] {string, int, string}[]
      */
     public function resolveExports(): array {
         $aResult = [];

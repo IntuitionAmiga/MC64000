@@ -39,8 +39,6 @@ class PackedGPRPair extends PackedRegisterPair {
 
     /**
      * Constructor
-     *
-     * @param int[] $aOpcodes
      */
     public function __construct() {
         $this->oSrcParser = new EffectiveAddress\GPRDirect();

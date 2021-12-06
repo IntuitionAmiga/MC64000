@@ -31,6 +31,8 @@ use function \array_keys;
  */
 class IntegerDyadic extends Dyadic {
 
+    use EffectiveAddress\TPotentiallyFoldableImmediateAware;
+
     const
         NO_OP    = 0,
         CLEAR_8  = 1,
@@ -172,10 +174,12 @@ class IntegerDyadic extends Dyadic {
             );
         }
 
-        if ($this->oSrcParser->wasImmediate()) {
-            $iImmediate = $this->oSrcParser->getImmediate();
+        $iImmediate = $this->getIntegerImmediate($this->oSrcParser);
+        if (null !== $iImmediate) {
             if (isset(self::OPCODES[$iOpcode][$iImmediate])) {
                 $sFoldFunc = self::OPCODES[$iOpcode][$iImmediate];
+
+                /** @var callable $cCallback */
                 $cCallback = [$this, $sFoldFunc];
                 $sAlternativeBytecode = $cCallback($this->sSrcBytecode, $this->sDstBytecode);
                 if (empty($sAlternativeBytecode)) {

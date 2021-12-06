@@ -15,38 +15,25 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Utils;
-
-use function \fprintf;
+namespace ABadCafe\MC64K\Parser\EffectiveAddress;
+use ABadCafe\MC64K;
+use ABadCafe\MC64K\Defs;
 
 /**
- * Basic Log Facility
+ * IPotentiallyFoldableImmediateParser
+ *
+ *
  */
-class Log {
+interface IPotentiallyFoldableImmediateParser extends IParser {
 
-    private static int $iLine  = 0;
-
-    /**
-     * Variadic template string message
-     *
-     * @param string $sFormat
-     * @param mixed  $aVarArgs
-     */
-    public static function printf(string $sFormat, ...$aVarArgs): void {
-        fprintf(
-            STDERR, ('#%d ' . $sFormat . "\n"), self::$iLine++,
-            ...$aVarArgs
-        );
-    }
 
     /**
-     * Simple direct message
-     *
-     * @param string $sMessage
+     * @return bool
      */
-    public static function write(string $sMessage): void {
-        fprintf(
-            STDERR, "#%d %s\n", self::$iLine++, $sMessage
-        );
-    }
+    public function wasImmediate(): bool;
+
+    /**
+     * @return int|float|null
+     */
+    public function getImmediate();
 }

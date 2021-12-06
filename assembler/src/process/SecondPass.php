@@ -45,21 +45,23 @@ class SecondPass {
             ->getOptions()
             ->isEnabled(Defs\Project\IOptions::LOG_LABEL_RESOLVE);
 
-        $bLogResolution &&
-        Log::printf('There are %d 32-bit forwards branch references to resolve...', count($aBranchTargets));
+        if ($bLogResolution) {
+            Log::printf('There are %d 32-bit forwards branch references to resolve...', count($aBranchTargets));
+        }
         foreach ($aBranchTargets as $iReferenceOffset => $oResolved) {
             $iTargetOffset = $oResolved->iLabelPosition;
             $iDisplacement = $iTargetOffset - $iReferenceOffset - Defs\IBranchLimits::DISPLACEMENT_SIZE;
-            $bLogResolution &&
-            Log::printf(
-                "\tReference to '%s' (%s@%d) at BCP #%d points to BCP #%d, displacement size is %d",
-                $oResolved->sLabel,
-                IO\SourceFile::shortenFilename($oResolved->sFilename),
-                $oResolved->iLineNumber,
-                $iReferenceOffset,
-                $iTargetOffset,
-                $iDisplacement
-            );
+            if ($bLogResolution) {
+                Log::printf(
+                    "\tReference to '%s' (%s@%d) at BCP #%d points to BCP #%d, displacement size is %d",
+                    $oResolved->sLabel,
+                    IO\SourceFile::shortenFilename($oResolved->sFilename),
+                    $oResolved->iLineNumber,
+                    $iReferenceOffset,
+                    $iTargetOffset,
+                    $iDisplacement
+                );
+            }
             $oOutput->patch(
                 pack(Defs\IIntLimits::LONG_BIN_FORMAT, $iDisplacement),
                 $iReferenceOffset
@@ -83,33 +85,36 @@ class SecondPass {
             ->getOptions()
             ->isEnabled(Defs\Project\IOptions::LOG_LABEL_RESOLVE);
 
-        $bLogResolution &&
-        Log::printf("There are %d imported symbols to enumerate...", count($aImportReferences));
+        if ($bLogResolution) {
+            Log::printf("There are %d imported symbols to enumerate...", count($aImportReferences));
+        }
 
         $aEnumeratedImports = [];
 
         foreach ($aImportReferences as $sLabel => $aReferences) {
             if (empty($aReferences)) {
-                $bLogResolution &&
-                Log::printf("\tImported label '%s' is unused, enumeration skipped", $sLabel);
+                if ($bLogResolution) {
+                    Log::printf("\tImported label '%s' is unused, enumeration skipped", $sLabel);
+                }
                 continue;
             }
 
             $iEnumeration = $iImportID++;
 
-            $bLogResolution &&
-            Log::printf("\tEnumerated label '%s' as #%d", $sLabel, $iEnumeration);
-
+            if ($bLogResolution) {
+                Log::printf("\tEnumerated label '%s' as #%d", $sLabel, $iEnumeration);
+            }
             $aEnumeratedImports[$iEnumeration] = $sLabel;
 
             foreach ($aReferences as $oReference) {
-                $bLogResolution &&
-                Log::printf(
-                    "\t\tReference (%s@%d) at offset %d",
-                    IO\SourceFile::shortenFilename($oReference->sFilename),
-                    $oReference->iLineNumber,
-                    $oReference->iLocation
-                );
+                if ($bLogResolution) {
+                    Log::printf(
+                        "\t\tReference (%s@%d) at offset %d",
+                        IO\SourceFile::shortenFilename($oReference->sFilename),
+                        $oReference->iLineNumber,
+                        $oReference->iLocation
+                    );
+                }
                 $oOutput->patch(
                     pack(Defs\IIntLimits::LONG_BIN_FORMAT, $iEnumeration),
                     $oReference->iLocation

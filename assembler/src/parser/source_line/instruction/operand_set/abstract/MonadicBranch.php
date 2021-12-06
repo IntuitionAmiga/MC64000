@@ -33,7 +33,7 @@ use function \strlen;
  */
 abstract class MonadicBranch extends Monadic {
 
-    use TBranching;
+    use TBranching, EffectiveAddress\TPotentiallyFoldableImmediateAware;
 
     const
         OPERAND_TARGET    = 1,
@@ -73,11 +73,15 @@ abstract class MonadicBranch extends Monadic {
         $sBytecode = $sSrcBytecode . $sDisplacement;
         $this->checkBranchDisplacement($sBytecode, $this->oSrcParser->hasSideEffects());
 
-        if ($this->oSrcParser->wasImmediate()) {
-            $sFoldFunc = static::OPCODES[$iOpcode];
-            $cCallback = [$this, $sFoldFunc];
+        $oSrcParser = $this->castParserImmediateAware($this->oSrcParser);
+        if ($oSrcParser->wasImmediate()) {
+
+            $aFunctions = $this->getFoldFunctions();
+
+            /** @var callable $cCallback */
+            $cCallback = [$this, $aFunctions[$iOpcode]];
             $sFolded   =  $cCallback(
-                $this->oSrcParser->getImmediate(),
+                $oSrcParser->getImmediate(),
                 $this->oTgtParser->getLastDisplacement(),
                 strlen($sBytecode)
             );
@@ -90,8 +94,8 @@ abstract class MonadicBranch extends Monadic {
             }
 
             throw new CodeFoldException(
-                'SrcEA #' . $this->oSrcParser->getImmediate() .
-                ' using ' . $sFoldFunc,
+                'SrcEA #' . $oSrcParser->getImmediate() .
+                ' using ' . $aFunctions[$iOpcode],
                 $sFolded
             );
         }
@@ -103,4 +107,8 @@ abstract class MonadicBranch extends Monadic {
         return $sBytecode;
     }
 
+    /**
+     * @return string[]
+     */
+    protected abstract function getFoldFunctions(): array;
 }

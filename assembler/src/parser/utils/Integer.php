@@ -185,7 +185,7 @@ class Integer implements Defs\IInteger, Defs\IIntLimits {
      * Since 64-bit PHP has no explicit understanding of unsigned arithmetic, the necessary
      * range comparisons are performed using bcmath, before conversion.
      *
-     * @param  string $iValue
+     * @param  string $sValue
      * @return int
      * @throws \RangeException
      */
@@ -271,7 +271,7 @@ class Integer implements Defs\IInteger, Defs\IIntLimits {
      * @param  int $iWordSize
      * @throws \LengthException
      */
-    private static function assertLength(string $sValue, int $iBase, int $iWordSize) {
+    private static function assertLength(string $sValue, int $iBase, int $iWordSize): void {
         $sTemp = $iBase === self::BASE_10 ? ltrim($sValue, '-+') : $sValue;
         if (strlen($sTemp) > self::MAP_BASE_LENGTH[$iBase][$iWordSize]) {
             throw new \LengthException(

@@ -33,7 +33,7 @@ use function \strlen;
  */
 abstract class DyadicBranch extends Dyadic {
 
-    use TBranching;
+    use TBranching, EffectiveAddress\TPotentiallyFoldableImmediateAware;
 
     const
         OPERAND_TARGET    = 2,
@@ -85,13 +85,20 @@ abstract class DyadicBranch extends Dyadic {
         $sBytecode = $sDstBytecode . $sSrcBytecode . $sDisplacement;
         $this->checkBranchDisplacement($sBytecode, $bOperandSideEffects);
 
+        $oDstParser = $this->castParserImmediateAware($this->oDstParser);
+        $oSrcParser = $this->castParserImmediateAware($this->oSrcParser);
+
         // Check for foldable immediate values
-        if ($this->oDstParser->wasImmediate() && $this->oSrcParser->wasImmediate()) {
-            $sFoldFunc = static::OPCODES[$iOpcode];
-            $cCallback = [$this, $sFoldFunc];
+        if (
+            $oDstParser->wasImmediate() && $oSrcParser->wasImmediate()
+        ) {
+            $aFunctions = $this->getFoldFunctions();
+
+            /** @var callable $cCallback */
+            $cCallback = [$this, $aFunctions[$iOpcode]];
             $sFolded   =  $cCallback(
-                $this->oSrcParser->getImmediate(),
-                $this->oDstParser->getImmediate(),
+                $oSrcParser->getImmediate(),
+                $oDstParser->getImmediate(),
                 $this->oTgtParser->getLastDisplacement(),
                 strlen($sBytecode)
             );
@@ -104,21 +111,25 @@ abstract class DyadicBranch extends Dyadic {
             }
 
             throw new CodeFoldException(
-                'SrcEA #' . $this->oSrcParser->getImmediate() . ', ' .
-                'DstEA #' . $this->oDstParser->getImmediate() .
-                ' using ' . $sFoldFunc,
+                'SrcEA #' . $oSrcParser->getImmediate() . ', ' .
+                'DstEA #' . $oDstParser->getImmediate() .
+                ' using ' . $aFunctions[$iOpcode],
                 $sFolded
             );
         }
 
         // Check for foldable EA. These are where the source EA is exactly the same as the destination.
         if ($this->canOptimiseSourceOperand($sSrcBytecode, $sDstBytecode)) {
-            $sFoldFunc = static::OPCODES[$iOpcode];
-            $cCallback = [$this, $sFoldFunc];
+            $aFunctions = $this->getFoldFunctions();
+
+            /** @var callable $cCallback */
+            $cCallback = [$this, $aFunctions[$iOpcode]];
+
+            $mDefault  = $this->getCallbackDefault();
 
             $sFolded   = $cCallback(
-                static::CB_DEFAULT, // doesn't matter
-                static::CB_DEFAULT, // doesn't matter
+                $mDefault,
+                $mDefault,
                 $this->oTgtParser->getLastDisplacement(),
                 strlen($sBytecode)
             );
@@ -133,7 +144,7 @@ abstract class DyadicBranch extends Dyadic {
             throw new CodeFoldException(
                 'SrcEA '  . $aOperands[$iSrcIndex] . ', ' .
                 'DstEA '  . $aOperands[$iDstIndex] .
-                ' using ' . $sFoldFunc,
+                ' using ' . $aFunctions[$iOpcode],
                 $sFolded
             );
         }
@@ -146,4 +157,13 @@ abstract class DyadicBranch extends Dyadic {
         return $sBytecode;
     }
 
+    /**
+     * @return string[]
+     */
+    protected abstract function getFoldFunctions(): array;
+
+    /**
+     * @return int|float
+     */
+    protected abstract function getCallbackDefault();
 }
