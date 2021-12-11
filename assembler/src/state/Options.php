@@ -121,9 +121,30 @@ class Options {
             $mValue = $cCast($mValue);
         }
         if (Defs\Project\IOptions::TYPE_BOOL === $iType) {
-            $this->aBoolOptions[$sOption] = $mValue;
+            $this->aBoolOptions[$sOption] = !empty($mValue);
         }
         $this->aAllOptions[$sOption] = $mValue;
         return $this;
+    }
+
+    /**
+     * Get an expected integer parameter. If the named option does not exist, OutOfBoundsException is thrown. If
+     * the option exists but is not an integer value, TypeError is thrown instead.
+     *
+     * @param  string $sOption
+     ^ @return int
+     * @throws \TypeError
+     * @throws \OutOfBoundsException
+     */
+    public function getInt(string $sOption): int {
+        if (isset($this->aAllOptions[$sOption])) {
+            if (is_int($this->aAllOptions[$sOption])) {
+                return $this->aAllOptions[$sOption];
+            } else {
+                throw new \TypeError('Option ' . $sOption . ' is not an integer');
+            }
+        } else {
+            throw new \OutOfBoundsException('Option ' . $sOption . ' is not set');
+        }
     }
 }
