@@ -40,19 +40,19 @@ class LabelLocation {
         IE_CALL  = 4
     ;
 
-    /** @var mixed[][] $aGlobalLabels */
+    /** @var (string|int)[][] $aGlobalLabels */
     private array $aGlobalLabels         = [];
 
-    /** @var mixed[][] $aLocalLabels */
+    /** @var (string|int)[][][] $aLocalLabels */
     private array $aLocalLabels          = [];
 
-    /** @var mixed[][] $aUnresolvedLabels */
+    /** @var (string|int)[][][] $aUnresolvedLabels */
     private array $aUnresolvedLabels     = [];
 
     /** @var string[] $aExportedLabels */
     private array $aExportedLabels       = [];
 
-    /** @var mixed[][] $aImportedLabels */
+    /** @var \stdClass[][] $aImportedLabels */
     private array $aImportedLabels       = [];
 
     /** @var string[] $aEnumeratedImports */
@@ -138,7 +138,7 @@ class LabelLocation {
         if (isset($this->aGlobalLabels[$sLabel])) {
             throw new \Exception(
                 "Duplicate global: '"    . $sLabel .
-                "' already declared in " . IO\SourceFile::shortenFilename($this->aGlobalLabels[$sLabel][self::I_FILE]) .
+                "' already declared in " . IO\SourceFile::shortenFilename((string)$this->aGlobalLabels[$sLabel][self::I_FILE]) .
                 ' on line ' . $this->aGlobalLabels[$sLabel][self::I_LINE]
             );
         }
@@ -231,7 +231,7 @@ class LabelLocation {
                     $this->aLocalLabels[$sFile][$sLabel][self::I_OFST]
                 );
             }
-            return $this->aLocalLabels[$sFile][$sLabel][self::I_OFST];
+            return (int)$this->aLocalLabels[$sFile][$sLabel][self::I_OFST];
         }
         return null;
     }
@@ -251,7 +251,7 @@ class LabelLocation {
                     $this->aGlobalLabels[$sLabel][self::I_OFST]
                 );
             }
-            return $this->aGlobalLabels[$sLabel][self::I_OFST];
+            return (int)$this->aGlobalLabels[$sLabel][self::I_OFST];
         }
         return null;
     }
@@ -422,7 +422,7 @@ class LabelLocation {
     /**
      * Returns the (pre-enumerated) set of imports.
      *
-     * @return mixed[][]
+     * @return \stdClass[][]
      */
     public function getImports(): array {
         return $this->aImportedLabels;

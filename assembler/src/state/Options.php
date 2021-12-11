@@ -37,7 +37,7 @@ class Options {
     private array $aBoolOptions = [];
 
     /**
-     * @var mixed[] $aAllOptions
+     * @var (bool|int|float|string)[] $aAllOptions
      */
     private array $aAllOptions = [];
 
@@ -51,7 +51,7 @@ class Options {
     /**
      * Import a key-value set of options
      *
-     * @param  mixed[] $aOptions
+     * @param  (bool|int|float|string)[] $aOptions
      * @return self (fluent)
      */
     public function import(array $aOptions): self {
@@ -99,8 +99,8 @@ class Options {
      * Returns a value set for an option, or the supplied default if the option has no defined value.
      *
      * @param  string $sOption
-     * @param  mixed  $mDefault
-     * @return mixed
+     * @param  bool|int|float|string|null  $mDefault
+     * @return bool|int|float|string|null
      */
     public function get(string $sOption, $mDefault = null) {
         return $this->aAllOptions[$sOption] ?? $mDefault;
@@ -110,9 +110,9 @@ class Options {
      * Set an option. If the option has a known type associated with the key, the corresponding value
      * will be coerced using a cast.
      *
-     * @param  string $sOption
-     * @param  mixed  $mValue
-     * @return self   fluent
+     * @param  string                 $sOption
+     * @param  bool|int|float|string  $mValue
+     * @return self                   fluent
      */
     public function set(string $sOption, $mValue): self {
         $iType = Defs\Project\IOptions::TYPE_MAP[$sOption] ?? -1;
@@ -147,4 +147,5 @@ class Options {
             throw new \OutOfBoundsException('Option ' . $sOption . ' is not set');
         }
     }
+
 }
