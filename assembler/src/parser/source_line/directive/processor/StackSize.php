@@ -54,7 +54,7 @@ class StackSize implements Directive\IProcessor {
             $iStackSize = (int)$aMatches[1];
             $oOptions   = State\Coordinator::get()
                 ->getGlobalOptions();
-            $iOldStackSize = (int)$oOptions->get(Defs\Project\IOptions::APP_STACK_SIZE, -1);
+            $iOldStackSize = $oOptions->getInt(Defs\Project\IOptions::APP_STACK_SIZE, -1);
             if ($iStackSize > $iOldStackSize) {
                 Log::printf(
                     "Increasing stack size from %d to %d",

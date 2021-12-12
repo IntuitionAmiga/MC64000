@@ -128,24 +128,53 @@ class Options {
     }
 
     /**
-     * Get an expected integer parameter. If the named option does not exist, OutOfBoundsException is thrown. If
-     * the option exists but is not an integer value, TypeError is thrown instead.
+     * Get an explicit integer parameter. If the named option does not exist and a default is provided, it will
+     * be returned. If no default is proviced, \OutOfBoundsException is thrown.
+     * If the named option exists but is not an integer, \TypeError is thrown.
      *
-     * @param  string $sOption
-     ^ @return int
+     * @param  string    $sOption
+     * @param  int|null  $iDefault
+     * @return int
      * @throws \TypeError
      * @throws \OutOfBoundsException
      */
-    public function getInt(string $sOption): int {
+    public function getInt(string $sOption, ?int $iDefault): int {
         if (isset($this->aAllOptions[$sOption])) {
             if (is_int($this->aAllOptions[$sOption])) {
                 return $this->aAllOptions[$sOption];
             } else {
                 throw new \TypeError('Option ' . $sOption . ' is not an integer');
             }
-        } else {
-            throw new \OutOfBoundsException('Option ' . $sOption . ' is not set');
         }
+        if (null === $iDefault) {
+            throw new \OutOfBoundsException('Option ' . $sOption . ' is not defined');
+        }
+        return $iDefault;
+    }
+
+    /**
+     * Get an explicit float parameter. If the named option does not exist and a default is provided, it will
+     * be returned. If no default is proviced, \OutOfBoundsException is thrown.
+     * If the named option exists but is not a float, \TypeError is thrown.
+     *
+     * @param  string      $sOption
+     * @param  float|null  $fDefault
+     ^ @return float
+     * @throws \TypeError
+     * @throws \OutOfBoundsException
+     */
+    public function getFloat(string $sOption, ?float $fDefault): float {
+        if (isset($this->aAllOptions[$sOption])) {
+            if (is_float($this->aAllOptions[$sOption])) {
+                return $this->aAllOptions[$sOption];
+            } else {
+                throw new \TypeError('Option ' . $sOption . ' is not a float');
+            }
+        }
+        if (null === $fDefault) {
+            throw new \OutOfBoundsException('Option ' . $sOption . ' is not defined');
+        }
+        return $fDefault;
     }
 
 }

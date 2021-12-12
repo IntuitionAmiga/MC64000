@@ -121,7 +121,7 @@ class Assembler {
 
         $oTarget->setStackSize(
             $oState->getGlobalOptions()
-                ->getInt(Defs\Project\IOptions::APP_STACK_SIZE)
+                ->getInt(Defs\Project\IOptions::APP_STACK_SIZE, Defs\Project\IOptions::DEF_STACK_SIZE)
         );
 
         $oTargetChunk = new IO\Output\TargetInfo($oTarget);
