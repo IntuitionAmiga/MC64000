@@ -1,2 +1,3 @@
 core/src/cpp/obj/*
 core/src/cpp/bin/*
+assembler/test_projects/*/bin/*.64x
