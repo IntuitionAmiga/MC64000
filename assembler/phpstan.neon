@@ -1,6 +1,6 @@
 parameters:
     bootstrapFiles:
         - src/classmap.php
-    level: 8
+    level: 9
     paths:
         - src
