@@ -17,7 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\State;
 
-use function \strlen, \uasort, \str_replace, \array_keys, \array_values;
+use function \strlen, \uasort, \str_replace, \array_keys, \array_values, \preg_replace_callback;
 
 /**
  * DefinitionSet
@@ -66,17 +66,17 @@ class DefinitionSet {
     }
 
     /**
-     * Returns the set of current definitions. These are sorted value longest first.
-     * The return is associative.
+     * Returns the set of current definitions. These are sorted by decreasing key length as the keys are
+     * used as the search terms for search and replace. We swap out the longest matches first.
      *
      * @return string[]
      */
     public function getDefinitions(): array {
         if (false === $this->bolSorted) {
-            uasort(
+            uksort(
                 $this->aDefinitions,
                 function (string $sA, string $sB) {
-                    return strlen($sA) - strlen($sB);
+                    return strlen($sB) - strlen($sA);
                 }
             );
             $this->bolSorted = true;
@@ -85,7 +85,7 @@ class DefinitionSet {
     }
 
     /**
-     * Apply the corrent definition set to a string performing a set of search and replace terms.
+     * Apply the current definition set to a string performing a set of search and replace terms.
      *
      * @todo This needs doing properly. The current implementation is a dumb search and replace that is not
      * sensible - it will result in later search terms overwriting earlier ones. What we should do is to
@@ -99,7 +99,23 @@ class DefinitionSet {
         if (empty($this->aDefinitions)) {
             return $sInput;
         }
+
+        // Protect any string literals or labels
+        $iPlaceholderKey = 0;
+        $aPlaceholderMap = [];
+        $sInput = (string)preg_replace_callback(
+            '/".*?"|[a-zA-Z0-9_]+\:$/',
+            function(array $aMatches) use (&$iPlaceholderKey, &$aPlaceholderMap): string {
+                $sKey = '{S:' . $iPlaceholderKey++ . '}';
+                $aPlaceholderMap[$sKey] = $aMatches[0];
+                return $sKey;
+            },
+            $sInput
+        );
+
         $aDefinitions = $this->getDefinitions();
+        $aDefinitions += $aPlaceholderMap;
+
         return str_replace(array_keys($aDefinitions), array_values($aDefinitions), $sInput);
     }
 }

@@ -9,7 +9,7 @@ Provides functions for memory allocation, copying, filling etc.
 ```asm
     ; void mem_init()
 
-    bsr mem_init
+    hcf mem_init
 ```
 Initialises the host memory subsystem. Should be called from _main_ before any other memory functions.
 
@@ -20,7 +20,7 @@ ___
 ```asm
     ; void mem_done()
 
-    bsr mem_done
+    hcf mem_done
 ```
 Finalises the host memory subsytem. Should be called from _exit_ after all other memory functions.
 
@@ -31,7 +31,7 @@ ___
     ; r8|a0:void* address, r0|d0:uint64 error mem_alloc(r0|d0:uint64 size)
 
     move.q  size, d0
-    bsr     mem_alloc
+    hcf     mem_alloc
     biz.q   a0, .no_memory
 ```
 Attempts to allocate _size_ bytes of memory as indicated by the value in r0|d0.
@@ -46,7 +46,7 @@ ___
     ; mem_free(r8|a0:void* address)
 
     move.q  address, a0
-    bsr     mem_free
+    hcf     mem_free
 ```
 Attempts to free the memory referenced by the address in r8|a0.
 
@@ -62,7 +62,7 @@ ___
     move.q  size, d0
     move.q  from, a0
     move.q  to, a1
-    bsr     mem_copy
+    hcf     mem_copy
 ```
 Attempts to copy the block of memory of length _size_ bytes held in r0|d0 and pointed to by the address in r8|a0 to the region beginning at the address in r9|a1.
 
@@ -81,7 +81,7 @@ ___
     move.b  value, d0
     move.q  count, d1
     move.q  address, a0
-    bsr     mem_fill_byte
+    hcf     mem_fill_byte
 ```
 Attempts to fill the memory block of _count_ bytes in length, held in r1|d1 and pointed to by the address in r8|a0 with the byte value stored in r0|d0.
 
@@ -98,7 +98,7 @@ ___
     move.w  value, d0
     move.q  count, d1
     move.q  address, a0
-    bsr     mem_fill_word
+    hcf     mem_fill_word
 ```
 Attempts to fill the memory block of up to _count_ words in length, held in r1|d1 and pointed to by the address in r8|a0 with the word value stored in r0|d0.
 
@@ -116,7 +116,7 @@ ___
     move.l  value, d0
     move.q  count, d1
     move.q  address, a0
-    bsr     mem_fill_long
+    hcf     mem_fill_long
 ```
 Attempts to fill the memory block of up to _count_ longs in length, held in r1|d1 and pointed to by the address in r8|a0 with the long value stored in r0|d0.
 
@@ -134,7 +134,7 @@ ___
     move.q  value, d0
     move.q  count, d1
     move.q  address, a0
-    bsr     mem_fill_quad
+    hcf     mem_fill_quad
 ```
 Attempts to fill the memory block of up to _count_ quads in length, held in r1|d1 and pointed to by the address in r8|a0 with the quad value stored in r0|d0.
 

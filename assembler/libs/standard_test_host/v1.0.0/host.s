@@ -28,3 +28,8 @@
 
     @export main x                  ; Main entry point on execution.
     @export exit x                  ; Main exit point to ensure any cleanup.
+
+; Standard host vector function ID values
+
+    @equ library_init #0
+    @equ library_done #1

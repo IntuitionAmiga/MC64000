@@ -34,7 +34,14 @@ class Declaration implements SourceLine\IParser {
     const IDX_TYPE = 1;
     const IDX_DATA = 2;
 
+    /**
+     * @var string[] $aMatches
+     */
     private array $aMatches = [];
+
+    /**
+     * @var string[] $aProcessHook
+     */
     private array $aProcessHook = [
         'b' => 'processBytes',
         'w' => 'processWords',
@@ -45,7 +52,9 @@ class Declaration implements SourceLine\IParser {
     ];
 
     /**
-     * @implements IParser::checkLine(string $sLine): bool
+     * @inheritDoc
+     *
+     * Implements IParser::checkLine(string $sLine): bool
      */
     public function checkLine(string $sLine): bool {
         $bMatch = (bool)preg_match(self::BASIC_LINE_MATCH, $sLine, $this->aMatches);
@@ -62,6 +71,7 @@ class Declaration implements SourceLine\IParser {
         if (!isset($this->aProcessHook[$this->aMatches[self::IDX_TYPE]])) {
             throw new \Exception();
         }
+        /** @var callable $cProcessHook */
         $cProcessHook = [$this, $this->aProcessHook[$this->aMatches[self::IDX_TYPE]]];
         return $cProcessHook($this->aMatches[self::IDX_DATA]);
     }
@@ -79,6 +89,7 @@ class Declaration implements SourceLine\IParser {
         }
         $aData = $this->getValues($sData);
         foreach ($aData as $i => $sValue) {
+            /** @var string $sValue */
             $aData[$i] = Utils\Integer::parseLiteral($sValue, Defs\IIntLimits::BYTE);
         }
         return pack(Defs\IIntLimits::BYTE_BIN_FORMAT . '*', ...$aData);
@@ -93,6 +104,7 @@ class Declaration implements SourceLine\IParser {
     private function processWords(string $sData): string {
         $aData = $this->getValues($sData);
         foreach ($aData as $i => $sValue) {
+            /** @var string $sValue */
             $aData[$i] = Utils\Integer::parseLiteral($sValue, Defs\IIntLimits::WORD);
         }
         return pack(Defs\IIntLimits::WORD_BIN_FORMAT . '*', ...$aData);
@@ -107,6 +119,7 @@ class Declaration implements SourceLine\IParser {
     private function processLongs(string $sData): string {
         $aData = $this->getValues($sData);
         foreach ($aData as $i => $sValue) {
+            /** @var string $sValue */
             $aData[$i] = Utils\Integer::parseLiteral($sValue, Defs\IIntLimits::LONG);
         }
         return pack(Defs\IIntLimits::LONG_BIN_FORMAT . '*', ...$aData);
@@ -121,6 +134,7 @@ class Declaration implements SourceLine\IParser {
     private function processQuads(string $sData): string {
         $aData = $this->getValues($sData);
         foreach ($aData as $i => $sValue) {
+            /** @var string $sValue */
             $aData[$i] = Utils\Integer::parseLiteral($sValue, Defs\IIntLimits::QUAD);
         }
         return pack(Defs\IIntLimits::QUAD_BIN_FORMAT . '*', ...$aData);

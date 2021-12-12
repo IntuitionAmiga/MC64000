@@ -7,7 +7,7 @@ Library of routines for opening, closing, reading and writing file streams.
 ### io_file_open
 r8|a0:FILE\* stream, r0|d0:uint64 error io_file_open(r8|a0:char const\* name, r0|d0:uint8 mode)
 ```asm
-    bsr io_file_open
+    hcf io_file_open
 ```
 Description.
 
@@ -17,7 +17,7 @@ ___
 io_file_seek()
 
 ```asm
-    bsr io_file_seek
+    hcf io_file_seek
 ```
 Description.
 
@@ -26,7 +26,7 @@ ___
 ### io_file_tell
 io_file_tell()
 ```asm
-    bsr io_file_tell
+    hcf io_file_tell
 ```
 Description.
 
@@ -35,7 +35,7 @@ ___
 ### io_file_read
 io_file_read()
 ```asm
-    bsr io_file_read
+    hcf io_file_read
 ```
 Description.
 
@@ -44,7 +44,7 @@ ___
 ### io_file_write
 io_file_write()
 ```asm
-    bsr io_file_write
+    hcf io_file_write
 ```
 Description.
 
@@ -53,7 +53,7 @@ ___
 ### io_file_close
 io_file_close()
 ```asm
-    bsr io_file_close
+    hcf io_file_close
 ```
 Description.
 
@@ -64,7 +64,7 @@ r0|d0:uint64 result io_file_print_string(r8|a0:FILE\* stream, r9|a1:char const\*
 ```asm
     move.q  stream, a0
     lea     message, a1
-    bsr     io_file_print_string
+    hcf     io_file_print_string
 ```
 Writes the string pointed to by r9|a1 to the open stream pointed to by r8|a0. No newline is added.
 
@@ -79,7 +79,7 @@ r0|d0:uint64 result io_file_print_byte(r8|a0:FILE\* stream, r0|d0:uint8 value, r
 
     move.q  stream, a0
     move.b  value, d0
-    bsr     io_file_print_byte
+    hcf     io_file_print_byte
 ```
 Writes the byte integer in r0|d0 to the stream output pointed to by r8|a0, applying the global formatting template for bytes.
 
@@ -94,7 +94,7 @@ r0|d0:uint64 result io_file_print_word(r8|a0:FILE\* stream, r0|d0:uint16 value, 
 ```asm
     move.q  stream, a0
     move.w  value, d0
-    bsr     io_file_print_word
+    hcf     io_file_print_word
 ```
 Writes the word integer in r0|d0 to the stream output pointed to by r8|a0, applying the global formatting template for words.
 
@@ -109,7 +109,7 @@ r0|d0:uint64 result io_file_print_long(r8|a0:FILE\* stream, r0|d0:uint32 value, 
 ```asm
     move.q  stream, a0
     move.l  value, d0
-    bsr     io_file_print_long
+    hcf     io_file_print_long
 ```
 Writes the long integer in r0|d0 to the stream output pointed to by r8|a0, applying the global formatting template for longs.
 
@@ -124,7 +124,7 @@ r0|d0:uint64 result io_file_print_quad(r8|a0:FILE\* stream, r0|d0:uint64 value, 
 ```asm
     move.q  stream, a0
     move.q  value, d0
-    bsr     io_file_print_quad
+    hcf     io_file_print_quad
 ```
 Writes the quad integer in r0|d0 to the stream output pointed to by r8|a0, applying the global formatting template for longs.
 
@@ -138,7 +138,7 @@ r0|d0:uint64 result io_file_print_single(r8|a0:FILE\* stream, fp0:float32 value,
 ```asm
     move.q  stream, a0
     fmove.s value, fp0
-    bsr     io_file_print_single
+    hcf     io_file_print_single
 ```
 Writes the single precision floating point value in fp0 to the stream output pointed to by r8|a0, applying the global formatting template for singles.
 
@@ -153,7 +153,7 @@ r0|d0:uint64 result io_file_print_double(r8|a0:FILE\* stream, fp0:float64 value,
 ```asm
     move.q  stream, a0
     fmove.d value, fp0
-    bsr     io_file_print_double
+    hcf     io_file_print_double
 ```
 Writes the double precision floating point value in fp0 to the stream output pointed to by r8|a0, applying the global formatting template for doubles.
 
@@ -168,7 +168,7 @@ r0|d0:int8 value, r1|d1 uint64 result io_file_parse_byte(r8|a0:FILE\* stream, r9
 ```asm
     move.q  stream, a0
     lea     format, a1
-    bsr     io_file_parse_byte
+    hcf     io_file_parse_byte
     bnz     d1, .error
     move.b  d0, value
 ```
@@ -185,7 +185,7 @@ r0|d0:int16 value, r1|d1 uint64 result io_file_parse_word(r8|a0:FILE\* stream, r
 ```asm
     move.q  stream, a0
     lea     format, a1
-    bsr     io_file_parse_word
+    hcf     io_file_parse_word
     bnz     d1, .error
     move.w  d0, value
 ```
@@ -202,7 +202,7 @@ r0|d0:int32 value, r1|d1 uint64 result io_file_parse_long(r8|a0:FILE\* stream, r
 ```asm
     move.q  stream, a0
     lea     format, a1
-    bsr     io_file_parse_long
+    hcf     io_file_parse_long
     bnz     d1, .error
     move.l  d0, value
 ```
@@ -219,7 +219,7 @@ r0|d0:int64 value, r1|d1 uint64 result io_file_parse_quad(r8|a0:FILE\* stream, r
 ```asm
     move.q  stream, a0
     lea     format, a1
-    bsr     io_file_parse_quad
+    hcf     io_file_parse_quad
     bnz     d1, .error
     move.q  d0, value
 ```

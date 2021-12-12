@@ -29,10 +29,11 @@ use function \abs, \sqrt, \exp, \log, \sin, \cos, \tan, \asin, \acos, \atan;
  * FloatDyadic
  *
  * For all vanilla float destination @ source -> destination operations.
+ *
  */
 class FloatDyadic extends Dyadic {
 
-
+    use EffectiveAddress\TPotentiallyFoldableImmediateAware;
 
     /**
      * The set of specific opcodes that this Operand Parser applies to
@@ -109,7 +110,6 @@ class FloatDyadic extends Dyadic {
      */
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
         $sFullByteCode = parent::parse($iOpcode, $aOperands, $aSizes);
-
         if (
             isset(self::SKIP_IF_OPERANDS_SAME[$iOpcode]) &&
             $this->sourceOperandWasOptimised()
@@ -119,10 +119,12 @@ class FloatDyadic extends Dyadic {
             );
         }
 
-        if ( ( $aConversion = self::OPCODES[$iOpcode]) && $this->oSrcParser->wasImmediate()) {
-            $fImmediate = (float)$this->oSrcParser->getImmediate();
-            $cConstExp = $aConversion[1];
-            $fConstant = $cConstExp($fImmediate);
+        if (
+            ( $aConversion = self::OPCODES[$iOpcode]) &&
+            null !== ($fImmediate = $this->getFloatImmediate($this->oSrcParser))
+        ) {
+            $cConstExp  = $aConversion[1];
+            $fConstant  = $cConstExp($fImmediate);
 
             if (is_nan($fConstant)) {
                 throw new \Exception(

@@ -67,7 +67,7 @@ class Interpreter {
         /**
          * HCF Vector (host native call triggered by HCF operation)
          */
-        typedef Status (*HCFVector)();
+        typedef Status (*HCFVector)(uint8 uFunctionID);
 
         /**
          * Initialise the HCF vectors. Only a reference is taken so the supplied table must not go out of scope.

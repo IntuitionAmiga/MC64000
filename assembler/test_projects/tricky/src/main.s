@@ -82,13 +82,13 @@ main:
     bne.q   #3,  d7, .error
 
     lea     .success_text, a0
-    bsr     io_print_string
+    hcf     io_print_string
 
     bra     exit
 
 .error:
     lea     .error_text, a0
-    bsr     io_print_string
+    hcf     io_print_string
 
 
 exit:

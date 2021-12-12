@@ -68,4 +68,15 @@ class FloatDyadicBranch extends DyadicBranch {
     public function getOpcodes(): array {
         return array_keys(self::OPCODES);
     }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getFoldFunctions(): array {
+        return self::OPCODES;
+    }
+
+    protected function getCallbackDefault(): float {
+        return self::CB_DEFAULT;
+    }
 }

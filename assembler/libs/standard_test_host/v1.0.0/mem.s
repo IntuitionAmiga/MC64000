@@ -18,44 +18,29 @@
     @equ ERR_NO_MEM  100
     @equ ERR_MEM     101
 
-; Break out to the host, reset the stack and return.
-.invoke:
-    hcf #1
-    add.q #1, sp
-    rts
+    @def mem_vector      #1
 
-mem_init:
-    move.b #0, -(sp)
-    bra.b .invoke
+    @equ mem_init        #0, mem_vector
+    @equ mem_done        #1, mem_vector
+    @equ mem_alloc       #2, mem_vector
+    @equ mem_free        #3, mem_vector
+    @equ mem_copy        #4, mem_vector
+    @equ mem_fill_byte   #5, mem_vector
+    @equ mem_fill_word   #6, mem_vector
+    @equ mem_fill_long   #7, mem_vector
+    @equ mem_fill_quad   #8, mem_vector
 
-mem_done:
-    move.b #1, -(sp)
-    bra.b .invoke
+    @equ mem_and_byte   #9,  mem_vector
+    @equ mem_and_word   #10, mem_vector
+    @equ mem_and_long   #11, mem_vector
+    @equ mem_and_quad   #12, mem_vector
 
-mem_alloc:
-    move.b #2, -(sp)
-    bra.b .invoke
+    @equ mem_or_byte    #13, mem_vector
+    @equ mem_or_word    #14, mem_vector
+    @equ mem_or_long    #15, mem_vector
+    @equ mem_or_quad    #16, mem_vector
 
-mem_free:
-    move.b #3, -(sp)
-    bra.b .invoke
-
-mem_copy:
-    move.b #4, -(sp)
-    bra.b .invoke
-
-mem_fill_byte:
-    move.b #5, -(sp)
-    bra.b .invoke
-
-mem_fill_word:
-    move.b #6, -(sp)
-    bra.b .invoke
-
-mem_fill_long:
-    move.b #7, -(sp)
-    bra.b .invoke
-
-mem_fill_quad:
-    move.b #8, -(sp)
-    bra.b .invoke
+    @equ mem_eor_byte   #17, mem_vector
+    @equ mem_eor_word   #18, mem_vector
+    @equ mem_eor_long   #19, mem_vector
+    @equ mem_eor_quad   #20, mem_vector
