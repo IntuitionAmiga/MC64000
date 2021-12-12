@@ -30,7 +30,7 @@ class Log {
      * Variadic template string message
      *
      * @param string $sFormat
-     * @param mixed  $aVarArgs
+     * @param int|float|string  $aVarArgs
      */
     public static function printf(string $sFormat, ...$aVarArgs): void {
         fprintf(
