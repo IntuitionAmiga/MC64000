@@ -42,8 +42,8 @@ namespace VectorMath {
 #define v2_copy(T, NAME) { \
     T*       pDst = aoGPR[ABI::PTR_REG_1].p ## NAME; \
     T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## NAME; \
-    pDst[V_X] = pSrc[V_Y]; \
-    pDst[V_X] = pSrc[V_Y]; \
+    pDst[V_X] = pSrc[V_X]; \
+    pDst[V_Y] = pSrc[V_Y]; \
 }
 
 /**
@@ -73,8 +73,8 @@ namespace VectorMath {
 #define v2_add_assign(T, NAME) { \
     T*       pfDst = aoGPR[ABI::PTR_REG_1].pf ## NAME; \
     T const* pfSrc = aoGPR[ABI::PTR_REG_0].pf ## NAME; \
-    pfDst[V_X] += pfSrc[V_Y]; \
-    pfDst[V_X] += pfSrc[V_Y]; \
+    pfDst[V_X] += pfSrc[V_X]; \
+    pfDst[V_Y] += pfSrc[V_Y]; \
 }
 
 /**
