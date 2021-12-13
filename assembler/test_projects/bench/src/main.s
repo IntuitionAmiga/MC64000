@@ -34,16 +34,15 @@ main:
     hcf         io_print_string
 
     bsr         calibration
-    bsr         bench_add_reg_to_indirect
-    bsr         bench_add_reg_ind_to_reg_ind
-    bsr         bench_add_reg_to_label
-    bsr         bench_add_label_to_label
-    bsr         bench_small_imm_to_reg
-    bsr         bench_biz_int_taken
-    bsr         bench_biz_int_not_taken
+    ;bsr         bench_add_reg_to_indirect
+    ;bsr         bench_add_reg_ind_to_reg_ind
+    ;bsr         bench_add_reg_to_label
+    ;bsr         bench_add_label_to_label
+    ;bsr         bench_small_imm_to_reg
+    ;bsr         bench_biz_int_taken
+    ;bsr         bench_biz_int_not_taken
     bsr         bench_bsr_ret
     bsr         bench_hcf
-
     bsr         bench_vec3f_func
     bsr         bench_vec3f_hcf
 
