@@ -19,28 +19,59 @@ namespace ABadCafe\MC64K\Utils;
 
 /**
  * TestCase
+ *
+ * Minimalist base for unit tests. Will be ran in a sandboxed process so that no two different test
+ * classes can affect each other.
  */
 abstract class TestCase {
 
     private int $iAssertsMade = 0;
     private int $iAssertsPass = 0;
+    private int $iIncrement   = 1;
 
+    /**
+     * Tests to override this.
+     */
     public abstract function run(): void;
 
+    /**
+     * Report outcome on destruction. If a test case makes no assertions, that's a red flag.
+     */
     public function __destruct() {
-        printf("[Assertions %d/%d]\n", $this->iAssertsPass, $this->iAssertsMade);
+        if ($this->iAssertsMade > 0) {
+            printf("[Assertions %d/%d]\n", $this->iAssertsPass, $this->iAssertsMade);
+        } else {
+            echo "[No assertions made!]\n";
+        }
     }
 
+    /**
+     * Called before running a test, can be overridden to set up any necessary mocks.
+     */
     public function setUp(): void {
 
     }
 
+    /**
+     * Called after running a test, can be overridden to tidy up any necessary mocks.
+     */
     public function tearDown(): void {
 
     }
 
+    /**
+     * Cause the next assertion to be made to be ignored in the total count.
+     * Method is fluent as the intent is the very next thing to call should be the assertion to ignore.
+     */
+    protected final function disregardNextAssertion(): self {
+        $this->iIncrement = 0;
+        return $this;
+    }
+
     protected final function assertTrue(bool $bTest): void {
-        ++$this->iAssertsMade;
+        $this->iAssertsMade += $this->iIncrement;
+        $this->iIncrement = 1;
+
         if (false === $bTest) {
             throw new TestAssertionFailure(__METHOD__ . '() input was false');
         }
@@ -48,7 +79,8 @@ abstract class TestCase {
     }
 
     protected final function assertFalse(bool $bTest): void {
-        ++$this->iAssertsMade;
+        $this->iAssertsMade += $this->iIncrement;
+        $this->iIncrement = 1;
         if (false !== $bTest) {
             throw new TestAssertionFailure(__METHOD__ . '() input was true');
         }
@@ -61,9 +93,14 @@ abstract class TestCase {
      * @param T $b
      */
     protected final function assertSame($a, $b): void {
-        ++$this->iAssertsMade;
+        $this->iAssertsMade += $this->iIncrement;
+        $this->iIncrement = 1;
         if ($a !== $b) {
-            throw new TestAssertionFailure(__METHOD__ . '() inputs are different');
+            throw new TestAssertionFailure(
+                __METHOD__ . '() inputs ' .
+                var_export($a, true) . ' / ' .
+                var_export($b, true) . ' are different'
+            );
         }
         ++$this->iAssertsPass;
     }
@@ -74,9 +111,14 @@ abstract class TestCase {
      * @param T $b
      */
     protected final function assertEqual($a, $b): void {
-        ++$this->iAssertsMade;
+        $this->iAssertsMade += $this->iIncrement;
+        $this->iIncrement = 1;
         if ($a != $b) {
-            throw new TestAssertionFailure(__METHOD__ . '() inputs are different');
+            throw new TestAssertionFailure(
+                __METHOD__ . '() inputs ' .
+                var_export($a, true) . ' / ' .
+                var_export($b, true) . ' are different'
+            );
         }
         ++$this->iAssertsPass;
     }
@@ -87,7 +129,8 @@ abstract class TestCase {
      * @param T $oEntity
      */
     protected final function assertInstanceOf(string $sType, $oEntity): void {
-        ++$this->iAssertsMade;
+        $this->iAssertsMade += $this->iIncrement;
+        $this->iIncrement = 1;
         if (!($oEntity instanceof $sType)) {
             throw new TestAssertionFailure(__METHOD__ . '() input is not an instance of ' . $sType);
         }

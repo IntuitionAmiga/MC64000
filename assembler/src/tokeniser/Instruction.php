@@ -51,22 +51,21 @@ class Instruction {
             // To solve this, we first take the operand string and replace all indirect operands with placeholders, keeping
             // track of the original operand text. We then split the remaining text on commas and for each element of the
             // output, restore the original text.
+            $aOperands = [];
+            if (!empty($aMatches[self::MATCHED_OPERANDS])) {
+                $iPlaceholderKey = 0;
+                $aPlaceholderMap = [];
+                $sOperands = preg_replace_callback(
+                    self::MATCH_INDIRECT,
+                    function(array $aMatches) use (&$iPlaceholderKey, &$aPlaceholderMap) : string {
+                        $sKey = '(I:' . $iPlaceholderKey++ . ')';
+                        $aPlaceholderMap[$sKey] = $aMatches[0];
+                        return $sKey;
+                    },
+                    $aMatches[self::MATCHED_OPERANDS]
+                );
 
-            $iPlaceholderKey = 0;
-            $aPlaceholderMap = [];
-            $sOperands = preg_replace_callback(
-                self::MATCH_INDIRECT,
-                function(array $aMatches) use (&$iPlaceholderKey, &$aPlaceholderMap) : string {
-                    $sKey = '(I:' . $iPlaceholderKey++ . ')';
-                    $aPlaceholderMap[$sKey] = $aMatches[0];
-                    return $sKey;
-                },
-                $aMatches[self::MATCHED_OPERANDS]
-            );
-
-            return new Token(
-                $sMnemonic,
-                array_map(
+                $aOperands = array_map(
                     function(string $sFragment) use (&$aPlaceholderMap) : string {
                         return str_replace(
                             array_keys($aPlaceholderMap),
@@ -75,7 +74,12 @@ class Instruction {
                         );
                     },
                     explode(',', $sOperands)
-                )
+                );
+
+            }
+            return new Token(
+                $sMnemonic,
+                $aOperands
             );
         }
         return null;
