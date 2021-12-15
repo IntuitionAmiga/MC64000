@@ -21,7 +21,7 @@ use ABadCafe\MC64K\Parser\Utils;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
 
-use function \rtrim, \preg_match, \stripcslashes, \pack, \array_map, \explode;
+use function \strlen, \rtrim, \preg_match, \stripcslashes, \pack, \array_map, \explode;
 
 /**
  * Declaration
@@ -78,19 +78,26 @@ class Declaration implements SourceLine\IParser {
 
     /**
      * Process a list of discrete byte values. This can be a comma separated list or a quote delimited string of
-     * characters. This is not explicitly null terminated.
+     * characters. This is not explicitly null terminated; \LengthException is thrown for an empty string.
      *
      * @param  string $sData
      * @return string
+     * @throws \LengthException
      */
     private function processBytes(string $sData): string {
         if (preg_match('/^"(.*?)"$/', $sData, $aMatches)) {
-            return stripcslashes($aMatches[1]);
+            $sResult = stripcslashes($aMatches[1]);
+            if (0 === strlen($sResult)) {
+                throw new \LengthException("Cannot encode empty string");
+            }
+            return $sResult;
         }
         $aData = $this->getValues($sData);
+
         foreach ($aData as $i => $sValue) {
             /** @var string $sValue */
-            $aData[$i] = Utils\Integer::parseLiteral($sValue, Defs\IIntLimits::BYTE);
+            $mValue = Utils\Integer::parseLiteral($sValue, Defs\IIntLimits::BYTE);
+            $aData[$i] = $mValue;
         }
         return pack(Defs\IIntLimits::BYTE_BIN_FORMAT . '*', ...$aData);
     }

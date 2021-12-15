@@ -16,8 +16,9 @@
 declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\State;
-
 use ABadCafe\MC64K\Defs;
+
+use function \is_int, \is_float;
 
 /**
  * Options

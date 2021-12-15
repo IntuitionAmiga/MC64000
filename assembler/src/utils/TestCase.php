@@ -17,6 +17,8 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Utils;
 
+use function \printf, \var_export;
+
 /**
  * TestCase
  *

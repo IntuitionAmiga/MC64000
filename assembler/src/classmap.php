@@ -5,6 +5,7 @@ namespace ABadCafe\MC64K;
 const CLASS_MAP = [
   'ABadCafe\\MC64K\\IParser' => '/IParser.php',
   'ABadCafe\\MC64K\\Parser\\SourceError' => '/parser/SourceError.php',
+  'ABadCafe\\MC64K\\Parser\\Utils\\FloatingPoint' => '/parser/utils/FloatingPoint.php',
   'ABadCafe\\MC64K\\Parser\\Utils\\Integer' => '/parser/utils/Integer.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\TParser' => '/parser/source_line/TParser.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\IParser' => '/parser/source_line/IParser.php',
@@ -107,6 +108,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Defs\\IInteger' => '/defs/IInteger.php',
   'ABadCafe\\MC64K\\Defs\\IBranchLimits' => '/defs/IBranchLimits.php',
   'ABadCafe\\MC64K\\Defs\\ILabel' => '/defs/ILabel.php',
+  'ABadCafe\\MC64K\\Defs\\IFloatLimits' => '/defs/IFloatLimits.php',
   'ABadCafe\\MC64K\\Defs\\IIdentifier' => '/defs/IIdentifier.php',
   'ABadCafe\\MC64K\\Defs\\IIntLimits' => '/defs/IIntLimits.php',
   'ABadCafe\\MC64K\\Defs\\Register\\INames' => '/defs/register/INames.php',
