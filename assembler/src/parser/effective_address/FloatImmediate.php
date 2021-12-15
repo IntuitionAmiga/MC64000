@@ -17,6 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\EffectiveAddress;
+use ABadCafe\MC64K\Defs\IFloatLimits;
 use ABadCafe\MC64K\Parser;
 
 use function \preg_match, \doubleval, \is_nan, \abs, \chr, \pack;
@@ -30,13 +31,7 @@ class FloatImmediate implements IParser, EffectiveAddress\IOther {
 
     use TOperationSizeAware;
 
-    const
-        MATCH         = '/^#((?:[-+]{0,1}\d+)\.\d*(?:[eE][-+]{0,1}\d+){0,1})([sSdD]{0,1})$/',
-        MATCHED_VALUE = 1,
-        MATCHED_FSIZE = 2,
-        MAX_SINGLE    = 3.4e38,
-        MIN_SINGLE    = 1.18e-38
-    ;
+    const PREFIX = '#';
 
     /**
      * @var float|null $iLastParsed
@@ -62,32 +57,14 @@ class FloatImmediate implements IParser, EffectiveAddress\IOther {
      */
     public function parse(string $sSource): ?string {
         $this->fLastParsed = null;
-        if (preg_match(self::MATCH, $sSource, $aMatches)) {
-            $fValue = doubleval($aMatches[self::MATCHED_VALUE]);
-            if (is_nan($fValue)) {
-                throw new \RangeException('Could not encode ' . $aMatches[self::MATCHED_VALUE]);
-            }
-
-            $this->fLastParsed = $fValue;
-
-            // If the operation size or immidate requests a single, we need to validate it's in range.
-            if (
-                $this->iOperationSize == 4             ||
-                's' === $aMatches[self::MATCHED_FSIZE] ||
-                'S' === $aMatches[self::MATCHED_FSIZE]
-            ) {
-                $fAbs = abs($fValue);
-                if (
-                    $fAbs !== 0.0 && (
-                        $fAbs > self::MAX_SINGLE ||
-                        $fAbs < self::MIN_SINGLE
-                    )
-                ) {
-                    throw new \RangeException('Cannot encode single precision ' . $aMatches[self::MATCHED_VALUE]);
-                }
-                return chr(self::FLT_IMM_SINGLE) . pack('g', $fValue);
+        $aMatches = Parser\Utils\FloatingPoint::match($sSource, self::PREFIX);
+        if (!empty($aMatches)) {
+            $iSize = $this->iOperationSize ?? IFloatLimits::DOUBLE;
+            $this->fLastParsed = Parser\Utils\FloatingPoint::parseMatch($aMatches, $iSize);
+            if (IFloatLimits::SINGLE === $iSize) {
+                return chr(self::FLT_IMM_SINGLE) . pack('g', $this->fLastParsed);
             } else {
-                return chr(self::FLT_IMM_DOUBLE) . pack('e', $fValue);
+                return chr(self::FLT_IMM_DOUBLE) . pack('e', $this->fLastParsed);
             }
         }
         return null;

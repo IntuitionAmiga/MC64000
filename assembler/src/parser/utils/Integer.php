@@ -25,8 +25,6 @@ use function \preg_match, \array_slice, \ltrim, \trim, \base_convert, \substr, \
  * Integer
  *
  * Utility class for parsing integer strings in different base/format for different word sizes.
- *
- *
  */
 class Integer implements Defs\IInteger, Defs\IIntLimits {
 

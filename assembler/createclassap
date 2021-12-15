@@ -27,7 +27,7 @@ class ClassMapBuilder {
     ];
 
     const EXCLUDE_DIRS = [
-        'src/test' => 1
+        'src/tests' => 1
     ];
 
     /** @var string[] $aFiles */
@@ -78,6 +78,8 @@ class ClassMapBuilder {
         $aSubdirs    = [];
 
         while (false !== ($sItem = $oCurrentDir->read())) {
+
+
             if (isset(self::EXCLUDE_PATTERNS[$sItem])) {
                 continue;
             }

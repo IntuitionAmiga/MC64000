@@ -17,7 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\State;
 
-use function \strlen, \uasort, \str_replace, \array_keys, \array_values, \preg_replace_callback;
+use function \strlen, \uksort, \str_replace, \array_keys, \array_values, \preg_replace_callback;
 
 /**
  * DefinitionSet
