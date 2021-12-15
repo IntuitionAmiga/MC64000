@@ -155,6 +155,10 @@ class Declaration implements SourceLine\IParser {
      */
     private function processSingles(string $sData): string {
         $aData = $this->getValues($sData);
+        foreach ($aData as $i => $sValue) {
+            /** @var string $sValue */
+            $aData[$i] = Utils\FloatingPoint::parseLiteral($sValue, Defs\IFloatLimits::SINGLE);
+        }
         return pack('g*', ...$aData);
     }
 
@@ -166,6 +170,10 @@ class Declaration implements SourceLine\IParser {
      */
     private function processDoubles(string $sData): string {
         $aData = $this->getValues($sData);
+        foreach ($aData as $i => $sValue) {
+            /** @var string $sValue */
+            $aData[$i] = Utils\FloatingPoint::parseLiteral($sValue, Defs\IFloatLimits::DOUBLE);
+        }
         return pack('e*', ...$aData);
     }
 
