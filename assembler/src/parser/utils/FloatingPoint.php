@@ -18,6 +18,8 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Parser\Utils;
 use ABadCafe\MC64K\Defs;
 
+use function \is_finite;
+
 /**
  * FloatingPoint
  *
@@ -85,7 +87,7 @@ class FloatingPoint implements Defs\IFloatLimits {
      */
     public static function parseMatch(array $aMatches, int $iWordSize): float {
         $fValue = doubleval($aMatches[self::MATCHED_VALUE]);
-        if (is_nan($fValue)) {
+        if (false === is_finite($fValue)) {
             throw new \RangeException('Could not encode ' . $aMatches[self::MATCHED_VALUE]);
         }
         if (

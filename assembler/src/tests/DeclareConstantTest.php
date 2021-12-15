@@ -173,7 +173,6 @@ class DeclareConstantTest extends TestCase {
             "\x0e\x00\x00\x00" .
             "\x0f\x00\x00\x00"
         ),
-
     ];
 
     /**
@@ -229,6 +228,50 @@ class DeclareConstantTest extends TestCase {
     ];
 
     /**
+     * Expected outcomes for valid dc.s list cases
+     *
+     * @const array<string, string>
+     */
+    const DECLARE_SINGLE_PASS_CASES = [
+        '    dc.s 0.0'  => "\x00\x00\x00\x00",
+        '    dc.s 1.0'  => "\x00\x00\x80\x3f",
+        '    dc.s -1.0' => "\x00\x00\x80\xbf"
+    ];
+
+    /**
+     * Expected failure outcomes for dc.s list cases
+     *
+     * @const array<string, string>
+     */
+    const DECLARE_SINGLE_FAIL_CASES = [
+        '    dc.s #1.0'   => \InvalidArgumentException::class,
+        '    dc.s 1.e+39' => \RangeException::class,
+        '    dc.s 1.e-39' => \RangeException::class,
+    ];
+
+    /**
+     * Expected outcomes for valid dc.b list cases
+     *
+     * @const array<string, string>
+     */
+    const DECLARE_DOUBLE_PASS_CASES = [
+        '    dc.d 0.0'  => "\x00\x00\x00\x00\x00\x00\x00\x00",
+        '    dc.d 1.0'  => "\x00\x00\x00\x00\x00\x00\xf0\x3f",
+        '    dc.d -1.0' => "\x00\x00\x00\x00\x00\x00\xf0\xbf"
+    ];
+
+    /**
+     * Expected failure outcomes for dc.b list cases
+     *
+     * @const array<string, string>
+     */
+    const DECLARE_DOUBLE_FAIL_CASES = [
+        '    dc.d #1.0' => \InvalidArgumentException::class,
+        '    dc.d 2.e+308' => \RangeException::class,
+    ];
+
+
+    /**
      * @inheritDoc
      */
     public function run(): void {
@@ -239,6 +282,8 @@ class DeclareConstantTest extends TestCase {
         $this->testDeclareWords($oParser);
         $this->testDeclareLongs($oParser);
         $this->testDeclareQuads($oParser);
+        $this->testDeclareSingles($oParser);
+        $this->testDeclareDoubles($oParser);
     }
 
     /**
@@ -346,5 +391,44 @@ class DeclareConstantTest extends TestCase {
             }
         }
     }
+
+    /**
+     * Tests dc.s 0.0, 1.0, ... behaviour.
+     */
+    private function testDeclareSingles(Data\Declaration $oParser): void {
+        foreach (self::DECLARE_SINGLE_PASS_CASES as $sTestCase => $sResult) {
+            $oParser->checkLine($sTestCase);
+            $this->assertSame($sResult, $oParser->parse($sTestCase));
+        }
+        foreach (self::DECLARE_SINGLE_FAIL_CASES as $sTestCase => $sException) {
+            try {
+                $oParser->checkLine($sTestCase);
+                $oParser->parse($sTestCase);
+                $this->assertTrue(false);
+            } catch (\Throwable $oError) {
+                $this->assertInstanceOf($sException, $oError);
+            }
+        }
+    }
+
+    /**
+     * Tests dc.s 0.0, 1.0, ... behaviour.
+     */
+    private function testDeclareDoubles(Data\Declaration $oParser): void {
+        foreach (self::DECLARE_DOUBLE_PASS_CASES as $sTestCase => $sResult) {
+            $oParser->checkLine($sTestCase);
+            $this->assertSame($sResult, $oParser->parse($sTestCase));
+        }
+        foreach (self::DECLARE_DOUBLE_FAIL_CASES as $sTestCase => $sException) {
+            try {
+                $oParser->checkLine($sTestCase);
+                $oParser->parse($sTestCase);
+                $this->assertTrue(false);
+            } catch (\Throwable $oError) {
+                $this->assertInstanceOf($sException, $oError);
+            }
+        }
+    }
+
 }
 
