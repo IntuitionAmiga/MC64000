@@ -131,12 +131,12 @@ class LabelLocation {
      * @param  string         $sLabel
      * @param  int            $iOffset
      * @return self
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     public function addGlobal(IO\ISourceFile $oFile, string $sLabel, int $iOffset): self {
         $this->assertLabel($sLabel);
         if (isset($this->aGlobalLabels[$sLabel])) {
-            throw new \Exception(
+            throw new \RuntimeException(
                 "Duplicate global: '"    . $sLabel .
                 "' already declared in " . IO\SourceFile::shortenFilename((string)$this->aGlobalLabels[$sLabel][self::I_FILE]) .
                 ' on line ' . $this->aGlobalLabels[$sLabel][self::I_LINE]
@@ -167,13 +167,13 @@ class LabelLocation {
      * @param  string         $sLabel
      * @param  int            $iOffset
      * @return self
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     public function addLocal(IO\ISourceFile $oFile, string $sLabel, int $iOffset): self {
         $this->assertLabel($sLabel);
         $sCurrentFile = $oFile->getFilename();
         if (isset($this->aLocalLabels[$sCurrentFile][$sLabel])) {
-            throw new \Exception(
+            throw new \RuntimeException(
                 "Duplicate local: '"     . $sLabel .
                 "' already declared in " . IO\SourceFile::shortenFilename($sCurrentFile) .
                 ' on line '              . $this->aLocalLabels[$sCurrentFile][$sLabel][self::I_LINE]

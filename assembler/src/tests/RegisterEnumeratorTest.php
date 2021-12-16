@@ -88,6 +88,7 @@ class RegisterEnumeratorTest extends TestCase {
         $this->testNativeFPRNames();
         $this->testLegacyGPRNames();
         $this->testIllegalGPRNames();
+        $this->testIllegalFPRNames();
     }
 
     private function testNativeGPRNames(): void {
