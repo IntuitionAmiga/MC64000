@@ -23,25 +23,14 @@ use ABadCafe\MC64K\Defs\EffectiveAddress\IRegisterIndirect;
 /**
  * DisplacedIndirectEATest
  *
+ * Tests for d32(rX) / (d32, rX) addressing modes.
+ * We don't test the different integer formatting options here as there are separate tests for the formatter.
  */
 class DisplacedIndirectEATest extends TestCase {
 
     const DISPLACEMENTS = [
-        '1'            => "\x01\x00\x00\x00",
-        '+1'           => "\x01\x00\x00\x00",
+        '16'           => "\x10\x00\x00\x00",
         '-1'           => "\xff\xff\xff\xff",
-        '0x00000001'   => "\x01\x00\x00\x00",
-        '0xFFFFFFFF'   => "\xff\xff\xff\xff",
-        '$00000001'    => "\x01\x00\x00\x00",
-        '$FFFFFFFF'    => "\xff\xff\xff\xff",
-        '01'           => "\x01\x00\x00\x00",
-        '037777777777' => "\xff\xff\xff\xff",
-        '@1'           => "\x01\x00\x00\x00",
-        '@37777777777' => "\xff\xff\xff\xff",
-        '0b1'          => "\x01\x00\x00\x00",
-        '0b11111111111111111111111111111111' => "\xff\xff\xff\xff",
-        '%1'          => "\x01\x00\x00\x00",
-        '%11111111111111111111111111111111' => "\xff\xff\xff\xff",
     ];
 
     const NATIVE_TEST_CASE = [
@@ -73,14 +62,6 @@ class DisplacedIndirectEATest extends TestCase {
         '%s(%sa6)' => IRegisterIndirect::R14_IND_DSP,
         '%s(%sa7)' => IRegisterIndirect::R15_IND_DSP,
         '%s(%ssp)' => IRegisterIndirect::R15_IND_DSP,
-    ];
-
-    const BAD_GPR_TEST_CASE = [
-        '(a8)', '(a9)', '(r16)'
-    ];
-
-    const NON_GPR_TEST_CASE = [
-        '(d0)', '(label)', '(#0)'
     ];
 
     /**
