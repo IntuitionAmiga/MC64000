@@ -41,9 +41,9 @@ abstract class TestCase {
      */
     public function __destruct() {
         if ($this->iAssertsMade > 0) {
-            printf("[Assertions %d/%d]\n", $this->iAssertsPass, $this->iAssertsMade);
+            printf("\t[Assertions %d/%d]\n", $this->iAssertsPass, $this->iAssertsMade);
         } else {
-            echo "[No assertions made!]\n";
+            echo "\t[No assertions made!]\n";
         }
     }
 

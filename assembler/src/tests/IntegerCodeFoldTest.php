@@ -41,110 +41,129 @@ class IntegerCodeFoldTest extends TestCase {
     ;
 
     /**
-     * Map of array of potentially foldable integer operation test cases along with their expected outcomes.
-     *
-     *    ILLEGAL_VALUE when we expect \UnexpectedValueException to be thrown
-     *    PASS          when we expect code to be generated.
-     *    CLEAR_B/W/L/Q when we expect the code to be folded to an equivalent clear operation.
-     *    FOLD          when we expect the code to be folded completely.
+     * Placebo cases - these should not fold, clear or be detected as illegal.
      */
-    const TEST_CASES = [
+    const NON_FOLDED_TEST_CASES = [
+        'and.b #1, r0',
+        'and.w #1, r0',
+        'and.l #1, r0',
+        'and.q #1, r0',
+        'or.b #1, r0',
+        'or.w #1, r0',
+        'or.l #1, r0',
+        'or.q #1, r0',
+        'lsl.b #1, r0',
+        'lsl.w #1, r0',
+        'lsl.l #1, r0',
+        'lsl.q #1, r0',
+        'lsr.b #1, r0',
+        'lsr.w #1, r0',
+        'lsr.l #1, r0',
+        'lsr.q #1, r0',
+        'add.b #1, r0',
+        'add.w #1, r0',
+        'add.l #1, r0',
+        'add.q #1, r0',
+        'sub.b #1, r0',
+        'sub.w #1, r0',
+        'sub.l #1, r0',
+        'sub.q #1, r0',
+        'mulu.b #3, r0',
+        'mulu.w #3, r0',
+        'mulu.l #3, r0',
+        'mulu.q #3, r0',
+        'muls.b #3, r0',
+        'muls.w #3, r0',
+        'muls.l #3, r0',
+        'muls.q #3, r0',
+        'divs.l #3, r0',
+        'divs.q #3, r0',
+        'divu.l #3, r0',
+        'divu.q #3, r0',
+    ];
+
+    const FOLD_TEST_CASES = [
+        'or.b #0, r0',
+        'or.w #0, r0',
+        'or.l #0, r0',
+        'or.q #0, r0',
+        'lsl.b #0, r0',
+        'lsl.w #0, r0',
+        'lsl.l #0, r0',
+        'lsl.q #0, r0',
+        'lsr.b #0, r0',
+        'lsr.w #0, r0',
+        'lsr.l #0, r0',
+        'lsr.q #0, r0',
+        'add.b #0, r0',
+        'add.w #0, r0',
+        'add.l #0, r0',
+        'add.q #0, r0',
+        'sub.b #0, r0',
+        'sub.w #0, r0',
+        'sub.l #0, r0',
+        'sub.q #0, r0',
+        'muls.b #1, r0',
+        'muls.w #1, r0',
+        'muls.l #1, r0',
+        'muls.q #1, r0',
+        'mulu.b #1, r0',
+        'mulu.w #1, r0',
+        'mulu.l #1, r0',
+        'mulu.q #1, r0',
+        'divs.l #1, r0',
+        'divs.q #1, r0',
+        'divu.l #1, r0',
+        'divu.q #1, r0',
+    ];
+
+    const CLEAR_TEST_CASES = [
         'clr.b r0'      => self::CLEAR_B,
         'clr.w r0'      => self::CLEAR_W,
         'clr.l r0'      => self::CLEAR_L,
         'clr.q r0'      => self::CLEAR_Q,
-        'and.b #1, r0'  => self::PASS,
-        'and.w #1, r0'  => self::PASS,
-        'and.l #1, r0'  => self::PASS,
-        'and.q #1, r0'  => self::PASS,
         'and.b #0, r0'  => self::CLEAR_B,
         'and.w #0, r0'  => self::CLEAR_W,
         'and.l #0, r0'  => self::CLEAR_L,
         'and.q #0, r0'  => self::CLEAR_Q,
-        'or.b #1, r0'   => self::PASS,
-        'or.w #1, r0'   => self::PASS,
-        'or.l #1, r0'   => self::PASS,
-        'or.q #1, r0'   => self::PASS,
-        'or.b #0, r0'   => self::FOLD,
-        'or.w #0, r0'   => self::FOLD,
-        'or.l #0, r0'   => self::FOLD,
-        'or.q #0, r0'   => self::FOLD,
-        'lsl.b #1, r0'  => self::PASS,
-        'lsl.w #1, r0'  => self::PASS,
-        'lsl.l #1, r0'  => self::PASS,
-        'lsl.q #1, r0'  => self::PASS,
-        'lsl.b #0, r0'  => self::FOLD,
-        'lsl.w #0, r0'  => self::FOLD,
-        'lsl.l #0, r0'  => self::FOLD,
-        'lsl.q #0, r0'  => self::FOLD,
-        'lsr.b #1, r0'  => self::PASS,
-        'lsr.w #1, r0'  => self::PASS,
-        'lsr.l #1, r0'  => self::PASS,
-        'lsr.q #1, r0'  => self::PASS,
-        'lsr.b #0, r0'  => self::FOLD,
-        'lsr.w #0, r0'  => self::FOLD,
-        'lsr.l #0, r0'  => self::FOLD,
-        'lsr.q #0, r0'  => self::FOLD,
-        'add.b #1, r0'  => self::PASS,
-        'add.w #1, r0'  => self::PASS,
-        'add.l #1, r0'  => self::PASS,
-        'add.q #1, r0'  => self::PASS,
-        'add.b #0, r0'  => self::FOLD,
-        'add.w #0, r0'  => self::FOLD,
-        'add.l #0, r0'  => self::FOLD,
-        'add.q #0, r0'  => self::FOLD,
-        'sub.b #1, r0'  => self::PASS,
-        'sub.w #1, r0'  => self::PASS,
-        'sub.l #1, r0'  => self::PASS,
-        'sub.q #1, r0'  => self::PASS,
-        'sub.b #0, r0'  => self::FOLD,
-        'sub.w #0, r0'  => self::FOLD,
-        'sub.l #0, r0'  => self::FOLD,
-        'sub.q #0, r0'  => self::FOLD,
-        'muls.b #3, r0' => self::PASS,
-        'muls.w #3, r0' => self::PASS,
-        'muls.l #3, r0' => self::PASS,
-        'muls.q #3, r0' => self::PASS,
-        'muls.b #1, r0' => self::FOLD,
-        'muls.w #1, r0' => self::FOLD,
-        'muls.l #1, r0' => self::FOLD,
-        'muls.q #1, r0' => self::FOLD,
         'muls.b #0, r0' => self::CLEAR_B,
         'muls.w #0, r0' => self::CLEAR_W,
         'muls.l #0, r0' => self::CLEAR_L,
         'muls.q #0, r0' => self::CLEAR_Q,
-        'mulu.b #3, r0' => self::PASS,
-        'mulu.w #3, r0' => self::PASS,
-        'mulu.l #3, r0' => self::PASS,
-        'mulu.q #3, r0' => self::PASS,
-        'mulu.b #1, r0' => self::FOLD,
-        'mulu.w #1, r0' => self::FOLD,
-        'mulu.l #1, r0' => self::FOLD,
-        'mulu.q #1, r0' => self::FOLD,
         'mulu.b #0, r0' => self::CLEAR_B,
         'mulu.w #0, r0' => self::CLEAR_W,
         'mulu.l #0, r0' => self::CLEAR_L,
         'mulu.q #0, r0' => self::CLEAR_Q,
-        'divs.l #3, r0' => self::PASS,
-        'divs.q #3, r0' => self::PASS,
-        'divs.l #1, r0' => self::FOLD,
-        'divs.q #1, r0' => self::FOLD,
-        'divs.l #0, r0' => self::ILLEGAL_VALUE,
-        'divs.q #0, r0' => self::ILLEGAL_VALUE,
-        'divu.l #3, r0' => self::PASS,
-        'divu.q #3, r0' => self::PASS,
-        'divu.l #1, r0' => self::FOLD,
-        'divu.q #1, r0' => self::FOLD,
-        'divu.l #0, r0' => self::ILLEGAL_VALUE,
-        'divu.q #0, r0' => self::ILLEGAL_VALUE,
     ];
 
+    const TRAP_ILLEGAL_TEST_CASES = [
+        'divs.l #0, r0',
+        'divs.q #0, r0',
+        'divu.l #0, r0',
+        'divu.q #0, r0',
+    ];
 
     /**
      * @inheritDoc
      */
     public function run(): void {
+        $oParser = new Parser\SourceLine\Instruction\Statement();
+        $this->testNonFolded($oParser);
+        $this->testFoldToClear($oParser);
+        $this->testFoldToEmpty($oParser);
+        $this->testTrapIllegal($oParser);
+    }
 
+    private function testNonFolded(Parser\SourceLine\Instruction\Statement $oParser): void {
+        echo "\ttesting: non-folded\n";
+        foreach (self::NON_FOLDED_TEST_CASES as $sInput) {
+            $sBytecode = (string)$oParser->parse($sInput);
+            $this->assertTrue(strlen($sBytecode) > 0);
+        }
+    }
+
+    private function testFoldToClear(Parser\SourceLine\Instruction\Statement $oParser): void {
+        echo "\ttesting: fold to clr.x\n";
         $aFoldBytecode = [
             self::CLEAR_B => chr(Defs\Mnemonic\IDataMove::CLR_B) . chr(0),
             self::CLEAR_W => chr(Defs\Mnemonic\IDataMove::CLR_W) . chr(0),
@@ -152,30 +171,28 @@ class IntegerCodeFoldTest extends TestCase {
             self::CLEAR_Q => chr(Defs\Mnemonic\IDataMove::CLR_Q) . chr(0)
         ];
 
-        $oParser = new Parser\SourceLine\Instruction\Statement();
-        foreach (self::TEST_CASES as $sInput => $iExpect) {
+        foreach (self::CLEAR_TEST_CASES as $sInput => $iExpect) {
+            $sBytecode = (string)$oParser->parse($sInput);
+            $this->assertSame($aFoldBytecode[$iExpect], $sBytecode);
+        }
+    }
+
+    private function testFoldToEmpty(Parser\SourceLine\Instruction\Statement $oParser): void {
+        echo "\ttesting: fold to empty\n";
+        foreach (self::FOLD_TEST_CASES as $sInput) {
+            $sBytecode = (string)$oParser->parse($sInput);
+            $this->assertSame(0, strlen($sBytecode));
+        }
+    }
+
+    private function testTrapIllegal(Parser\SourceLine\Instruction\Statement $oParser): void {
+        echo "\ttesting: trap illegal\n";
+        foreach (self::TRAP_ILLEGAL_TEST_CASES as $sInput) {
             try {
                 $sBytecode = (string)$oParser->parse($sInput);
-
-                switch ($iExpect) {
-                    case self::PASS:
-                        $this->assertTrue(0 < strlen($sBytecode));
-                        break;
-                    case self::FOLD:
-                        $this->assertTrue(0 === strlen($sBytecode));
-                        break;
-                    case self::CLEAR_B:
-                    case self::CLEAR_W:
-                    case self::CLEAR_L:
-                    case self::CLEAR_Q:
-                        $this->assertSame($aFoldBytecode[$iExpect], $sBytecode);
-                        break;
-                    default;
-                        $this->assertTrue(false);
-                        break;
-                }
-            } catch (\UnexpectedValueException $oError) {
-                $this->assertEqual(self::ILLEGAL_VALUE, $iExpect);
+                $this->assertTrue(false);
+            } catch (\Throwable $oError) {
+                $this->assertInstanceOf(\UnexpectedValueException::class, $oError);
             }
         }
     }

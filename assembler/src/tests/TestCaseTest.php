@@ -30,6 +30,7 @@ class TestCaseTest extends TestCase {
      */
     public function run(): void {
         // Postitive assertions - none of these should fail
+        echo "\ttesting: positive assertions\n";
         $this->assertTrue(true);
         $this->assertFalse(false);
         $this->assertEqual(1, 1);
@@ -37,6 +38,7 @@ class TestCaseTest extends TestCase {
         $this->assertInstanceOf(self::class, $this);
 
         // Negative assertions - all of these should fail
+        echo "\ttesting: failure case assertions\n";
         try {
             $this
                 ->disregardNextAssertion()
