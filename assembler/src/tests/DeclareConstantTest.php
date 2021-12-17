@@ -27,7 +27,7 @@ use ABadCafe\MC64K\Parser\SourceLine\Data;
 class DeclareConstantTest extends TestCase {
 
     /**
-     * Basic test cases for checkLine()
+     * Basic test cases for checkLine(). It specifically looks for dc.(b/w/l/q/s/d) followed by anything.
      *
      * @const array<string, bool>
      */
@@ -290,17 +290,17 @@ class DeclareConstantTest extends TestCase {
      * Tests the checkLine() behaviour.
      */
     private function testCheckLine(Data\Declaration $oParser): void {
+        echo "\ttesting: match\n";
         foreach (self::CHECK_LINE_TEST_CASES as $sTestCase => $bExpect) {
             $this->assertSame($bExpect, $oParser->checkLine($sTestCase));
         }
     }
 
-
-
     /**
      * Tests dc.b "text" behaviour.
      */
     private function testDeclareString(Data\Declaration $oParser): void {
+        echo "\ttesting: dc.b string\n";
         foreach (self::DECLARE_STRING_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -320,6 +320,7 @@ class DeclareConstantTest extends TestCase {
      * Tests dc.b 0, 1, ... behaviour.
      */
     private function testDeclareBytes(Data\Declaration $oParser): void {
+        echo "\ttesting: dc.b int, ...\n";
         foreach (self::DECLARE_BYTE_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -339,6 +340,7 @@ class DeclareConstantTest extends TestCase {
      * Tests dc.w 0, 1, ... behaviour.
      */
     private function testDeclareWords(Data\Declaration $oParser): void {
+        echo "\ttesting: dc.w int, ...\n";
         foreach (self::DECLARE_WORD_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -358,6 +360,7 @@ class DeclareConstantTest extends TestCase {
      * Tests dc.l 0, 1, ... behaviour.
      */
     private function testDeclareLongs(Data\Declaration $oParser): void {
+        echo "\ttesting: dc.l int, ...\n";
         foreach (self::DECLARE_LONG_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -377,6 +380,7 @@ class DeclareConstantTest extends TestCase {
      * Tests dc.q 0, 1, ... behaviour.
      */
     private function testDeclareQuads(Data\Declaration $oParser): void {
+        echo "\ttesting: dc.q int, ...\n";
         foreach (self::DECLARE_QUAD_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -396,6 +400,7 @@ class DeclareConstantTest extends TestCase {
      * Tests dc.s 0.0, 1.0, ... behaviour.
      */
     private function testDeclareSingles(Data\Declaration $oParser): void {
+        echo "\ttesting: dc.s float, ...\n";
         foreach (self::DECLARE_SINGLE_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -415,6 +420,7 @@ class DeclareConstantTest extends TestCase {
      * Tests dc.s 0.0, 1.0, ... behaviour.
      */
     private function testDeclareDoubles(Data\Declaration $oParser): void {
+        echo "\ttesting: dc.d float, ...\n";
         foreach (self::DECLARE_DOUBLE_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));

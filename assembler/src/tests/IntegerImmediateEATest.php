@@ -51,6 +51,7 @@ class IntegerImmediateEATest extends TestCase {
      * Tests for small immediate only
      */
     private function testSmall(EffectiveAddress\IntegerImmediate $oParser): void {
+        echo "\ttesting: small immediate #0 ... #8\n";
         $aSmallCases = [
             '#0' => chr(Defs\EffectiveAddress\IOther::INT_SMALL_0),
             '#1' => chr(Defs\EffectiveAddress\IOther::INT_SMALL_1),
@@ -72,6 +73,11 @@ class IntegerImmediateEATest extends TestCase {
      * Tests for immediate up to byte
      */
     private function testByte(EffectiveAddress\IntegerImmediate $oParser): void {
+        printf(
+            "\ttesting: byte immediate #%d ... #%d | #0x0 ... #0xFF\n",
+            Defs\IIntLimits::BYTE_MIN_SIGNED,
+            Defs\IIntLimits::BYTE_MAX_SIGNED
+        );
         $aTestCases = [
             // Small immediate representation
             '#0' => chr(Defs\EffectiveAddress\IOther::INT_SMALL_0),
@@ -113,6 +119,11 @@ class IntegerImmediateEATest extends TestCase {
      * Tests for immediate up to word
      */
     private function testWord(EffectiveAddress\IntegerImmediate $oParser): void {
+        printf(
+            "\ttesting: word immediate #%d ... #%d | #0x0 ... #0xFFFF\n",
+            Defs\IIntLimits::WORD_MIN_SIGNED,
+            Defs\IIntLimits::WORD_MAX_SIGNED
+        );
         $aTestCases = [
             // Small immediate
             '#0' => chr(Defs\EffectiveAddress\IOther::INT_SMALL_0),
@@ -161,6 +172,11 @@ class IntegerImmediateEATest extends TestCase {
      * Tests for immediate up to long
      */
     private function testLong(EffectiveAddress\IntegerImmediate $oParser): void {
+        printf(
+            "\ttesting: long immediate #%d ... #%d | #0x0 ... #0xFFFFFFFF\n",
+            Defs\IIntLimits::LONG_MIN_SIGNED,
+            Defs\IIntLimits::LONG_MAX_SIGNED
+        );
         $aTestCases = [
             // Small immediate
             '#0' => chr(Defs\EffectiveAddress\IOther::INT_SMALL_0),
@@ -213,6 +229,11 @@ class IntegerImmediateEATest extends TestCase {
      * Tests for immediate up to quad
      */
     private function  testQuad(EffectiveAddress\IntegerImmediate $oParser): void {
+        printf(
+            "\ttesting: quad immediate #%d ... #%d | #0x0 ... #0xFFFFFFFFFFFFFFFF\n",
+            Defs\IIntLimits::QUAD_MIN_SIGNED,
+            Defs\IIntLimits::QUAD_MAX_SIGNED
+        );
         $aTestCases = [
             // Small immediate
             '#0' => chr(Defs\EffectiveAddress\IOther::INT_SMALL_0),

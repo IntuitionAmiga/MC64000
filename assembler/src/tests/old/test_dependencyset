@@ -18,7 +18,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K;
 
-require_once '../MC64K.php';
+require_once '../../MC64K.php';
 
 const EXAMPLES = [
     ['DependencyA', '1.0.0'],

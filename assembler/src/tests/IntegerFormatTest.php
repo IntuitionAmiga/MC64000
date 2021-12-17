@@ -144,6 +144,7 @@ class IntegerFormatTest extends TestCase {
      */
     public function run(): void {
         foreach (self::TEST_CASES as $iWordSize => $aTestCases) {
+            echo "\ttesting: <num> (", $iWordSize, " byte)\n";
             foreach ($aTestCases as $sExpression => $iExpect) {
                 $iResult = Parser\Utils\Integer::parseLiteral((string)$sExpression, $iWordSize);
                 $this->assertEqual($iExpect, $iResult);
