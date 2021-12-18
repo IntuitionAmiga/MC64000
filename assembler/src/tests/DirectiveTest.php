@@ -41,6 +41,7 @@ class DirectiveTest extends TestCase {
      */
     public function run(): void {
         $this->testAlign();
+        $this->testFlag();
     }
 
     /**
@@ -58,5 +59,29 @@ class DirectiveTest extends TestCase {
             $this->assertSame($sExpect, $oBuffer->getBytecode());
         }
     }
+
+    private function testFlag(): void {
+        echo "\ttesting @en/@enable\n";
+        $oOptions = State\Coordinator::get()->getOptions();
+        $this->assertFalse($oOptions->isEnabled('unit_test_flag'));
+        $this->assertFalse($oOptions->isEnabled('unit_test_flag_short'));
+
+        $oProcessor = new Processor\Flag();
+        $oProcessor->process(' @enable unit_test_flag');
+        $oProcessor->process(' @en unit_test_flag_short');
+
+        $this->assertTrue($oOptions->isEnabled('unit_test_flag'));
+        $this->assertTrue($oOptions->isEnabled('unit_test_flag_short'));
+
+        echo "\ttesting @dis/@disable\n";
+        $oProcessor->process(' @disable unit_test_flag');
+        $oProcessor->process(' @dis unit_test_flag_short');
+        $this->assertFalse($oOptions->isEnabled('unit_test_flag'));
+        $this->assertFalse($oOptions->isEnabled('unit_test_flag_short'));
+
+    }
+
+
+
 }
 
