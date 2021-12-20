@@ -18,6 +18,7 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Tests;
 use ABadCafe\MC64K\Utils\TestCase;
 use ABadCafe\MC64K\State;
+use ABadCafe\MC64K\Defs;
 use ABadCafe\MC64K\Parser\SourceLine\Directive\Processor;
 
 use function \sprintf;
@@ -69,6 +70,7 @@ class DirectiveTest extends TestCase {
         $this->testDefine();
         $this->testExport();
         $this->testImport();
+        $this->testStackSize();
     }
 
     /**
@@ -140,7 +142,7 @@ class DirectiveTest extends TestCase {
         $this->assertSame('test_1_replacement', $aDefinitions['TEST1']);
         $this->assertSame('test_2_replacement', $aDefinitions['TEST2']);
 
-        echo "\testing @undef\@undefine\n";
+        echo "\ttesting @undef\@undefine\n";
         $oUndefine = new Processor\Undefine();
         $oUndefine->process(' @undef    TEST1');
         $oUndefine->process(' @undefine TEST2');
@@ -213,5 +215,25 @@ class DirectiveTest extends TestCase {
             $this->assertTrue(isset($aImportExports[$sTestCase]));
             $this->assertSame($iExpect, $aImportExports[$sTestCase]);
         }
+    }
+
+    private function testStackSize(): void {
+        echo "\ttesting @stacksize\n";
+        $oStackSize = new Processor\StackSize();
+        $oOptions   = State\Coordinator::get()
+            ->getGlobalOptions();
+        $iInitialStackSize = $oOptions->getInt(Defs\Project\IOptions::APP_STACK_SIZE, -1);
+        $this->assertTrue($iInitialStackSize > 1);
+
+        // Asking for a smaller stack than is already set should be rejected.
+        $iHalfStackSize = $iInitialStackSize >> 1;
+        $oStackSize->process(" @stacksize " . $iHalfStackSize);
+        $this->assertSame($iInitialStackSize, $oOptions->getInt(Defs\Project\IOptions::APP_STACK_SIZE, -1));
+
+        // Asking for a larger stack than is already set should be accepted.
+        $iTwiceStackSize = $iInitialStackSize << 1;
+        $oStackSize->process(" @stacksize " . $iTwiceStackSize);
+        $this->assertSame($iTwiceStackSize, $oOptions->getInt(Defs\Project\IOptions::APP_STACK_SIZE, -1));
+
     }
 }
