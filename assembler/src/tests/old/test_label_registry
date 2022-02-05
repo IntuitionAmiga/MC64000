@@ -18,11 +18,11 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K;
 
-require_once '../MC64K.php';
+require_once '../../MC64K.php';
 
 $oState = State\Coordinator::get();
 
-$oState->setCurrentFilename('mock_00.s');
+$oState->setCurrentFile(new IO\SourceString('', 'mock_00.s'));
 
 try {
     $oState->addGlobalLabel('main', 10, 9);
@@ -42,7 +42,7 @@ try {
     echo "SUCCESS - caught expected ", $oError->getMessage(), "\n";
 }
 
-$oState->setCurrentFilename('mock_01.s');
+$oState->setCurrentFile(new IO\SourceString('', 'mock_01.s'));
 
 try {
     $oState->addGlobalLabel('debug', 10, 250);

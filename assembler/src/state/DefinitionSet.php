@@ -17,7 +17,7 @@ declare(strict_types = 1);
 
 namespace ABadCafe\MC64K\State;
 
-use function \strlen, \uasort, \str_replace, \array_keys, \array_values, \preg_replace_callback;
+use function \strlen, \uksort, \str_replace, \array_keys, \array_values, \preg_replace_callback;
 
 /**
  * DefinitionSet
@@ -43,11 +43,11 @@ class DefinitionSet {
      * @param  string $sDefinition
      * @param  string $sValue
      * @return self   fluent
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     public function add(string $sDefinition, string $sValue): self {
         if (isset($this->aDefinitions[$sDefinition])) {
-            throw new \Exception("Duplicate definition");
+            throw new \RuntimeException("Duplicate definition");
         }
         $this->aDefinitions[$sDefinition] = $sValue;
         $this->bolSorted = false;

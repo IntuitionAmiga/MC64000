@@ -83,7 +83,7 @@ trait TBranching {
         $iDisplacement = $this->oTgtParser->getLastDisplacement();
         if ($iDisplacement < 0) {
             $iInstructionLength = strlen($sInstructionBytecode) + 1;
-            $iPosDisplacement   = abs($iDisplacement);
+            $iPosDisplacement   = -$iDisplacement;
             if (
                 $iPosDisplacement < $iInstructionLength ||
                 ($iPosDisplacement == $iInstructionLength && false === ($this->bAllowBranchToSelf || $bOperandSideEffects))

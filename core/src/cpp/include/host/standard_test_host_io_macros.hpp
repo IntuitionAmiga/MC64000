@@ -18,7 +18,6 @@ namespace MC64K {
 namespace StandardTestHost {
 namespace IO {
 
-
 /**
  * Gnarly
  */

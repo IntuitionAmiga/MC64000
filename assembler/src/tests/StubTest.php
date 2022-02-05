@@ -1,4 +1,3 @@
-#!/usr/bin/php -n
 <?php
 
 /**
@@ -11,29 +10,26 @@
  *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
  *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
  *
- *
+ *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K;
+namespace ABadCafe\MC64K\Tests;
+use ABadCafe\MC64K\Utils\TestCase;
 
-require_once '../MC64K.php';
+/**
+ * StubTest
+ *
+ * Empty Stub
+ */
+class StubTest extends TestCase {
 
-const EXAMPLES = [
-    '.looptarget:', // expect null for this one
-    'jmp (a0)',
-    'add.b #1, r0',
-    'sub.w r0, r1',
-    'and.l r1, (r0)',
-    'beq.q (r0), (r1), label1',
-    'bgt.b (r1, r0.w), r0, label2',
-    'ble.q 4(r1), 4(r0, r2.w), label3',
-    'flog2.d (r0, r1.w * 2), 4(r0, r2.w)'
-];
+    /**
+     * @inheritDoc
+     */
+    public function run(): void {
 
-$oTokeniser = new Tokeniser\Instruction;
-
-foreach (EXAMPLES as $sInput) {
-    echo $sInput, " => ", print_r($oTokeniser->tokenise($sInput), true), "\n";
+    }
 }
+

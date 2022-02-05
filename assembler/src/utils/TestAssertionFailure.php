@@ -1,4 +1,3 @@
-#!/usr/bin/php -n
 <?php
 
 /**
@@ -11,26 +10,13 @@
  *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
  *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
  *
- *
+ *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K;
+namespace ABadCafe\MC64K\Utils;
 
-require_once '../MC64K.php';
+class TestAssertionFailure extends \LogicException {
 
-const EXAMPLES = [
-    ['DependencyA', '1.0.0'],
-    ['DependencyB', '1.1.0'],
-    ['DependencyB', '1.0.0'],
-    ['DependencyA', '1.0.999']
-];
-
-$oDependencySet = new State\DependencySet();
-
-foreach (EXAMPLES as $aTest) {
-    $oDependencySet->add($aTest[0], $aTest[1]);
 }
-
-print_r($oDependencySet->getDependencies());

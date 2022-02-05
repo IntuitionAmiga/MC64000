@@ -19,7 +19,7 @@
     "sources": [
         "lib:standard_test_host/v1.0.0/host.s",
         "lib:standard_test_host/v1.0.0/io.s",
-        "lib:standard_test_host/v1.0.0/vec3.s",
+        "lib:standard_test_host/v1.0.0/vector_math.s",
         "src/main.s",
         "src/calibrate.s",
         "src/bench_add_reg_to_reg_ind.s",
