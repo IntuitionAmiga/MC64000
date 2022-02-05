@@ -77,7 +77,15 @@ class BranchDisplacementTest extends TestCase {
         $this->testBranch();
     }
 
-    private function testShortBranch(): void {
+    /**
+     * Tests regular (4-byte) displacement. Basic bra is used which allows the total bytecode emitted
+     * to be validated. Also tests that a zero branch is completely folded out.
+     *
+     * Since branch displacements are relative to the end of the instruction bytecode, negative displacments
+     * less than or equal to the instruction length are illegal and should throw an exception. This is also
+     * tested for.
+     */
+     private function testBranch(): void {
         echo "\ttesting bra valid cases\n";
         $oParser = new Parser\SourceLine\Instruction\Statement();
 
@@ -101,7 +109,15 @@ class BranchDisplacementTest extends TestCase {
         }
     }
 
-    private function testBranch(): void {
+    /**
+     * Tests short (1-byte) displacement. Basic bra.b is used which allows the total bytecode emitted
+     * to be validated. Also tests that a zero branch is completely folded out.
+     *
+     * Since branch displacements are relative to the end of the instruction bytecode, negative displacments
+     * less than or equal to the instruction length are illegal and should throw an exception. This is also
+     * tested for.
+     */
+    private function testShortBranch(): void {
         echo "\ttesting bra.b valid cases\n";
         $oParser = new Parser\SourceLine\Instruction\Statement();
 

@@ -287,7 +287,8 @@ class DeclareConstantTest extends TestCase {
     }
 
     /**
-     * Tests the checkLine() behaviour.
+     * Tests the checkLine() behaviour. This returns true/false if the line match is accepted, so this can be trivially
+     * asserted.
      */
     private function testCheckLine(Data\Declaration $oParser): void {
         echo "\ttesting: match\n";
@@ -297,7 +298,8 @@ class DeclareConstantTest extends TestCase {
     }
 
     /**
-     * Tests dc.b "text" behaviour.
+     * Tests dc.b "text" behaviour. Legal examples are tested first, where the bytecode output can be directly asserted.
+     * Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareString(Data\Declaration $oParser): void {
         echo "\ttesting: dc.b string\n";
@@ -317,7 +319,8 @@ class DeclareConstantTest extends TestCase {
     }
 
     /**
-     * Tests dc.b 0, 1, ... behaviour.
+     * Tests dc.b 0, 1, ... behaviour. Legal examples are tested first, where the bytecode output can be directly
+     * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareBytes(Data\Declaration $oParser): void {
         echo "\ttesting: dc.b int, ...\n";
@@ -337,7 +340,8 @@ class DeclareConstantTest extends TestCase {
     }
 
     /**
-     * Tests dc.w 0, 1, ... behaviour.
+     * Tests dc.w 0, 1, ... behaviour. Legal examples are tested first, where the bytecode output can be directly
+     * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareWords(Data\Declaration $oParser): void {
         echo "\ttesting: dc.w int, ...\n";
@@ -357,7 +361,8 @@ class DeclareConstantTest extends TestCase {
     }
 
     /**
-     * Tests dc.l 0, 1, ... behaviour.
+     * Tests dc.l 0, 1, ... behaviour. Legal examples are tested first, where the bytecode output can be directly
+     * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareLongs(Data\Declaration $oParser): void {
         echo "\ttesting: dc.l int, ...\n";
@@ -377,7 +382,8 @@ class DeclareConstantTest extends TestCase {
     }
 
     /**
-     * Tests dc.q 0, 1, ... behaviour.
+     * Tests dc.q 0, 1, ... behaviour. Legal examples are tested first, where the bytecode output can be directly
+     * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareQuads(Data\Declaration $oParser): void {
         echo "\ttesting: dc.q int, ...\n";
@@ -397,7 +403,8 @@ class DeclareConstantTest extends TestCase {
     }
 
     /**
-     * Tests dc.s 0.0, 1.0, ... behaviour.
+     * Tests dc.s 0.0, 1.0, ... behaviour. Legal examples are tested first, where the bytecode output can be directly
+     * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareSingles(Data\Declaration $oParser): void {
         echo "\ttesting: dc.s float, ...\n";
@@ -417,7 +424,8 @@ class DeclareConstantTest extends TestCase {
     }
 
     /**
-     * Tests dc.s 0.0, 1.0, ... behaviour.
+     * Tests dc.s 0.0, 1.0, ... behaviour. Legal examples are tested first, where the bytecode output can be directly
+     * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareDoubles(Data\Declaration $oParser): void {
         echo "\ttesting: dc.d float, ...\n";
@@ -435,6 +443,4 @@ class DeclareConstantTest extends TestCase {
             }
         }
     }
-
 }
-
