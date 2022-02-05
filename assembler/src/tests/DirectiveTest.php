@@ -19,6 +19,7 @@ namespace ABadCafe\MC64K\Tests;
 use ABadCafe\MC64K\Utils\TestCase;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
+use ABadCafe\MC64K\IO;
 use ABadCafe\MC64K\Parser\SourceLine\Directive\Processor;
 
 use function \sprintf;
@@ -68,6 +69,10 @@ class DirectiveTest extends TestCase {
         $this->testAlign();
         $this->testFlag();
         $this->testDefine();
+        $this->testDuplicateDefineInFileThrows();
+        $this->testDefineHasFileScope();
+        $this->testEqu();
+        $this->testEquHasGlobalScope();
         $this->testExport();
         $this->testImport();
         $this->testStackSize();
@@ -125,6 +130,9 @@ class DirectiveTest extends TestCase {
     private function testDefine(): void {
         echo "\ttesting @def/@define\n";
         $oDefine = new Processor\Define();
+
+        State\Coordinator::get()->setCurrentFile(new IO\SourceString('', __METHOD__));
+
         $oDefinitions = State\Coordinator::get()->getDefinitionSet();
 
         $aDefinitions = $oDefinitions->getDefinitions();
@@ -150,6 +158,127 @@ class DirectiveTest extends TestCase {
         $this->assertTrue(is_array($aDefinitions));
         $this->assertFalse(isset($aDefinitions['TEST1']));
         $this->assertFalse(isset($aDefinitions['TEST2']));
+    }
+
+    /**
+     * Asserts that duplicating a define that is already active in the current file is an error.
+     */
+    private function testDuplicateDefineInFileThrows(): void {
+        echo "\ttesting duplicate define throws\n";
+        $oDefine = new Processor\Define();
+
+        State\Coordinator::get()->setCurrentFile(new IO\SourceString('', __METHOD__));
+        $oDefinitions = State\Coordinator::get()->getDefinitionSet();
+
+        // Make sure the definition is not already set up
+        $aDefinitions = $oDefinitions->getDefinitions();
+        $this->assertTrue(is_array($aDefinitions));
+        $this->assertFalse(isset($aDefinitions['DUPE_1']));
+
+        // First define should be fine
+        $oDefine->process(' @define DUPE_1 123');
+        $aDefinitions = $oDefinitions->getDefinitions();
+        $this->assertTrue(is_array($aDefinitions));
+        $this->assertTrue(isset($aDefinitions['DUPE_1']));
+        $this->assertSame('123', $aDefinitions['DUPE_1']);
+
+        // A second attempt should throw
+        try {
+            $oDefine->process(' @define DUPE_1 456');
+            $this->assertTrue(false);
+        } catch (\Throwable $oError) {
+            $this->assertInstanceOf(\RuntimeException::class, $oError);
+        }
+    }
+
+    /**
+     * Asserts that duplicating a define in a different file is not an error since defines have file scope.
+     */
+    private function testDefineHasFileScope(): void {
+        echo "\ttesting define has file scope\n";
+        $oDefine = new Processor\Define();
+
+        // Change the file
+        State\Coordinator::get()->setCurrentFile(new IO\SourceString('', __METHOD__ . '1'));
+        $oDefinitions = State\Coordinator::get()->getDefinitionSet();
+
+        // Make sure the definition is not already set up
+        $aDefinitions = $oDefinitions->getDefinitions();
+
+        $this->assertTrue(is_array($aDefinitions));
+        $this->assertFalse(isset($aDefinitions['DUPE_1']));
+
+        // First define should be fine
+        $oDefine->process(' @define DUPE_1 123');
+        $aDefinitions = $oDefinitions->getDefinitions();
+        $this->assertTrue(is_array($aDefinitions));
+        $this->assertTrue(isset($aDefinitions['DUPE_1']));
+        $this->assertSame('123', $aDefinitions['DUPE_1']);
+
+        // Change the file
+        State\Coordinator::get()->setCurrentFile(new IO\SourceString('', __METHOD__ . '2'));
+
+        // A second attempt should not throw
+        $oDefine->process(' @define DUPE_1 456');
+    }
+
+    /**
+     * Asserts that the equ directive sets a definition
+     */
+    private function testEqu(): void {
+        echo "\ttesting @equ\n";
+        $oDefine = new Processor\Define();
+
+        State\Coordinator::get()->setCurrentFile(new IO\SourceString('', __METHOD__));
+
+        $oDefinitions = State\Coordinator::get()->getDefinitionSet();
+
+        $aDefinitions = $oDefinitions->getDefinitions();
+        $this->assertTrue(is_array($aDefinitions));
+        $this->assertFalse(isset($aDefinitions['TEST_EQU']));
+
+        // First define should be fine
+        $oDefine->process(' @equ TEST_EQU 678');
+
+        // EQU should be visible in file scope
+        $aDefinitions = $oDefinitions->getDefinitions();
+        $this->assertTrue(is_array($aDefinitions));
+        $this->assertTrue(isset($aDefinitions['TEST_EQU']));
+        $this->assertSame('678', $aDefinitions['TEST_EQU']);
+    }
+
+    /**
+     * Asserts that a set equ definition persists when file changes.
+     */
+    private function testEquHasGlobalScope(): void {
+        echo "\ttesting @equ has global scope\n";
+        $oDefine = new Processor\Define();
+
+        State\Coordinator::get()->setCurrentFile(new IO\SourceString('', __METHOD__. '1'));
+
+        $oDefinitions = State\Coordinator::get()->getDefinitionSet();
+
+        $aDefinitions = $oDefinitions->getDefinitions();
+        $this->assertTrue(is_array($aDefinitions));
+        $this->assertFalse(isset($aDefinitions['TEST_EQU_GLOBAL']));
+
+        // First define should be fine
+        $oDefine->process(' @equ TEST_EQU_GLOBAL ABC');
+
+        // EQU should be visible in file scope
+        $aDefinitions = $oDefinitions->getDefinitions();
+        $this->assertTrue(is_array($aDefinitions));
+        $this->assertTrue(isset($aDefinitions['TEST_EQU_GLOBAL']));
+        $this->assertSame('ABC', $aDefinitions['TEST_EQU_GLOBAL']);
+
+        // Change the file
+        State\Coordinator::get()->setCurrentFile(new IO\SourceString('', __METHOD__ . '2'));
+
+        // EQU should still be visible in file scope
+        $aDefinitions = $oDefinitions->getDefinitions();
+        $this->assertTrue(is_array($aDefinitions));
+        $this->assertTrue(isset($aDefinitions['TEST_EQU_GLOBAL']));
+        $this->assertSame('ABC', $aDefinitions['TEST_EQU_GLOBAL']);
     }
 
     /**
@@ -217,6 +346,10 @@ class DirectiveTest extends TestCase {
         }
     }
 
+    /**
+     * Tests the behaviour of the stacksize directive. At present it is only legal to make the stack larger than
+     * than it was. Trying to shrink it will not raise an error but is ignored.
+     */
     private function testStackSize(): void {
         echo "\ttesting @stacksize\n";
         $oStackSize = new Processor\StackSize();

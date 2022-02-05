@@ -43,11 +43,11 @@ class DefinitionSet {
      * @param  string $sDefinition
      * @param  string $sValue
      * @return self   fluent
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     public function add(string $sDefinition, string $sValue): self {
         if (isset($this->aDefinitions[$sDefinition])) {
-            throw new \Exception("Duplicate definition");
+            throw new \RuntimeException("Duplicate definition");
         }
         $this->aDefinitions[$sDefinition] = $sValue;
         $this->bolSorted = false;
