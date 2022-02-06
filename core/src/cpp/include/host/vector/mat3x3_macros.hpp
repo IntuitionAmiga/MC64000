@@ -21,66 +21,66 @@ namespace MC64K {
 namespace StandardTestHost {
 namespace VectorMath {
 
-#define m3x3_identity(T, NAME) mat_identity<T, 3>(aoGPR[ABI::PTR_REG_0].pf ## NAME)
+#define m3x3_identity(T, UNION_NAME) mat_identity<T, 3>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
 
-#define m3x3_copy(T, NAME) mat_copy<T, 3>( \
-    aoGPR[ABI::PTR_REG_1].p ## NAME, \
-    aoGPR[ABI::PTR_REG_0].p ## NAME \
+#define m3x3_copy(T, UNION_NAME) mat_copy<T, 3>( \
+    aoGPR[ABI::PTR_REG_1].p ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].p ## UNION_NAME \
 )
 
-#define m3x3_scale_assign(T, NAME) mat_scale_assign<T, 3>( \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME, \
-    Interpreter::fpr()[ABI::FLT_REG_0].f ## NAME \
+#define m3x3_scale_assign(T, UNION_NAME) mat_scale_assign<T, 3>( \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
+    Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m3x3_scale(T, NAME) mat_scale<T, 3>( \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME, \
-    Interpreter::fpr()[ABI::FLT_REG_0].f ## NAME \
+#define m3x3_scale(T, UNION_NAME) mat_scale<T, 3>( \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
+    Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m3x3_add_assign(T, NAME) mat_add_assign<T, 3>( \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m3x3_add_assign(T, UNION_NAME) mat_add_assign<T, 3>( \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m3x3_add(T, NAME) mat_add<T, 3>( \
-    aoGPR[ABI::PTR_REG_2].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m3x3_add(T, UNION_NAME) mat_add<T, 3>( \
+    aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m3x3_sub_assign(T, NAME) mat_sub_assign<T, 3>( \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m3x3_sub_assign(T, UNION_NAME) mat_sub_assign<T, 3>( \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m3x3_sub(T, NAME) mat_sub<T, 3>( \
-    aoGPR[ABI::PTR_REG_2].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m3x3_sub(T, UNION_NAME) mat_sub<T, 3>( \
+    aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m3x3_multiply(T, NAME) mat3x3_multiply<T>( \
-    aoGPR[ABI::PTR_REG_2].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m3x3_multiply(T, UNION_NAME) mat3x3_multiply<T>( \
+    aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m3x3_multiply_assign(T, NAME) { \
-    T*       pfDst  = aoGPR[ABI::PTR_REG_1].pf ## NAME; \
+#define m3x3_multiply_assign(T, UNION_NAME) { \
+    T*       pfDst  = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME; \
     T        pfTmp[3*3]; \
     mat_copy<T, 3>(pfTmp, pfDst); \
     mat3x3_multiply<T>( \
         pfDst, \
         pfTmp, \
-        aoGPR[ABI::PTR_REG_0].pf ## NAME \
+        aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
     ); \
 }
 
-#define m3x3_transpose(T, NAME) { \
-    T*       pDst = aoGPR[ABI::PTR_REG_1].p ## NAME; \
-    T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+#define m3x3_transpose(T, UNION_NAME) { \
+    T*       pDst = aoGPR[ABI::PTR_REG_1].p ## UNION_NAME; \
+    T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
     pDst[M3_11] = pSrc[M3_11]; \
     pDst[M3_12] = pSrc[M3_21]; \
     pDst[M3_13] = pSrc[M3_31]; \
@@ -94,8 +94,8 @@ namespace VectorMath {
 
 #define swap_pair(a, b) { t = a; a = b; b = t; }
 
-#define m3x3_transpose_assign(T, NAME) { \
-    T* pDst = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+#define m3x3_transpose_assign(T, UNION_NAME) { \
+    T* pDst = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
     T  t; \
     swap_pair(pDst[M3_12], pDst[M3_21]); \
     swap_pair(pDst[M3_13], pDst[M3_31]); \

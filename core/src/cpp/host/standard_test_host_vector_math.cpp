@@ -100,7 +100,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M2X2F_TRANSPOSE_AS:    m2x2_transpose_assign(uint32, uLong);       break;
         case M2X2F_TRANSPOSE:       m2x2_transpose(uint32, uLong);              break;
         case M2X2F_DET:             m2x2_determinant(float32, Single);          break;
-        case M2X2F_INVERSE_AS:
+        case M2X2F_INVERSE_AS:      m2x2_inverse_assign(float32, Single);       break;
         case M2X2F_INVERSE:
 
         case M3X3F_IDENTITY:        m3x3_identity(float32, Single);             break;
@@ -138,7 +138,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         //    break;
 
         default:
-            std::fprintf(stderr, "Unknown Mem operation %d\n", iOperation);
+            std::fprintf(stderr, "Unknown operation %d\n", iOperation);
             return Interpreter::UNKNOWN_HOST_CALL;
             break;
     }
