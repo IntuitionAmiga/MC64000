@@ -121,6 +121,29 @@ namespace VectorMath {
     } \
 }
 
+/**
+ * Inversion of 2x2
+ *
+ * | a b |   =>     1     |  d -b |
+ * | c d |      (ad - bc) | -c  a |
+ */
+#define m2x2_inverse(T, UNION_NAME) { \
+    T*       pfDst = aoGPR[ABI::PTR_REG_1].p ## UNION_NAME; \
+    T const* pfSrc = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
+    T fDeterminant = pfSrc[M2_11] * pfSrc[M2_22] - pfSrc[M2_12] * pfSrc[M2_21]; \
+    if (fDeterminant) { \
+        fDeterminant = 1.0 / fDeterminant; \
+        pfDst[M2_11] = fDeterminant * pfSrc[M2_22]; \
+        pfDst[M2_22] = fDeterminant * pfSrc[M2_11]; \
+        pfDst[M2_12] = -fDeterminant * pfSrc[M2_12]; \
+        pfDst[M2_22] = -FDeterminant * pfSrc[M2_22]; \
+        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE; \
+    } else { \
+        aoGPR[ABI::INT_REG_0].uQuad = ERR_ZERO_DIVIDE; \
+    } \
+}
+
+
 
 }}}
 

@@ -102,6 +102,29 @@ namespace VectorMath {
     swap_pair(pDst[M3_23], pDst[M3_32]); \
 }
 
+/**
+ *
+ *  | a b c |
+ *  | d e f |  => a | e f | - b | d f | + c | d e | => a(ei - fg) - b(di - fg) + c(dh - eg)
+ *  | g h i |       | h i |     | g i |     | g h |
+ *
+ *  => aei + bfg + cdh - ceg - bdi - afh
+ */
+#define m3x3_determinant(T, UNION_NAME) { \
+    T const* pfMtx = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME; \
+    Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME = \
+    /*   aei */ (pfMtx[M3_11] * pfMtx[M3_22] * pfMtx[M3_33]) + \
+    /* + bfg */ (pfMtx[M3_12] * pfMtx[M3_23] * pfMtx[M3_31]) + \
+    /* + cdh */ (pfMtx[M3_13] * pfMtx[M3_21] * pfMtx[M3_32]) - \
+    /* - ceg */ (pfMtx[M3_13] * pfMtx[M3_22] * pfMtx[M3_31]) - \
+    /* - bdi */ (pfMtx[M3_12] * pfMtx[M3_21] * pfMtx[M3_33]) - \
+    /* - afh */ (pfMtx[M3_11] * pfMtx[M3_23] * pfMtx[M3_32]);  \
+}
+
+#define m3x3_inverse_assign(T, UNION_NAME) {\
+\
+}
+
 }}}
 
 #endif

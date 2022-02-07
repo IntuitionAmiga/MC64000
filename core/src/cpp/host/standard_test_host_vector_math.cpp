@@ -87,6 +87,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case VEC3F_TO_VEC4F:        v3_expand_v4(float32, Single);              break;
         case VEC4F_XFORM_4X4:       v4_transform_4x4(float32, Single);          break;
 
+        // 2x2 Matrices
         case M2X2F_IDENTITY:        m2x2_identity(float32, Single);             break;
         case M2X2F_COPY:            m2x2_copy(uint32, uLong);                   break;
         case M2X2F_SCALE_AS:        m2x2_scale_assign(float32, Single);         break;
@@ -101,8 +102,9 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M2X2F_TRANSPOSE:       m2x2_transpose(uint32, uLong);              break;
         case M2X2F_DET:             m2x2_determinant(float32, Single);          break;
         case M2X2F_INVERSE_AS:      m2x2_inverse_assign(float32, Single);       break;
-        case M2X2F_INVERSE:
+        case M2X2F_INVERSE:         m2x2_inverse_assign(float32, Single);       break;
 
+        // 3x3 Matrices
         case M3X3F_IDENTITY:        m3x3_identity(float32, Single);             break;
         case M3X3F_COPY:            m3x3_copy(uint32, uLong);                   break;
         case M3X3F_SCALE_AS:        m3x3_scale_assign(float32, Single);         break;
@@ -115,11 +117,12 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M3X3F_MULTIPLY:        m3x3_multiply(float32, Single);             break;
         case M3X3F_TRANSPOSE_AS:    m3x3_transpose_assign(uint32, uLong);       break;
         case M3X3F_TRANSPOSE:       m3x3_transpose(uint32, uLong);              break;
-        case M3X3F_DET:
+        case M3X3F_DET:             m3x3_determinant(float32, Single);          break;
         case M3X3F_INVERSE_AS:
         case M3X3F_INVERSE:
             break;
 
+        // 4x4 Matrices
         case M4X4F_IDENTITY:        m4x4_identity(float32, Single);             break;
         case M4X4F_COPY:            m4x4_copy(uint32, uLong);                   break;
         case M4X4F_SCALE_AS:        m4x4_scale_assign(float32, Single);         break;
