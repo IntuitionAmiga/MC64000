@@ -155,6 +155,46 @@ namespace VectorMath {
     }                                                                                  \
 }
 
+#define m3x3_inverse(T, UNION_NAME) {                                                  \
+    T const* pfSrc = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME;                           \
+    T* pfDst = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME;                                 \
+    T fDeterminant = mat3x3_determinant<T>(pfSrc);                                     \
+    if (fDeterminant) {                                                                \
+        /* A = (ei - fh) */                                                            \
+        pfDst[M3_11] = (pfSrc[M3_22] * pfSrc[M3_33]) - (pfSrc[M3_23] * pfSrc[M3_32]);  \
+        /* D = (ch - bi) */                                                            \
+        pfDst[M3_12] = (pfSrc[M3_13] * pfSrc[M3_32]) - (pfSrc[M3_12] * pfSrc[M3_33]);  \
+        /* G = (bf - ce) */                                                            \
+        pfDst[M3_13] = (pfSrc[M3_12] * pfSrc[M3_23]) - (pfSrc[M3_13] * pfSrc[M3_22]);  \
+        /* B = (fg - di) */                                                            \
+        pfDst[M3_21] = (pfSrc[M3_23] * pfSrc[M3_31]) - (pfSrc[M3_21] * pfSrc[M3_33]);  \
+        /* E = (ai - cg) */                                                            \
+        pfDst[M3_22] = (pfSrc[M3_11] * pfSrc[M3_33]) - (pfSrc[M3_13] * pfSrc[M3_31]);  \
+        /* H = (cd - af) */                                                            \
+        pfDst[M3_23] = (pfSrc[M3_13] * pfSrc[M3_21]) - (pfSrc[M3_11] * pfSrc[M3_23]);  \
+        /* C = (dh - eg) */                                                            \
+        pfDst[M3_31] = (pfSrc[M3_21] * pfSrc[M3_32]) - (pfSrc[M3_22] * pfSrc[M3_31]);  \
+        /* F = (bg - ah) */                                                            \
+        pfDst[M3_32] = (pfSrc[M3_12] * pfSrc[M3_31]) - (pfSrc[M3_11] * pfSrc[M3_32]);  \
+        /* I = (ae - bd) */                                                            \
+        pfDst[M3_33] = (pfSrc[M3_11] * pfSrc[M3_22]) - (pfSrc[M3_12] * pfSrc[M3_21]);  \
+        fDeterminant = 1.0 / fDeterminant;                                             \
+        pfDst[M3_11] *= fDeterminant;                                                  \
+        pfDst[M3_12] *= fDeterminant;                                                  \
+        pfDst[M3_13] *= fDeterminant;                                                  \
+        pfDst[M3_21] *= fDeterminant;                                                  \
+        pfDst[M3_22] *= fDeterminant;                                                  \
+        pfDst[M3_23] *= fDeterminant;                                                  \
+        pfDst[M3_31] *= fDeterminant;                                                  \
+        pfDst[M3_32] *= fDeterminant;                                                  \
+        pfDst[M3_33] *= fDeterminant;                                                  \
+        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;                                   \
+    } else {                                                                           \
+        aoGPR[ABI::INT_REG_0].uQuad = ERR_ZERO_DIVIDE;                                 \
+    }                                                                                  \
+}
+
+
 }}}
 
 #endif

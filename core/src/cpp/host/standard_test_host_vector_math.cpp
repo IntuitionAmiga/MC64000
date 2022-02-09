@@ -119,8 +119,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M3X3F_TRANSPOSE:       m3x3_transpose(uint32, uLong);              break;
         case M3X3F_DET:             m3x3_determinant(float32, Single);          break;
         case M3X3F_INVERSE_AS:      m3x3_inverse_assign(float32, Single);       break;
-        case M3X3F_INVERSE:
-            break;
+        case M3X3F_INVERSE:         m3x3_inverse(float32, Single);              break;
 
         // 4x4 Matrices
         case M4X4F_IDENTITY:        m4x4_identity(float32, Single);             break;
