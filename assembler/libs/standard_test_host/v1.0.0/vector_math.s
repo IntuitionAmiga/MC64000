@@ -17,6 +17,8 @@
 
     @def vecmath_vector #2
 
+    @equ ERR_DIV_ZERO  1000
+
     @equ vec2f_splat          #0, vecmath_vector
     @equ vec2f_copy           #1, vecmath_vector
     @equ vec2f_scale_assign   #2, vecmath_vector

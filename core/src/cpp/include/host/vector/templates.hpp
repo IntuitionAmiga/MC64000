@@ -295,6 +295,26 @@ inline void mat3x3_multiply(T* pfC, T const* pfA, T const* pfB) {
 }
 
 /**
+ * Mat3x3 determinant
+ *
+ *  | a b c |
+ *  | d e f |  => a | e f | - b | d f | + c | d e | => a(ei - fg) - b(di - fg) + c(dh - eg)
+ *  | g h i |       | h i |     | g i |     | g h |
+ *
+ *  => aei + bfg + cdh - ceg - bdi - afh
+ */
+template<typename T>
+inline T mat3x3_determinant(T const* pfMtx) {
+    return
+    /*   aei */ (pfMtx[M3_11] * pfMtx[M3_22] * pfMtx[M3_33]) +
+    /* + bfg */ (pfMtx[M3_12] * pfMtx[M3_23] * pfMtx[M3_31]) +
+    /* + cdh */ (pfMtx[M3_13] * pfMtx[M3_21] * pfMtx[M3_32]) -
+    /* - ceg */ (pfMtx[M3_13] * pfMtx[M3_22] * pfMtx[M3_31]) -
+    /* - bdi */ (pfMtx[M3_12] * pfMtx[M3_21] * pfMtx[M3_33]) -
+    /* - afh */ (pfMtx[M3_11] * pfMtx[M3_23] * pfMtx[M3_32]);
+}
+
+/**
  * Mat4x4 multiplication
  *
  * C = A x B, A is by row, B is by column

@@ -21,83 +21,129 @@ namespace MC64K {
 namespace StandardTestHost {
 namespace VectorMath {
 
-#define m2x2_identity(T, NAME) mat_identity<T, 2>(aoGPR[ABI::PTR_REG_0].pf ## NAME)
+#define m2x2_identity(T, UNION_NAME) mat_identity<T, 2>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
 
-#define m2x2_copy(T, NAME) mat_copy<T, 2>( \
-    aoGPR[ABI::PTR_REG_1].p ## NAME, \
-    aoGPR[ABI::PTR_REG_0].p ## NAME \
+#define m2x2_copy(T, UNION_NAME) mat_copy<T, 2>( \
+    aoGPR[ABI::PTR_REG_1].p ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].p ## UNION_NAME \
 )
 
-#define m2x2_scale_assign(T, NAME) mat_scale_assign<T, 2>( \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME, \
-    Interpreter::fpr()[ABI::FLT_REG_0].f ## NAME \
+#define m2x2_scale_assign(T, UNION_NAME) mat_scale_assign<T, 2>( \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
+    Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m2x2_scale(T, NAME) mat_scale<T, 2>( \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME, \
-    Interpreter::fpr()[ABI::FLT_REG_0].f ## NAME \
+#define m2x2_scale(T, UNION_NAME) mat_scale<T, 2>( \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
+    Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m2x2_add_assign(T, NAME) mat_add_assign<T, 2>( \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m2x2_add_assign(T, UNION_NAME) mat_add_assign<T, 2>( \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m2x2_add(T, NAME) mat_add<T, 2>( \
-    aoGPR[ABI::PTR_REG_2].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m2x2_add(T, UNION_NAME) mat_add<T, 2>( \
+    aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m2x2_sub_assign(T, NAME) mat_sub_assign<T, 2>( \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m2x2_sub_assign(T, UNION_NAME) mat_sub_assign<T, 2>( \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m2x2_sub(T, NAME) mat_sub<T, 2>( \
-    aoGPR[ABI::PTR_REG_2].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m2x2_sub(T, UNION_NAME) mat_sub<T, 2>( \
+    aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m2x2_multiply(T, NAME) mat2x2_multiply<T>( \
-    aoGPR[ABI::PTR_REG_2].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m2x2_multiply(T, UNION_NAME) mat2x2_multiply<T>( \
+    aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m2x2_multiply_assign(T, NAME) { \
-    T*       pfDst  = aoGPR[ABI::PTR_REG_1].pf ## NAME; \
+#define m2x2_multiply_assign(T, UNION_NAME) { \
+    T*       pfDst  = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME; \
     T        pfTmp[2*2]; \
     mat_copy<T, 2>(pfTmp, pfDst); \
     mat2x2_multiply<T>( \
         pfDst, \
         pfTmp, \
-        aoGPR[ABI::PTR_REG_0].pf ## NAME \
+        aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
     ); \
 }
 
-#define m2x2_transpose(T, NAME) { \
-    T*       pDst = aoGPR[ABI::PTR_REG_1].p ## NAME; \
-    T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+#define m2x2_transpose(T, UNION_NAME) { \
+    T*       pDst = aoGPR[ABI::PTR_REG_1].p ## UNION_NAME; \
+    T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
     pDst[M2_11] = pSrc[M2_11]; \
     pDst[M2_12] = pSrc[M2_21]; \
     pDst[M2_21] = pSrc[M2_12]; \
     pDst[M2_22] = pSrc[M2_22]; \
 }
 
-#define m2x2_transpose_assign(T, NAME) { \
-    T* pDst = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+#define m2x2_transpose_assign(T, UNION_NAME) { \
+    T* pDst = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
     T  tmp  = pDst[M2_12]; \
     pDst[M2_12] = pDst[M2_21]; \
     pDst[M2_21] = tmp; \
 }
 
-#define m2x2_determinant(T, NAME) { \
-    T const* pfMtx = aoGPR[ABI::PTR_REG_0].pf ## NAME; \
-    Interpreter::fpr()[ABI::FLT_REG_0].f ## NAME = pfMtx[M2_11]*pfMtx[M2_22] - pfMtx[M2_12]*pfMtx[M2_21]; \
+#define m2x2_determinant(T, UNION_NAME) { \
+    T const* pfMtx = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME; \
+    Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME = pfMtx[M2_11] * pfMtx[M2_22] - pfMtx[M2_12] * pfMtx[M2_21]; \
 }
+
+/**
+ * Inversion of 2x2
+ *
+ * | a b |   =>     1     |  d -b |
+ * | c d |      (ad - bc) | -c  a |
+ */
+#define m2x2_inverse_assign(T, UNION_NAME) { \
+    T* pfMtx       = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME; \
+    T fDeterminant = pfMtx[M2_11] * pfMtx[M2_22] - pfMtx[M2_12] * pfMtx[M2_21]; \
+    if (fDeterminant) { \
+        fDeterminant = 1.0 / fDeterminant; \
+        T fSwap      = pfMtx[M2_22]; \
+        pfMtx[M2_22] = fDeterminant * pfMtx[M2_11]; \
+        pfMtx[M2_11] = fDeterminant * fSwap; \
+        pfMtx[M2_12] *= -fDeterminant; \
+        pfMtx[M2_21] *= -fDeterminant; \
+        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE; \
+    } else { \
+        aoGPR[ABI::INT_REG_0].uQuad = ERR_ZERO_DIVIDE; \
+    } \
+}
+
+/**
+ * Inversion of 2x2
+ *
+ * | a b |   =>     1     |  d -b |
+ * | c d |      (ad - bc) | -c  a |
+ */
+#define m2x2_inverse(T, UNION_NAME) { \
+    T*       pfDst = aoGPR[ABI::PTR_REG_1].p ## UNION_NAME; \
+    T const* pfSrc = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
+    T fDeterminant = pfSrc[M2_11] * pfSrc[M2_22] - pfSrc[M2_12] * pfSrc[M2_21]; \
+    if (fDeterminant) { \
+        fDeterminant = 1.0 / fDeterminant; \
+        pfDst[M2_11] = fDeterminant * pfSrc[M2_22]; \
+        pfDst[M2_22] = fDeterminant * pfSrc[M2_11]; \
+        pfDst[M2_12] = -fDeterminant * pfSrc[M2_12]; \
+        pfDst[M2_22] = -FDeterminant * pfSrc[M2_22]; \
+        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE; \
+    } else { \
+        aoGPR[ABI::INT_REG_0].uQuad = ERR_ZERO_DIVIDE; \
+    } \
+}
+
+
 
 }}}
 

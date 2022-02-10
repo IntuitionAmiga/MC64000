@@ -21,66 +21,66 @@ namespace MC64K {
 namespace StandardTestHost {
 namespace VectorMath {
 
-#define m4x4_identity(T, NAME) mat_identity<T, 4>(aoGPR[ABI::PTR_REG_0].pf ## NAME)
+#define m4x4_identity(T, UNION_NAME) mat_identity<T, 4>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
 
-#define m4x4_copy(T, NAME) mat_copy<T, 4>( \
-    aoGPR[ABI::PTR_REG_1].p ## NAME, \
-    aoGPR[ABI::PTR_REG_0].p ## NAME \
+#define m4x4_copy(T, UNION_NAME) mat_copy<T, 4>( \
+    aoGPR[ABI::PTR_REG_1].p ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].p ## UNION_NAME \
 )
 
-#define m4x4_scale_assign(T, NAME) mat_scale_assign<T, 4>( \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME, \
-    Interpreter::fpr()[ABI::FLT_REG_0].f ## NAME \
+#define m4x4_scale_assign(T, UNION_NAME) mat_scale_assign<T, 4>( \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
+    Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m4x4_scale(T, NAME) mat_scale<T, 4>( \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME, \
-    Interpreter::fpr()[ABI::FLT_REG_0].f ## NAME \
+#define m4x4_scale(T, UNION_NAME) mat_scale<T, 4>( \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
+    Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m4x4_add_assign(T, NAME) mat_add_assign<T, 4>( \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m4x4_add_assign(T, UNION_NAME) mat_add_assign<T, 4>( \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m4x4_add(T, NAME) mat_add<T, 4>( \
-    aoGPR[ABI::PTR_REG_2].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m4x4_add(T, UNION_NAME) mat_add<T, 4>( \
+    aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m4x4_sub_assign(T, NAME) mat_sub_assign<T, 4>( \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m4x4_sub_assign(T, UNION_NAME) mat_sub_assign<T, 4>( \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m4x4_sub(T, NAME) mat_sub<T, 4>( \
-    aoGPR[ABI::PTR_REG_2].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m4x4_sub(T, UNION_NAME) mat_sub<T, 4>( \
+    aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m4x4_multiply(T, NAME) mat4x4_multiply<T>( \
-    aoGPR[ABI::PTR_REG_2].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME \
+#define m4x4_multiply(T, UNION_NAME) mat4x4_multiply<T>( \
+    aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m4x4_multiply_assign(T, NAME) { \
-    T*       pfDst  = aoGPR[ABI::PTR_REG_1].pf ## NAME; \
+#define m4x4_multiply_assign(T, UNION_NAME) { \
+    T*       pfDst  = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME; \
     T        pfTmp[4*4]; \
     mat_copy<T, 4>(pfTmp, pfDst); \
     mat4x4_multiply<T>( \
         pfDst, \
         pfTmp, \
-        aoGPR[ABI::PTR_REG_0].pf ## NAME \
+        aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
     ); \
 }
 
-#define m4x4_transpose(T, NAME) { \
-    T*       pDst = aoGPR[ABI::PTR_REG_1].p ## NAME; \
-    T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+#define m4x4_transpose(T, UNION_NAME) { \
+    T*       pDst = aoGPR[ABI::PTR_REG_1].p ## UNION_NAME; \
+    T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
     pDst[M4_11] = pSrc[M4_11]; \
     pDst[M4_12] = pSrc[M4_21]; \
     pDst[M4_13] = pSrc[M4_31]; \
@@ -101,8 +101,8 @@ namespace VectorMath {
 
 #define swap_pair(a, b) { t = a; a = b; b = t; }
 
-#define m4x4_transpose_assign(T, NAME) { \
-    T* pDst = aoGPR[ABI::PTR_REG_0].p ## NAME; \
+#define m4x4_transpose_assign(T, UNION_NAME) { \
+    T* pDst = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
     T  t; \
     swap_pair(pDst[M4_12], pDst[M4_21]); \
     swap_pair(pDst[M4_13], pDst[M4_31]); \
@@ -112,11 +112,11 @@ namespace VectorMath {
     swap_pair(pDst[M4_34], pDst[M4_43]); \
 }
 
-#define v4_transform_4x4(T, NAME) \
+#define v4_transform_4x4(T, UNION_NAME) \
 vec4_transform_4x4<T>( \
-    aoGPR[ABI::PTR_REG_2].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_1].pf ## NAME, \
-    aoGPR[ABI::PTR_REG_0].pf ## NAME, \
+    aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
     Interpreter::gpr()[ABI::INT_REG_0].uLong \
 )
 

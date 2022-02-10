@@ -242,6 +242,14 @@ typedef enum {
 
 } Call;
 
+/**
+ * Error return values
+ */
+typedef enum {
+    ERR_ZERO_DIVIDE = 1000
+} Result;
+
+
 Interpreter::Status hostVector(uint8 uFunctionID);
 
 }}} // namespace
