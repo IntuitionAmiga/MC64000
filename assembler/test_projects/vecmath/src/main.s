@@ -5,6 +5,7 @@ main:
     hcf         io_init
 
     bsr         vec2f_tests
+    bsr         mat2x2f_tests
 
 exit:
     hcf         io_done
