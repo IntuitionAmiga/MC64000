@@ -23,7 +23,9 @@
         "src/main.s",
         "src/vec2f_tests.s",
         "src/mat2x2f_tests.s",
-        "src/mat3x3f_tests.s"
+        "src/mat3x3f_tests.s",
+        "src/mat4x4f_tests.s"
+
     ],
     "defines": {
     }
