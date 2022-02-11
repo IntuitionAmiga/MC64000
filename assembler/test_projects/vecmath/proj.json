@@ -21,8 +21,9 @@
         "lib:standard_test_host/v1.0.0/mem.s",
         "lib:standard_test_host/v1.0.0/vector_math.s",
         "src/main.s",
-        "src/vec2_tests.s",
-        "src/mat2x2_tests.s"
+        "src/vec2f_tests.s",
+        "src/mat2x2f_tests.s",
+        "src/mat3x3f_tests.s"
     ],
     "defines": {
     }
