@@ -84,7 +84,7 @@ namespace VectorMath {
     pDst[M3_11] = pSrc[M3_11]; \
     pDst[M3_12] = pSrc[M3_21]; \
     pDst[M3_13] = pSrc[M3_31]; \
-    pDst[M3_21] = pSrc[M3_21]; \
+    pDst[M3_21] = pSrc[M3_12]; \
     pDst[M3_22] = pSrc[M3_22]; \
     pDst[M3_23] = pSrc[M3_32]; \
     pDst[M3_31] = pSrc[M3_13]; \
