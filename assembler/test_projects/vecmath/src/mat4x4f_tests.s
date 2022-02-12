@@ -15,13 +15,11 @@ mat4x4f_tests:
     bsr     .test_add
     bsr     .test_sub_assign
     bsr     .test_sub
-    ;bsr     .test_mul_assign
-    ;bsr     .test_mul
-    bsr     .test_trans_assign
+    bsr     .test_mul_assign
+    bsr     .test_mul
     bsr     .test_trans
-    ;bsr     .test_det
-    ;bsr     .test_inv_assign
-    ;bsr     .test_inv
+    bsr     .test_det
+    bsr     .test_inv
     rts
 
 ; Common code to compare two 4x4 matrices and report whether or not they evaluate the same
@@ -180,21 +178,6 @@ mat4x4f_tests:
     move.q  r10, r8
     bra     .verify
 
-; tests M1 = Trans(M1)
-.test_trans_assign:
-    lea     .test_trans_assign_header, r8
-    hcf     io_print_string
-
-    lea     .test_trans_in, r8
-    lea     STACK_BUFFER, r9
-    move.q  #SIZE_BYTES, r0
-    hcf     mem_copy
-    move.q  r9, r8
-    hcf     mat4x4f_trans_assign
-
-    lea     .test_trans_out, r8
-    bra     .verify
-
 ; tests M2 = Trans(M1)
 .test_trans:
     lea     .test_trans_header, r8
@@ -216,26 +199,11 @@ mat4x4f_tests:
     hcf     mat4x4f_det
 
     move.q  #1, r0
-    fbeq.s  #10.0, fp0, .det_pass
+    fbeq.s  #4.0, fp0, .det_pass
     clr.q   r0
 .det_pass:
     bsr     report_result
     rts
-
-; tests M1 = inv(M1)
-.test_inv_assign:
-    lea     .test_inv_assign_header, r8
-    hcf     io_print_string
-
-    lea     .test_inv_in, r8
-    lea     STACK_BUFFER, r9
-    move.q  #SIZE_BYTES, r0
-    hcf     mem_copy
-    move.q  r9, r8
-    hcf     mat4x4f_inv_assign
-
-    lea     .test_inv_out, r8
-    bra     .verify
 
 ; tests M1 = inv(M1)
 .test_inv:
@@ -248,6 +216,7 @@ mat4x4f_tests:
 
     lea     .test_inv_out, r8
     bra     .verify
+
 
     @align 0, 8
 .test_identity_out:
@@ -283,20 +252,30 @@ mat4x4f_tests:
     dc.s    4.1, 4.2, 4.3, 4.4
 
 .test_trans_out:
+.test_mul_in_b:
     dc.s    1.1, 2.1, 3.1, 4.1
     dc.s    1.2, 2.2, 3.2, 4.2
     dc.s    1.3, 2.3, 3.3, 4.3
     dc.s    1.4, 2.4, 3.4, 4.4
 
-
-.test_mul_in_b:
-
 .test_mul_out:
+    dc.s     6.30, 11.30, 16.30, 21.30
+    dc.s    11.30, 20.30, 29.30, 38.30
+    dc.s    16.30, 29.30, 42.30, 55.30
+    dc.s    21.30, 38.30, 55.30, 72.30
 
 .test_det_in:
 .test_inv_in:
+    dc.s 1.0, 0.0, 0.0, 0.0
+    dc.s 1.0, 2.0, 1.0, 0.0
+    dc.s 1.0, 0.0, 2.0, 0.0
+    dc.s 1.0, 0.0, 0.0, 1.0
 
 .test_inv_out:
+    dc.s  1.0,  0.0,  0.0,  0.0
+    dc.s -0.25, 0.5, -0.25, 0.0
+    dc.s -0.5,  0.0,  0.5,  0.0
+    dc.s -1.0,  0.0,  0.0,  1.0
 
 .test_group_header:
     dc.b    "Testing mat4x4f operations...\n\0"
@@ -331,18 +310,11 @@ mat4x4f_tests:
 .test_mul_header:
     dc.b    "\tmat4x4f_mul: (r10) = (r9) * (r8) \0"
 
-.test_trans_assign_header:
-    dc.b    "\tmat4x4f_trans_assign: (r8) = T(r8) \0"
-
 .test_trans_header:
     dc.b    "\tmat4x4f_trans: (r9) = T(r8) \0"
 
 .test_det_header:
     dc.b    "\tmat4x4f_det: fp0 = det(r8) \0"
 
-.test_inv_assign_header:
-    dc.b    "\tmat4x4f_inv_assign: (r8) = inv(r8) \0"
-
 .test_inv_header:
     dc.b    "\tmat4x4f_inv: (r9) = inv(r8) \0"
-

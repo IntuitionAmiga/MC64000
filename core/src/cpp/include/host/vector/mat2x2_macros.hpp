@@ -87,13 +87,6 @@ namespace VectorMath {
     pDst[M2_22] = pSrc[M2_22]; \
 }
 
-#define m2x2_transpose_assign(T, UNION_NAME) { \
-    T* pDst = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
-    T  tmp  = pDst[M2_12]; \
-    pDst[M2_12] = pDst[M2_21]; \
-    pDst[M2_21] = tmp; \
-}
-
 #define m2x2_determinant(T, UNION_NAME) { \
     T const* pfMtx = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME; \
     Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME = pfMtx[M2_11] * pfMtx[M2_22] - pfMtx[M2_12] * pfMtx[M2_21]; \
@@ -105,38 +98,16 @@ namespace VectorMath {
  * | a b |   =>     1     |  d -b |
  * | c d |      (ad - bc) | -c  a |
  */
-#define m2x2_inverse_assign(T, UNION_NAME) { \
-    T* pfMtx       = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME; \
-    T fDeterminant = pfMtx[M2_11] * pfMtx[M2_22] - pfMtx[M2_12] * pfMtx[M2_21]; \
-    if (fDeterminant) { \
-        fDeterminant = 1.0 / fDeterminant; \
-        T fSwap      = pfMtx[M2_22]; \
-        pfMtx[M2_22] = fDeterminant * pfMtx[M2_11]; \
-        pfMtx[M2_11] = fDeterminant * fSwap; \
-        pfMtx[M2_12] *= -fDeterminant; \
-        pfMtx[M2_21] *= -fDeterminant; \
-        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE; \
-    } else { \
-        aoGPR[ABI::INT_REG_0].uQuad = ERR_ZERO_DIVIDE; \
-    } \
-}
-
-/**
- * Inversion of 2x2
- *
- * | a b |   =>     1     |  d -b |
- * | c d |      (ad - bc) | -c  a |
- */
 #define m2x2_inverse(T, UNION_NAME) { \
-    T*       pfDst = aoGPR[ABI::PTR_REG_1].p ## UNION_NAME; \
-    T const* pfSrc = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
+    T*       pfDst = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME; \
+    T const* pfSrc = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME; \
     T fDeterminant = pfSrc[M2_11] * pfSrc[M2_22] - pfSrc[M2_12] * pfSrc[M2_21]; \
     if (fDeterminant) { \
         fDeterminant = 1.0 / fDeterminant; \
         pfDst[M2_11] = fDeterminant * pfSrc[M2_22]; \
         pfDst[M2_22] = fDeterminant * pfSrc[M2_11]; \
         pfDst[M2_12] = -fDeterminant * pfSrc[M2_12]; \
-        pfDst[M2_22] = -FDeterminant * pfSrc[M2_22]; \
+        pfDst[M2_21] = -fDeterminant * pfSrc[M2_21]; \
         aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE; \
     } else { \
         aoGPR[ABI::INT_REG_0].uQuad = ERR_ZERO_DIVIDE; \

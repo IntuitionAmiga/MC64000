@@ -35,8 +35,17 @@ template void vec3_1_transform_4x4(float32* pfDst, float32 const* pfSrc, float32
 template void vec3_expand_vec4(float32* pfDst, float32 const* pfSrc, float32 fValue, size_t uCount);
 template void vec4_transform_4x4(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
 
+template void mat2x2_multiply(float32* pfC, float32 const* pfA, float32 const* pfB);
+template void mat3x3_multiply(float32* pfC, float32 const* pfA, float32 const* pfB);
+template float32 mat3x3_determinant(float32 const* pfMtx);
+template void mat4x4_multiply(float32* pfC, float32 const* pfA, float32 const* pfB);
+template float32 mat4x4_determinant(float32 const* pfSrc);
+template uint64 mat4x4_inverse(float32* pfDst, float32 const* pfSrc);
+
+
+
 /**
- * Mem::hostVector(uint8 uFunctionID)
+ * VectorMath::hostVector(uint8 uFunctionID)
  */
 Interpreter::Status hostVector(uint8 uFunctionID) {
 
@@ -98,11 +107,9 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M2X2F_SUB:             m2x2_sub(float32, Single);                  break;
         case M2X2F_MULTIPLY_AS:     m2x2_multiply_assign(float32, Single);      break;
         case M2X2F_MULTIPLY:        m2x2_multiply(float32, Single);             break;
-        case M2X2F_TRANSPOSE_AS:    m2x2_transpose_assign(uint32, uLong);       break;
         case M2X2F_TRANSPOSE:       m2x2_transpose(uint32, uLong);              break;
         case M2X2F_DET:             m2x2_determinant(float32, Single);          break;
-        case M2X2F_INVERSE_AS:      m2x2_inverse_assign(float32, Single);       break;
-        case M2X2F_INVERSE:         m2x2_inverse_assign(float32, Single);       break;
+        case M2X2F_INVERSE:         m2x2_inverse(float32, Single);              break;
 
         // 3x3 Matrices
         case M3X3F_IDENTITY:        m3x3_identity(float32, Single);             break;
@@ -115,10 +122,8 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M3X3F_SUB:             m3x3_sub(float32, Single);                  break;
         case M3X3F_MULTIPLY_AS:     m3x3_multiply_assign(float32, Single);      break;
         case M3X3F_MULTIPLY:        m3x3_multiply(float32, Single);             break;
-        case M3X3F_TRANSPOSE_AS:    m3x3_transpose_assign(uint32, uLong);       break;
         case M3X3F_TRANSPOSE:       m3x3_transpose(uint32, uLong);              break;
         case M3X3F_DET:             m3x3_determinant(float32, Single);          break;
-        case M3X3F_INVERSE_AS:      m3x3_inverse_assign(float32, Single);       break;
         case M3X3F_INVERSE:         m3x3_inverse(float32, Single);              break;
 
         // 4x4 Matrices
@@ -132,11 +137,9 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M4X4F_SUB:             m4x4_sub(float32, Single);                  break;
         case M4X4F_MULTIPLY_AS:     m4x4_multiply_assign(float32, Single);      break;
         case M4X4F_MULTIPLY:        m4x4_multiply(float32, Single);             break;
-        case M4X4F_TRANSPOSE_AS:    m4x4_transpose_assign(uint32, uLong);       break;
-        case M4X4F_TRANSPOSE:       m4x4_transpose_assign(uint32, uLong);       break;
-        //case M4X4F_DET:
-        //case M4X4F_INVERSE_AS:
-        //case M4X4F_INVERSE:
+        case M4X4F_TRANSPOSE:       m4x4_transpose(uint32, uLong);              break;
+        case M4X4F_DET:             m4x4_determinant(float32, Single);          break;
+        case M4X4F_INVERSE:         m4x4_inverse(float32, Single);              break;
         //    break;
 
         default:

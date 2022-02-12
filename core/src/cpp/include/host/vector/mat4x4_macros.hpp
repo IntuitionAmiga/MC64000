@@ -99,17 +99,15 @@ namespace VectorMath {
     pDst[M4_44] = pSrc[M4_44]; \
 }
 
-#define swap_pair(a, b) { t = a; a = b; b = t; }
+#define m4x4_determinant(T, UNION_NAME) {                                              \
+    T const* pfMtx = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME;                           \
+    Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME = mat4x4_determinant<T>(pfMtx); \
+}
 
-#define m4x4_transpose_assign(T, UNION_NAME) { \
-    T* pDst = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
-    T  t; \
-    swap_pair(pDst[M4_12], pDst[M4_21]); \
-    swap_pair(pDst[M4_13], pDst[M4_31]); \
-    swap_pair(pDst[M4_14], pDst[M4_41]); \
-    swap_pair(pDst[M4_23], pDst[M4_32]); \
-    swap_pair(pDst[M4_24], pDst[M4_42]); \
-    swap_pair(pDst[M4_34], pDst[M4_43]); \
+#define m4x4_inverse(T, UNION_NAME) {                                                  \
+    T const* pfSrc = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME;                           \
+    T* pfDst       = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME;                           \
+    aoGPR[ABI::INT_REG_0].uQuad = mat4x4_inverse<T>(pfDst, pfSrc);                     \
 }
 
 #define v4_transform_4x4(T, UNION_NAME) \
