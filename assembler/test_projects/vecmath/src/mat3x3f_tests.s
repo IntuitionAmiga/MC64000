@@ -17,10 +17,8 @@ mat3x3f_tests:
     bsr     .test_sub
     bsr     .test_mul_assign
     bsr     .test_mul
-    bsr     .test_trans_assign
     bsr     .test_trans
     bsr     .test_det
-    bsr     .test_inv_assign
     bsr     .test_inv
     rts
 
@@ -180,21 +178,6 @@ mat3x3f_tests:
     move.q  r10, r8
     bra     .verify
 
-; tests M1 = Trans(M1)
-.test_trans_assign:
-    lea     .test_trans_assign_header, r8
-    hcf     io_print_string
-
-    lea     .test_trans_in, r8
-    lea     STACK_BUFFER, r9
-    move.q  #SIZE_BYTES, r0
-    hcf     mem_copy
-    move.q  r9, r8
-    hcf     mat3x3f_trans_assign
-
-    lea     .test_trans_out, r8
-    bra     .verify
-
 ; tests M2 = Trans(M1)
 .test_trans:
     lea     .test_trans_header, r8
@@ -221,21 +204,6 @@ mat3x3f_tests:
 .det_pass:
     bsr     report_result
     rts
-
-; tests M1 = inv(M1)
-.test_inv_assign:
-    lea     .test_inv_assign_header, r8
-    hcf     io_print_string
-
-    lea     .test_inv_in, r8
-    lea     STACK_BUFFER, r9
-    move.q  #SIZE_BYTES, r0
-    hcf     mem_copy
-    move.q  r9, r8
-    hcf     mat3x3f_inv_assign
-
-    lea     .test_inv_out, r8
-    bra     .verify
 
 ; tests M1 = inv(M1)
 .test_inv:
@@ -338,17 +306,11 @@ mat3x3f_tests:
 .test_mul_header:
     dc.b    "\tmat3x3f_mul: (r10) = (r9) * (r8) \0"
 
-.test_trans_assign_header:
-    dc.b    "\tmat3x3f_trans_assign: (r8) = T(r8) \0"
-
 .test_trans_header:
     dc.b    "\tmat3x3f_trans: (r9) = T(r8) \0"
 
 .test_det_header:
     dc.b    "\tmat3x3f_det: fp0 = det(r8) \0"
-
-.test_inv_assign_header:
-    dc.b    "\tmat3x3f_inv_assign: (r8) = inv(r8) \0"
 
 .test_inv_header:
     dc.b    "\tmat3x3f_inv: (r9) = inv(r8) \0"

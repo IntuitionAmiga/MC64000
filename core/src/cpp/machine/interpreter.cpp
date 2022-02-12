@@ -23,11 +23,14 @@
 namespace MC64K {
 namespace Machine {
 
+// As nice as this is, it's just too flaky with LTO
 #ifdef USE_GLOBAL_REGISTER
 register uint8 const* puProgramCounter __asm__("r12");
 #else
 uint8 const* puProgramCounter;
 #endif
+
+//uint8 const* puProgramCounter = 0;
 
 GPRegister      Interpreter::aoGPR[GPRegister::MAX] = {};
 FPRegister      Interpreter::aoFPR[FPRegister::MAX] = {};

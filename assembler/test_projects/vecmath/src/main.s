@@ -7,6 +7,7 @@ main:
     bsr         vec2f_tests
     bsr         mat2x2f_tests
     bsr         mat3x3f_tests
+    bsr         mat4x4f_tests
 
 exit:
     hcf         io_done
@@ -39,6 +40,6 @@ report_result:
     rts
 
 .txt_pass:
-    dc.b "Passed.\n\0"
+    dc.b "\x1b[32\x3b1mPassed.\x1b[0m\n\0"
 .txt_fail:
-    dc.b "Failed.\n\0"
+    dc.b "\x1b[31\x3b1mFailed!\x1b[0m\n\0"

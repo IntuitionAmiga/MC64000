@@ -23,6 +23,12 @@ namespace MC64K {
 namespace StandardTestHost {
 namespace VectorMath {
 
+#ifdef MATRIX_FORCE_DOUBLE
+#define MT T
+#else
+#define MT float64
+#endif
+
 /**
  * Applies a Mat2x2 to an input set of Vec2
  */
@@ -221,20 +227,49 @@ inline void mat_sub(T* pfDst, T const* pfSrc1, T const* pfSrc2) {
     }
 }
 
+// template<typename T, unsigned const uDim>
+// inline void mat_print(T const* pfMtx) {
+//     std::putchar('\n');
+//     for (unsigned r = 0; r < uDim; ++r) {
+//         std::printf("| ");
+//         for (unsigned c = 0; c < uDim; ++c) {
+//             std::printf("%0.6f ", (double) *pfMtx++);
+//         }
+//         std::printf("|\n");
+//     }
+//     std::putchar('\n');
+// }
+
 /**
  * Mat2x2 multiplication.
  *
  * C = A x B, A is by row, B is by column
  */
 template<typename T>
-void mat2x2_multiply(T* pfC, T const* pfA, T const* pfB) {
+inline void mat2x2_multiply(T* pfC, T const* pfA, T const* pfB) {
     // Row 1
-    pfC[M2_11] = pfA[M2_11]*pfB[M2_11] + pfA[M2_12]*pfB[M2_21];
-    pfC[M2_12] = pfA[M2_11]*pfB[M2_12] + pfA[M2_12]*pfB[M2_22];
+    pfC[M2_11] = (T)(
+        ((MT)pfA[M2_11] * (MT)pfB[M2_11]) +
+        ((MT)pfA[M2_12] * (MT)pfB[M2_21])
+    );
+    pfC[M2_12] = (T)(
+        ((MT)pfA[M2_11] * (MT)pfB[M2_12]) +
+        ((MT)pfA[M2_12] * (MT)pfB[M2_22])
+    );
 
     // Row 2
-    pfC[M2_21] = pfA[M2_21]*pfB[M2_11] + pfA[M2_22]*pfB[M2_21];
-    pfC[M2_22] = pfA[M2_21]*pfB[M2_12] + pfA[M2_22]*pfB[M2_22];
+    pfC[M2_21] = (T)(
+        ((MT)pfA[M2_21] * (MT)pfB[M2_11]) +
+        ((MT)pfA[M2_22] * (MT)pfB[M2_21])
+    );
+    pfC[M2_22] = (T)(
+        ((MT)pfA[M2_21] * (MT)pfB[M2_12]) +
+        ((MT)pfA[M2_22] * (MT)pfB[M2_22])
+    );
+
+//     mat_print<T, 2>(pfA);
+//     mat_print<T, 2>(pfB);
+//     mat_print<T, 2>(pfC);
 }
 
 /**
@@ -245,53 +280,93 @@ void mat2x2_multiply(T* pfC, T const* pfA, T const* pfB) {
 template<typename T>
 inline void mat3x3_multiply(T* pfC, T const* pfA, T const* pfB) {
 
-    // Row 1 //////////////////////////////////////////////////////////////////////////
+    // Row 1
     // A: | 11 12 13 |   B: | 11 ... |
     //                      | 21 ... |
     //                      | 31 ... |
-    pfC[M3_11] = pfA[M3_11]*pfB[M3_11] + pfA[M3_12]*pfB[M3_21] + pfA[M3_13]*pfB[M3_31];
+    pfC[M3_11] = (T)(
+        ((MT)pfA[M3_11] * (MT)pfB[M3_11]) +
+        ((MT)pfA[M3_12] * (MT)pfB[M3_21]) +
+        ((MT)pfA[M3_13] * (MT)pfB[M3_31])
+    );
 
     // A: | 11 12 13 |   B: | ... 12 ... |
     //                      | ... 22 ... |
     //                      | ... 32 ... |
-    pfC[M3_12] = pfA[M3_11]*pfB[M3_12] + pfA[M3_12]*pfB[M3_22] + pfA[M3_13]*pfB[M3_32];
+    pfC[M3_12] = (T)(
+        ((MT)pfA[M3_11] * (MT)pfB[M3_12]) +
+        ((MT)pfA[M3_12] * (MT)pfB[M3_22]) +
+        ((MT)pfA[M3_13] * (MT)pfB[M3_32])
+    );
 
     // A: | 11 12 13 |   B: | ... 13 |
     //                      | ... 23 |
     //                      | ... 33 |
-    pfC[M3_13] = pfA[M3_11]*pfB[M3_13] + pfA[M3_12]*pfB[M3_23] + pfA[M3_13]*pfB[M3_33];
+    pfC[M3_13] = (T)(
+        ((MT)pfA[M3_11] * (MT)pfB[M3_13]) +
+        ((MT)pfA[M3_12] * (MT)pfB[M3_23]) +
+        ((MT)pfA[M3_13] * (MT)pfB[M3_33])
+    );
 
-    // Row 2 //////////////////////////////////////////////////////////////////////////
+    // Row 2
     // A: | 21 22 23 |   B: | 11 ... |
     //                      | 21 ... |
     //                      | 31 ... |
-    pfC[M3_21] = pfA[M3_21]*pfB[M3_11] + pfA[M3_22]*pfB[M3_21] + pfA[M3_23]*pfB[M3_31];
+    pfC[M3_21] = (T)(
+        ((MT)pfA[M3_21] * (MT)pfB[M3_11]) +
+        ((MT)pfA[M3_22] * (MT)pfB[M3_21]) +
+        ((MT)pfA[M3_23] * (MT)pfB[M3_31])
+    );
 
     // A: | 21 22 23 |   B: | ... 12 ... |
     //                      | ... 22 ... |
     //                      | ... 32 ... |
-    pfC[M3_22] = pfA[M3_21]*pfB[M3_12] + pfA[M3_22]*pfB[M3_22] + pfA[M3_23]*pfB[M3_32];
+    pfC[M3_22] = (T)(
+        ((MT)pfA[M3_21] * (MT)pfB[M3_12]) +
+        ((MT)pfA[M3_22] * (MT)pfB[M3_22]) +
+        ((MT)pfA[M3_23] * (MT)pfB[M3_32])
+    );
 
     // A: | 21 22 23 |   B: | ... 13 |
     //                      | ... 23 |
     //                      | ... 33 |
-    pfC[M3_23] = pfA[M3_21]*pfB[M3_13] + pfA[M3_22]*pfB[M3_23] + pfA[M3_23]*pfB[M3_33];
+    pfC[M3_23] = (T)(
+        ((MT)pfA[M3_21] * (MT)pfB[M3_13]) +
+        ((MT)pfA[M3_22] * (MT)pfB[M3_23]) +
+        ((MT)pfA[M3_23] * (MT)pfB[M3_33])
+    );
 
-    // Row 3 //////////////////////////////////////////////////////////////////////////
+    // Row 3
     // A: | 31 32 33 |   B: | 11 ... |
     //                      | 21 ... |
     //                      | 31 ... |
-    pfC[M3_31] = pfA[M3_31]*pfB[M3_11] + pfA[M3_32]*pfB[M3_21] + pfA[M3_33]*pfB[M3_31];
+    pfC[M3_31] = (T)(
+        ((MT)pfA[M3_31] * (MT)pfB[M3_11]) +
+        ((MT)pfA[M3_32] * (MT)pfB[M3_21]) +
+        ((MT)pfA[M3_33] * (MT)pfB[M3_31])
+    );
 
     // A: | 31 32 33 |   B: | ... 12 ... |
     //                      | ... 22 ... |
     //                      | ... 32 ... |
-    pfC[M3_32] = pfA[M3_31]*pfB[M3_12] + pfA[M3_32]*pfB[M3_22] + pfA[M3_33]*pfB[M3_32];
+    pfC[M3_32] = (T)(
+        ((MT)pfA[M3_31] * (MT)pfB[M3_12]) +
+        ((MT)pfA[M3_32] * (MT)pfB[M3_22]) +
+        ((MT)pfA[M3_33] * (MT)pfB[M3_32])
+    );
 
     // A: | 31 32 33 |   B: | ... 13 |
     //                      | ... 23 |
     //                      | ... 33 |
-    pfC[M3_33] = pfA[M3_31]*pfB[M3_13] + pfA[M3_32]*pfB[M3_23] + pfA[M3_33]*pfB[M3_33];
+    pfC[M3_33] = (T)(
+        ((MT)pfA[M3_31] * (MT)pfB[M3_13]) +
+        ((MT)pfA[M3_32] * (MT)pfB[M3_23]) +
+        ((MT)pfA[M3_33] * (MT)pfB[M3_33])
+    );
+
+//     mat_print<T, 3>(pfA);
+//     mat_print<T, 3>(pfB);
+//     mat_print<T, 3>(pfC);
 }
 
 /**
@@ -315,112 +390,422 @@ inline T mat3x3_determinant(T const* pfMtx) {
 }
 
 /**
- * Mat4x4 multiplication
+ * Mat4x4 multiplication. Internally, each term is calculated using double precision regardless
+ * of whether or not we are doing 32-bit or 64-bit precision. This is to minimise the accumulation
+ * of error, particularly for single precision matrices.
  *
  * C = A x B, A is by row, B is by column
  */
 template<typename T>
 inline void mat4x4_multiply(T* pfC, T const* pfA, T const* pfB) {
-    // Row 1 //////////////////////////////////////////////////////////////////////////
+    // Row 1
     // A: | 11 12 13 14 |   B: | 11 ... |
     //                         | 21 ... |
     //                         | 31 ... |
     //                         | 41 ... |
-    pfC[M4_11] = pfA[M4_11]*pfB[M4_11] + pfA[M4_12]*pfB[M4_21] + pfA[M4_13]*pfB[M4_31] + pfA[M4_14]*pfB[M4_41];
+    pfC[M4_11] = (T)(
+        ((MT)pfA[M4_11] * (MT)pfB[M4_11]) +
+        ((MT)pfA[M4_12] * (MT)pfB[M4_21]) +
+        ((MT)pfA[M4_13] * (MT)pfB[M4_31]) +
+        ((MT)pfA[M4_14] * (MT)pfB[M4_41])
+    );
 
     // A: | 11 12 13 14 |   B: | ... 12 ... |
     //                         | ... 22 ... |
     //                         | ... 32 ... |
     //                         | ... 42 ... |
-    pfC[M4_12] = pfA[M4_11]*pfB[M4_12] + pfA[M4_12]*pfB[M4_22] + pfA[M4_13]*pfB[M4_32] + pfA[M4_14]*pfB[M4_42];
+    pfC[M4_12] = (T)(
+        ((MT)pfA[M4_11] * (MT)pfB[M4_12]) +
+        ((MT)pfA[M4_12] * (MT)pfB[M4_22]) +
+        ((MT)pfA[M4_13] * (MT)pfB[M4_32]) +
+        ((MT)pfA[M4_14] * (MT)pfB[M4_42])
+    );
 
     // A: | 11 12 13 14 |   B: | ... 13 ... |
     //                         | ... 23 ... |
     //                         | ... 33 ... |
     //                         | ... 43 ... |
-    pfC[M4_13] = pfA[M4_11]*pfB[M4_13] + pfA[M4_12]*pfB[M4_23] + pfA[M4_13]*pfB[M4_33] + pfA[M4_14]*pfB[M4_43];
+    pfC[M4_13] = (T)(
+        ((MT)pfA[M4_11] * (MT)pfB[M4_13]) +
+        ((MT)pfA[M4_12] * (MT)pfB[M4_23]) +
+        ((MT)pfA[M4_13] * (MT)pfB[M4_33]) +
+        ((MT)pfA[M4_14] * (MT)pfB[M4_43])
+    );
 
     // A: | 11 12 13 14 |   B: | ... 14 |
     //                         | ... 24 |
     //                         | ... 34 |
     //                         | ... 44 |
-    pfC[M4_14] = pfA[M4_11]*pfB[M4_14] + pfA[M4_12]*pfB[M4_24] + pfA[M4_13]*pfB[M4_34] + pfA[M4_14]*pfB[M4_44];
+    pfC[M4_14] = (T)(
+        ((MT)pfA[M4_11] * (MT)pfB[M4_14]) +
+        ((MT)pfA[M4_12] * (MT)pfB[M4_24]) +
+        ((MT)pfA[M4_13] * (MT)pfB[M4_34]) +
+        ((MT)pfA[M4_14] * (MT)pfB[M4_44])
+    );
 
-    // Row 2 //////////////////////////////////////////////////////////////////////////
+    // Row 2
     // A: | 21 22 23 24 |   B: | 11 ... |
     //                         | 21 ... |
     //                         | 31 ... |
     //                         | 41 ... |
-    pfC[M4_21] = pfA[M4_21]*pfB[M4_11] + pfA[M4_22]*pfB[M4_21] + pfA[M4_23]*pfB[M4_31] + pfA[M4_24]*pfB[M4_41];
+    pfC[M4_21] = (T)(
+        ((MT)pfA[M4_21] * (MT)pfB[M4_11]) +
+        ((MT)pfA[M4_22] * (MT)pfB[M4_21]) +
+        ((MT)pfA[M4_23] * (MT)pfB[M4_31]) +
+        ((MT)pfA[M4_24] * (MT)pfB[M4_41])
+    );
 
     // A: | 21 22 23 24 |   B: | ... 12 ... |
     //                         | ... 22 ... |
     //                         | ... 32 ... |
     //                         | ... 42 ... |
-    pfC[M4_22] = pfA[M4_21]*pfB[M4_12] + pfA[M4_22]*pfB[M4_22] + pfA[M4_23]*pfB[M4_32] + pfA[M4_24]*pfB[M4_42];
+    pfC[M4_22] = (T)(
+        ((MT)pfA[M4_21] * (MT)pfB[M4_12]) +
+        ((MT)pfA[M4_22] * (MT)pfB[M4_22]) +
+        ((MT)pfA[M4_23] * (MT)pfB[M4_32]) +
+        ((MT)pfA[M4_24] * (MT)pfB[M4_42])
+    );
 
     // A: | 21 22 23 24 |   B: | ... 13 ... |
     //                         | ... 23 ... |
     //                         | ... 33 ... |
     //                         | ... 43 ... |
-    pfC[M4_23] = pfA[M4_21]*pfB[M4_13] + pfA[M4_22]*pfB[M4_23] + pfA[M4_23]*pfB[M4_33] + pfA[M4_24]*pfB[M4_43];
+    pfC[M4_23] = (T)(
+        ((MT)pfA[M4_21] * (MT)pfB[M4_13]) +
+        ((MT)pfA[M4_22] * (MT)pfB[M4_23]) +
+        ((MT)pfA[M4_23] * (MT)pfB[M4_33]) +
+        ((MT)pfA[M4_24] * (MT)pfB[M4_43])
+    );
 
     // A: | 21 22 23 24 |   B: | ... 14 |
     //                         | ... 24 |
     //                         | ... 34 |
     //                         | ... 44 |
-    pfC[M4_24] = pfA[M4_21]*pfB[M4_14] + pfA[M4_22]*pfB[M4_24] + pfA[M4_23]*pfB[M4_34] + pfA[M4_24]*pfB[M4_44];
+    pfC[M4_24] = (T)(
+        ((MT)pfA[M4_21] * (MT)pfB[M4_14]) +
+        ((MT)pfA[M4_22] * (MT)pfB[M4_24]) +
+        ((MT)pfA[M4_23] * (MT)pfB[M4_34]) +
+        ((MT)pfA[M4_24] * (MT)pfB[M4_44])
+    );
 
-    // Row 3 //////////////////////////////////////////////////////////////////////////
+    // Row 3
     // A: | 31 32 33 34 |   B: | 11 ... |
     //                         | 21 ... |
     //                         | 31 ... |
     //                         | 41 ... |
-    pfC[M4_31] = pfA[M4_31]*pfB[M4_11] + pfA[M4_32]*pfB[M4_21] + pfA[M4_33]*pfB[M4_31] + pfA[M4_34]*pfB[M4_41];
+    pfC[M4_31] = (T)(
+        ((MT)pfA[M4_31] * (MT)pfB[M4_11]) +
+        ((MT)pfA[M4_32] * (MT)pfB[M4_21]) +
+        ((MT)pfA[M4_33] * (MT)pfB[M4_31]) +
+        ((MT)pfA[M4_34] * (MT)pfB[M4_41])
+    );
 
     // A: | 31 32 33 34 |   B: | ... 12 ... |
     //                         | ... 22 ... |
     //                         | ... 32 ... |
     //                         | ... 42 ... |
-    pfC[M4_32] = pfA[M4_31]*pfB[M4_12] + pfA[M4_32]*pfB[M4_22] + pfA[M4_33]*pfB[M4_32] + pfA[M4_34]*pfB[M4_42];
+    pfC[M4_32] = (T)(
+        ((MT)pfA[M4_31] * (MT)pfB[M4_12]) +
+        ((MT)pfA[M4_32] * (MT)pfB[M4_22]) +
+        ((MT)pfA[M4_33] * (MT)pfB[M4_32]) +
+        ((MT)pfA[M4_34] * (MT)pfB[M4_42])
+    );
 
     // A: | 31 32 33 34 |   B: | ... 13 ... |
     //                         | ... 23 ... |
     //                         | ... 33 ... |
     //                         | ... 43 ... |
-    pfC[M4_33] = pfA[M4_31]*pfB[M4_13] + pfA[M4_32]*pfB[M4_23] + pfA[M4_33]*pfB[M4_33] + pfA[M4_34]*pfB[M4_43];
+    pfC[M4_33] = (T)(
+        ((MT)pfA[M4_31] * (MT)pfB[M4_13]) +
+        ((MT)pfA[M4_32] * (MT)pfB[M4_23]) +
+        ((MT)pfA[M4_33] * (MT)pfB[M4_33]) +
+        ((MT)pfA[M4_34] * (MT)pfB[M4_43])
+    );
 
     // A: | 31 32 33 34 |   B: | ... 14 |
     //                         | ... 24 |
     //                         | ... 34 |
     //                         | ... 44 |
-    pfC[M4_34] = pfA[M4_31]*pfB[M4_14] + pfA[M4_32]*pfB[M4_24] + pfA[M4_23]*pfB[M4_34] + pfA[M4_34]*pfB[M4_44];
+    pfC[M4_34] = (T)(
+        ((MT)pfA[M4_31] * (MT)pfB[M4_14]) +
+        ((MT)pfA[M4_32] * (MT)pfB[M4_24]) +
+        ((MT)pfA[M4_33] * (MT)pfB[M4_34]) +
+        ((MT)pfA[M4_34] * (MT)pfB[M4_44])
+    );
 
-    // Row 4 //////////////////////////////////////////////////////////////////////////
+    // Row 4
     // A: | 41 42 43 44 |   B: | 11 ... |
     //                         | 21 ... |
     //                         | 31 ... |
     //                         | 41 ... |
-    pfC[M4_41] = pfA[M4_41]*pfB[M4_11] + pfA[M4_42]*pfB[M4_21] + pfA[M4_43]*pfB[M4_31] + pfA[M4_44]*pfB[M4_41];
+    pfC[M4_41] = (T)(
+        ((MT)pfA[M4_41] * (MT)pfB[M4_11]) +
+        ((MT)pfA[M4_42] * (MT)pfB[M4_21]) +
+        ((MT)pfA[M4_43] * (MT)pfB[M4_31]) +
+        ((MT)pfA[M4_44] * (MT)pfB[M4_41])
+    );
 
     // A: | 41 42 43 44 |   B: | ... 12 ... |
     //                         | ... 22 ... |
     //                         | ... 32 ... |
     //                         | ... 42 ... |
-    pfC[M4_42] = pfA[M4_41]*pfB[M4_12] + pfA[M4_42]*pfB[M4_22] + pfA[M4_43]*pfB[M4_32] + pfA[M4_44]*pfB[M4_42];
+    pfC[M4_42] = (T)(
+        ((MT)pfA[M4_41] * (MT)pfB[M4_12]) +
+        ((MT)pfA[M4_42] * (MT)pfB[M4_22]) +
+        ((MT)pfA[M4_43] * (MT)pfB[M4_32]) +
+        ((MT)pfA[M4_44] * (MT)pfB[M4_42])
+    );
 
     // A: | 41 42 43 44 |   B: | ... 13 ... |
     //                         | ... 23 ... |
     //                         | ... 33 ... |
     //                         | ... 43 ... |
-    pfC[M4_43] = pfA[M4_41]*pfB[M4_13] + pfA[M4_42]*pfB[M4_23] + pfA[M4_43]*pfB[M4_33] + pfA[M4_44]*pfB[M4_43];
+    pfC[M4_43] = (T)(
+        ((MT)pfA[M4_41] * (MT)pfB[M4_13]) +
+        ((MT)pfA[M4_42] * (MT)pfB[M4_23]) +
+        ((MT)pfA[M4_43] * (MT)pfB[M4_33]) +
+        ((MT)pfA[M4_44] * (MT)pfB[M4_43])
+    );
 
     // A: | 41 42 43 44 |   B: | ... 14 |
     //                         | ... 24 |
     //                         | ... 34 |
     //                         | ... 44 |
-    pfC[M4_44] = pfA[M4_41]*pfB[M4_14] + pfA[M4_42]*pfB[M4_24] + pfA[M4_43]*pfB[M4_34] + pfA[M4_44]*pfB[M4_44];
+    pfC[M4_44] = (T)(
+        ((MT)pfA[M4_41] * (MT)pfB[M4_14]) +
+        ((MT)pfA[M4_42] * (MT)pfB[M4_24]) +
+        ((MT)pfA[M4_43] * (MT)pfB[M4_34]) +
+        ((MT)pfA[M4_44] * (MT)pfB[M4_44])
+    );
 
+//     mat_print<T, 4>(pfA);
+//     mat_print<T, 4>(pfB);
+//     mat_print<T, 4>(pfC);
+}
+
+/**
+ * Mat4x4 Determinant - this gets painful
+ */
+template<typename T>
+inline T mat4x4_determinant(T const* pfSrc) {
+
+    MT pfTmp[4];
+
+    pfTmp[0] = (
+        ((MT)pfSrc[M4_22] * (MT)pfSrc[M4_33] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_22] * (MT)pfSrc[M4_34] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_32] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_32] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_43]) +
+        ((MT)pfSrc[M4_42] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_34]) -
+        ((MT)pfSrc[M4_42] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_33])
+    );
+
+    pfTmp[1] = (
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_34] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_33] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_34]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_33])
+    );
+
+    pfTmp[2] = (
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_32] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_34] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_42]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_34]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_32])
+    );
+
+    pfTmp[3] = (
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_33] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_32] * (MT)pfSrc[M4_43]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_33]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_32])
+    );
+
+    return (T)(
+        (MT)pfSrc[M4_11] * pfTmp[0] +
+        (MT)pfSrc[M4_12] * pfTmp[1] +
+        (MT)pfSrc[M4_13] * pfTmp[2] +
+        (MT)pfSrc[M4_14] * pfTmp[3]
+    );
+}
+
+/**
+ * Mat4x4 - Inverse. This is painful.
+ */
+template<typename T>
+inline uint64 mat4x4_inverse(T* pfDst, T const* pfSrc) {
+
+    MT pfTmp[16], fDeterminant;
+
+    // Calculate the terms that are used for the determinant first.
+    pfTmp[M4_11] = (
+        ((MT)pfSrc[M4_22] * (MT)pfSrc[M4_33] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_22] * (MT)pfSrc[M4_34] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_32] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_32] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_43]) +
+        ((MT)pfSrc[M4_42] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_34]) -
+        ((MT)pfSrc[M4_42] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_33])
+    );
+
+    pfTmp[M4_21] = (
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_34] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_33] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_34]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_33])
+    );
+
+    pfTmp[M4_31] = (
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_32] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_34] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_42]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_34]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_32])
+    );
+
+    pfTmp[M4_41] = (
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_33] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_32] * (MT)pfSrc[M4_43]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_33]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_32])
+    );
+
+    fDeterminant =
+        pfSrc[M4_11] * pfTmp[M4_11] +
+        pfSrc[M4_12] * pfTmp[M4_21] +
+        pfSrc[M4_13] * pfTmp[M4_31] +
+        pfSrc[M4_14] * pfTmp[M4_41]
+    ;
+
+    if (fDeterminant == 0.0) {
+        return ERR_ZERO_DIVIDE;
+    }
+
+    // Carry on now as it's definitely not pointless.
+    pfTmp[M4_12] =
+        ((MT)pfSrc[M4_12] * (MT)pfSrc[M4_34] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_12] * (MT)pfSrc[M4_33] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_32] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_32] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_42] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_34]) +
+        ((MT)pfSrc[M4_42] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_33])
+    ;
+
+    pfTmp[M4_22] =
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_33] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_34] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_43]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_34]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_33])
+    ;
+
+    pfTmp[M4_32] =
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_34] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_32] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_34]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_32])
+    ;
+
+    pfTmp[M4_42] =
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_32] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_33] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_43]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_42]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_33]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_32])
+    ;
+
+    pfTmp[M4_13] =
+        ((MT)pfSrc[M4_12] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_12] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_22] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_22] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_43]) +
+        ((MT)pfSrc[M4_42] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_24]) -
+        ((MT)pfSrc[M4_42] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_23])
+    ;
+
+    pfTmp[M4_23] =
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_24]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_23])
+    ;
+
+    pfTmp[M4_33] =
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_44]) -
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_44]) +
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_42]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_24]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_22])
+    ;
+
+    pfTmp[M4_43] =
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_43]) +
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_43]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_42]) -
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_23]) +
+        ((MT)pfSrc[M4_41] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_22])
+    ;
+
+    pfTmp[M4_14] =
+        ((MT)pfSrc[M4_12] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_33]) -
+        ((MT)pfSrc[M4_12] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_34]) +
+        ((MT)pfSrc[M4_22] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_34]) -
+        ((MT)pfSrc[M4_22] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_33]) -
+        ((MT)pfSrc[M4_32] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_24]) +
+        ((MT)pfSrc[M4_32] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_23])
+    ;
+
+    pfTmp[M4_24] =
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_34]) -
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_33]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_34]) +
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_33]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_24]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_23])
+    ;
+
+    pfTmp[M4_34] =
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_24] * (MT)pfSrc[M4_32]) -
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_34]) +
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_34]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_32]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_24]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_14] * (MT)pfSrc[M4_22])
+    ;
+
+    pfTmp[M4_44] =
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_22] * (MT)pfSrc[M4_33]) -
+        ((MT)pfSrc[M4_11] * (MT)pfSrc[M4_23] * (MT)pfSrc[M4_32]) -
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_33]) +
+        ((MT)pfSrc[M4_21] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_32]) +
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_12] * (MT)pfSrc[M4_23]) -
+        ((MT)pfSrc[M4_31] * (MT)pfSrc[M4_13] * (MT)pfSrc[M4_22])
+    ;
+
+    // Now scale by the inverse determinant to get the output
+    fDeterminant = 1.0 / fDeterminant;
+    for (int i = 0; i < 16; ++i) {
+        pfDst[i] = (T)(pfTmp[i] * fDeterminant);
+    }
+    return ABI::ERR_NONE;
 }
 
 }}}

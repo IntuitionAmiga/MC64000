@@ -1,10 +1,10 @@
 
-    @def MATRIX_SIZE 4
-    @def SIZE_BYTES 16
-    @def STACK_BUFFER -24(sp) ; Room for one matrix and the return address of the verify call
+    @def MATRIX_SIZE 16
+    @def SIZE_BYTES 64
+    @def STACK_BUFFER -72(sp) ; Room for one matrix and the return address of the verify call
 
-; This is the main entry point for the float 2x2 matrix tests
-mat2x2f_tests:
+; This is the main entry point for the float 4x4 matrix tests
+mat4x4f_tests:
     lea     .test_group_header, r8
     hcf     io_print_string
     bsr     .test_identity
@@ -22,7 +22,7 @@ mat2x2f_tests:
     bsr     .test_inv
     rts
 
-; Common code to compare two 2x2 matrices and report whether or not they evaluate the same
+; Common code to compare two 4x4 matrices and report whether or not they evaluate the same
 .verify:
     move.q  #MATRIX_SIZE, r0
     bsr     verify_array_singles
@@ -35,7 +35,7 @@ mat2x2f_tests:
     hcf     io_print_string
 
     lea     STACK_BUFFER, r8
-    hcf     mat2x2f_identity
+    hcf     mat4x4f_identity
 
     lea     .test_identity_out, r9
     bra     .verify
@@ -48,7 +48,7 @@ mat2x2f_tests:
     lea     STACK_BUFFER, r9
     lea     .test_copy_in_out, r8
     move.q  #SIZE_BYTES, r0
-    hcf     mat2x2f_copy
+    hcf     mat4x4f_copy
 
     bra    .verify
 
@@ -64,7 +64,7 @@ mat2x2f_tests:
     lea     STACK_BUFFER, r8
 
     fmove.s #0.5, fp0
-    hcf     mat2x2f_scale_assign
+    hcf     mat4x4f_scale_assign
 
     lea     .test_scale_out, r9
     bra     .verify
@@ -77,7 +77,7 @@ mat2x2f_tests:
     fmove.s #0.5, fp0
     lea     .test_scale_in, r8 ; source
     lea     STACK_BUFFER, r9       ; target
-    hcf     mat2x2f_scale
+    hcf     mat4x4f_scale
     lea     .test_scale_out, r8
 
     bra     .verify
@@ -92,7 +92,7 @@ mat2x2f_tests:
     move.q  #SIZE_BYTES, r0
     hcf     mem_copy
     lea     .test_add_in_b, r8
-    hcf     mat2x2f_add_assign
+    hcf     mat4x4f_add_assign
 
     lea     .test_add_out, r8
     bra     .verify
@@ -106,7 +106,7 @@ mat2x2f_tests:
     lea     .test_add_in_a, r8
     lea     .test_add_in_b, r9
     lea     STACK_BUFFER, r10
-    hcf     mat2x2f_add
+    hcf     mat4x4f_add
 
     ; check the result
     lea     .test_add_out, r9
@@ -126,7 +126,7 @@ mat2x2f_tests:
 
     ; subtract in place
     lea     .test_sub_in_b, r8
-    hcf     mat2x2f_sub_assign
+    hcf     mat4x4f_sub_assign
 
     ; check the result
     lea     .test_sub_out, r8
@@ -141,7 +141,7 @@ mat2x2f_tests:
     lea     .test_sub_in_a, r9
     lea     .test_sub_in_b, r8
     lea     STACK_BUFFER, r10
-    hcf     mat2x2f_sub
+    hcf     mat4x4f_sub
 
     lea     .test_sub_out, r9
     move.q  r10, r8
@@ -159,7 +159,7 @@ mat2x2f_tests:
     hcf     mem_copy
 
     lea     .test_mul_in_b, r8
-    hcf     mat2x2f_mul_assign
+    hcf     mat4x4f_mul_assign
 
     lea     .test_mul_out, r8
     bra     .verify
@@ -172,7 +172,7 @@ mat2x2f_tests:
     lea     .test_mul_in_a, r9
     lea     .test_mul_in_b, r8
     lea     STACK_BUFFER, r10
-    hcf     mat2x2f_mul
+    hcf     mat4x4f_mul
 
     lea     .test_mul_out, r9
     move.q  r10, r8
@@ -185,7 +185,7 @@ mat2x2f_tests:
 
     lea     .test_trans_in, r8
     lea     STACK_BUFFER, r9
-    hcf     mat2x2f_trans
+    hcf     mat4x4f_trans
 
     lea     .test_trans_out, r8
     bra     .verify
@@ -196,10 +196,10 @@ mat2x2f_tests:
     hcf     io_print_string
 
     lea     .test_det_in, r8
-    hcf     mat2x2f_det
+    hcf     mat4x4f_det
 
     move.q  #1, r0
-    fbeq.s  #-10.0, fp0, .det_pass
+    fbeq.s  #4.0, fp0, .det_pass
     clr.q   r0
 .det_pass:
     bsr     report_result
@@ -212,10 +212,11 @@ mat2x2f_tests:
 
     lea     .test_inv_in, r8
     lea     STACK_BUFFER, r9
-    hcf     mat2x2f_inv
+    hcf     mat4x4f_inv
 
     lea     .test_inv_out, r8
     bra     .verify
+
 
     @align 0, 8
 .test_identity_out:
@@ -223,86 +224,97 @@ mat2x2f_tests:
 .test_scale_in:
 .test_add_in_a:
 .test_sub_in_b:
-    dc.s    1.0, 0.0
-    dc.s    0.0, 1.0
+    dc.s    1.0, 0.0, 0.0, 0.0
+    dc.s    0.0, 1.0, 0.0, 0.0
+    dc.s    0.0, 0.0, 1.0, 0.0
+    dc.s    0.0, 0.0, 0.0, 1.0
 
 .test_scale_out:
 .test_add_in_b:
 .test_sub_out:
-    dc.s    0.5, 0.0
-    dc.s    0.0, 0.5
+    dc.s    0.5, 0.0, 0.0, 0.0
+    dc.s    0.0, 0.5, 0.0, 0.0
+    dc.s    0.0, 0.0, 0.5, 0.0
+    dc.s    0.0, 0.0, 0.0, 0.5
 
 .test_add_out:
 .test_sub_in_a:
-    dc.s    1.5, 0.0
-    dc.s    0.0, 1.5
+    dc.s    1.5, 0.0, 0.0, 0.0
+    dc.s    0.0, 1.5, 0.0, 0.0
+    dc.s    0.0, 0.0, 1.5, 0.0
+    dc.s    0.0, 0.0, 0.0, 1.5
 
 .test_mul_in_a:
 .test_trans_in:
-    dc.s    1.0, 2.0
-    dc.s    3.0, 4.0
-
-.test_mul_in_b:
-    dc.s    1.0, 2.0
-    dc.s   -2.0, 1.0
-
-.test_mul_out:
-.test_det_in:
-.test_inv_in:
-    dc.s   -3.0,  4.0
-    dc.s   -5.0, 10.0
+    dc.s    1.1, 1.2, 1.3, 1.4
+    dc.s    2.1, 2.2, 2.3, 2.4
+    dc.s    3.1, 3.2, 3.3, 3.4
+    dc.s    4.1, 4.2, 4.3, 4.4
 
 .test_trans_out:
-    dc.s    1.0, 3.0
-    dc.s    2.0, 4.0
+.test_mul_in_b:
+    dc.s    1.1, 2.1, 3.1, 4.1
+    dc.s    1.2, 2.2, 3.2, 4.2
+    dc.s    1.3, 2.3, 3.3, 4.3
+    dc.s    1.4, 2.4, 3.4, 4.4
+
+.test_mul_out:
+    dc.s     6.30, 11.30, 16.30, 21.30
+    dc.s    11.30, 20.30, 29.30, 38.30
+    dc.s    16.30, 29.30, 42.30, 55.30
+    dc.s    21.30, 38.30, 55.30, 72.30
+
+.test_det_in:
+.test_inv_in:
+    dc.s 1.0, 0.0, 0.0, 0.0
+    dc.s 1.0, 2.0, 1.0, 0.0
+    dc.s 1.0, 0.0, 2.0, 0.0
+    dc.s 1.0, 0.0, 0.0, 1.0
 
 .test_inv_out:
-    dc.s   -1.0, 0.4
-    dc.s   -0.5, 0.3
-
-.test_det_out:
-    dc.s   -10.0
+    dc.s  1.0,  0.0,  0.0,  0.0
+    dc.s -0.25, 0.5, -0.25, 0.0
+    dc.s -0.5,  0.0,  0.5,  0.0
+    dc.s -1.0,  0.0,  0.0,  1.0
 
 .test_group_header:
-    dc.b    "Testing mat2x2f operations...\n\0"
+    dc.b    "Testing mat4x4f operations...\n\0"
 
 .test_identity_header:
-    dc.b    "\tmat2x2f_identity: (r8) = I \0"
+    dc.b    "\tmat4x4f_identity: (r8) = I \0"
 
 .test_copy_header:
-    dc.b    "\tmat2x2f_copy: (r9) = (r8) \0"
+    dc.b    "\tmat4x4f_copy: (r9) = (r8) \0"
 
 .test_scale_assign_header:
-    dc.b    "\tmat2x2f_scale_assign: (r8) *= fp0 \0"
+    dc.b    "\tmat4x4f_scale_assign: (r8) *= fp0 \0"
 
 .test_scale_header:
-    dc.b    "\tmat2x2f_scale: (r9) = fp0 * (r8) \0"
+    dc.b    "\tmat4x4f_scale: (r9) = fp0 * (r8) \0"
 
 .test_add_assign_header:
-    dc.b    "\tmat2x2f_add_assign: (r9) += (r8) \0"
+    dc.b    "\tmat4x4f_add_assign: (r9) += (r8) \0"
 
 .test_add_header:
-    dc.b    "\tmat2x2f_add: (r10) = (r9) + (r8) \0"
+    dc.b    "\tmat4x4f_add: (r10) = (r9) + (r8) \0"
 
 .test_sub_assign_header:
-    dc.b    "\tmat2x2f_sub_assign: (r9) -= (r8) \0"
+    dc.b    "\tmat4x4f_sub_assign: (r9) -= (r8) \0"
 
 .test_sub_header:
-    dc.b    "\tmat2x2f_sub: (r10) = (r9) - (r8) \0"
+    dc.b    "\tmat4x4f_sub: (r10) = (r9) - (r8) \0"
 
 .test_mul_assign_header:
-    dc.b    "\tmat2x2f_mul_assign: (r9) *= (r8) \0"
+    dc.b    "\tmat4x4f_mul_assign: (r9) *= (r8) \0"
 
 .test_mul_header:
-    dc.b    "\tmat2x2f_mul: (r10) = (r9) * (r8) \0"
+    dc.b    "\tmat4x4f_mul: (r10) = (r9) * (r8) \0"
 
 .test_trans_header:
-    dc.b    "\tmat2x2f_trans: (r9) = T(r8) \0"
+    dc.b    "\tmat4x4f_trans: (r9) = T(r8) \0"
 
 .test_det_header:
-    dc.b    "\tmat2x2f_det: fp0 = det(r8) \0"
-
+    dc.b    "\tmat4x4f_det: fp0 = det(r8) \0"
 
 .test_inv_header:
-    dc.b    "\tmat2x2f_inv: (r9) = inv(r8) \0"
-
+    dc.b    "\tmat4x4f_inv: (r9) = inv(r8) \0"

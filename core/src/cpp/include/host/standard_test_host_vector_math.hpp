@@ -200,10 +200,8 @@ typedef enum {
     M2X2F_SUB,          // (a2) = (a1) - (a0)
     M2X2F_MULTIPLY_AS,  // (a1) *= (a0)
     M2X2F_MULTIPLY,     // (a2) = (a1) * (a0)
-    M2X2F_TRANSPOSE_AS, // (a0) = Transpose(a0)
     M2X2F_TRANSPOSE,    // (a1) = Transpose(a0)
     M2X2F_DET,          // fp0  = Determinant(a0)
-    M2X2F_INVERSE_AS,   // (a0) = Inverse(a0)
     M2X2F_INVERSE,      // (a1) = Inverse(a0)
 
     // mat3x3f float32[3][3]
@@ -217,10 +215,8 @@ typedef enum {
     M3X3F_SUB,          // (a2) = (a1) - (a0)
     M3X3F_MULTIPLY_AS,  // (a1) *= (a0)
     M3X3F_MULTIPLY,     // (a2) = (a1) * (a0)
-    M3X3F_TRANSPOSE_AS, // (a0) = Transpose(a0)
     M3X3F_TRANSPOSE,    // (a1) = Transpose(a0)
     M3X3F_DET,          // fp0  = Determinant(a0)
-    M3X3F_INVERSE_AS,   // (a0) = Inverse(a0)
     M3X3F_INVERSE,      // (a1) = Inverse(a0)
 
     // mat4x4f float32[4][4]
@@ -234,10 +230,8 @@ typedef enum {
     M4X4F_SUB,          // (a2) = (a1) - (a0)
     M4X4F_MULTIPLY_AS,  // (a1) *= (a0)
     M4X4F_MULTIPLY,     // (a2) = (a1) * (a0)
-    M4X4F_TRANSPOSE_AS, // (a0) = Transpose(a0)
     M4X4F_TRANSPOSE,    // (a1) = Transpose(a0)
     M4X4F_DET,          // fp0  = Determinant(a0)
-    M4X4F_INVERSE_AS,   // (a0) = Inverse(a0)
     M4X4F_INVERSE,      // (a1) = Inverse(a0)
 
 } Call;
