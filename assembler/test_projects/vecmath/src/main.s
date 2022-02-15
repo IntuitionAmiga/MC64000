@@ -5,10 +5,11 @@ main:
     hcf         io_init
 
     bsr         vec2f_tests
+    bsr         vec2d_tests
+
     bsr         mat2x2f_tests
     bsr         mat3x3f_tests
     bsr         mat4x4f_tests
-
     bsr         mat2x2d_tests
     bsr         mat3x3d_tests
     bsr         mat4x4d_tests
