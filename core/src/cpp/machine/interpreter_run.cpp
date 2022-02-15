@@ -27,49 +27,49 @@ namespace {
 inline void rolByte(uint8* puValue, uint8 uSize) {
     uSize &= 7;
     uint8 val = *puValue;
-    *puValue = val << uSize | val >> (8 - uSize);
+    *puValue = (uint8)(val << uSize | val >> (8 - uSize));
 }
 
 inline void rolWord(uint16* puValue, uint8 uSize) {
     uSize &= 15;
     uint16 val = *puValue;
-    *puValue = val << uSize | val >> (16 - uSize);
+    *puValue = (uint16)(val << uSize | val >> (16 - uSize));
 }
 
 inline void rolLong(uint32* puValue, uint8 uSize) {
     uSize &= 31;
     uint32 val = *puValue;
-    *puValue = val << uSize | val >> (32 - uSize);
+    *puValue = (uint32)(val << uSize | val >> (32 - uSize));
 }
 
 inline void rolQuad(uint64* puValue, uint8 uSize) {
     uSize &= 63;
     uint64 val = *puValue;
-    *puValue = val << uSize | val >> (64 - uSize);
+    *puValue = (uint64)(val << uSize | val >> (64 - uSize));
 }
 
 inline void rorByte(uint8* puValue, uint8 uSize) {
     uSize &= 7;
     uint8 val = *puValue;
-    *puValue = val >> uSize | val << (8 - uSize);
+    *puValue = (uint8)(val >> uSize | val << (8 - uSize));
 }
 
 inline void rorWord(uint16* puValue, uint8 uSize) {
     uSize &= 15;
     uint16 val = *puValue;
-    *puValue = val >> uSize | val << (16 - uSize);
+    *puValue = (uint16)(val >> uSize | val << (16 - uSize));
 }
 
 inline void rorLong(uint32* puValue, uint8 uSize) {
     uSize &= 31;
     uint32 val = *puValue;
-    *puValue = val >> uSize | val << (32 - uSize);
+    *puValue = (uint32)(val >> uSize | val << (32 - uSize));
 }
 
 inline void rorQuad(uint64* puValue, uint8 uSize) {
     uSize &= 63;
     uint64 val = *puValue;
-    *puValue = val >> uSize | val << (64 - uSize);
+    *puValue = (uint64)(val >> uSize | val << (64 - uSize));
 }
 
 uint8 mapFloatClassification(int iClass) {
@@ -542,14 +542,14 @@ void Interpreter::run() {
             case Opcode::ROR_W:  dyadic(SIZE_WORD); rorWord((uint16*)pDstEA, asUByte(pSrcEA));  break;
             case Opcode::ROR_L:  dyadic(SIZE_LONG); rorLong((uint32*)pDstEA, asUByte(pSrcEA));  break;
             case Opcode::ROR_Q:  dyadic(SIZE_QUAD); rorQuad((uint64*)pDstEA, asUByte(pSrcEA));  break;
-            case Opcode::BCLR_B: dyadic(SIZE_BYTE); asUByte(pDstEA) &= ~(1 << (asUByte(pSrcEA) & 7));  break;
-            case Opcode::BCLR_W: dyadic(SIZE_WORD); asUWord(pDstEA) &= ~(1 << (asUByte(pSrcEA) & 15)); break;
-            case Opcode::BCLR_L: dyadic(SIZE_LONG); asULong(pDstEA) &= ~(1 << (asUByte(pSrcEA) & 31)); break;
-            case Opcode::BCLR_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA) &= ~(1 << (asUByte(pSrcEA) & 63)); break;
-            case Opcode::BSET_B: dyadic(SIZE_BYTE); asUByte(pDstEA) |=  (1 << (asUByte(pSrcEA) & 7));  break;
-            case Opcode::BSET_W: dyadic(SIZE_WORD); asUWord(pDstEA) |=  (1 << (asUByte(pSrcEA) & 15)); break;
-            case Opcode::BSET_L: dyadic(SIZE_LONG); asULong(pDstEA) |=  (1 << (asUByte(pSrcEA) & 31)); break;
-            case Opcode::BSET_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA) |=  (1 << (asUByte(pSrcEA) & 63)); break;
+            case Opcode::BCLR_B: dyadic(SIZE_BYTE); asUByte(pDstEA) &= (uint8)  ~(1 << (asUByte(pSrcEA) & 7));  break;
+            case Opcode::BCLR_W: dyadic(SIZE_WORD); asUWord(pDstEA) &= (uint16) ~(1 << (asUByte(pSrcEA) & 15)); break;
+            case Opcode::BCLR_L: dyadic(SIZE_LONG); asULong(pDstEA) &= (uint32) ~(1 << (asUByte(pSrcEA) & 31)); break;
+            case Opcode::BCLR_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA) &= (uint64) ~(1 << (asUByte(pSrcEA) & 63)); break;
+            case Opcode::BSET_B: dyadic(SIZE_BYTE); asUByte(pDstEA) |= (uint8)  (1 << (asUByte(pSrcEA) & 7));  break;
+            case Opcode::BSET_W: dyadic(SIZE_WORD); asUWord(pDstEA) |= (uint16) (1 << (asUByte(pSrcEA) & 15)); break;
+            case Opcode::BSET_L: dyadic(SIZE_LONG); asULong(pDstEA) |= (uint32) (1 << (asUByte(pSrcEA) & 31)); break;
+            case Opcode::BSET_Q: dyadic(SIZE_QUAD); asUQuad(pDstEA) |= (uint64) (1 << (asUByte(pSrcEA) & 63)); break;
 
             case Opcode::BFFFO: {
                 unpackGPRPair();
@@ -683,7 +683,7 @@ void Interpreter::run() {
 
     Nanoseconds::Value uElapsed = Nanoseconds::mark() - uStart;
 
-    float64 fMIPS = (1000.0 * uInstructionCount) / (float64)uElapsed;
+    float64 fMIPS = (1000.0 * (float64)uInstructionCount) / (float64)uElapsed;
 
     std::fprintf(
         stderr,

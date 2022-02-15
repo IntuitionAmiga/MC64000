@@ -132,7 +132,7 @@ namespace VectorMath {
         pfDst[M3_32] = (pfSrc[M3_12] * pfSrc[M3_31]) - (pfSrc[M3_11] * pfSrc[M3_32]);  \
         /* I = (ae - bd) */                                                            \
         pfDst[M3_33] = (pfSrc[M3_11] * pfSrc[M3_22]) - (pfSrc[M3_12] * pfSrc[M3_21]);  \
-        fDeterminant = 1.0 / fDeterminant;                                             \
+        fDeterminant = (T)1.0 / fDeterminant;                                             \
         pfDst[M3_11] *= fDeterminant;                                                  \
         pfDst[M3_12] *= fDeterminant;                                                  \
         pfDst[M3_13] *= fDeterminant;                                                  \
