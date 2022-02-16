@@ -46,7 +46,7 @@ Runtime::Runtime(Definition& roDefinition, char const* sBinaryPath) :
     );
     Machine::Interpreter::initImportSymbols(
         poExecutable->getImportedSymbolSet()->getSymbols(),
-        poExecutable->getImportedSymbolSet()->getCount()
+        (uint32)poExecutable->getImportedSymbolSet()->getCount()
     );
 }
 

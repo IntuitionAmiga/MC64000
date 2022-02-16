@@ -39,7 +39,7 @@ Definition::Definition(
     uNumHCFVectors(0)
 {
     assert(roHCFVectors.size() <= Machine::Limits::MAX_HCF_VECTORS);
-    if ((uNumHCFVectors = roHCFVectors.size())) {
+    if ((uNumHCFVectors = (uint32)roHCFVectors.size())) {
         size_t uSize = sizeof(Machine::Interpreter::HCFVector) * uNumHCFVectors;
         if (!(pcHCFVectors = (Machine::Interpreter::HCFVector*)std::malloc(uSize))) {
             throw MC64K::OutOfMemoryException();

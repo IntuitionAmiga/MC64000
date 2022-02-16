@@ -103,7 +103,7 @@ namespace VectorMath {
     T const* pfSrc = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME; \
     T fDeterminant = pfSrc[M2_11] * pfSrc[M2_22] - pfSrc[M2_12] * pfSrc[M2_21]; \
     if (fDeterminant) { \
-        fDeterminant = 1.0 / fDeterminant; \
+        fDeterminant = (T)1.0 / fDeterminant; \
         pfDst[M2_11] = fDeterminant * pfSrc[M2_22]; \
         pfDst[M2_22] = fDeterminant * pfSrc[M2_11]; \
         pfDst[M2_12] = -fDeterminant * pfSrc[M2_12]; \

@@ -42,40 +42,41 @@ The Host ABI reserves a number of registers for parameters and return.
 
 These are used so that the aliases d0, d1, a0 and a1 retain their historic 680x0 meaning. Generally a host native call does not clobber any registers, however, since the same registers are typically used for return values, these registers should be considered volatile.
 
-Execution of host native code is triggered by a hcf operation. MC64K allows up to 256 host vectors. Rather than assign every function to a host vector, functions are grouped into related sets, each of which has a single vector. Within each vector, functions are assigned an increnting ID value. To invoke a specific function, it's ID is first pushed onto the stack and then the vector to which it belongs is triggered:
+Host functions are arranged in up to 256 groups, or vectors, each of which can contain up to 256 operations. Execution of host native code is triggered by a hcf operation which accepts two unsigned byte immediate operands. The first operand is interpreted as the operation selector, the second the vector selector. For simplicity, this library contains stub source files that enumerate these, as well as any commonly used constants, for each library.
+
+
+For example, in io.s:
 
 ```asm
 
-    @def EXAMPLE_HOST_VECTOR 0
-    @def EXAMPLE_HOST_FUNCTION_ID 0
+    ; constants
+    @equ IO_OPEN_READ  0
+    @equ IO_OPEN_WRITE 1
 
-example_host_function:
-    move.b  #EXAMPLE_HOST_FUNCTION_ID, -(sp) ; load the function ID onto the stack
-    hcf     #EXAMPLE_HOST_VECTOR             ; trigger the vector
-    add.q   #1, sp                           ; restore the stack
-    rts                                      ; done
+    ; Functions <offset>, <vector>
+    @def io_vector #0
+    @equ io_init         #0, io_vector
+    @equ io_done         #1, io_vector
+    @equ io_print_string #2, io_vector
 ```
 
-In order to reduce code size, the included libary files share the trigger and stack restore logic across multiple functions, e.g:
+Invoking these from your own code is as simple as:
 
 ```asm
 
-.invoke:
-    hcf     #HOST_VECTOR
-    add.q   #1, sp
+    @export main x
+    @export exit x
+
+main:
+    hcf io_init
+    lea .hello, r8
+    hcf io_print_string
+    hcf io_done
+exit:
     rts
 
-example_host_function_1:
-    move.b  #EXAMPLE_HOST_FUNCTION_1_ID, -(sp)
-    bra.b   .invoke
-
-example_host_function_2:
-    move.b  #EXAMPLE_HOST_FUNCTION_2_ID, -(sp)
-    bra.b   .invoke
-
-example_host_function_3:
-    move.b  #EXAMPLE_HOST_FUNCTION_3_ID, -(sp)
-    bra.b   .invoke
+.hello:
+    dc.s "Hello world!\n\0"
 ```
 
 ## Document Example Layout

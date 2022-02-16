@@ -133,7 +133,7 @@ void Binary::loadManifest() {
         throw Error(sFileName, "unable to allocate chunk", CHUNK_MANIFEST_ID);
     }
 
-    uManifestLength = auHeader[1] / sizeof(ManifestEntry);
+    uManifestLength = (uint32) (auHeader[1] / sizeof(ManifestEntry));
 
     if (uManifestLength != std::fread(poManifest, sizeof(ManifestEntry), uManifestLength, poFileHandle)) {
         throw Error(sFileName, "failed to load chunk", CHUNK_MANIFEST_ID);

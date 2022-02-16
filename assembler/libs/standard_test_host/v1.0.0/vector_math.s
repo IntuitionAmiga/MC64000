@@ -19,44 +19,44 @@
 
     @equ ERR_DIV_ZERO  1000
 
-    @equ vec2f_splat          #0, vecmath_vector
-    @equ vec2f_copy           #1, vecmath_vector
-    @equ vec2f_scale_assign   #2, vecmath_vector
-    @equ vec2f_scale          #3, vecmath_vector
-    @equ vec2f_add_assign     #4, vecmath_vector
-    @equ vec2f_add            #5, vecmath_vector
-    @equ vec2f_sub_assign     #6, vecmath_vector
-    @equ vec2f_sub            #7, vecmath_vector
-    @equ vec2f_dot            #8, vecmath_vector
-    @equ vec2f_magn          #09, vecmath_vector
-    @equ vec2f_norm_assign   #10, vecmath_vector
-    @equ vec2f_norm          #11, vecmath_vector
-    @equ vec2f_lerp          #12, vecmath_vector
-    @equ vec2f_xfrm_2x2      #13, vecmath_vector
-    @equ vec2f_0_xfrm_3x3    #14, vecmath_vector
-    @equ vec2f_1_xfrm_3x3    #15, vecmath_vector
-    @equ vec2f_to_vec3f      #16, vecmath_vector
+    @equ vec2f_splat           #0, vecmath_vector
+    @equ vec2f_copy            #1, vecmath_vector
+    @equ vec2f_scale_assign    #2, vecmath_vector
+    @equ vec2f_scale           #3, vecmath_vector
+    @equ vec2f_add_assign      #4, vecmath_vector
+    @equ vec2f_add             #5, vecmath_vector
+    @equ vec2f_sub_assign      #6, vecmath_vector
+    @equ vec2f_sub             #7, vecmath_vector
+    @equ vec2f_dot             #8, vecmath_vector
+    @equ vec2f_magn            #9, vecmath_vector
+    @equ vec2f_norm_assign    #10, vecmath_vector
+    @equ vec2f_norm           #11, vecmath_vector
+    @equ vec2f_lerp           #12, vecmath_vector
+    @equ vec2f_xfrm_2x2       #13, vecmath_vector
+    @equ vec2f_0_xfrm_3x3     #14, vecmath_vector
+    @equ vec2f_1_xfrm_3x3     #15, vecmath_vector
+    @equ vec2f_to_vec3f       #16, vecmath_vector
 
-    @equ vec3f_splat         #17, vecmath_vector
-    @equ vec3f_copy          #18, vecmath_vector
-    @equ vec3f_scale_assign  #19, vecmath_vector
-    @equ vec3f_scale         #20, vecmath_vector
-    @equ vec3f_add_assign    #21, vecmath_vector
-    @equ vec3f_add           #22, vecmath_vector
-    @equ vec3f_sub_assign    #23, vecmath_vector
-    @equ vec3f_sub           #24, vecmath_vector
-    @equ vec3f_dot           #25, vecmath_vector
-    @equ vec3f_cross_assign  #26, vecmath_vector
-    @equ vec3f_cross         #27, vecmath_vector
-    @equ vec3f_magn          #28, vecmath_vector
-    @equ vec3f_norm_as       #29, vecmath_vector
-    @equ vec3f_norm          #30, vecmath_vector
-    @equ vec3f_lerp          #31, vecmath_vector
-    @equ vec3f_xfrm_3x3      #32, vecmath_vector
-    @equ vec3f_0_xfrm_4x4    #33, vecmath_vector
-    @equ vec3f_1_xfrm_4x4    #34, vecmath_vector
-    @equ vec3f_to_vec4f      #35, vecmath_vector
-    @equ vec4f_xfrm_4x4      #36, vecmath_vector
+    @equ vec3f_splat          #17, vecmath_vector
+    @equ vec3f_copy           #18, vecmath_vector
+    @equ vec3f_scale_assign   #19, vecmath_vector
+    @equ vec3f_scale          #20, vecmath_vector
+    @equ vec3f_add_assign     #21, vecmath_vector
+    @equ vec3f_add            #22, vecmath_vector
+    @equ vec3f_sub_assign     #23, vecmath_vector
+    @equ vec3f_sub            #24, vecmath_vector
+    @equ vec3f_dot            #25, vecmath_vector
+    @equ vec3f_cross_assign   #26, vecmath_vector
+    @equ vec3f_cross          #27, vecmath_vector
+    @equ vec3f_magn           #28, vecmath_vector
+    @equ vec3f_norm_as        #29, vecmath_vector
+    @equ vec3f_norm           #30, vecmath_vector
+    @equ vec3f_lerp           #31, vecmath_vector
+    @equ vec3f_xfrm_3x3       #32, vecmath_vector
+    @equ vec3f_0_xfrm_4x4     #33, vecmath_vector
+    @equ vec3f_1_xfrm_4x4     #34, vecmath_vector
+    @equ vec3f_to_vec4f       #35, vecmath_vector
+    @equ vec4f_xfrm_4x4       #36, vecmath_vector
 
     @equ mat2x2f_identity     #37, vecmath_vector
     @equ mat2x2f_copy         #38, vecmath_vector
@@ -100,3 +100,84 @@
     @equ mat4x4f_det          #74, vecmath_vector
     @equ mat4x4f_inv          #75, vecmath_vector
 
+
+    @equ vec2d_splat          #76, vecmath_vector
+    @equ vec2d_copy           #77, vecmath_vector
+    @equ vec2d_scale_assign   #78, vecmath_vector
+    @equ vec2d_scale          #79, vecmath_vector
+    @equ vec2d_add_assign     #80, vecmath_vector
+    @equ vec2d_add            #81, vecmath_vector
+    @equ vec2d_sub_assign     #82, vecmath_vector
+    @equ vec2d_sub            #83, vecmath_vector
+    @equ vec2d_dot            #84, vecmath_vector
+    @equ vec2d_magn           #85, vecmath_vector
+    @equ vec2d_norm_assign    #86, vecmath_vector
+    @equ vec2d_norm           #87, vecmath_vector
+    @equ vec2d_lerp           #88, vecmath_vector
+    @equ vec2d_xfrm_2x2       #89, vecmath_vector
+    @equ vec2d_0_xfrm_3x3     #90, vecmath_vector
+    @equ vec2d_1_xfrm_3x3     #91, vecmath_vector
+    @equ vec2d_to_vec3f       #92, vecmath_vector
+
+    @equ vec3d_splat          #93, vecmath_vector
+    @equ vec3d_copy           #94, vecmath_vector
+    @equ vec3d_scale_assign   #95, vecmath_vector
+    @equ vec3d_scale          #96, vecmath_vector
+    @equ vec3d_add_assign     #97, vecmath_vector
+    @equ vec3d_add            #98, vecmath_vector
+    @equ vec3d_sub_assign     #99, vecmath_vector
+    @equ vec3d_sub            #100, vecmath_vector
+    @equ vec3d_dot            #101, vecmath_vector
+    @equ vec3d_cross_assign   #102, vecmath_vector
+    @equ vec3d_cross          #103, vecmath_vector
+    @equ vec3d_magn           #104, vecmath_vector
+    @equ vec3d_norm_as        #105, vecmath_vector
+    @equ vec3d_norm           #106, vecmath_vector
+    @equ vec3d_lerp           #107, vecmath_vector
+    @equ vec3d_xfrm_3x3       #108, vecmath_vector
+    @equ vec3d_0_xfrm_4x4     #109, vecmath_vector
+    @equ vec3d_1_xfrm_4x4     #110, vecmath_vector
+    @equ vec3d_to_vec4f       #111, vecmath_vector
+    @equ vec4d_xfrm_4x4       #112, vecmath_vector
+
+    @equ mat2x2d_identity     #113, vecmath_vector
+    @equ mat2x2d_copy         #114, vecmath_vector
+    @equ mat2x2d_scale_assign #115, vecmath_vector
+    @equ mat2x2d_scale        #116, vecmath_vector
+    @equ mat2x2d_add_assign   #117, vecmath_vector
+    @equ mat2x2d_add          #118, vecmath_vector
+    @equ mat2x2d_sub_assign   #119, vecmath_vector
+    @equ mat2x2d_sub          #120, vecmath_vector
+    @equ mat2x2d_mul_assign   #121, vecmath_vector
+    @equ mat2x2d_mul          #122, vecmath_vector
+    @equ mat2x2d_trans        #123, vecmath_vector
+    @equ mat2x2d_det          #124, vecmath_vector
+    @equ mat2x2d_inv          #125, vecmath_vector
+
+    @equ mat3x3d_identity     #126, vecmath_vector
+    @equ mat3x3d_copy         #127, vecmath_vector
+    @equ mat3x3d_scale_assign #128, vecmath_vector
+    @equ mat3x3d_scale        #129, vecmath_vector
+    @equ mat3x3d_add_assign   #130, vecmath_vector
+    @equ mat3x3d_add          #131, vecmath_vector
+    @equ mat3x3d_sub_assign   #132, vecmath_vector
+    @equ mat3x3d_sub          #133, vecmath_vector
+    @equ mat3x3d_mul_assign   #134, vecmath_vector
+    @equ mat3x3d_mul          #135, vecmath_vector
+    @equ mat3x3d_trans        #136, vecmath_vector
+    @equ mat3x3d_det          #137, vecmath_vector
+    @equ mat3x3d_inv          #138, vecmath_vector
+
+    @equ mat4x4d_identity     #139, vecmath_vector
+    @equ mat4x4d_copy         #140, vecmath_vector
+    @equ mat4x4d_scale_assign #141, vecmath_vector
+    @equ mat4x4d_scale        #142, vecmath_vector
+    @equ mat4x4d_add_assign   #143, vecmath_vector
+    @equ mat4x4d_add          #144, vecmath_vector
+    @equ mat4x4d_sub_assign   #145, vecmath_vector
+    @equ mat4x4d_sub          #146, vecmath_vector
+    @equ mat4x4d_mul_assign   #147, vecmath_vector
+    @equ mat4x4d_mul          #148, vecmath_vector
+    @equ mat4x4d_trans        #149, vecmath_vector
+    @equ mat4x4d_det          #150, vecmath_vector
+    @equ mat4x4d_inv          #151, vecmath_vector

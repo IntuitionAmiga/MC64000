@@ -13,7 +13,7 @@
         "log_code_folds": true,
         "log_label_add": false,
         "log_label_ref": false,
-        "log_label_resolve": false
+        "log_label_resolve": true
     },
     "sources": [
         "lib:standard_test_host/v1.0.0/host.s",
@@ -24,8 +24,11 @@
         "src/vec2f_tests.s",
         "src/mat2x2f_tests.s",
         "src/mat3x3f_tests.s",
-        "src/mat4x4f_tests.s"
-
+        "src/mat4x4f_tests.s",
+        "src/vec2d_tests.s",
+        "src/mat2x2d_tests.s",
+        "src/mat3x3d_tests.s",
+        "src/mat4x4d_tests.s"
     ],
     "defines": {
     }
