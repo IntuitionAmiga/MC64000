@@ -96,9 +96,9 @@ mat4x4_transpose( \
 Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME = mat4x4_determinant<T>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
 
 #define m4x4_inverse(T, UNION_NAME) \
-mat4x4_inverse<T>( \
-    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
-    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME \
+aoGPR[ABI::INT_REG_0].uQuad = mat4x4_inverse<T>( \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
 #define v4_transform_4x4(T, UNION_NAME) \
