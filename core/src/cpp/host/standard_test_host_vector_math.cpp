@@ -23,27 +23,6 @@ namespace MC64K {
 namespace StandardTestHost {
 namespace VectorMath {
 
-// Explicit template instantiations
-
-template void vec2_transform_2x2(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec2_0_transform_3x3(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec2_1_transform_3x3(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec2_expand_vec3(float32* pfDst, float32 const* pfSrc, float32 fValue, size_t uCount);
-template void vec3_transform_3x3(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec3_0_transform_4x4(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec3_1_transform_4x4(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec3_expand_vec4(float32* pfDst, float32 const* pfSrc, float32 fValue, size_t uCount);
-template void vec4_transform_4x4(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-
-template void mat2x2_multiply(float32* pfC, float32 const* pfA, float32 const* pfB);
-template void mat3x3_multiply(float32* pfC, float32 const* pfA, float32 const* pfB);
-template float32 mat3x3_determinant(float32 const* pfMtx);
-template void mat4x4_multiply(float32* pfC, float32 const* pfA, float32 const* pfB);
-template float32 mat4x4_determinant(float32 const* pfSrc);
-template uint64 mat4x4_inverse(float32* pfDst, float32 const* pfSrc);
-
-
-
 /**
  * VectorMath::hostVector(uint8 uFunctionID)
  */

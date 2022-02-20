@@ -23,53 +23,61 @@ namespace VectorMath {
 
 #define m4x4_identity(T, UNION_NAME) mat_identity<T, 4>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
 
-#define m4x4_copy(T, UNION_NAME) mat_copy<T, 4>( \
+#define m4x4_copy(T, UNION_NAME) \
+mat_copy<T, 4>( \
     aoGPR[ABI::PTR_REG_1].p ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].p ## UNION_NAME \
 )
 
-#define m4x4_scale_assign(T, UNION_NAME) mat_scale_assign<T, 4>( \
+#define m4x4_scale_assign(T, UNION_NAME) \
+mat_scale_assign<T, 4>( \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
     Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m4x4_scale(T, UNION_NAME) mat_scale<T, 4>( \
+#define m4x4_scale(T, UNION_NAME) \
+mat_scale<T, 4>( \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
     Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m4x4_add_assign(T, UNION_NAME) mat_add_assign<T, 4>( \
+#define m4x4_add_assign(T, UNION_NAME) \
+mat_add_assign<T, 4>( \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m4x4_add(T, UNION_NAME) mat_add<T, 4>( \
+#define m4x4_add(T, UNION_NAME) \
+mat_add<T, 4>( \
     aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m4x4_sub_assign(T, UNION_NAME) mat_sub_assign<T, 4>( \
+#define m4x4_sub_assign(T, UNION_NAME) \
+mat_sub_assign<T, 4>( \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m4x4_sub(T, UNION_NAME) mat_sub<T, 4>( \
+#define m4x4_sub(T, UNION_NAME) \
+mat_sub<T, 4>( \
     aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m4x4_multiply(T, UNION_NAME) mat4x4_multiply<T>( \
+#define m4x4_multiply(T, UNION_NAME) \
+mat4x4_multiply<T>( \
     aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
 #define m4x4_multiply_assign(T, UNION_NAME) { \
-    T*       pfDst  = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME; \
-    T        pfTmp[4*4]; \
+    T* pfDst  = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME; \
+    T  pfTmp[4*4]; \
     mat_copy<T, 4>(pfTmp, pfDst); \
     mat4x4_multiply<T>( \
         pfDst, \
@@ -78,37 +86,20 @@ namespace VectorMath {
     ); \
 }
 
-#define m4x4_transpose(T, UNION_NAME) { \
-    T*       pDst = aoGPR[ABI::PTR_REG_1].p ## UNION_NAME; \
-    T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
-    pDst[M4_11] = pSrc[M4_11]; \
-    pDst[M4_12] = pSrc[M4_21]; \
-    pDst[M4_13] = pSrc[M4_31]; \
-    pDst[M4_14] = pSrc[M4_41]; \
-    pDst[M4_21] = pSrc[M4_12]; \
-    pDst[M4_22] = pSrc[M4_22]; \
-    pDst[M4_23] = pSrc[M4_32]; \
-    pDst[M4_24] = pSrc[M4_42]; \
-    pDst[M4_31] = pSrc[M4_13]; \
-    pDst[M4_32] = pSrc[M4_23]; \
-    pDst[M4_33] = pSrc[M4_33]; \
-    pDst[M4_34] = pSrc[M4_43]; \
-    pDst[M4_41] = pSrc[M4_14]; \
-    pDst[M4_42] = pSrc[M4_24]; \
-    pDst[M4_43] = pSrc[M4_34]; \
-    pDst[M4_44] = pSrc[M4_44]; \
-}
+#define m4x4_transpose(T, UNION_NAME) \
+mat4x4_transpose( \
+    aoGPR[ABI::PTR_REG_1].p ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].p ## UNION_NAME \
+)
 
-#define m4x4_determinant(T, UNION_NAME) {                                              \
-    T const* pfMtx = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME;                           \
-    Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME = mat4x4_determinant<T>(pfMtx); \
-}
+#define m4x4_determinant(T, UNION_NAME) \
+Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME = mat4x4_determinant<T>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
 
-#define m4x4_inverse(T, UNION_NAME) {                                                  \
-    T const* pfSrc = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME;                           \
-    T* pfDst       = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME;                           \
-    aoGPR[ABI::INT_REG_0].uQuad = mat4x4_inverse<T>(pfDst, pfSrc);                     \
-}
+#define m4x4_inverse(T, UNION_NAME) \
+mat4x4_inverse<T>( \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME \
+)
 
 #define v4_transform_4x4(T, UNION_NAME) \
 vec4_transform_4x4<T>( \
