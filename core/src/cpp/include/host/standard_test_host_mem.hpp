@@ -16,14 +16,7 @@
 
 #include "standard_test_host.hpp"
 
-namespace MC64K {
-namespace StandardTestHost {
-
-/**
- * Mem namespace. Gathers together all parts of the Standard Test Host Memory functionality.
- *
- */
-namespace Mem {
+namespace MC64K::StandardTestHost::Mem {
 
 /**
  * Call
@@ -105,6 +98,6 @@ typedef enum {
 
 Interpreter::Status hostVector(uint8 uFunctionID);
 
-}}} // namespace
+} // namespace
 
 #endif

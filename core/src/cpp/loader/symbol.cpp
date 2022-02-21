@@ -18,8 +18,7 @@
 #include "loader/executable.hpp"
 #include "host/definition.hpp"
 
-namespace MC64K {
-namespace Loader {
+namespace MC64K::Loader {
 
 /**
  * @inheritDoc
@@ -166,4 +165,4 @@ LoadedSymbolSet::~LoadedSymbolSet() {
     std::free((void*)puRawData);
 }
 
-}} // namespace
+} // namespace

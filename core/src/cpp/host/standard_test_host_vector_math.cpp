@@ -19,30 +19,7 @@
 
 using MC64K::Machine::Interpreter;
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace VectorMath {
-
-// Explicit template instantiations
-
-template void vec2_transform_2x2(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec2_0_transform_3x3(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec2_1_transform_3x3(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec2_expand_vec3(float32* pfDst, float32 const* pfSrc, float32 fValue, size_t uCount);
-template void vec3_transform_3x3(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec3_0_transform_4x4(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec3_1_transform_4x4(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-template void vec3_expand_vec4(float32* pfDst, float32 const* pfSrc, float32 fValue, size_t uCount);
-template void vec4_transform_4x4(float32* pfDst, float32 const* pfSrc, float32 const* pfM, size_t uCount);
-
-template void mat2x2_multiply(float32* pfC, float32 const* pfA, float32 const* pfB);
-template void mat3x3_multiply(float32* pfC, float32 const* pfA, float32 const* pfB);
-template float32 mat3x3_determinant(float32 const* pfMtx);
-template void mat4x4_multiply(float32* pfC, float32 const* pfA, float32 const* pfB);
-template float32 mat4x4_determinant(float32 const* pfSrc);
-template uint64 mat4x4_inverse(float32* pfDst, float32 const* pfSrc);
-
-
+namespace MC64K::StandardTestHost::VectorMath {
 
 /**
  * VectorMath::hostVector(uint8 uFunctionID)
@@ -127,6 +104,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M3X3F_TRANSPOSE:       m3x3_transpose(uint32, uLong);              break;
         case M3X3F_DET:             m3x3_determinant(float32, Single);          break;
         case M3X3F_INVERSE:         m3x3_inverse(float32, Single);              break;
+
 
         // 4x4 Matrices
         case M4X4F_IDENTITY:        m4x4_identity(float32, Single);             break;
@@ -234,7 +212,6 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
 
         //    break;
 
-
         default:
             std::fprintf(stderr, "Unknown operation %d\n", iOperation);
             return Interpreter::UNKNOWN_HOST_CALL;
@@ -244,5 +221,5 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
     return Interpreter::RUNNING;
 }
 
-}}} // namespace
+} // namespace
 

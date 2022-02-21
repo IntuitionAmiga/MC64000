@@ -17,8 +17,7 @@
 #include "machine/gnarly.hpp"
 #include <cstdio>
 
-namespace MC64K {
-namespace Machine {
+namespace MC64K::Machine {
 
 namespace {
     /**
@@ -389,4 +388,4 @@ void Interpreter::restoreRegisters(uint32 uMask, uint8 uEAMode) {
 }
 
 
-}} // namespace
+} // namespace

@@ -19,9 +19,7 @@
 #include <cstdlib>
 #include "./offsets.hpp"
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace VectorMath {
+namespace MC64K::StandardTestHost::VectorMath {
 
 #ifdef MATRIX_FORCE_DOUBLE
 #define MT T
@@ -33,7 +31,7 @@ namespace VectorMath {
  * Applies a Mat2x2 to an input set of Vec2
  */
 template<typename T>
-void vec2_transform_2x2(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
+inline void vec2_transform_2x2(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
     while (uCount--) {
         *pfDst++ = pfM[M2_11] * pfSrc[V_X] + pfM[M2_12] * pfSrc[V_Y];
         *pfDst++ = pfM[M2_21] * pfSrc[V_X] + pfM[M2_22] * pfSrc[V_Y];
@@ -46,7 +44,7 @@ void vec2_transform_2x2(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
  * Output is also a set of Vec2. Only the first 2 rows of the matrix are considered.
  */
 template<typename T>
-void vec2_0_transform_3x3(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
+inline void vec2_0_transform_3x3(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
     while (uCount--) {
         *pfDst++ = pfM[M3_11] * pfSrc[V_X] + pfM[M3_12] * pfSrc[V_Y];
         *pfDst++ = pfM[M3_21] * pfSrc[V_X] + pfM[M3_22] * pfSrc[V_Y];
@@ -59,7 +57,7 @@ void vec2_0_transform_3x3(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount)
  * Output is also a set of Vec2. Only the first 2 rows of the matrix are considered.
  */
 template<typename T>
-void vec2_1_transform_3x3(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
+inline void vec2_1_transform_3x3(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
     while (uCount--) {
         *pfDst++ = pfM[M3_11] * pfSrc[V_X] + pfM[M3_12] * pfSrc[V_Y] + pfM[M3_13];
         *pfDst++ = pfM[M3_21] * pfSrc[V_X] + pfM[M3_22] * pfSrc[V_Y] + pfM[M3_23];
@@ -71,7 +69,7 @@ void vec2_1_transform_3x3(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount)
  * Vec2 to Vec3 expand
  */
 template<typename T>
-void vec2_expand_vec3(T* pfDst, T const* pfSrc, T fValue, size_t uCount) {
+inline void vec2_expand_vec3(T* pfDst, T const* pfSrc, T fValue, size_t uCount) {
     while (uCount--) {
         *pfDst++ = *pfSrc++;
         *pfDst++ = *pfSrc++;
@@ -83,7 +81,7 @@ void vec2_expand_vec3(T* pfDst, T const* pfSrc, T fValue, size_t uCount) {
  * Applies a Mat3x3 to an input set of Vec3
  */
 template<typename T>
-void vec3_transform_3x3(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
+inline void vec3_transform_3x3(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
     while (uCount--) {
         *pfDst++ = pfM[M3_11] * pfSrc[V_X] + pfM[M3_12] * pfSrc[V_Y] + pfM[M3_13] * pfSrc[V_Z];
         *pfDst++ = pfM[M3_21] * pfSrc[V_X] + pfM[M3_22] * pfSrc[V_Y] + pfM[M3_23] * pfSrc[V_Z];
@@ -97,7 +95,7 @@ void vec3_transform_3x3(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
  * Output is also a set of Vec3. Only the first 3 rows of the matrix are considered.
  */
 template<typename T>
-void vec3_0_transform_4x4(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
+inline void vec3_0_transform_4x4(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
     while (uCount--) {
         *pfDst++ = pfM[M4_11] * pfSrc[V_X] + pfM[M4_12] * pfSrc[V_Y] + pfM[M4_13] * pfSrc[V_Z];
         *pfDst++ = pfM[M4_21] * pfSrc[V_X] + pfM[M4_22] * pfSrc[V_Y] + pfM[M4_23] * pfSrc[V_Z];
@@ -111,7 +109,7 @@ void vec3_0_transform_4x4(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount)
  * Output is also a set of Vec3. Only the first thee rows of the matrix are considered.
  */
 template<typename T>
-void vec3_1_transform_4x4(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
+inline void vec3_1_transform_4x4(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
     while (uCount--) {
         *pfDst++ = pfM[M4_11] * pfSrc[V_X] + pfM[M4_12] * pfSrc[V_Y] + pfM[M4_13] * pfSrc[V_Z] + pfM[M4_14];
         *pfDst++ = pfM[M4_21] * pfSrc[V_X] + pfM[M4_22] * pfSrc[V_Y] + pfM[M4_23] * pfSrc[V_Z] + pfM[M4_24];
@@ -124,7 +122,7 @@ void vec3_1_transform_4x4(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount)
  * Vec3 to Vec4 expand
  */
 template<typename T>
-void vec3_expand_vec4(T* pfDst, T const* pfSrc, T fValue, size_t uCount) {
+inline void vec3_expand_vec4(T* pfDst, T const* pfSrc, T fValue, size_t uCount) {
     while (uCount--) {
         *pfDst++ = *pfSrc++;
         *pfDst++ = *pfSrc++;
@@ -137,7 +135,7 @@ void vec3_expand_vec4(T* pfDst, T const* pfSrc, T fValue, size_t uCount) {
  * Apply a Mat4x4 to an input set of Vec4.
  */
 template<typename T>
-void vec4_transform_4x4(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
+inline void vec4_transform_4x4(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
     while (uCount--) {
         *pfDst++ = pfM[M4_11] * pfSrc[V_X] + pfM[M4_12] * pfSrc[V_Y] + pfM[M4_13] * pfSrc[V_Z] + pfM[M4_14] * pfSrc[V_W];
         *pfDst++ = pfM[M4_21] * pfSrc[V_X] + pfM[M4_22] * pfSrc[V_Y] + pfM[M4_23] * pfSrc[V_Z] + pfM[M4_24] * pfSrc[V_W];
@@ -201,9 +199,9 @@ inline void mat_add_assign(T* pfDst, T const* pfSrc) {
  * Generic add
  */
 template<typename T, unsigned const uDim>
-inline void mat_add(T* pfDst, T const* pfSrc1, T const* pfSrc2) {
+inline void mat_add(T* pfDst, T const* pfSrcA, T const* pfSrcB) {
     for (unsigned u=0; u < uDim * uDim; ++u) {
-        pfDst[u] = pfSrc1[u] + pfSrc2[u];
+        pfDst[u] = pfSrcA[u] + pfSrcB[u];
     }
 }
 
@@ -221,24 +219,24 @@ inline void mat_sub_assign(T* pfDst, T const* pfSrc) {
  * Generic sub
  */
 template<typename T, unsigned const uDim>
-inline void mat_sub(T* pfDst, T const* pfSrc1, T const* pfSrc2) {
+inline void mat_sub(T* pfDst, T const* pfSrcA, T const* pfSrcB) {
     for (unsigned u=0; u < uDim * uDim; ++u) {
-        pfDst[u] = pfSrc1[u] - pfSrc2[u];
+        pfDst[u] = pfSrcA[u] - pfSrcB[u];
     }
 }
 
-// template<typename T, unsigned const uDim>
-// inline void mat_print(T const* pfMtx) {
-//     std::putchar('\n');
-//     for (unsigned r = 0; r < uDim; ++r) {
-//         std::printf("| ");
-//         for (unsigned c = 0; c < uDim; ++c) {
-//             std::printf("%0.6f ", (double) *pfMtx++);
-//         }
-//         std::printf("|\n");
-//     }
-//     std::putchar('\n');
-// }
+template<typename T, unsigned const uDim>
+inline void mat_print(T const* pfMtx) {
+    std::putchar('\n');
+    for (unsigned r = 0; r < uDim; ++r) {
+        std::printf("| ");
+        for (unsigned c = 0; c < uDim; ++c) {
+            std::printf("%0.6f ", (double) *pfMtx++);
+        }
+        std::printf("|\n");
+    }
+    std::putchar('\n');
+}
 
 /**
  * Mat2x2 multiplication.
@@ -246,127 +244,159 @@ inline void mat_sub(T* pfDst, T const* pfSrc1, T const* pfSrc2) {
  * C = A x B, A is by row, B is by column
  */
 template<typename T>
-inline void mat2x2_multiply(T* pfC, T const* pfA, T const* pfB) {
+inline void mat2x2_multiply(T* pfDst, T const* pfSrcA, T const* pfSrcB) {
     // Row 1
-    pfC[M2_11] = (T)(
-        ((MT)pfA[M2_11] * (MT)pfB[M2_11]) +
-        ((MT)pfA[M2_12] * (MT)pfB[M2_21])
+    pfDst[M2_11] = (T)(
+        ((MT)pfSrcA[M2_11] * (MT)pfSrcB[M2_11]) +
+        ((MT)pfSrcA[M2_12] * (MT)pfSrcB[M2_21])
     );
-    pfC[M2_12] = (T)(
-        ((MT)pfA[M2_11] * (MT)pfB[M2_12]) +
-        ((MT)pfA[M2_12] * (MT)pfB[M2_22])
+    pfDst[M2_12] = (T)(
+        ((MT)pfSrcA[M2_11] * (MT)pfSrcB[M2_12]) +
+        ((MT)pfSrcA[M2_12] * (MT)pfSrcB[M2_22])
     );
 
     // Row 2
-    pfC[M2_21] = (T)(
-        ((MT)pfA[M2_21] * (MT)pfB[M2_11]) +
-        ((MT)pfA[M2_22] * (MT)pfB[M2_21])
+    pfDst[M2_21] = (T)(
+        ((MT)pfSrcA[M2_21] * (MT)pfSrcB[M2_11]) +
+        ((MT)pfSrcA[M2_22] * (MT)pfSrcB[M2_21])
     );
-    pfC[M2_22] = (T)(
-        ((MT)pfA[M2_21] * (MT)pfB[M2_12]) +
-        ((MT)pfA[M2_22] * (MT)pfB[M2_22])
+    pfDst[M2_22] = (T)(
+        ((MT)pfSrcA[M2_21] * (MT)pfSrcB[M2_12]) +
+        ((MT)pfSrcA[M2_22] * (MT)pfSrcB[M2_22])
     );
-
-//     mat_print<T, 2>(pfA);
-//     mat_print<T, 2>(pfB);
-//     mat_print<T, 2>(pfC);
 }
 
+template<typename T>
+inline void mat2x2_transpose(T* pDst, T const* pSrc) {
+    pDst[M2_11] = pSrc[M2_11];
+    pDst[M2_12] = pSrc[M2_21];
+    pDst[M2_21] = pSrc[M2_12];
+    pDst[M2_22] = pSrc[M2_22];
+}
+
+template<typename T>
+inline T mat2x2_determinant(T const* pfSrc) {
+    return pfSrc[M2_11] * pfSrc[M2_22] - pfSrc[M2_12] * pfSrc[M2_21];
+}
+
+template<typename T>
+inline uint64 mat2x2_inverse(T* pfDst, T const* pfSrc) {
+    T fDeterminant = mat2x2_determinant<T>(pfSrc);
+    if (fDeterminant) {
+        fDeterminant = (T)1.0 / fDeterminant;
+        pfDst[M2_11] = fDeterminant * pfSrc[M2_22];
+        pfDst[M2_22] = fDeterminant * pfSrc[M2_11];
+        pfDst[M2_12] = -fDeterminant * pfSrc[M2_12];
+        pfDst[M2_21] = -fDeterminant * pfSrc[M2_21];
+        return ABI::ERR_NONE;
+    } else {
+        return ERR_ZERO_DIVIDE;
+    }
+}
 /**
  * Mat3x3 multiplication
  *
  * C = A x B, A is by row, B is by column
  */
 template<typename T>
-inline void mat3x3_multiply(T* pfC, T const* pfA, T const* pfB) {
+inline void mat3x3_multiply(T* pfDst, T const* pfSrcA, T const* pfSrcB) {
 
     // Row 1
     // A: | 11 12 13 |   B: | 11 ... |
     //                      | 21 ... |
     //                      | 31 ... |
-    pfC[M3_11] = (T)(
-        ((MT)pfA[M3_11] * (MT)pfB[M3_11]) +
-        ((MT)pfA[M3_12] * (MT)pfB[M3_21]) +
-        ((MT)pfA[M3_13] * (MT)pfB[M3_31])
+    pfDst[M3_11] = (T)(
+        ((MT)pfSrcA[M3_11] * (MT)pfSrcB[M3_11]) +
+        ((MT)pfSrcA[M3_12] * (MT)pfSrcB[M3_21]) +
+        ((MT)pfSrcA[M3_13] * (MT)pfSrcB[M3_31])
     );
 
     // A: | 11 12 13 |   B: | ... 12 ... |
     //                      | ... 22 ... |
     //                      | ... 32 ... |
-    pfC[M3_12] = (T)(
-        ((MT)pfA[M3_11] * (MT)pfB[M3_12]) +
-        ((MT)pfA[M3_12] * (MT)pfB[M3_22]) +
-        ((MT)pfA[M3_13] * (MT)pfB[M3_32])
+    pfDst[M3_12] = (T)(
+        ((MT)pfSrcA[M3_11] * (MT)pfSrcB[M3_12]) +
+        ((MT)pfSrcA[M3_12] * (MT)pfSrcB[M3_22]) +
+        ((MT)pfSrcA[M3_13] * (MT)pfSrcB[M3_32])
     );
 
     // A: | 11 12 13 |   B: | ... 13 |
     //                      | ... 23 |
     //                      | ... 33 |
-    pfC[M3_13] = (T)(
-        ((MT)pfA[M3_11] * (MT)pfB[M3_13]) +
-        ((MT)pfA[M3_12] * (MT)pfB[M3_23]) +
-        ((MT)pfA[M3_13] * (MT)pfB[M3_33])
+    pfDst[M3_13] = (T)(
+        ((MT)pfSrcA[M3_11] * (MT)pfSrcB[M3_13]) +
+        ((MT)pfSrcA[M3_12] * (MT)pfSrcB[M3_23]) +
+        ((MT)pfSrcA[M3_13] * (MT)pfSrcB[M3_33])
     );
 
     // Row 2
     // A: | 21 22 23 |   B: | 11 ... |
     //                      | 21 ... |
     //                      | 31 ... |
-    pfC[M3_21] = (T)(
-        ((MT)pfA[M3_21] * (MT)pfB[M3_11]) +
-        ((MT)pfA[M3_22] * (MT)pfB[M3_21]) +
-        ((MT)pfA[M3_23] * (MT)pfB[M3_31])
+    pfDst[M3_21] = (T)(
+        ((MT)pfSrcA[M3_21] * (MT)pfSrcB[M3_11]) +
+        ((MT)pfSrcA[M3_22] * (MT)pfSrcB[M3_21]) +
+        ((MT)pfSrcA[M3_23] * (MT)pfSrcB[M3_31])
     );
 
     // A: | 21 22 23 |   B: | ... 12 ... |
     //                      | ... 22 ... |
     //                      | ... 32 ... |
-    pfC[M3_22] = (T)(
-        ((MT)pfA[M3_21] * (MT)pfB[M3_12]) +
-        ((MT)pfA[M3_22] * (MT)pfB[M3_22]) +
-        ((MT)pfA[M3_23] * (MT)pfB[M3_32])
+    pfDst[M3_22] = (T)(
+        ((MT)pfSrcA[M3_21] * (MT)pfSrcB[M3_12]) +
+        ((MT)pfSrcA[M3_22] * (MT)pfSrcB[M3_22]) +
+        ((MT)pfSrcA[M3_23] * (MT)pfSrcB[M3_32])
     );
 
     // A: | 21 22 23 |   B: | ... 13 |
     //                      | ... 23 |
     //                      | ... 33 |
-    pfC[M3_23] = (T)(
-        ((MT)pfA[M3_21] * (MT)pfB[M3_13]) +
-        ((MT)pfA[M3_22] * (MT)pfB[M3_23]) +
-        ((MT)pfA[M3_23] * (MT)pfB[M3_33])
+    pfDst[M3_23] = (T)(
+        ((MT)pfSrcA[M3_21] * (MT)pfSrcB[M3_13]) +
+        ((MT)pfSrcA[M3_22] * (MT)pfSrcB[M3_23]) +
+        ((MT)pfSrcA[M3_23] * (MT)pfSrcB[M3_33])
     );
 
     // Row 3
     // A: | 31 32 33 |   B: | 11 ... |
     //                      | 21 ... |
     //                      | 31 ... |
-    pfC[M3_31] = (T)(
-        ((MT)pfA[M3_31] * (MT)pfB[M3_11]) +
-        ((MT)pfA[M3_32] * (MT)pfB[M3_21]) +
-        ((MT)pfA[M3_33] * (MT)pfB[M3_31])
+    pfDst[M3_31] = (T)(
+        ((MT)pfSrcA[M3_31] * (MT)pfSrcB[M3_11]) +
+        ((MT)pfSrcA[M3_32] * (MT)pfSrcB[M3_21]) +
+        ((MT)pfSrcA[M3_33] * (MT)pfSrcB[M3_31])
     );
 
     // A: | 31 32 33 |   B: | ... 12 ... |
     //                      | ... 22 ... |
     //                      | ... 32 ... |
-    pfC[M3_32] = (T)(
-        ((MT)pfA[M3_31] * (MT)pfB[M3_12]) +
-        ((MT)pfA[M3_32] * (MT)pfB[M3_22]) +
-        ((MT)pfA[M3_33] * (MT)pfB[M3_32])
+    pfDst[M3_32] = (T)(
+        ((MT)pfSrcA[M3_31] * (MT)pfSrcB[M3_12]) +
+        ((MT)pfSrcA[M3_32] * (MT)pfSrcB[M3_22]) +
+        ((MT)pfSrcA[M3_33] * (MT)pfSrcB[M3_32])
     );
 
     // A: | 31 32 33 |   B: | ... 13 |
     //                      | ... 23 |
     //                      | ... 33 |
-    pfC[M3_33] = (T)(
-        ((MT)pfA[M3_31] * (MT)pfB[M3_13]) +
-        ((MT)pfA[M3_32] * (MT)pfB[M3_23]) +
-        ((MT)pfA[M3_33] * (MT)pfB[M3_33])
+    pfDst[M3_33] = (T)(
+        ((MT)pfSrcA[M3_31] * (MT)pfSrcB[M3_13]) +
+        ((MT)pfSrcA[M3_32] * (MT)pfSrcB[M3_23]) +
+        ((MT)pfSrcA[M3_33] * (MT)pfSrcB[M3_33])
     );
+}
 
-//     mat_print<T, 3>(pfA);
-//     mat_print<T, 3>(pfB);
-//     mat_print<T, 3>(pfC);
+template<typename T>
+inline void mat3x3_transpose(T* pDst, T const* pSrc) {
+    pDst[M3_11] = pSrc[M3_11];
+    pDst[M3_12] = pSrc[M3_21];
+    pDst[M3_13] = pSrc[M3_31];
+    pDst[M3_21] = pSrc[M3_12];
+    pDst[M3_22] = pSrc[M3_22];
+    pDst[M3_23] = pSrc[M3_32];
+    pDst[M3_31] = pSrc[M3_13];
+    pDst[M3_32] = pSrc[M3_23];
+    pDst[M3_33] = pSrc[M3_33];
 }
 
 /**
@@ -389,6 +419,54 @@ inline T mat3x3_determinant(T const* pfMtx) {
     /* - afh */ (pfMtx[M3_11] * pfMtx[M3_23] * pfMtx[M3_32]);
 }
 
+
+/**
+ *   | a b c | -1         1    | A B C |T            1    | A D G |
+ *   | d e f |     =>   ------ | D E F |      =>   ------ | B E H |
+ *   | g h i |          det(A) | G H I |           det(A) | C F I |
+ *
+ *  A =  (ei - fh),   D = -(bi - ch),   G =  (bf - ce)
+ *  B = -(di - fg),   E =  (ai - cg),   H = -(af - cd)
+ *  C =  (dh - eg),   F = -(ah - bg),   I =  (ae - bd)
+ */
+template<typename T>
+inline uint64 mat3x3_inverse(T* pfDst, T const* pfSrc) {
+    T fDeterminant = mat3x3_determinant<T>(pfSrc);
+    if (fDeterminant) {
+        /* A = (ei - fh) */
+        pfDst[M3_11] = (pfSrc[M3_22] * pfSrc[M3_33]) - (pfSrc[M3_23] * pfSrc[M3_32]);
+        /* D = (ch - bi) */
+        pfDst[M3_12] = (pfSrc[M3_13] * pfSrc[M3_32]) - (pfSrc[M3_12] * pfSrc[M3_33]);
+        /* G = (bf - ce) */
+        pfDst[M3_13] = (pfSrc[M3_12] * pfSrc[M3_23]) - (pfSrc[M3_13] * pfSrc[M3_22]);
+        /* B = (fg - di) */
+        pfDst[M3_21] = (pfSrc[M3_23] * pfSrc[M3_31]) - (pfSrc[M3_21] * pfSrc[M3_33]);
+        /* E = (ai - cg) */
+        pfDst[M3_22] = (pfSrc[M3_11] * pfSrc[M3_33]) - (pfSrc[M3_13] * pfSrc[M3_31]);
+        /* H = (cd - af) */
+        pfDst[M3_23] = (pfSrc[M3_13] * pfSrc[M3_21]) - (pfSrc[M3_11] * pfSrc[M3_23]);
+        /* C = (dh - eg) */
+        pfDst[M3_31] = (pfSrc[M3_21] * pfSrc[M3_32]) - (pfSrc[M3_22] * pfSrc[M3_31]);
+        /* F = (bg - ah) */
+        pfDst[M3_32] = (pfSrc[M3_12] * pfSrc[M3_31]) - (pfSrc[M3_11] * pfSrc[M3_32]);
+        /* I = (ae - bd) */
+        pfDst[M3_33] = (pfSrc[M3_11] * pfSrc[M3_22]) - (pfSrc[M3_12] * pfSrc[M3_21]);
+        fDeterminant = (T)1.0 / fDeterminant;                                           \
+        pfDst[M3_11] *= fDeterminant;
+        pfDst[M3_12] *= fDeterminant;
+        pfDst[M3_13] *= fDeterminant;
+        pfDst[M3_21] *= fDeterminant;
+        pfDst[M3_22] *= fDeterminant;
+        pfDst[M3_23] *= fDeterminant;
+        pfDst[M3_31] *= fDeterminant;
+        pfDst[M3_32] *= fDeterminant;
+        pfDst[M3_33] *= fDeterminant;
+        return ABI::ERR_NONE;
+    } else {
+        return ERR_ZERO_DIVIDE;
+    }
+}
+
 /**
  * Mat4x4 multiplication. Internally, each term is calculated using double precision regardless
  * of whether or not we are doing 32-bit or 64-bit precision. This is to minimise the accumulation
@@ -397,50 +475,50 @@ inline T mat3x3_determinant(T const* pfMtx) {
  * C = A x B, A is by row, B is by column
  */
 template<typename T>
-inline void mat4x4_multiply(T* pfC, T const* pfA, T const* pfB) {
+inline void mat4x4_multiply(T* pfDst, T const* pfSrcA, T const* pfSrcB) {
     // Row 1
     // A: | 11 12 13 14 |   B: | 11 ... |
     //                         | 21 ... |
     //                         | 31 ... |
     //                         | 41 ... |
-    pfC[M4_11] = (T)(
-        ((MT)pfA[M4_11] * (MT)pfB[M4_11]) +
-        ((MT)pfA[M4_12] * (MT)pfB[M4_21]) +
-        ((MT)pfA[M4_13] * (MT)pfB[M4_31]) +
-        ((MT)pfA[M4_14] * (MT)pfB[M4_41])
+    pfDst[M4_11] = (T)(
+        ((MT)pfSrcA[M4_11] * (MT)pfSrcB[M4_11]) +
+        ((MT)pfSrcA[M4_12] * (MT)pfSrcB[M4_21]) +
+        ((MT)pfSrcA[M4_13] * (MT)pfSrcB[M4_31]) +
+        ((MT)pfSrcA[M4_14] * (MT)pfSrcB[M4_41])
     );
 
     // A: | 11 12 13 14 |   B: | ... 12 ... |
     //                         | ... 22 ... |
     //                         | ... 32 ... |
     //                         | ... 42 ... |
-    pfC[M4_12] = (T)(
-        ((MT)pfA[M4_11] * (MT)pfB[M4_12]) +
-        ((MT)pfA[M4_12] * (MT)pfB[M4_22]) +
-        ((MT)pfA[M4_13] * (MT)pfB[M4_32]) +
-        ((MT)pfA[M4_14] * (MT)pfB[M4_42])
+    pfDst[M4_12] = (T)(
+        ((MT)pfSrcA[M4_11] * (MT)pfSrcB[M4_12]) +
+        ((MT)pfSrcA[M4_12] * (MT)pfSrcB[M4_22]) +
+        ((MT)pfSrcA[M4_13] * (MT)pfSrcB[M4_32]) +
+        ((MT)pfSrcA[M4_14] * (MT)pfSrcB[M4_42])
     );
 
     // A: | 11 12 13 14 |   B: | ... 13 ... |
     //                         | ... 23 ... |
     //                         | ... 33 ... |
     //                         | ... 43 ... |
-    pfC[M4_13] = (T)(
-        ((MT)pfA[M4_11] * (MT)pfB[M4_13]) +
-        ((MT)pfA[M4_12] * (MT)pfB[M4_23]) +
-        ((MT)pfA[M4_13] * (MT)pfB[M4_33]) +
-        ((MT)pfA[M4_14] * (MT)pfB[M4_43])
+    pfDst[M4_13] = (T)(
+        ((MT)pfSrcA[M4_11] * (MT)pfSrcB[M4_13]) +
+        ((MT)pfSrcA[M4_12] * (MT)pfSrcB[M4_23]) +
+        ((MT)pfSrcA[M4_13] * (MT)pfSrcB[M4_33]) +
+        ((MT)pfSrcA[M4_14] * (MT)pfSrcB[M4_43])
     );
 
     // A: | 11 12 13 14 |   B: | ... 14 |
     //                         | ... 24 |
     //                         | ... 34 |
     //                         | ... 44 |
-    pfC[M4_14] = (T)(
-        ((MT)pfA[M4_11] * (MT)pfB[M4_14]) +
-        ((MT)pfA[M4_12] * (MT)pfB[M4_24]) +
-        ((MT)pfA[M4_13] * (MT)pfB[M4_34]) +
-        ((MT)pfA[M4_14] * (MT)pfB[M4_44])
+    pfDst[M4_14] = (T)(
+        ((MT)pfSrcA[M4_11] * (MT)pfSrcB[M4_14]) +
+        ((MT)pfSrcA[M4_12] * (MT)pfSrcB[M4_24]) +
+        ((MT)pfSrcA[M4_13] * (MT)pfSrcB[M4_34]) +
+        ((MT)pfSrcA[M4_14] * (MT)pfSrcB[M4_44])
     );
 
     // Row 2
@@ -448,44 +526,44 @@ inline void mat4x4_multiply(T* pfC, T const* pfA, T const* pfB) {
     //                         | 21 ... |
     //                         | 31 ... |
     //                         | 41 ... |
-    pfC[M4_21] = (T)(
-        ((MT)pfA[M4_21] * (MT)pfB[M4_11]) +
-        ((MT)pfA[M4_22] * (MT)pfB[M4_21]) +
-        ((MT)pfA[M4_23] * (MT)pfB[M4_31]) +
-        ((MT)pfA[M4_24] * (MT)pfB[M4_41])
+    pfDst[M4_21] = (T)(
+        ((MT)pfSrcA[M4_21] * (MT)pfSrcB[M4_11]) +
+        ((MT)pfSrcA[M4_22] * (MT)pfSrcB[M4_21]) +
+        ((MT)pfSrcA[M4_23] * (MT)pfSrcB[M4_31]) +
+        ((MT)pfSrcA[M4_24] * (MT)pfSrcB[M4_41])
     );
 
     // A: | 21 22 23 24 |   B: | ... 12 ... |
     //                         | ... 22 ... |
     //                         | ... 32 ... |
     //                         | ... 42 ... |
-    pfC[M4_22] = (T)(
-        ((MT)pfA[M4_21] * (MT)pfB[M4_12]) +
-        ((MT)pfA[M4_22] * (MT)pfB[M4_22]) +
-        ((MT)pfA[M4_23] * (MT)pfB[M4_32]) +
-        ((MT)pfA[M4_24] * (MT)pfB[M4_42])
+    pfDst[M4_22] = (T)(
+        ((MT)pfSrcA[M4_21] * (MT)pfSrcB[M4_12]) +
+        ((MT)pfSrcA[M4_22] * (MT)pfSrcB[M4_22]) +
+        ((MT)pfSrcA[M4_23] * (MT)pfSrcB[M4_32]) +
+        ((MT)pfSrcA[M4_24] * (MT)pfSrcB[M4_42])
     );
 
     // A: | 21 22 23 24 |   B: | ... 13 ... |
     //                         | ... 23 ... |
     //                         | ... 33 ... |
     //                         | ... 43 ... |
-    pfC[M4_23] = (T)(
-        ((MT)pfA[M4_21] * (MT)pfB[M4_13]) +
-        ((MT)pfA[M4_22] * (MT)pfB[M4_23]) +
-        ((MT)pfA[M4_23] * (MT)pfB[M4_33]) +
-        ((MT)pfA[M4_24] * (MT)pfB[M4_43])
+    pfDst[M4_23] = (T)(
+        ((MT)pfSrcA[M4_21] * (MT)pfSrcB[M4_13]) +
+        ((MT)pfSrcA[M4_22] * (MT)pfSrcB[M4_23]) +
+        ((MT)pfSrcA[M4_23] * (MT)pfSrcB[M4_33]) +
+        ((MT)pfSrcA[M4_24] * (MT)pfSrcB[M4_43])
     );
 
     // A: | 21 22 23 24 |   B: | ... 14 |
     //                         | ... 24 |
     //                         | ... 34 |
     //                         | ... 44 |
-    pfC[M4_24] = (T)(
-        ((MT)pfA[M4_21] * (MT)pfB[M4_14]) +
-        ((MT)pfA[M4_22] * (MT)pfB[M4_24]) +
-        ((MT)pfA[M4_23] * (MT)pfB[M4_34]) +
-        ((MT)pfA[M4_24] * (MT)pfB[M4_44])
+    pfDst[M4_24] = (T)(
+        ((MT)pfSrcA[M4_21] * (MT)pfSrcB[M4_14]) +
+        ((MT)pfSrcA[M4_22] * (MT)pfSrcB[M4_24]) +
+        ((MT)pfSrcA[M4_23] * (MT)pfSrcB[M4_34]) +
+        ((MT)pfSrcA[M4_24] * (MT)pfSrcB[M4_44])
     );
 
     // Row 3
@@ -493,44 +571,44 @@ inline void mat4x4_multiply(T* pfC, T const* pfA, T const* pfB) {
     //                         | 21 ... |
     //                         | 31 ... |
     //                         | 41 ... |
-    pfC[M4_31] = (T)(
-        ((MT)pfA[M4_31] * (MT)pfB[M4_11]) +
-        ((MT)pfA[M4_32] * (MT)pfB[M4_21]) +
-        ((MT)pfA[M4_33] * (MT)pfB[M4_31]) +
-        ((MT)pfA[M4_34] * (MT)pfB[M4_41])
+    pfDst[M4_31] = (T)(
+        ((MT)pfSrcA[M4_31] * (MT)pfSrcB[M4_11]) +
+        ((MT)pfSrcA[M4_32] * (MT)pfSrcB[M4_21]) +
+        ((MT)pfSrcA[M4_33] * (MT)pfSrcB[M4_31]) +
+        ((MT)pfSrcA[M4_34] * (MT)pfSrcB[M4_41])
     );
 
     // A: | 31 32 33 34 |   B: | ... 12 ... |
     //                         | ... 22 ... |
     //                         | ... 32 ... |
     //                         | ... 42 ... |
-    pfC[M4_32] = (T)(
-        ((MT)pfA[M4_31] * (MT)pfB[M4_12]) +
-        ((MT)pfA[M4_32] * (MT)pfB[M4_22]) +
-        ((MT)pfA[M4_33] * (MT)pfB[M4_32]) +
-        ((MT)pfA[M4_34] * (MT)pfB[M4_42])
+    pfDst[M4_32] = (T)(
+        ((MT)pfSrcA[M4_31] * (MT)pfSrcB[M4_12]) +
+        ((MT)pfSrcA[M4_32] * (MT)pfSrcB[M4_22]) +
+        ((MT)pfSrcA[M4_33] * (MT)pfSrcB[M4_32]) +
+        ((MT)pfSrcA[M4_34] * (MT)pfSrcB[M4_42])
     );
 
     // A: | 31 32 33 34 |   B: | ... 13 ... |
     //                         | ... 23 ... |
     //                         | ... 33 ... |
     //                         | ... 43 ... |
-    pfC[M4_33] = (T)(
-        ((MT)pfA[M4_31] * (MT)pfB[M4_13]) +
-        ((MT)pfA[M4_32] * (MT)pfB[M4_23]) +
-        ((MT)pfA[M4_33] * (MT)pfB[M4_33]) +
-        ((MT)pfA[M4_34] * (MT)pfB[M4_43])
+    pfDst[M4_33] = (T)(
+        ((MT)pfSrcA[M4_31] * (MT)pfSrcB[M4_13]) +
+        ((MT)pfSrcA[M4_32] * (MT)pfSrcB[M4_23]) +
+        ((MT)pfSrcA[M4_33] * (MT)pfSrcB[M4_33]) +
+        ((MT)pfSrcA[M4_34] * (MT)pfSrcB[M4_43])
     );
 
     // A: | 31 32 33 34 |   B: | ... 14 |
     //                         | ... 24 |
     //                         | ... 34 |
     //                         | ... 44 |
-    pfC[M4_34] = (T)(
-        ((MT)pfA[M4_31] * (MT)pfB[M4_14]) +
-        ((MT)pfA[M4_32] * (MT)pfB[M4_24]) +
-        ((MT)pfA[M4_33] * (MT)pfB[M4_34]) +
-        ((MT)pfA[M4_34] * (MT)pfB[M4_44])
+    pfDst[M4_34] = (T)(
+        ((MT)pfSrcA[M4_31] * (MT)pfSrcB[M4_14]) +
+        ((MT)pfSrcA[M4_32] * (MT)pfSrcB[M4_24]) +
+        ((MT)pfSrcA[M4_33] * (MT)pfSrcB[M4_34]) +
+        ((MT)pfSrcA[M4_34] * (MT)pfSrcB[M4_44])
     );
 
     // Row 4
@@ -538,50 +616,67 @@ inline void mat4x4_multiply(T* pfC, T const* pfA, T const* pfB) {
     //                         | 21 ... |
     //                         | 31 ... |
     //                         | 41 ... |
-    pfC[M4_41] = (T)(
-        ((MT)pfA[M4_41] * (MT)pfB[M4_11]) +
-        ((MT)pfA[M4_42] * (MT)pfB[M4_21]) +
-        ((MT)pfA[M4_43] * (MT)pfB[M4_31]) +
-        ((MT)pfA[M4_44] * (MT)pfB[M4_41])
+    pfDst[M4_41] = (T)(
+        ((MT)pfSrcA[M4_41] * (MT)pfSrcB[M4_11]) +
+        ((MT)pfSrcA[M4_42] * (MT)pfSrcB[M4_21]) +
+        ((MT)pfSrcA[M4_43] * (MT)pfSrcB[M4_31]) +
+        ((MT)pfSrcA[M4_44] * (MT)pfSrcB[M4_41])
     );
 
     // A: | 41 42 43 44 |   B: | ... 12 ... |
     //                         | ... 22 ... |
     //                         | ... 32 ... |
     //                         | ... 42 ... |
-    pfC[M4_42] = (T)(
-        ((MT)pfA[M4_41] * (MT)pfB[M4_12]) +
-        ((MT)pfA[M4_42] * (MT)pfB[M4_22]) +
-        ((MT)pfA[M4_43] * (MT)pfB[M4_32]) +
-        ((MT)pfA[M4_44] * (MT)pfB[M4_42])
+    pfDst[M4_42] = (T)(
+        ((MT)pfSrcA[M4_41] * (MT)pfSrcB[M4_12]) +
+        ((MT)pfSrcA[M4_42] * (MT)pfSrcB[M4_22]) +
+        ((MT)pfSrcA[M4_43] * (MT)pfSrcB[M4_32]) +
+        ((MT)pfSrcA[M4_44] * (MT)pfSrcB[M4_42])
     );
 
     // A: | 41 42 43 44 |   B: | ... 13 ... |
     //                         | ... 23 ... |
     //                         | ... 33 ... |
     //                         | ... 43 ... |
-    pfC[M4_43] = (T)(
-        ((MT)pfA[M4_41] * (MT)pfB[M4_13]) +
-        ((MT)pfA[M4_42] * (MT)pfB[M4_23]) +
-        ((MT)pfA[M4_43] * (MT)pfB[M4_33]) +
-        ((MT)pfA[M4_44] * (MT)pfB[M4_43])
+    pfDst[M4_43] = (T)(
+        ((MT)pfSrcA[M4_41] * (MT)pfSrcB[M4_13]) +
+        ((MT)pfSrcA[M4_42] * (MT)pfSrcB[M4_23]) +
+        ((MT)pfSrcA[M4_43] * (MT)pfSrcB[M4_33]) +
+        ((MT)pfSrcA[M4_44] * (MT)pfSrcB[M4_43])
     );
 
     // A: | 41 42 43 44 |   B: | ... 14 |
     //                         | ... 24 |
     //                         | ... 34 |
     //                         | ... 44 |
-    pfC[M4_44] = (T)(
-        ((MT)pfA[M4_41] * (MT)pfB[M4_14]) +
-        ((MT)pfA[M4_42] * (MT)pfB[M4_24]) +
-        ((MT)pfA[M4_43] * (MT)pfB[M4_34]) +
-        ((MT)pfA[M4_44] * (MT)pfB[M4_44])
+    pfDst[M4_44] = (T)(
+        ((MT)pfSrcA[M4_41] * (MT)pfSrcB[M4_14]) +
+        ((MT)pfSrcA[M4_42] * (MT)pfSrcB[M4_24]) +
+        ((MT)pfSrcA[M4_43] * (MT)pfSrcB[M4_34]) +
+        ((MT)pfSrcA[M4_44] * (MT)pfSrcB[M4_44])
     );
-
-//     mat_print<T, 4>(pfA);
-//     mat_print<T, 4>(pfB);
-//     mat_print<T, 4>(pfC);
 }
+
+template<typename T>
+inline void mat4x4_transpose(T* pDst, T const* pSrc) {
+    pDst[M4_11] = pSrc[M4_11];
+    pDst[M4_12] = pSrc[M4_21];
+    pDst[M4_13] = pSrc[M4_31];
+    pDst[M4_14] = pSrc[M4_41];
+    pDst[M4_21] = pSrc[M4_12];
+    pDst[M4_22] = pSrc[M4_22];
+    pDst[M4_23] = pSrc[M4_32];
+    pDst[M4_24] = pSrc[M4_42];
+    pDst[M4_31] = pSrc[M4_13];
+    pDst[M4_32] = pSrc[M4_23];
+    pDst[M4_33] = pSrc[M4_33];
+    pDst[M4_34] = pSrc[M4_43];
+    pDst[M4_41] = pSrc[M4_14];
+    pDst[M4_42] = pSrc[M4_24];
+    pDst[M4_43] = pSrc[M4_34];
+    pDst[M4_44] = pSrc[M4_44];
+}
+
 
 /**
  * Mat4x4 Determinant - this gets painful
@@ -808,5 +903,5 @@ inline uint64 mat4x4_inverse(T* pfDst, T const* pfSrc) {
     return ABI::ERR_NONE;
 }
 
-}}}
+}
 #endif

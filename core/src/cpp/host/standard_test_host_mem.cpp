@@ -16,12 +16,11 @@
 #include <cstring>
 #include "host/standard_test_host_mem.hpp"
 #include "machine/register.hpp"
+#include "host/mem/inline.hpp"
 
 using MC64K::Machine::Interpreter;
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace Mem {
+namespace MC64K::StandardTestHost::Mem {
 
 /**
  * Fill a word aligned block with words. If the base adddess is not aligned, filling starts from the next aligned
@@ -95,12 +94,12 @@ void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
  *
  * @todo - explicit vectorisation of larger blocks.
  *
- * @param  void const*  pBuffer
- * @param  uint16       uValue
- * @param  uint64       uSize
- * @return void const*  pFound
+ * @param  void const*    pBuffer
+ * @param  uint16         uValue
+ * @param  uint64         uSize
+ * @return uint16 const*  pFound
  */
-void const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize) {
+uint16 const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize) {
     uint64 uRawAddress = (uint64)pBuffer;
     if (uRawAddress & 1) {
         --uSize;
@@ -122,12 +121,12 @@ void const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize) {
  *
  * @todo - explicit vectorisation of larger blocks.
  *
- * @param  void const*  pBuffer
- * @param  uint32       uValue
- * @param  uint64       uSize
- * @return void const*  pFound
+ * @param  void const*    pBuffer
+ * @param  uint32         uValue
+ * @param  uint64         uSize
+ * @return uint32 const*  pFound
  */
-void const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize) {
+uint32 const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize) {
     uint64 uRawAddress = (uint64)pBuffer;
     if (uRawAddress & 3) {
         --uSize;
@@ -149,12 +148,12 @@ void const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize) {
  *
  * @todo - explicit vectorisation of larger blocks
  *
- * @param  void const*  pBuffer
- * @param  uint64       uValue
- * @param  uint64       uSize
- * @return void const*  pFound
+ * @param  void const*   pBuffer
+ * @param  uint64        uValue
+ * @param  uint64        uSize
+ * @return uint64 const* pFound
  */
-void const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize) {
+uint64 const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize) {
     uint64 uRawAddress = (uint64)pBuffer;
     if (uRawAddress & 7) {
         --uSize;
@@ -174,202 +173,74 @@ void const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize) {
  * Mem::hostVector(uint8 uFunctionID)
  */
 Interpreter::Status hostVector(uint8 uFunctionID) {
-
-    Machine::GPRegister* aoGPR = Interpreter::gpr();
-
     Call iOperation = (Call) uFunctionID;
     switch (iOperation) {
         case INIT:
         case DONE:
             break;
 
-        case ALLOC: {
-            uint64 uSize = aoGPR[ABI::INT_REG_0].uQuad;
-            if (uSize) {
-                void *pBuffer = std::malloc(uSize);
-                aoGPR[ABI::PTR_REG_0].pAny  = pBuffer;
-                aoGPR[ABI::INT_REG_0].uQuad = pBuffer ?
+        case ALLOC:
+            if (uint64 uSize  = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
+                void* pBuffer = std::malloc(uSize);
+                Interpreter::gpr<ABI::PTR_REG_0>().pAny  = pBuffer;
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = pBuffer ?
                     (uint64)ABI::ERR_NONE :
                     (uint64)ERR_NO_MEM;
             } else {
-                aoGPR[ABI::PTR_REG_0].pAny  = 0;
-                aoGPR[ABI::INT_REG_0].uQuad = ERR_MEM;
+                Interpreter::gpr<ABI::PTR_REG_0>().pAny  = 0;
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ERR_MEM;
             }
             break;
-        }
 
-        case FREE: {
-            std::free(aoGPR[ABI::PTR_REG_0].pAny);
-            aoGPR[ABI::PTR_REG_0].pAny = 0;
+        case FREE:
+            std::free(Interpreter::gpr<ABI::PTR_REG_0>().pAny);
+            Interpreter::gpr<ABI::PTR_REG_0>().pAny = 0;
             break;
-        }
 
-
-        case COPY: {
-            uint64 uSize = aoGPR[ABI::INT_REG_0].uQuad;
-            if (uSize) {
-                void* pFrom = aoGPR[ABI::PTR_REG_0].pAny;
-                void* pTo   = aoGPR[ABI::PTR_REG_1].pAny;
+        case COPY:
+            if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
+                void* pFrom = Interpreter::gpr<ABI::PTR_REG_0>().pAny;
+                void* pTo   = Interpreter::gpr<ABI::PTR_REG_1>().pAny;
                 if (pFrom && pTo) {
                     std::memcpy(pTo, pFrom, uSize);
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
                 } else {
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
                 }
             } else {
-                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
             }
             break;
-        }
 
-        case FILL_BYTE: {
-            uint64 uSize = aoGPR[ABI::INT_REG_1].uQuad;
-            if (uSize) {
-                void* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
-                if (pBuffer) {
-                    std::memset(pBuffer, aoGPR[ABI::INT_REG_0].uByte, uSize);
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
-                } else {
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
-                }
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
-            }
-            break;
-        }
-
-        case FILL_WORD: {
-            uint64 uSize = aoGPR[ABI::INT_REG_1].uQuad;
-            if (uSize) {
-                void* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
-                if (pBuffer) {
-                    fillWord(pBuffer, aoGPR[ABI::INT_REG_0].uWord, uSize);
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
-                } else {
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
-                }
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
-            }
-            break;
-        }
-
-        case FILL_LONG: {
-            uint64 uSize = aoGPR[ABI::INT_REG_1].uQuad;
-            if (uSize) {
-                void* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
-                if (pBuffer) {
-                    fillLong(pBuffer, aoGPR[ABI::INT_REG_0].uLong, uSize);
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
-                } else {
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
-                }
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
-            }
-            break;
-        }
-
-        case FILL_QUAD: {
-            uint64 uSize = aoGPR[ABI::INT_REG_1].uQuad;
-            if (uSize) {
-                void* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
-                if (pBuffer) {
-                    fillQuad(pBuffer, aoGPR[ABI::INT_REG_0].uQuad, uSize);
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
-                } else {
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
-                }
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
-            }
-            break;
-        }
-
-        case FIND_BYTE: {
-            uint64 uSize = aoGPR[ABI::INT_REG_1].uQuad;
-            if (uSize) {
-                void const* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
-                if (pBuffer) {
-                    aoGPR[ABI::PTR_REG_0].pAny  = (void*)std::memchr(pBuffer, (int)aoGPR[ABI::INT_REG_0].uByte, uSize);
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
-                } else {
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
-                }
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
-            }
-            break;
-        }
-
-        case FIND_WORD: {
-            uint64 uSize = aoGPR[ABI::INT_REG_1].uQuad;
-            if (uSize) {
-                void const* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
-                if (pBuffer) {
-                    aoGPR[ABI::PTR_REG_0].pAny  = (void*)findWord(pBuffer, aoGPR[ABI::INT_REG_0].uWord, uSize);
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
-                } else {
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
-                }
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
-            }
-            break;
-        }
-
-        case FIND_LONG: {
-            uint64 uSize = aoGPR[ABI::INT_REG_1].uQuad;
-            if (uSize) {
-                void const* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
-                if (pBuffer) {
-                    aoGPR[ABI::PTR_REG_0].pAny  = (void*)findLong(pBuffer, aoGPR[ABI::INT_REG_0].uLong, uSize);
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
-                } else {
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
-                }
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
-            }
-            break;
-        }
-
-        case FIND_QUAD: {
-            uint64 uSize = aoGPR[ABI::INT_REG_1].uQuad;
-            if (uSize) {
-                void const* pBuffer = aoGPR[ABI::PTR_REG_0].pAny;
-                if (pBuffer) {
-                    aoGPR[ABI::PTR_REG_0].pAny  = (void*)findQuad(pBuffer, aoGPR[ABI::INT_REG_0].uQuad, uSize);
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE;
-                } else {
-                    aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NULL_PTR;
-                }
-            } else {
-                aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_BAD_SIZE;
-            }
-            break;
-        }
+        case FILL_BYTE: fill<uint8>();  break;
+        case FILL_WORD: fill<uint16>(); break;
+        case FILL_LONG: fill<uint32>(); break;
+        case FILL_QUAD: fill<uint64>(); break;
+        case FIND_BYTE: find<uint8>();  break;
+        case FIND_WORD: find<uint16>(); break;
+        case FIND_LONG: find<uint32>(); break;
+        case FIND_QUAD: find<uint64>(); break;
 
         case STR_LENGTH: {
-            char const* sString = aoGPR[ABI::PTR_REG_0].sString;
+            char const* sString = Interpreter::gpr<ABI::PTR_REG_0>().sString;
             if (sString) {
-                aoGPR[ABI::INT_REG_0].uQuad = std::strlen(sString);
-                aoGPR[ABI::INT_REG_1].uQuad = ABI::ERR_NONE;
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = std::strlen(sString);
+                Interpreter::gpr<ABI::INT_REG_1>().uQuad = ABI::ERR_NONE;
             } else {
-                aoGPR[ABI::INT_REG_0].uQuad = 0;
-                aoGPR[ABI::INT_REG_1].uQuad = ABI::ERR_NULL_PTR;
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = 0;
+                Interpreter::gpr<ABI::INT_REG_1>().uQuad = ABI::ERR_NULL_PTR;
             }
             break;
         }
         case STR_COMPARE: {
-            char const* sString1 = aoGPR[ABI::PTR_REG_0].sString;
-            char const* sString2 = aoGPR[ABI::PTR_REG_0].sString;
+            char const* sString1 = Interpreter::gpr<ABI::PTR_REG_0>().sString;
+            char const* sString2 = Interpreter::gpr<ABI::PTR_REG_1>().sString;
             if (sString1 && sString2) {
-                aoGPR[ABI::INT_REG_0].iQuad = std::strcmp(sString1, sString2);
-                aoGPR[ABI::INT_REG_1].uQuad = ABI::ERR_NONE;
+                Interpreter::gpr<ABI::INT_REG_0>().iQuad = std::strcmp(sString1, sString2);
+                Interpreter::gpr<ABI::INT_REG_1>().uQuad = ABI::ERR_NONE;
             } else {
-                aoGPR[ABI::INT_REG_0].uQuad = 0;
-                aoGPR[ABI::INT_REG_1].uQuad = ABI::ERR_NULL_PTR;
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = 0;
+                Interpreter::gpr<ABI::INT_REG_1>().uQuad = ABI::ERR_NULL_PTR;
             }
             break;
         }
@@ -383,5 +254,5 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
     return Interpreter::RUNNING;
 }
 
-}}} // namespace
+} // namespace
 

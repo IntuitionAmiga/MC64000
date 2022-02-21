@@ -19,15 +19,13 @@
 #include "host/standard_test_host_mem.hpp"
 #include "host/standard_test_host_vector_math.hpp"
 #include "loader/symbol.hpp"
-#include "host/macros.hpp"
 #include "machine/register.hpp"
 
 using MC64K::Loader::Symbol;
 using MC64K::Machine::Interpreter;
 using MC64K::Misc::Version;
 
-namespace MC64K {
-namespace StandardTestHost {
+namespace MC64K::StandardTestHost {
 
 char const*  sHostInfo         = "Standard Test Host";
 char const** pHostCLIParams    = 0;
@@ -72,4 +70,4 @@ Host::Definition instance(
     }
 );
 
-}}
+}

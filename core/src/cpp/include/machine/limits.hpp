@@ -18,9 +18,7 @@
 #include "register.hpp"
 #include "error.hpp"
 
-namespace MC64K {
-namespace Machine {
-namespace Limits {
+namespace MC64K::Machine::Limits {
 
 enum {
     MAX_HCF_VECTORS = 256,
@@ -29,5 +27,5 @@ enum {
     MAX_STACK_SIZE  = 1 << 23
 };
 
-}}} // namespace
+} // namespace
 #endif

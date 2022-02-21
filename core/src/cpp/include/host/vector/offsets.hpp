@@ -14,45 +14,52 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-// Vector offsets
-#define V_X 0
-#define V_Y 1
-#define V_Z 2
-#define V_W 3
+namespace MC64K::StandardTestHost::VectorMath {
 
-// Mat2x2 offsets
-#define M2_11 0
-#define M2_12 1
-#define M2_21 2
-#define M2_22 3
+enum VectorOffset {
+    V_X = 0,
+    V_Y = 1,
+    V_Z = 2,
+    V_W = 3,
+};
 
-// Mat3x3 offsets
-#define M3_11 0
-#define M3_12 1
-#define M3_13 2
-#define M3_21 3
-#define M3_22 4
-#define M3_23 5
-#define M3_31 6
-#define M3_32 7
-#define M3_33 8
+enum Mat2x2Offset {
+    M2_11 = 0,
+    M2_12 = 1,
+    M2_21 = 2,
+    M2_22 = 3,
+};
 
-// Mat4x4 offsets
-#define M4_11 0
-#define M4_12 1
-#define M4_13 2
-#define M4_14 3
-#define M4_21 4
-#define M4_22 5
-#define M4_23 6
-#define M4_24 7
-#define M4_31 8
-#define M4_32 9
-#define M4_33 10
-#define M4_34 11
-#define M4_41 12
-#define M4_42 13
-#define M4_43 14
-#define M4_44 15
+enum Mat3x3Offset {
+    M3_11 = 0,
+    M3_12 = 1,
+    M3_13 = 2,
+    M3_21 = 3,
+    M3_22 = 4,
+    M3_23 = 5,
+    M3_31 = 6,
+    M3_32 = 7,
+    M3_33 = 8,
+};
 
+enum Mat4x4Offset {
+    M4_11 =  0,
+    M4_12 =  1,
+    M4_13 =  2,
+    M4_14 =  3,
+    M4_21 =  4,
+    M4_22 =  5,
+    M4_23 =  6,
+    M4_24 =  7,
+    M4_31 =  8,
+    M4_32 =  9,
+    M4_33 = 10,
+    M4_34 = 11,
+    M4_41 = 12,
+    M4_42 = 13,
+    M4_43 = 14,
+    M4_44 = 15,
+};
+
+} // namespace
 #endif

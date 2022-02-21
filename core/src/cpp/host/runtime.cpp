@@ -18,8 +18,7 @@
 #include "host/runtime.hpp"
 #include "loader/executable.hpp"
 
-namespace MC64K {
-namespace Host {
+namespace MC64K::Host {
 
 /**
  * @inheritDoc
@@ -70,4 +69,4 @@ Machine::Interpreter::Status Runtime::invoke(size_t uFunctionID) {
     return Machine::Interpreter::getStatus();
 }
 
-}} // namespace
+} // namespace

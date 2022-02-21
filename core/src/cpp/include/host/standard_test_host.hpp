@@ -20,8 +20,8 @@ using MC64K::Machine::Interpreter;
 using MC64K::Machine::GPRegister;
 using MC64K::Machine::FPRegister;
 
-namespace MC64K {
-namespace StandardTestHost {
+namespace MC64K::StandardTestHost {
+
 namespace ABI {
 
 /**
@@ -68,6 +68,6 @@ void setCLIParameters(unsigned const uArgC, char const** pArgV);
 
 extern MC64K::Host::Definition instance;
 
-}} // namespace
+}// namespace
 
 #endif

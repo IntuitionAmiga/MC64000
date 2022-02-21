@@ -19,8 +19,7 @@
 #include <cmath>
 #include <csetjmp>
 
-namespace MC64K {
-namespace Machine {
+namespace MC64K::Machine {
 
 namespace {
 
@@ -694,5 +693,5 @@ void Interpreter::run() {
     );
 }
 
-}}
+}
 

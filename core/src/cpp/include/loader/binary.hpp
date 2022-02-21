@@ -19,8 +19,7 @@
 #include "symbol.hpp"
 #include "host/definition.hpp"
 
-namespace MC64K {
-namespace Loader {
+namespace MC64K::Loader {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -168,5 +167,5 @@ class Binary {
         bool validateTarget(uint8 const* puRawTarget);
 };
 
-}} // namespace
+} // namespace
 #endif

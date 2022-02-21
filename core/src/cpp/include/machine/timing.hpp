@@ -17,8 +17,7 @@
 #include "mc64k.hpp"
 #include <time.h>
 
-namespace MC64K {
-namespace Machine {
+namespace MC64K::Machine {
 
 /**
  * Nanosecond measurement
@@ -38,5 +37,5 @@ class Nanoseconds {
         }
 };
 
-}} // namespace
+} // namespace
 #endif

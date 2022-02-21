@@ -17,9 +17,7 @@
 #include "./offsets.hpp"
 #include "./templates.hpp"
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace VectorMath {
+namespace MC64K::StandardTestHost::VectorMath {
 
 /**
  * Dot product of Vec2
@@ -203,7 +201,7 @@ vec2_expand_vec3<T>( \
     Interpreter::gpr()[ABI::INT_REG_0].uLong \
 )
 
-}}}
+}
 
 #endif
 

@@ -16,8 +16,7 @@
 
 #include "scalar.hpp"
 
-namespace MC64K {
-namespace Misc {
+namespace MC64K::Misc {
 
 class InvalidVersion {};
 
@@ -89,6 +88,6 @@ class Version {
         }
 };
 
-}} // namespace
+} // namespace
 
 #endif

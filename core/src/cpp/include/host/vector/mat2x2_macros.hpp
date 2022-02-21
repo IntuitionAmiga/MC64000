@@ -17,59 +17,68 @@
 #include "./offsets.hpp"
 #include "./templates.hpp"
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace VectorMath {
+namespace MC64K::StandardTestHost::VectorMath {
 
+/**
+ * These macros exist to select the appropriate register union member to invoke the given template operation on.
+ */
 #define m2x2_identity(T, UNION_NAME) mat_identity<T, 2>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
 
-#define m2x2_copy(T, UNION_NAME) mat_copy<T, 2>( \
+#define m2x2_copy(T, UNION_NAME) \
+mat_copy<T, 2>( \
     aoGPR[ABI::PTR_REG_1].p ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].p ## UNION_NAME \
 )
 
-#define m2x2_scale_assign(T, UNION_NAME) mat_scale_assign<T, 2>( \
+#define m2x2_scale_assign(T, UNION_NAME) \
+mat_scale_assign<T, 2>( \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
     Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m2x2_scale(T, UNION_NAME) mat_scale<T, 2>( \
+#define m2x2_scale(T, UNION_NAME) \
+mat_scale<T, 2>( \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
     Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m2x2_add_assign(T, UNION_NAME) mat_add_assign<T, 2>( \
+#define m2x2_add_assign(T, UNION_NAME) \
+mat_add_assign<T, 2>( \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m2x2_add(T, UNION_NAME) mat_add<T, 2>( \
+#define m2x2_add(T, UNION_NAME) \
+mat_add<T, 2>( \
     aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m2x2_sub_assign(T, UNION_NAME) mat_sub_assign<T, 2>( \
+#define m2x2_sub_assign(T, UNION_NAME) \
+mat_sub_assign<T, 2>( \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m2x2_sub(T, UNION_NAME) mat_sub<T, 2>( \
+#define m2x2_sub(T, UNION_NAME) \
+mat_sub<T, 2>( \
     aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m2x2_multiply(T, UNION_NAME) mat2x2_multiply<T>( \
+#define m2x2_multiply(T, UNION_NAME) \
+mat2x2_multiply<T>( \
     aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
 #define m2x2_multiply_assign(T, UNION_NAME) { \
-    T*       pfDst  = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME; \
-    T        pfTmp[2*2]; \
+    T* pfDst  = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME; \
+    T  pfTmp[2*2]; \
     mat_copy<T, 2>(pfTmp, pfDst); \
     mat2x2_multiply<T>( \
         pfDst, \
@@ -78,19 +87,15 @@ namespace VectorMath {
     ); \
 }
 
-#define m2x2_transpose(T, UNION_NAME) { \
-    T*       pDst = aoGPR[ABI::PTR_REG_1].p ## UNION_NAME; \
-    T const* pSrc = aoGPR[ABI::PTR_REG_0].p ## UNION_NAME; \
-    pDst[M2_11] = pSrc[M2_11]; \
-    pDst[M2_12] = pSrc[M2_21]; \
-    pDst[M2_21] = pSrc[M2_12]; \
-    pDst[M2_22] = pSrc[M2_22]; \
-}
+#define m2x2_transpose(T, UNION_NAME) \
+mat2x2_transpose<T>( \
+    aoGPR[ABI::PTR_REG_1].p ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].p ## UNION_NAME \
+)
 
-#define m2x2_determinant(T, UNION_NAME) { \
-    T const* pfMtx = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME; \
-    Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME = pfMtx[M2_11] * pfMtx[M2_22] - pfMtx[M2_12] * pfMtx[M2_21]; \
-}
+
+#define m2x2_determinant(T, UNION_NAME) \
+Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME = mat2x2_determinant<T>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
 
 /**
  * Inversion of 2x2
@@ -98,25 +103,14 @@ namespace VectorMath {
  * | a b |   =>     1     |  d -b |
  * | c d |      (ad - bc) | -c  a |
  */
-#define m2x2_inverse(T, UNION_NAME) { \
-    T*       pfDst = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME; \
-    T const* pfSrc = aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME; \
-    T fDeterminant = pfSrc[M2_11] * pfSrc[M2_22] - pfSrc[M2_12] * pfSrc[M2_21]; \
-    if (fDeterminant) { \
-        fDeterminant = (T)1.0 / fDeterminant; \
-        pfDst[M2_11] = fDeterminant * pfSrc[M2_22]; \
-        pfDst[M2_22] = fDeterminant * pfSrc[M2_11]; \
-        pfDst[M2_12] = -fDeterminant * pfSrc[M2_12]; \
-        pfDst[M2_21] = -fDeterminant * pfSrc[M2_21]; \
-        aoGPR[ABI::INT_REG_0].uQuad = ABI::ERR_NONE; \
-    } else { \
-        aoGPR[ABI::INT_REG_0].uQuad = ERR_ZERO_DIVIDE; \
-    } \
+#define m2x2_inverse(T, UNION_NAME) \
+aoGPR[ABI::INT_REG_0].uQuad = mat2x2_inverse<T>( \
+    aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
+    aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
+)
+
+
 }
-
-
-
-}}}
 
 #endif
 

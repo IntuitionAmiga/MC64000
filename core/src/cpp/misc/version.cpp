@@ -15,8 +15,7 @@
 #include <cstdlib>
 #include "misc/version.hpp"
 
-namespace MC64K {
-namespace Misc {
+namespace MC64K::Misc {
 
 /**
  * @inheritDoc
@@ -41,4 +40,4 @@ bool Version::isCompatible(Version const& roVersion) const {
     );
 }
 
-}} // namespace
+} // namespace

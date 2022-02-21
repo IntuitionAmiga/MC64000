@@ -1,5 +1,5 @@
-#ifndef __MC64K_STANDARD_TEST_HOST_VECTOR_MATH_MAT_3X3_MACROS_HPP__
-    #define __MC64K_STANDARD_TEST_HOST_VECTOR_MATH_MAT_3X3_MACROS_HPP__
+#ifndef __MC64K_STANDARD_TEST_HOST_VECTOR_MATH_MAT_2X2_MACROS_HPP__
+    #define __MC64K_STANDARD_TEST_HOST_VECTOR_MATH_MAT_2X2_MACROS_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -19,93 +19,106 @@
 
 namespace MC64K::StandardTestHost::VectorMath {
 
-#define m3x3_identity(T, UNION_NAME) mat_identity<T, 3>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
+template <typename T>
+inline void m2x2_identity(GPRegister* aoGPR) {
+    mat_identity<T, 2>(aoGPR[ABI::PTR_REG_0].address<T>());
+}
 
-#define m3x3_copy(T, UNION_NAME) \
-mat_copy<T, 3>( \
-    aoGPR[ABI::PTR_REG_1].p ## UNION_NAME, \
-    aoGPR[ABI::PTR_REG_0].p ## UNION_NAME \
-)
+template <typename T>
+inline void m2x2_copy(GPRegister* aoGPR) {
+    mat_copy<T, 2>(
+        aoGPR[ABI::PTR_REG_1].address<T>()),
+        aoGPR[ABI::PTR_REG_0].address<T const>())
+    );
+}
 
-#define m3x3_scale_assign(T, UNION_NAME) \
-mat_scale_assign<T, 3>( \
+template <typename T>
+inline void m2x2_scale_inplace(GPRegister* aoGPR) {
+    mat_scale_assign<T, 2>(
+        aoGPR[ABI::PTR_REG_1].address<T>()),
+        Interpreter::fpr()[ABI::FLT_REG_0].value<T>()
+    );
+}
+
+#define m2x2_scale_assign(T, UNION_NAME) \
+mat_scale_assign<T, 2>( \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
     Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m3x3_scale(T, UNION_NAME) \
-mat_scale<T, 3>( \
+#define m2x2_scale(T, UNION_NAME) \
+mat_scale<T, 2>( \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME, \
     Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME \
 )
 
-#define m3x3_add_assign(T, UNION_NAME) \
-mat_add_assign<T, 3>( \
+#define m2x2_add_assign(T, UNION_NAME) \
+mat_add_assign<T, 2>( \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m3x3_add(T, UNION_NAME) \
-mat_add<T, 3>( \
+#define m2x2_add(T, UNION_NAME) \
+mat_add<T, 2>( \
     aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m3x3_sub_assign(T, UNION_NAME) \
-mat_sub_assign<T, 3>( \
+#define m2x2_sub_assign(T, UNION_NAME) \
+mat_sub_assign<T, 2>( \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m3x3_sub(T, UNION_NAME) \
-mat_sub<T, 3>( \
+#define m2x2_sub(T, UNION_NAME) \
+mat_sub<T, 2>( \
     aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m3x3_multiply(T, UNION_NAME) \
-mat3x3_multiply<T>( \
+#define m2x2_multiply(T, UNION_NAME) \
+mat2x2_multiply<T>( \
     aoGPR[ABI::PTR_REG_2].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-#define m3x3_multiply_assign(T, UNION_NAME) { \
+#define m2x2_multiply_assign(T, UNION_NAME) { \
     T* pfDst  = aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME; \
-    T  pfTmp[3 * 3]; \
-    mat_copy<T, 3>(pfTmp, pfDst); \
-    mat3x3_multiply<T>( \
+    T  pfTmp[2*2]; \
+    mat_copy<T, 2>(pfTmp, pfDst); \
+    mat2x2_multiply<T>( \
         pfDst, \
         pfTmp, \
         aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
     ); \
 }
 
-#define m3x3_transpose(T, UNION_NAME) \
-mat3x3_transpose<T>( \
+#define m2x2_transpose(T, UNION_NAME) \
+mat2x2_transpose<T>( \
     aoGPR[ABI::PTR_REG_1].p ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].p ## UNION_NAME \
 )
 
-#define m3x3_determinant(T, UNION_NAME) \
-Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME = mat3x3_determinant<T>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
 
-#define m3x3_inverse(T, UNION_NAME) \
-aoGPR[ABI::INT_REG_0].uQuad = mat3x3_inverse<T>( \
+#define m2x2_determinant(T, UNION_NAME) \
+Interpreter::fpr()[ABI::FLT_REG_0].f ## UNION_NAME = mat2x2_determinant<T>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
+
+/**
+ * Inversion of 2x2
+ *
+ * | a b |   =>     1     |  d -b |
+ * | c d |      (ad - bc) | -c  a |
+ */
+#define m2x2_inverse(T, UNION_NAME) \
+aoGPR[ABI::INT_REG_0].uQuad = mat2x2_inverse<T>( \
     aoGPR[ABI::PTR_REG_1].pf ## UNION_NAME, \
     aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME \
 )
 
-template <typename T>
-inline void m3x3_inverse_legit(GPRegister* aoGPR) {
-    aoGPR[ABI::INT_REG_0].uQuad = mat3x3_inverse<T>(
-        aoGPR[ABI::PTR_REG_1].address<T>(),
-        aoGPR[ABI::PTR_REG_0].address<T>()
-    );
-}
 
 }
 

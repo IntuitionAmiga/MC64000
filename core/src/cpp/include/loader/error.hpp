@@ -14,8 +14,7 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-namespace MC64K {
-namespace Loader {
+namespace MC64K::Loader {
 
 /**
  * Error
@@ -48,5 +47,5 @@ class LinkError {
 
 };
 
-}} // namespace
+}// namespace
 #endif
