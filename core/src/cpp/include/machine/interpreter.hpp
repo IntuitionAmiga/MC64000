@@ -135,6 +135,22 @@ class Interpreter {
         static FPRegister* fpr();
 
         /**
+         * Compile-time range-checked access to GPR
+         *
+         * Interpreter::gpr<GPRegister::D0>()
+         */
+        template<unsigned N>
+        static constexpr GPRegister& gpr();
+
+        /**
+         * Compile-time range-checked access to FPR
+         *
+         * Interpreter::fpr<FPRegister::FP0>()
+         */
+        template<unsigned N>
+        static constexpr FPRegister& fpr();
+
+        /**
          * Dump the machine state
          *
          * @param std::FILE* poStream
@@ -237,6 +253,25 @@ inline GPRegister& Interpreter::gpr(unsigned int const uReg) {
 inline FPRegister& Interpreter::fpr(unsigned int const uReg) {
     return aoFPR[uReg & FPRegister::MASK];
 }
+
+/**
+ * @inheritDoc
+ */
+template<unsigned N>
+inline constexpr GPRegister& Interpreter::gpr() {
+    static_assert(N < GPRegister::MAX, "Invalid GPR number");
+    return aoGPR[N];
+}
+
+/**
+ * @inheritDoc
+ */
+template<unsigned N>
+inline constexpr FPRegister& Interpreter::fpr() {
+    static_assert(N < FPRegister::MAX, "Invalid FPR number");
+    return aoFPR[N];
+}
+
 
 }} // namespace
 #endif

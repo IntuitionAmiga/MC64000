@@ -92,7 +92,13 @@ union GPRegister {
         GPRegister() : uQuad(0) {}
 
     /**
-     * For template accessors
+     * For template accessors where the operand size is a template parameter:
+     *
+     * template<typename T> void example(GPRegister& register, T iValue) {
+     *     register.value<T>() = iValue;
+     * }
+     *
+     * T must be an integer type.
      */
     template<typename T>
     inline T& value() {
@@ -116,6 +122,10 @@ union GPRegister {
         }
     }
 
+    /**
+     * For template accessors where the register size access is a template parameter:
+     *
+     */
     template<typename T>
     inline T* address() {
         return (T*)pAny;
@@ -155,7 +165,13 @@ union FPRegister {
         FPRegister() : fDouble(0.0) {}
 
     /**
-     * For template accessors
+     * For template accessors, where the operand size is the template parameter:
+     *
+     * template<typename T> void example(FPRegister& register, T fValue) {
+     *     register.value<T>() = fValue;
+     * }
+     *
+     * T must be a floating point type.
      */
     template<typename T>
     inline T& value() {

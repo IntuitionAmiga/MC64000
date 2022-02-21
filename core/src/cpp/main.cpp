@@ -29,11 +29,10 @@ int main(int iArgN, char const** aArgV) {
     }
 
     try {
-        const char* sExecutableName = aArgV[1];
+        char const* sExecutableName = aArgV[1];
 
         MC64K::StandardTestHost::setCLIParameters(iArgN, aArgV);
         MC64K::Host::Runtime oRuntime(MC64K::StandardTestHost::instance, sExecutableName);
-
         oRuntime.invoke(MC64K::StandardTestHost::ABI::MAIN);
 
     } catch (MC64K::Loader::Error& oError) {
