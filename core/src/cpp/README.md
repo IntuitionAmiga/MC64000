@@ -13,6 +13,18 @@
 
 ## Example C++ Runtime
 
+### Standards
+- Requires C++17:
+    - Shorthand namespaces
+    - `if constexpr`
+- Does use compile-time checking:
+    - static_assert.
+    - type checks.
+    - range checks.
+- Does not focus on memory safety:
+    - Primarily this is due to the fact that the virtual machine can construct any plausible 64-bit value and interpret it as an address meaning that it is inherently unsafe.
+    - Uses standard C libraries for basic IO and memory allocation.
+
 ### Coding Style
 - 4 space indentation.
 - Opening brace on same line as structure/function/control statement.
@@ -23,7 +35,6 @@
     - `int const*` for pointer to constant integer.
     - `int const*` for constant pointer to integer.
     - `int const* const` for constant pointer to constant integer.
-- Google style namespaces.
 - Simplified Hungarian Notation, single character prefix for non-function identifier names:
     - i for signed integer types int8, int16, int32, int64, short, int, long, etc.
         - int32 iExample
