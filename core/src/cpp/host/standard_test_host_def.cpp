@@ -19,7 +19,6 @@
 #include "host/standard_test_host_mem.hpp"
 #include "host/standard_test_host_vector_math.hpp"
 #include "loader/symbol.hpp"
-#include "host/macros.hpp"
 #include "machine/register.hpp"
 
 using MC64K::Loader::Symbol;
