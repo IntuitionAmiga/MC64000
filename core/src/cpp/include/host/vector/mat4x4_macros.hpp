@@ -17,9 +17,7 @@
 #include "./offsets.hpp"
 #include "./templates.hpp"
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace VectorMath {
+namespace MC64K::StandardTestHost::VectorMath {
 
 #define m4x4_identity(T, UNION_NAME) mat_identity<T, 4>(aoGPR[ABI::PTR_REG_0].pf ## UNION_NAME)
 
@@ -109,7 +107,7 @@ vec4_transform_4x4<T>( \
     Interpreter::gpr()[ABI::INT_REG_0].uLong \
 )
 
-}}}
+}
 
 #endif
 

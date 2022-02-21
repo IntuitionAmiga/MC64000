@@ -17,9 +17,7 @@
 #include "./offsets.hpp"
 #include "./templates.hpp"
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace VectorMath {
+namespace MC64K::StandardTestHost::VectorMath {
 
 /**
  * Gnarly macros for 3-component vectors
@@ -186,5 +184,5 @@ vec3_expand_vec4<T>( \
     Interpreter::gpr()[ABI::INT_REG_0].uLong \
 )
 
-}}} // namespace
+} // namespace
 #endif

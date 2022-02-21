@@ -18,9 +18,7 @@
 
 using MC64K::Machine::Interpreter;
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace IO {
+namespace MC64K::StandardTestHost::IO {
 
 /**
  * Default formatters
@@ -293,4 +291,4 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
     return Interpreter::RUNNING;
 }
 
-}}} // namespace
+} // namespace

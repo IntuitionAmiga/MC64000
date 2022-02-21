@@ -21,9 +21,7 @@
  *
  * @todo header generation from template definition shared with php assembler sources.
  */
-namespace MC64K {
-namespace ByteCode {
-namespace Opcode {
+namespace MC64K::ByteCode::Opcode {
 
 /**
  * Group
@@ -317,5 +315,5 @@ enum Arithmetic {
     FTWOTOX_D = OFS_ARITHMETIC + 79,
 };
 
-}}} // namespace
+} // namespace
 #endif

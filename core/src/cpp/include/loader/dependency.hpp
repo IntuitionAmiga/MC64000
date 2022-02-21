@@ -17,8 +17,7 @@
 #include <cstdio>
 #include "misc/version.hpp"
 
-namespace MC64K {
-namespace Loader {
+namespace MC64K::Loader {
 
 /**
  * Dependency
@@ -30,5 +29,5 @@ struct Dependency {
     char const*   sName;
 };
 
-}} // namespace
+} // namespace
 #endif

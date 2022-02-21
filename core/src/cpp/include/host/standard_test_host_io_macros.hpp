@@ -14,9 +14,7 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace IO {
+namespace MC64K::StandardTestHost::IO {
 
 /**
  * Gnarly
@@ -205,6 +203,6 @@ namespace IO {
     } \
 }
 
+} // namespace
 
-}}} // namespace
 #endif

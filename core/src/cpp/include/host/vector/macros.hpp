@@ -22,9 +22,7 @@
 #include "./mat3x3_macros.hpp"
 #include "./mat4x4_macros.hpp"
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace VectorMath {
+namespace MC64K::StandardTestHost::VectorMath {
 
 // // Explicit template instantiations
 //
@@ -42,5 +40,5 @@ namespace VectorMath {
 
 
 
-}}} // namespace
+} // namespace
 #endif

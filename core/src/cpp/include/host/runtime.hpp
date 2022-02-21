@@ -15,8 +15,7 @@
  */
 #include "definition.hpp"
 
-namespace MC64K {
-namespace Host {
+namespace MC64K::Host {
 
 /**
  * Runtime
@@ -46,6 +45,6 @@ class Runtime {
         Machine::Interpreter::Status invoke(size_t const uFunctionID);
 };
 
-}} // namespace
+} // namespace
 
 #endif

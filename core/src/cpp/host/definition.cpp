@@ -18,8 +18,7 @@
 #include "host/definition.hpp"
 #include "machine/limits.hpp"
 
-namespace MC64K {
-namespace Host {
+namespace MC64K::Host {
 
 /**
  * @inheritDoc
@@ -55,4 +54,4 @@ Definition::~Definition() {
     std::free((void*)pcHCFVectors);
 }
 
-}} // namespace
+} // namespace

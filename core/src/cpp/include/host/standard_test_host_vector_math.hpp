@@ -16,8 +16,7 @@
 
 #include "standard_test_host.hpp"
 
-namespace MC64K {
-namespace StandardTestHost {
+namespace MC64K::StandardTestHost::VectorMath {
 
 /**
  * VectorMath Namespace, for accelerated linear algebra on 2D and 3D vectors.
@@ -47,7 +46,6 @@ namespace StandardTestHost {
  *   | Tx Ty  1 |   | 1 |   |   1    |
  *
  */
-namespace VectorMath {
 
 /**
  * Call
@@ -324,6 +322,6 @@ typedef enum {
 
 Interpreter::Status hostVector(uint8 uFunctionID);
 
-}}} // namespace
+} // namespace
 
 #endif

@@ -19,9 +19,7 @@
 
 using MC64K::Machine::Interpreter;
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace VectorMath {
+namespace MC64K::StandardTestHost::VectorMath {
 
 /**
  * VectorMath::hostVector(uint8 uFunctionID)
@@ -106,6 +104,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case M3X3F_TRANSPOSE:       m3x3_transpose(uint32, uLong);              break;
         case M3X3F_DET:             m3x3_determinant(float32, Single);          break;
         case M3X3F_INVERSE:         m3x3_inverse(float32, Single);              break;
+
 
         // 4x4 Matrices
         case M4X4F_IDENTITY:        m4x4_identity(float32, Single);             break;
@@ -213,7 +212,6 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
 
         //    break;
 
-
         default:
             std::fprintf(stderr, "Unknown operation %d\n", iOperation);
             return Interpreter::UNKNOWN_HOST_CALL;
@@ -223,5 +221,5 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
     return Interpreter::RUNNING;
 }
 
-}}} // namespace
+} // namespace
 

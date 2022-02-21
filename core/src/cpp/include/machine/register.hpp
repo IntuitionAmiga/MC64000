@@ -15,14 +15,15 @@
  */
 
 #include "misc/scalar.hpp"
+#include <type_traits>
 
-namespace MC64K {
-namespace Machine {
+namespace MC64K::Machine {
 
 /**
  * GPRegister
  *
- * Basic general purpose (integer / addressing) register definition.
+ * Basic general purpose (integer / addressing) register definition. Direct access to member fields is allowed
+ * and generic accessors are provided for access from within other generic functions.
  */
 union GPRegister {
     public:
@@ -89,6 +90,36 @@ union GPRegister {
         char const* sString;
 
         GPRegister() : uQuad(0) {}
+
+    /**
+     * For template accessors
+     */
+    template<typename T>
+    inline T& value() {
+        static_assert(std::is_integral<T>::value, "Invalid template type for integer register access");
+        if constexpr(std::is_same<uint64, T>::value) {
+            return uQuad;
+        } else if constexpr(std::is_same<uint32, T>::value) {
+            return uLong;
+        } else if constexpr(std::is_same<uint16, T>::value) {
+            return uWord;
+        } else if constexpr(std::is_same<uint8, T>::value) {
+            return uByte;
+        } else if constexpr(std::is_same<int64, T>::value) {
+            return iQuad;
+        } else if constexpr(std::is_same<int32, T>::value) {
+            return iLong;
+        } else if constexpr(std::is_same<int16, T>::value) {
+            return iWord;
+        } else if constexpr(std::is_same<int8, T>::value) {
+            return iByte;
+        }
+    }
+
+    template<typename T>
+    inline T* address() {
+        return (T*)pAny;
+    }
 };
 
 /**
@@ -122,7 +153,20 @@ union FPRegister {
         float64 fDouble;
         float32 fSingle;
         FPRegister() : fDouble(0.0) {}
+
+    /**
+     * For template accessors
+     */
+    template<typename T>
+    inline T& value() {
+        static_assert(std::is_floating_point<T>::value, "Invalid template type for floating point register access");
+        if constexpr(std::is_same<float64, T>::value) {
+            return fDouble;
+        } else if constexpr(std::is_same<float32, T>::value) {
+            return fSingle;
+        }
+    }
 };
 
-}} // namespace
+} // namespace
 #endif

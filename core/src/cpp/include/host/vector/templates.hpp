@@ -19,9 +19,7 @@
 #include <cstdlib>
 #include "./offsets.hpp"
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace VectorMath {
+namespace MC64K::StandardTestHost::VectorMath {
 
 #ifdef MATRIX_FORCE_DOUBLE
 #define MT T
@@ -905,5 +903,5 @@ inline uint64 mat4x4_inverse(T* pfDst, T const* pfSrc) {
     return ABI::ERR_NONE;
 }
 
-}}}
+}
 #endif

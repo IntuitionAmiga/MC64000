@@ -19,8 +19,7 @@
 #include "misc/version.hpp"
 #include "loader/symbol.hpp"
 
-namespace MC64K {
-namespace Host {
+namespace MC64K::Host {
 
 /**
  * Definition
@@ -117,6 +116,6 @@ class Definition {
         }
 };
 
-}} // namespace
+} // namespace
 
 #endif

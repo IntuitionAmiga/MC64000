@@ -15,8 +15,7 @@
  */
 #include "definition.hpp"
 
-namespace MC64K {
-namespace Host {
+namespace MC64K :: Host {
 
 #define referenceBytecode(x) _mc64K_##x
 
@@ -43,6 +42,6 @@ namespace Host {
     (uint8)(((uint64)(x) >> 48) & 0xFF), \
     (uint8)(((uint64)(x) >> 56) & 0xFF)
 
-}} // namespace
+} // namespace
 
 #endif

@@ -19,8 +19,7 @@
 
 #include <initializer_list>
 
-namespace MC64K {
-namespace Loader {
+namespace MC64K::Loader {
 
 #define IMPORT_SYMBOL(name, access)         { (name), {0}, (access) }
 #define EXPORT_SYMBOL(name, access, entity) { (name), { (void*)entity }, (access) }
@@ -232,6 +231,6 @@ class LoadedSymbolSet : public SymbolSet {
         Symbol* allocate(size_t const uNumSymbols);
 };
 
-}} // namespace
+} // namespace
 #endif
 

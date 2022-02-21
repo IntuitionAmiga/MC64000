@@ -20,8 +20,7 @@
 #include "dependency.hpp"
 #include "binary.hpp"
 
-namespace MC64K {
-namespace Loader {
+namespace MC64K::Loader {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -111,5 +110,5 @@ class Executable {
         char* processSymbolName(char * sSymbolName, uint64 & ruSymbolFlags);
 };
 
-}} // namespace
+} // namespace
 #endif

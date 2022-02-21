@@ -20,8 +20,7 @@
 #include "machine/interpreter.hpp"
 #include "loader/executable.hpp"
 
-namespace MC64K {
-namespace Machine {
+namespace MC64K::Machine {
 
 // As nice as this is, it's just too flaky with LTO
 #ifdef USE_GLOBAL_REGISTER
@@ -245,7 +244,7 @@ void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
 
 }
 
-}} // namespace
+} // namespace
 
 #include "interpreter_ea.cpp"
 #include "interpreter_run.cpp"

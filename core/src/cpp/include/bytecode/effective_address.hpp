@@ -22,9 +22,7 @@
  * @todo header generation from template definition shared with php assembler sources.
  */
 
-namespace MC64K {
-namespace ByteCode {
-namespace EffectiveAddress {
+namespace MC64K::ByteCode::EffectiveAddress {
 
 /**
  * Group
@@ -357,5 +355,5 @@ enum Other2 {
     RESERVED_UP_TO     = 15
 };
 
-}}} // namespace
+} // namespace
 #endif

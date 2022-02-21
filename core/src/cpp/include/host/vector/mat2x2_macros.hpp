@@ -17,9 +17,7 @@
 #include "./offsets.hpp"
 #include "./templates.hpp"
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace VectorMath {
+namespace MC64K::StandardTestHost::VectorMath {
 
 /**
  * These macros exist to select the appropriate register union member to invoke the given template operation on.
@@ -112,7 +110,7 @@ aoGPR[ABI::INT_REG_0].uQuad = mat2x2_inverse<T>( \
 )
 
 
-}}}
+}
 
 #endif
 

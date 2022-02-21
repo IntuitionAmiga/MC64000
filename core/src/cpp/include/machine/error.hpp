@@ -14,8 +14,7 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-namespace MC64K {
-namespace Machine {
+namespace MC64K::Machine {
 
 /**
  * Error
@@ -34,5 +33,5 @@ class Error {
         Error(char const* sIssue) : sIssue(sIssue) {}
 };
 
-}} // namespace
+} // namespace
 #endif

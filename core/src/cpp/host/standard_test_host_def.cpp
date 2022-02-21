@@ -26,8 +26,7 @@ using MC64K::Loader::Symbol;
 using MC64K::Machine::Interpreter;
 using MC64K::Misc::Version;
 
-namespace MC64K {
-namespace StandardTestHost {
+namespace MC64K::StandardTestHost {
 
 char const*  sHostInfo         = "Standard Test Host";
 char const** pHostCLIParams    = 0;
@@ -72,4 +71,4 @@ Host::Definition instance(
     }
 );
 
-}}
+}

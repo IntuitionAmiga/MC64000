@@ -19,9 +19,7 @@
 
 using MC64K::Machine::Interpreter;
 
-namespace MC64K {
-namespace StandardTestHost {
-namespace Mem {
+namespace MC64K::StandardTestHost::Mem {
 
 /**
  * Fill a word aligned block with words. If the base adddess is not aligned, filling starts from the next aligned
@@ -383,5 +381,5 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
     return Interpreter::RUNNING;
 }
 
-}}} // namespace
+} // namespace
 
