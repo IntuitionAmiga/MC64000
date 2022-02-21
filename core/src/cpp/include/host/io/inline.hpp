@@ -1,4 +1,3 @@
-
 #ifndef __MC64K_STANDARD_TEST_HOST_IO_INLINE_HPP__
     #define __MC64K_STANDARD_TEST_HOST_IO_INLINE_HPP__
 
@@ -48,7 +47,7 @@ inline void setFormat(char const*& sTemplate, char const* sDefaultFormat) {
  */
 template<typename T>
 inline void print(char const* sDefaultFormat) {
-    static_assert(std::is_arithmetic<T>::value, "Invalid type for printNumeric<T>()");
+    static_assert(std::is_arithmetic<T>::value, "Invalid type for print<T>()");
     if constexpr (std::is_integral<T>::value) {
         Interpreter::gpr<ABI::INT_REG_0>().uQuad = getIOWriteResult(
             std::printf(
@@ -80,7 +79,7 @@ inline void print(char const* sDefaultFormat) {
  */
 template<typename T>
 inline void filePrint(char const* sDefaultFormat) {
-    static_assert(std::is_arithmetic<T>::value, "Invalid type for filePrintNumeric<T>()");
+    static_assert(std::is_arithmetic<T>::value, "Invalid type for filePrint<T>()");
     if (std::FILE* pStream = Interpreter::gpr<ABI::PTR_REG_0>().address<std::FILE>()) {
         if constexpr (std::is_integral<T>::value) {
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = getIOWriteResult(
@@ -118,7 +117,7 @@ inline void filePrint(char const* sDefaultFormat) {
  */
 template<typename T>
 inline void format(char const* sDefaultFormat) {
-    static_assert(std::is_arithmetic<T>::value, "Invalid type for formatNumeric<T>()");
+    static_assert(std::is_arithmetic<T>::value, "Invalid type for format<T>()");
     if (char* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().address<char>()) {
         if constexpr (std::is_integral<T>::value) {
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = getIOWriteResult(
@@ -150,7 +149,7 @@ inline void format(char const* sDefaultFormat) {
 
 template<typename T>
 inline void parse(char const* sDefaultFormat) {
-    static_assert(std::is_arithmetic<T>::value, "Invalid type for parseNumeric<T>()");
+    static_assert(std::is_arithmetic<T>::value, "Invalid type for parse<T>()");
     if (char const* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().address<char const>()) {
         if constexpr (std::is_integral<T>::value) {
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = getIOReadResult(
@@ -180,7 +179,7 @@ inline void parse(char const* sDefaultFormat) {
 
 template<typename T>
 inline void fileParse(char const* sDefaultFormat) {
-    static_assert(std::is_arithmetic<T>::value, "Invalid type for fileParseNumeric<T>()");
+    static_assert(std::is_arithmetic<T>::value, "Invalid type for fileParse<T>()");
     if (std::FILE* pStream = Interpreter::gpr<ABI::PTR_REG_0>().address<std::FILE>()) {
         if constexpr (std::is_integral<T>::value) {
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = getIOReadResult(
