@@ -23,7 +23,7 @@ namespace MC64K::StandardTestHost::Mem {
  *
  * Enumeration of calls in the Mem namespace
  */
-typedef enum {
+enum Call {
     INIT = 0,
     DONE,
 
@@ -86,15 +86,15 @@ typedef enum {
 
     STR_LENGTH,
     STR_COMPARE,
-} Call;
+};
 
 /**
  * Error return values
  */
-typedef enum {
+enum Result {
     ERR_NO_MEM = 100,
     ERR_MEM
-} Result;
+};
 
 Interpreter::Status hostVector(uint8 uFunctionID);
 

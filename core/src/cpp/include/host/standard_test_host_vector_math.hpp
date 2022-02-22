@@ -53,7 +53,7 @@ namespace MC64K::StandardTestHost::VectorMath {
  * Enumeration of calls in the VectorMath namespace.
  *
  */
-typedef enum {
+enum Call {
     /**
      * Init and copy
      */
@@ -310,14 +310,14 @@ typedef enum {
     M4X4D_DET,          // fp0  = Determinant(a0)
     M4X4D_INVERSE,      // (a1) = Inverse(a0)
 
-} Call;
+};
 
 /**
  * Error return values
  */
-typedef enum {
+enum Result {
     ERR_ZERO_DIVIDE = 1000
-} Result;
+};
 
 
 Interpreter::Status hostVector(uint8 uFunctionID);
