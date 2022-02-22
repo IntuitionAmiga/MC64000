@@ -5,8 +5,8 @@ BIN      = bin/interpreter_x64
 
 
 # Compiler settings
-CXXFLAGS = -Wall -Wconversion -Werror -Ofast -march=native -mtune=native -mavx2 -fPIC -pipe -Iinclude -DALLOW_MISALIGNED_IMMEDIATE -DUSE_GLOBAL_REGISTER
-GCC_CXXFLAGS = -fexpensive-optimizations -funroll-all-loops -DMESSAGE='"Compiled with GCC"'
+CXXFLAGS = -Wall -Wconversion -Werror -Ofast -march=native -mtune=native -mavx2 -fPIC -pipe -Iinclude -DALLOW_MISALIGNED_IMMEDIATE
+GCC_CXXFLAGS = -fexpensive-optimizations -funroll-all-loops -DUSE_GLOBAL_REGISTER -DMESSAGE='"Compiled with GCC"'
 CLANG_CXXFLAGS = -v -funroll-loops -DMESSAGE='"Compiled with Clang"'
 UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'
 
