@@ -127,7 +127,7 @@ union GPRegister {
      *
      */
     template<typename T>
-    inline T* address() {
+    inline T* address() const {
         return (T*)pAny;
     }
 };
