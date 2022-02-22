@@ -92,15 +92,14 @@ void closeStream() {
 
 /**
  * Reads up to <ABI::INT_REG_0>.q bytes from the stream pointed to by <ABI::PTR_REG_0> into the buffer pointed to by
- * <ABI::PTR_REG_1>. Returns the number of bytes read in <ABI::INT_REG_1>.q and an overall indicator of success/failure
- * in <ABI::INT_REG_0>.
+ * <ABI::PTR_REG_1>. Returns the number of bytes read in <ABI::INT_REG_0>.q and an overall indicator of success/failure
+ * in <ABI::INT_REG_1>.
  */
 void readStream() {
     std::FILE* pStream = Interpreter::gpr<ABI::PTR_REG_0>().address<std::FILE>();
     uint8*     pBuffer = Interpreter::gpr<ABI::PTR_REG_1>().puByte;
     if (pStream && pBuffer) {
-        size_t uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad;
-        if (uSize) {
+        if (size_t uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = std::fread(
                 pBuffer,
                 1,
@@ -122,16 +121,14 @@ void readStream() {
 
 /**
  * Writes up to <ABI::INT_REG_0>.q bytes from the buffer pointed to by <ABI::PTR_REG_1> to the stream pointed to by
- * <ABI::PTR_REG_0>. Returns the number of bytes read in <ABI::INT_REG_1>.q and an overall indicator of success/failure
- * in <ABI::INT_REG_0>.
+ * <ABI::PTR_REG_0>. Returns the number of bytes read in <ABI::INT_REG_0>.q and an overall indicator of success/failure
+ * in <ABI::INT_REG_1>.
  */
 void writeStream() {
     std::FILE* pStream = Interpreter::gpr<ABI::PTR_REG_0>().address<std::FILE>();
     uint8*     pBuffer = Interpreter::gpr<ABI::PTR_REG_1>().puByte;
-
     if (pStream && pBuffer) {
-        size_t uSize   = Interpreter::gpr<ABI::INT_REG_0>().uQuad;
-        if (uSize) {
+        if (size_t uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = std::fwrite(
                 pBuffer,
                 1,
@@ -204,7 +201,7 @@ void filePrint() {
             std::fputs(pText, pStream)
         );
     } else {
-        Interpreter::gpr<ABI::INT_REG_0>().uQuad =  ABI::ERR_NULL_PTR;
+        Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
     }
 }
 

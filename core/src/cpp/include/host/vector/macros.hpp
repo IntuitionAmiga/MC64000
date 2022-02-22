@@ -18,9 +18,6 @@
 #include "./templates.hpp"
 #include "./vec2_macros.hpp"
 #include "./vec3_macros.hpp"
-#include "./mat2x2_macros.hpp"
-#include "./mat3x3_macros.hpp"
-#include "./mat4x4_macros.hpp"
 
 namespace MC64K::StandardTestHost::VectorMath {
 

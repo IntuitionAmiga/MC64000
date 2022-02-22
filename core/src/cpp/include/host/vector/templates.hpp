@@ -27,43 +27,7 @@ namespace MC64K::StandardTestHost::VectorMath {
 #define MT float64
 #endif
 
-/**
- * Applies a Mat2x2 to an input set of Vec2
- */
-template<typename T>
-inline void vec2_transform_2x2(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
-    while (uCount--) {
-        *pfDst++ = pfM[M2_11] * pfSrc[V_X] + pfM[M2_12] * pfSrc[V_Y];
-        *pfDst++ = pfM[M2_21] * pfSrc[V_X] + pfM[M2_22] * pfSrc[V_Y];
-        pfSrc += 2;
-    }
-}
 
-/**
- * Applies a Mat3x3 to a input set of Vec2, substituting zero for the missing 3rd element of each one.
- * Output is also a set of Vec2. Only the first 2 rows of the matrix are considered.
- */
-template<typename T>
-inline void vec2_0_transform_3x3(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
-    while (uCount--) {
-        *pfDst++ = pfM[M3_11] * pfSrc[V_X] + pfM[M3_12] * pfSrc[V_Y];
-        *pfDst++ = pfM[M3_21] * pfSrc[V_X] + pfM[M3_22] * pfSrc[V_Y];
-        pfSrc += 2;
-    }
-}
-
-/**
- * Applies a Mat3x3 to a input set of Vec2, substituting one for the missing 3rd element of each one.
- * Output is also a set of Vec2. Only the first 2 rows of the matrix are considered.
- */
-template<typename T>
-inline void vec2_1_transform_3x3(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
-    while (uCount--) {
-        *pfDst++ = pfM[M3_11] * pfSrc[V_X] + pfM[M3_12] * pfSrc[V_Y] + pfM[M3_13];
-        *pfDst++ = pfM[M3_21] * pfSrc[V_X] + pfM[M3_22] * pfSrc[V_Y] + pfM[M3_23];
-        pfSrc += 2;
-    }
-}
 
 /**
  * Vec2 to Vec3 expand

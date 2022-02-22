@@ -1,5 +1,5 @@
-#ifndef __MC64K_STANDARD_TEST_HOST_VECTOR_MATH_MAT_2X2_HPP__
-    #define __MC64K_STANDARD_TEST_HOST_VECTOR_MATH_MAT_2X2_HPP__
+#ifndef __MC64K_STANDARD_TEST_HOST_VECTOR_MATH_MAT_4X4_HPP__
+    #define __MC64K_STANDARD_TEST_HOST_VECTOR_MATH_MAT_4X4_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -20,29 +20,29 @@
 namespace MC64K::StandardTestHost::VectorMath {
 
 template<typename T>
-inline void m2x2_identity() {
-    mat_identity<T, 2>(Interpreter::gpr<ABI::PTR_REG_0>().address<T>());
+inline void m4x4_identity() {
+    mat_identity<T, 4>(Interpreter::gpr<ABI::PTR_REG_0>().address<T>());
 }
 
 template<typename T>
-inline void m2x2_copy() {
-    mat_copy<T, 2>(
+inline void m4x4_copy() {
+    mat_copy<T, 4>(
         Interpreter::gpr<ABI::PTR_REG_1>().address<T>(),
         Interpreter::gpr<ABI::PTR_REG_0>().address<T const>()
     );
 }
 
 template<typename T>
-inline void m2x2_scale_assign() {
-    mat_scale_assign<T, 2>(
+inline void m4x4_scale_assign() {
+    mat_scale_assign<T, 4>(
         Interpreter::gpr<ABI::PTR_REG_0>().address<T>(),
         Interpreter::fpr<ABI::FLT_REG_0>().value<T>()
     );
 }
 
 template<typename T>
-inline void m2x2_scale() {
-    mat_scale<T, 2>(
+inline void m4x4_scale() {
+    mat_scale<T, 4>(
         Interpreter::gpr<ABI::PTR_REG_1>().address<T>(),
         Interpreter::gpr<ABI::PTR_REG_0>().address<T const>(),
         Interpreter::fpr<ABI::FLT_REG_0>().value<T>()
@@ -50,16 +50,16 @@ inline void m2x2_scale() {
 }
 
 template<typename T>
-inline void m2x2_add_assign() {
-    mat_add_assign<T, 2>(
+inline void m4x4_add_assign() {
+    mat_add_assign<T, 4>(
         Interpreter::gpr<ABI::PTR_REG_1>().address<T>(),
         Interpreter::gpr<ABI::PTR_REG_0>().address<T const>()
     );
 }
 
 template<typename T>
-inline void m2x2_add() {
-    mat_add<T, 2>(
+inline void m4x4_add() {
+    mat_add<T, 4>(
         Interpreter::gpr<ABI::PTR_REG_2>().address<T>(),
         Interpreter::gpr<ABI::PTR_REG_1>().address<T const>(),
         Interpreter::gpr<ABI::PTR_REG_0>().address<T const>()
@@ -67,16 +67,16 @@ inline void m2x2_add() {
 }
 
 template<typename T>
-inline void m2x2_sub_assign() {
-    mat_sub_assign<T, 2>(
+inline void m4x4_sub_assign() {
+    mat_sub_assign<T, 4>(
         Interpreter::gpr<ABI::PTR_REG_1>().address<T>(),
         Interpreter::gpr<ABI::PTR_REG_0>().address<T const>()
     );
 }
 
 template<typename T>
-inline void m2x2_sub() {
-    mat_sub<T, 2>(
+inline void m4x4_sub() {
+    mat_sub<T, 4>(
         Interpreter::gpr<ABI::PTR_REG_2>().address<T>(),
         Interpreter::gpr<ABI::PTR_REG_1>().address<T const>(),
         Interpreter::gpr<ABI::PTR_REG_0>().address<T const>()
@@ -84,8 +84,8 @@ inline void m2x2_sub() {
 }
 
 template<typename T>
-inline void m2x2_multiply() {
-    mat2x2_multiply<T>(
+inline void m4x4_multiply() {
+    mat4x4_multiply<T>(
         Interpreter::gpr<ABI::PTR_REG_2>().address<T>(),
         Interpreter::gpr<ABI::PTR_REG_1>().address<T const>(),
         Interpreter::gpr<ABI::PTR_REG_0>().address<T const>()
@@ -93,11 +93,11 @@ inline void m2x2_multiply() {
 }
 
 template<typename T>
-inline void m2x2_multiply_assign() {
+inline void m4x4_multiply_assign() {
     T* pfDst = Interpreter::gpr<ABI::PTR_REG_1>().address<T>();
-    T pfTmp[4];
-    mat_copy<T, 2>(pfTmp, pfDst);
-    mat2x2_multiply<T>(
+    T pfTmp[16];
+    mat_copy<T, 4>(pfTmp, pfDst);
+    mat4x4_multiply<T>(
         pfDst,
         pfTmp,
         Interpreter::gpr<ABI::PTR_REG_0>().address<T const>()
@@ -105,38 +105,36 @@ inline void m2x2_multiply_assign() {
 }
 
 template<typename T>
-inline void m2x2_transpose() {
-    mat2x2_transpose<T>(
+inline void m4x4_transpose() {
+    mat4x4_transpose<T>(
         Interpreter::gpr<ABI::PTR_REG_1>().address<T>(),
         Interpreter::gpr<ABI::PTR_REG_0>().address<T const>()
     );
 }
 
 template<typename T>
-inline void m2x2_determinant() {
-    Interpreter::fpr<ABI::FLT_REG_0>().value<T>() = mat2x2_determinant<T>(
+inline void m4x4_determinant() {
+    Interpreter::fpr<ABI::FLT_REG_0>().value<T>() = mat4x4_determinant<T>(
         Interpreter::gpr<ABI::PTR_REG_0>().address<T const>()
     );
 }
 
 template<typename T>
-inline void m2x2_inverse() {
-    Interpreter::gpr<ABI::INT_REG_0>().uQuad = mat2x2_inverse<T>(
+inline void m4x4_inverse() {
+    Interpreter::gpr<ABI::INT_REG_0>().uQuad = mat4x4_inverse<T>(
         Interpreter::gpr<ABI::PTR_REG_1>().address<T>(),
         Interpreter::gpr<ABI::PTR_REG_0>().address<T const>()
     );
 }
 
-/**
- * Applies a Mat2x2 to an input set of Vec2
- */
 template<typename T>
-inline void vec2_transform_2x2(T* pfDst, T const* pfSrc, T const* pfM, size_t uCount) {
-    while (uCount--) {
-        *pfDst++ = pfM[M2_11] * pfSrc[V_X] + pfM[M2_12] * pfSrc[V_Y];
-        *pfDst++ = pfM[M2_21] * pfSrc[V_X] + pfM[M2_22] * pfSrc[V_Y];
-        pfSrc += 2;
-    }
+inline void v4_transform_4x4() {
+    vec4_transform_4x4<T>(
+        Interpreter::gpr<ABI::PTR_REG_2>().address<T>(),
+        Interpreter::gpr<ABI::PTR_REG_1>().address<T const>(),
+        Interpreter::gpr<ABI::PTR_REG_0>().address<T const>(),
+        Interpreter::gpr<ABI::INT_REG_0>().uLong
+    );
 }
 
 }
