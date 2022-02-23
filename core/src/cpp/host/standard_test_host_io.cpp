@@ -12,9 +12,9 @@
  */
 
 #include <cstdio>
-#include "host/standard_test_host_io.hpp"
-#include "machine/register.hpp"
-#include "host/io/inline.hpp"
+#include <host/standard_test_host_io.hpp>
+#include <machine/register.hpp>
+#include <host/io/inline.hpp>
 
 using MC64K::Machine::Interpreter;
 

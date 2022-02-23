@@ -1,5 +1,5 @@
-#ifndef __MC64K_LOADER_DEPENDENCY_HPP__
-#   define __MC64K_LOADER_DEPENDENCY_HPP__
+#ifndef __MC64K_STANDARD_TEST_HOST_DISPLAY_HPP__
+    #define __MC64K_STANDARD_TEST_HOST_DISPLAY_HPP__
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,20 +14,30 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include <cstdio>
-#include <misc/version.hpp>
+#include "standard_test_host.hpp"
 
-namespace MC64K::Loader {
+namespace MC64K::StandardTestHost::Display {
 
 /**
- * Dependency
+ * Call
  *
- * Simple dependency data structure
+ * Enumeration of calls in the Mem namespace
  */
-struct Dependency {
-    Misc::Version oVersion;
-    char const*   sName;
+enum Call {
+    INIT = 0,
+    DONE,
+    BEGIN
 };
 
+/**
+ * Error return values
+ */
+enum Result {
+    ERR_NO_DISPLAY = 1000,
+};
+
+Interpreter::Status hostVector(uint8 uFunctionID);
+
 } // namespace
+
 #endif

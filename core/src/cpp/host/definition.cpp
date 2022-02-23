@@ -15,8 +15,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <cassert>
-#include "host/definition.hpp"
-#include "machine/limits.hpp"
+#include <host/definition.hpp>
+#include <machine/limits.hpp>
 
 namespace MC64K::Host {
 

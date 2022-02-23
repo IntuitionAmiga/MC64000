@@ -15,8 +15,8 @@
  */
 
 #include <cstdio>
-#include "misc/scalar.hpp"
-#include "machine/limits.hpp"
+#include <misc/scalar.hpp>
+#include <machine/limits.hpp>
 #include "dependency.hpp"
 #include "binary.hpp"
 

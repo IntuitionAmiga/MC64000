@@ -10,84 +10,31 @@
  *
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
-
-#include "machine/interpreter.hpp"
-#include "machine/timing.hpp"
-#include "bytecode/opcode.hpp"
-#include "machine/gnarly.hpp"
 #include <cstdio>
 #include <cmath>
-#include <csetjmp>
+#include <machine/interpreter.hpp>
+#include <machine/timing.hpp>
+#include <bytecode/opcode.hpp>
+#include <machine/inline.hpp>
+#include <machine/gnarly.hpp>
 
 namespace MC64K::Machine {
 
-namespace {
-
-inline void rolByte(uint8* puValue, uint8 uSize) {
-    uSize &= 7;
-    uint8 val = *puValue;
-    *puValue = (uint8)(val << uSize | val >> (8 - uSize));
-}
-
-inline void rolWord(uint16* puValue, uint8 uSize) {
-    uSize &= 15;
-    uint16 val = *puValue;
-    *puValue = (uint16)(val << uSize | val >> (16 - uSize));
-}
-
-inline void rolLong(uint32* puValue, uint8 uSize) {
-    uSize &= 31;
-    uint32 val = *puValue;
-    *puValue = (uint32)(val << uSize | val >> (32 - uSize));
-}
-
-inline void rolQuad(uint64* puValue, uint8 uSize) {
-    uSize &= 63;
-    uint64 val = *puValue;
-    *puValue = (uint64)(val << uSize | val >> (64 - uSize));
-}
-
-inline void rorByte(uint8* puValue, uint8 uSize) {
-    uSize &= 7;
-    uint8 val = *puValue;
-    *puValue = (uint8)(val >> uSize | val << (8 - uSize));
-}
-
-inline void rorWord(uint16* puValue, uint8 uSize) {
-    uSize &= 15;
-    uint16 val = *puValue;
-    *puValue = (uint16)(val >> uSize | val << (16 - uSize));
-}
-
-inline void rorLong(uint32* puValue, uint8 uSize) {
-    uSize &= 31;
-    uint32 val = *puValue;
-    *puValue = (uint32)(val >> uSize | val << (32 - uSize));
-}
-
-inline void rorQuad(uint64* puValue, uint8 uSize) {
-    uSize &= 63;
-    uint64 val = *puValue;
-    *puValue = (uint64)(val >> uSize | val << (64 - uSize));
-}
-
-uint8 mapFloatClassification(int iClass) {
-    switch (iClass) {
-        case FP_ZERO:
-            return 0;
-        case FP_NORMAL:
-            return 1;
-        case FP_SUBNORMAL:
-            return 2;
-        case FP_INFINITE:
-            return 3;
-        case FP_NAN:
-        default:
-            return 4;
+void __attribute__((noinline)) Interpreter::handleHCF() {
+    // Get the function ID and call it. The function is expected to return a valid
+    // status code we can set.
+    uint8 uNext = *puProgramCounter++;
+    if (uNext < uNumHCFVectors) {
+        uint8 const* volatile pNext = puProgramCounter + 1;
+        eStatus = pcHCFVectors[uNext](*puProgramCounter++);
+        if (eStatus == INITIALISED) {
+            puProgramCounter = pNext;
+            eStatus = RUNNING;
+        }
+    } else {
+        eStatus = UNKNOWN_HOST_CALL;
     }
 }
-
-} // namespace
 
 /**
  * @inheritDoc
@@ -100,22 +47,19 @@ void Interpreter::run() {
         return;
     }
 
-    std::fprintf(stderr, "Beginning run at PC:%p...\n", puProgramCounter);
-
     eStatus    = RUNNING;
-    iCallDepth = 1;
+    int32 iCallDepth = 1;
 
     initDisplacement();
 
-    uint64 uInstructionCount = 0;
-    Nanoseconds::Value uStart = Nanoseconds::mark();
+    initMIPSReport();
 
     while (RUNNING == eStatus) {
 
         // Fast branch back location for operations that don't change the status
         skipstatus:
 
-        ++uInstructionCount;
+        updateMIPS();
         switch (*puProgramCounter++) {
 
             // Integer register to register fast path prefix
@@ -184,18 +128,10 @@ void Interpreter::run() {
                 // This opcode expects 0xFF followed by a byte indicating which function to call.
                 // If the second byte is not 0xFF we assume we aren't in a valid bytecode stream
                 // any more.
-                uint8 uNext = *puProgramCounter++;
-                if (uNext != 0xFF) {
+                if (*puProgramCounter++ != 0xFF) {
                     eStatus = CAUGHT_FIRE;
                 } else {
-                    // Get the function ID and call it. The function is expected to return a valid
-                    // status code we can set.
-                    uNext = *puProgramCounter++;
-                    if (uNext < uNumHCFVectors) {
-                        eStatus = pcHCFVectors[uNext](*puProgramCounter++);
-                    } else {
-                        eStatus = UNKNOWN_HOST_CALL;
-                    }
+                    handleHCF();
                 }
                 break;
             }
@@ -680,17 +616,7 @@ void Interpreter::run() {
         }
     }
 
-    Nanoseconds::Value uElapsed = Nanoseconds::mark() - uStart;
-
-    float64 fMIPS = (1000.0 * (float64)uInstructionCount) / (float64)uElapsed;
-
-    std::fprintf(
-        stderr,
-        "Total instructions %lu in %lu nanoseconds, %.2f MIPS\n",
-        uInstructionCount,
-        uElapsed,
-        fMIPS
-    );
+    outputMIPSReport();
 }
 
 }

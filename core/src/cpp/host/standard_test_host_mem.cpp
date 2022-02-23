@@ -14,9 +14,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include "host/standard_test_host_mem.hpp"
-#include "machine/register.hpp"
-#include "host/mem/inline.hpp"
+#include <host/standard_test_host_mem.hpp>
+#include <machine/register.hpp>
+#include <host/mem/inline.hpp>
 
 using MC64K::Machine::Interpreter;
 

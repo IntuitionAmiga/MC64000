@@ -11,9 +11,7 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include <cstdio>
-#include <cstdlib>
-#include "misc/version.hpp"
+#include <misc/version.hpp>
 
 namespace MC64K::Misc {
 

@@ -155,7 +155,7 @@ class Interpreter {
         static uint8*           puStackBase;
         static HCFVector const* pcHCFVectors;
         static Loader::Symbol*  poImportSymbols;
-        static int32            iCallDepth;
+        //static int32            iCallDepth;
         static uint32           uNumHCFVectors;
         static uint32           uNumImportSymbols;
 
@@ -196,6 +196,8 @@ class Interpreter {
          * @param uint8  const uEAMode
          */
         static void  restoreRegisters(uint32 const uMask, uint8 const uEAMode);
+
+        static void  handleHCF();
 };
 
 /**

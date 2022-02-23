@@ -14,7 +14,7 @@
 
     @equ nanotime           dc.b 0xF0 ; super undocumented opcodes ftw
 
-    @equ max_loops          #20000000
+    @equ max_loops          #80000000
     @equ loop_scale         #10000 ; 10x unroll x 1000 for scale to MIPS from ops/ns
     @equ loop_counter       r2
     @equ time_recorded      r14
@@ -34,13 +34,13 @@ main:
     hcf         io_print_string
 
     bsr         calibration
-    ;bsr         bench_add_reg_to_indirect
-    ;bsr         bench_add_reg_ind_to_reg_ind
-    ;bsr         bench_add_reg_to_label
-    ;bsr         bench_add_label_to_label
-    ;bsr         bench_small_imm_to_reg
-    ;bsr         bench_biz_int_taken
-    ;bsr         bench_biz_int_not_taken
+    bsr         bench_add_reg_to_indirect
+    bsr         bench_add_reg_ind_to_reg_ind
+    bsr         bench_add_reg_to_label
+    bsr         bench_add_label_to_label
+    bsr         bench_small_imm_to_reg
+    bsr         bench_biz_int_taken
+    bsr         bench_biz_int_not_taken
     bsr         bench_bsr_ret
     bsr         bench_hcf
 

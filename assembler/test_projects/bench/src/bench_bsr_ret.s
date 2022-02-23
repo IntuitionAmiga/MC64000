@@ -126,13 +126,13 @@ bench_bsr_ret:
     rts
 
 .benchmark_info:
-    dc.b "Benchmarking: bsr/ret\n\0"
+    dc.b "Benchmarking: bsr/rts\n\0"
 
 .benchmark_info_1:
-    dc.b "Benchmarking: bsr/ret (stack misaligned)\n\0"
+    dc.b "Benchmarking: bsr/rts (stack misaligned)\n\0"
 
 .benchmark_info_2:
-    dc.b "Benchmarking: bsr.b/ret (short negative displacement)\n\0"
+    dc.b "Benchmarking: bsr.b/rts (short negative displacement)\n\0"
 
 .benchmark_info_3:
-    dc.b "Benchmarking: bsr.b/ret (short negative displacement, stack misaligned)\n\0"
+    dc.b "Benchmarking: bsr.b/rts (short negative displacement, stack misaligned)\n\0"

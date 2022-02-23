@@ -14,9 +14,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <new>
-#include "mc64k.hpp"
-#include "loader/executable.hpp"
-#include "host/definition.hpp"
+#include <mc64k.hpp>
+#include <loader/executable.hpp>
+#include <host/definition.hpp>
 
 namespace MC64K::Loader {
 

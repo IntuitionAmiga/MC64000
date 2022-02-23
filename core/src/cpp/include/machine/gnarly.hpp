@@ -15,7 +15,7 @@
  */
 
 /**
- * Collection of gnarly macros. Bite me.
+ * Collection of horrible, gnarly macros. Bite me.
  */
 
 /**
@@ -34,8 +34,7 @@
  */
 #ifdef ALLOW_MISALIGNED_IMMEDIATE
 #define readDisplacement() \
-    iDisplacement = *((int32*)puProgramCounter); puProgramCounter+=4;
-
+    iDisplacement = *((int32*)puProgramCounter); puProgramCounter += 4;
 #else
 #define readDisplacement() \
     auBytes[0] = *puProgramCounter++; \
@@ -143,4 +142,29 @@
     puProgramCounter = (uint8 const*)(*(aoGPR[GPRegister::SP].puQuad)); \
     aoGPR[GPRegister::SP].puByte += 8;
 
+#ifdef REPORT_MIPS
+    #define initMIPSReport() \
+        std::fprintf(stderr, "Beginning run at PC:%p...\n", puProgramCounter); \
+        uint64 uInstructionCount = 0; \
+        Nanoseconds::Value uStart = Nanoseconds::mark();
+
+    #define updateMIPS() ++uInstructionCount;
+
+    #define outputMIPSReport() \
+        Nanoseconds::Value uElapsed = Nanoseconds::mark() - uStart; \
+        float64 fMIPS = (1000.0 * (float64)uInstructionCount) / (float64)uElapsed; \
+        std::fprintf( \
+            stderr, \
+            "Total instructions %lu in %lu nanoseconds, %.2f MIPS\n", \
+            uInstructionCount, \
+            uElapsed, \
+            fMIPS \
+        );
+#else
+    #define initMIPSReport()
+    #define updateMIPS()
+    #define outputMIPSReport()
 #endif
+
+#endif
+
