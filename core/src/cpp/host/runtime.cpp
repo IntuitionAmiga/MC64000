@@ -15,8 +15,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <cassert>
-#include "host/runtime.hpp"
-#include "loader/executable.hpp"
+#include <host/runtime.hpp>
+#include <loader/executable.hpp>
 
 namespace MC64K::Host {
 

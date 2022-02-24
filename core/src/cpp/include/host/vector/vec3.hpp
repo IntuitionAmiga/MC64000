@@ -16,7 +16,6 @@
 
 #include <cmath>
 #include <machine/register.hpp>
-//#include <host/standard_test_host.hpp>
 #include "offsets.hpp"
 
 /**

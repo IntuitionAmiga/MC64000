@@ -15,11 +15,12 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "host/standard_test_host_io.hpp"
-#include "host/standard_test_host_mem.hpp"
-#include "host/standard_test_host_vector_math.hpp"
-#include "loader/symbol.hpp"
-#include "machine/register.hpp"
+#include <host/standard_test_host_io.hpp>
+#include <host/standard_test_host_mem.hpp>
+#include <host/standard_test_host_vector_math.hpp>
+#include <host/standard_test_host_display.hpp>
+#include <loader/symbol.hpp>
+#include <machine/register.hpp>
 
 using MC64K::Loader::Symbol;
 using MC64K::Machine::Interpreter;
@@ -53,7 +54,8 @@ Host::Definition instance(
     {
         IO::hostVector,
         Mem::hostVector,
-        VectorMath::hostVector
+        VectorMath::hostVector,
+        Display::hostVector
     },
 
     // Symbols this host exports to the virtual code.

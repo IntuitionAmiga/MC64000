@@ -14,8 +14,8 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include "mc64k.hpp"
 #include <time.h>
+#include <mc64k.hpp>
 
 namespace MC64K::Machine {
 

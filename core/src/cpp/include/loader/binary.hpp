@@ -15,9 +15,9 @@
  */
 
 #include <cstdio>
+#include <host/definition.hpp>
 #include "error.hpp"
 #include "symbol.hpp"
-#include "host/definition.hpp"
 
 namespace MC64K::Loader {
 

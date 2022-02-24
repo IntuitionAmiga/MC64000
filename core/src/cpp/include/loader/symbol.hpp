@@ -15,9 +15,8 @@
  */
 
 #include <cstdio>
-#include "misc/exception.hpp"
-
 #include <initializer_list>
+#include <misc/exception.hpp>
 
 namespace MC64K::Loader {
 

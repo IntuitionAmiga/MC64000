@@ -23,7 +23,7 @@ namespace MC64K::StandardTestHost::IO {
  *
  * Enumeration of calls in the IO namespace
  */
-typedef enum {
+enum Call {
     INIT = 0,
     DONE,
 
@@ -196,39 +196,39 @@ typedef enum {
      */
     CBUF_PARSE_SINGLE,
     CBUF_PARSE_DOUBLE,
-} Call;
+};
 
 /**
  * Allowed modes for file opening
  */
-typedef enum {
+enum Openmode {
     OPEN_READ = 0,
     OPEN_WRITE,
     OPEN_APPEND,
     OPEN_READ_UPDATE,
     OPEN_WRITE_UPDATE,
     OPEN_APPEND_UPDATE
-} OpenMode;
+};
 
 /**
  * Allowed modes for file opening
  */
-typedef enum {
+enum SeekMode {
     FROM_START = 0,
     FROM_CURRENT,
     FROM_END,
-} SeekMode;
+};
 
 
 /**
  * Error return values
  */
-typedef enum {
+enum Result {
     ERR_FILE = 200,
     ERR_OPEN,
     ERR_READ,
     ERR_WRITE,
-} Result;
+};
 
 Interpreter::Status hostVector(uint8 uFunctionID);
 

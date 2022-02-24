@@ -15,10 +15,10 @@
 #include <cstring>
 #include <cstdlib>
 #include <cassert>
-#include "machine/error.hpp"
-#include "machine/limits.hpp"
-#include "machine/interpreter.hpp"
-#include "loader/executable.hpp"
+#include <machine/error.hpp>
+#include <machine/limits.hpp>
+#include <machine/interpreter.hpp>
+#include <loader/executable.hpp>
 
 namespace MC64K::Machine {
 
@@ -40,7 +40,7 @@ void*           Interpreter::pTmpEA                 = 0;
 uint8*          Interpreter::puStackTop             = 0;
 uint8*          Interpreter::puStackBase            = 0;
 Loader::Symbol* Interpreter::poImportSymbols        = 0;
-int32           Interpreter::iCallDepth             = 0;
+//int32           Interpreter::iCallDepth             = 0;
 uint32          Interpreter::uNumHCFVectors         = 0;
 uint32          Interpreter::uNumImportSymbols      = 0;
 
@@ -126,13 +126,13 @@ void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
             poStream,
             "Machine State\n"
             "\tProgram Counter: %p [... 0x%02X > 0x%02X < 0x%02X ...]\n"
-            "\tCall Depth:      %d\n"
+            //"\tCall Depth:      %d\n"
             "\tStatus:          %d [%s]\n\n",
             puProgramCounter,
             (uint32) *(puProgramCounter - 1),
             (uint32) *(puProgramCounter),
             (uint32) *(puProgramCounter + 1),
-            iCallDepth,
+            //iCallDepth,
             eStatus,
             asStatusNames[eStatus]
         );
@@ -140,9 +140,9 @@ void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
         std::fprintf(
             poStream,
             "Machine State\n"
-            "\tCall Depth:      %d\n"
+            //"\tCall Depth:      %d\n"
             "\tStatus:          %d [%s]\n\n",
-            iCallDepth,
+            //iCallDepth,
             eStatus,
             asStatusNames[eStatus]
         );
@@ -241,7 +241,6 @@ void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
         }
         std::fprintf(poStream, "\n");
     }
-
 }
 
 } // namespace

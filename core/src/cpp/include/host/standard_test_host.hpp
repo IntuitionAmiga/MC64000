@@ -27,15 +27,15 @@ namespace ABI {
 /**
  * Enumeration of entry points the host expects to find in the loaded binary.
  */
-typedef enum {
+enum EntryPoint {
     MAIN = 0,
     EXIT = 1
-} EntryPoint;
+};
 
 /**
  * ABI. Define the registers used for param/return before stack spillage
  */
-typedef enum {
+enum Register {
     // r0-r2 (d0-d2) reserved for the first 3 integer parameter/return
     INT_REG_0 = GPRegister::R0,
     INT_REG_1 = GPRegister::R1,
@@ -50,17 +50,16 @@ typedef enum {
     FLT_REG_0 = FPRegister::FP0,
     FLT_REG_1 = FPRegister::FP1,
     FLT_REG_2 = FPRegister::FP2,
-
-} Register;
+};
 
 /**
  * Common Error codes
  */
-typedef enum {
+enum Result {
     ERR_NONE = 0,
     ERR_NULL_PTR,
     ERR_BAD_SIZE,
-} Result;
+};
 
 } // namespace ABI
 

@@ -14,10 +14,9 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 #include <initializer_list>
-
-#include "machine/interpreter.hpp"
-#include "misc/version.hpp"
-#include "loader/symbol.hpp"
+#include <machine/interpreter.hpp>
+#include <misc/version.hpp>
+#include <loader/symbol.hpp>
 
 namespace MC64K::Host {
 

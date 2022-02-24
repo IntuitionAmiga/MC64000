@@ -13,13 +13,13 @@
 
 #include <cstdio>
 #include <cmath>
-#include "machine/register.hpp"
-#include "host/standard_test_host_vector_math.hpp"
-#include "host/vector/vec2.hpp"
-#include "host/vector/vec3.hpp"
-#include "host/vector/mat2x2.hpp"
-#include "host/vector/mat3x3.hpp"
-#include "host/vector/mat4x4.hpp"
+#include <machine/register.hpp>
+#include <host/standard_test_host_vector_math.hpp>
+#include <host/vector/vec2.hpp>
+#include <host/vector/vec3.hpp>
+#include <host/vector/mat2x2.hpp>
+#include <host/vector/mat3x3.hpp>
+#include <host/vector/mat4x4.hpp>
 
 using MC64K::Machine::Interpreter;
 

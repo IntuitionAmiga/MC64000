@@ -18,17 +18,12 @@
 #include "register.hpp"
 #include "error.hpp"
 
-namespace MC64K {
-
-/**
- * Forwards references
- */
-namespace Loader {
+namespace MC64K::Loader {
     class Executable;
     struct Symbol;
 }
 
-namespace Machine {
+namespace MC64K::Machine {
 
 /**
  * Interpreter
@@ -41,7 +36,7 @@ class Interpreter {
         /**
          * Status
          */
-        typedef enum {
+        enum Status {
             UNINITIALISED = 0,
             INITIALISED,
             RUNNING,
@@ -51,7 +46,7 @@ class Interpreter {
             UNIMPLEMENTED_EAMODE,
             UNKNOWN_HOST_CALL,
             INVALID_ENTRYPOINT
-        } Status;
+        };
 
         /**
          * Debug dump options
@@ -109,22 +104,6 @@ class Interpreter {
         static void run();
 
         /**
-         * Get a GRP register (range checked)
-         *
-         * @param  unsigned int const uReg
-         * @return GPRegister&
-         */
-        static GPRegister& gpr(unsigned int const uReg);
-
-        /**
-         * Get a FPR register (range checked)
-         *
-         * @param  unsigned int const uReg
-         * @return FPRegister&
-         */
-        static FPRegister& fpr(unsigned int const uReg);
-
-        /**
          * Get the GP register set (array access)
          */
         static GPRegister* gpr();
@@ -176,7 +155,7 @@ class Interpreter {
         static uint8*           puStackBase;
         static HCFVector const* pcHCFVectors;
         static Loader::Symbol*  poImportSymbols;
-        static int32            iCallDepth;
+        //static int32            iCallDepth;
         static uint32           uNumHCFVectors;
         static uint32           uNumImportSymbols;
 
@@ -217,6 +196,8 @@ class Interpreter {
          * @param uint8  const uEAMode
          */
         static void  restoreRegisters(uint32 const uMask, uint8 const uEAMode);
+
+        static void  handleHCF();
 };
 
 /**
@@ -243,20 +224,6 @@ inline FPRegister* Interpreter::fpr() {
 /**
  * @inheritDoc
  */
-inline GPRegister& Interpreter::gpr(unsigned int const uReg) {
-    return aoGPR[uReg & GPRegister::MASK];
-}
-
-/**
- * @inheritDoc
- */
-inline FPRegister& Interpreter::fpr(unsigned int const uReg) {
-    return aoFPR[uReg & FPRegister::MASK];
-}
-
-/**
- * @inheritDoc
- */
 template<unsigned N>
 inline constexpr GPRegister& Interpreter::gpr() {
     static_assert(N < GPRegister::MAX, "Invalid GPR number");
@@ -272,6 +239,5 @@ inline constexpr FPRegister& Interpreter::fpr() {
     return aoFPR[N];
 }
 
-
-}} // namespace
+} // namespace
 #endif
