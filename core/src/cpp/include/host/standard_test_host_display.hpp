@@ -26,14 +26,33 @@ namespace MC64K::StandardTestHost::Display {
 enum Call {
     INIT = 0,
     DONE,
+    OPEN,
+    CLOSE,
     BEGIN
+};
+
+enum PixelFormat {
+    PXL_LUT_8   = 0,
+    PXL_ARGB_32 = 1,
+    PXL_MAX
+};
+
+enum Dimension {
+    WIDTH_MIN  = 320,
+    HEIGHT_MIN = 200,
+    WIDTH_MAX  = 16384,
+    HEIGHT_MAX = 16384,
 };
 
 /**
  * Error return values
  */
 enum Result {
-    ERR_NO_DISPLAY = 1000,
+    ERR_NO_DISPLAY     = 1000,
+    ERR_INVALID_FMT    = 1001,
+    ERR_INVALID_WIDTH  = 1002,
+    ERR_INVALID_HEIGHT = 1003,
+    ERR_INVALID_ID     = 1010,
 };
 
 Interpreter::Status hostVector(uint8 uFunctionID);

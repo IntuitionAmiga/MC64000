@@ -12,18 +12,25 @@
 ;
 ; Empty project - main.s
 
+.display_properties:
+    dc.w 1, 800, 600, 0x0000 ; format, width, height, flags
+
 main:
     hcf     io_init
     hcf     display_init
 
-    lea     on_frame, r8
+    move.q  .display_properties, r0
+    hcf     display_open
 
-    hcf     display_begin
+    hcf     display_close
+
+;    lea     on_frame, r8
+;    hcf     display_begin
 
     move.q  #0xabadcafe, r7
 
-    lea     .exit_message, r8
-    hcf     io_print_string
+    ;lea     .exit_message, r8
+    ;hcf     io_print_string
 
 exit:
     move.q  #0xdeadbeef, r6
@@ -36,6 +43,8 @@ on_frame:
     lea     .frame_message, r8
     hcf     io_print_string
     rts
+
+
 
 .frame_message:
     dc.b "VM frame callback called\n\0"

@@ -15,6 +15,10 @@
 
     @def display_vector #3
 
+    @equ PXL_CLUT_8
+
     @equ display_init     #0, display_vector
     @equ display_done     #1, display_vector
-    @equ display_begin    #2, display_vector
+    @equ display_open     #2, display_vector
+    @equ display_close    #3, display_vector
+    @equ display_begin    #4, display_vector
