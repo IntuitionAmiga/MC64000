@@ -1,0 +1,84 @@
+#ifndef __MC64K_STANDARD_TEST_HOST_DISPLAY_CONTEXT_HPP__
+    #define __MC64K_STANDARD_TEST_HOST_DISPLAY_CONTEXT_HPP__
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *    - 64-bit 680x0-inspired Virtual Machine and assembler -
+ */
+
+#include <host/standard_test_host_display.hpp>
+
+namespace MC64K::StandardTestHost::Display {
+
+union PackedParams {
+    uint64 u64;
+    uint16 u16[4];
+    uint8  u8[8];
+};
+
+/**
+ * PixelPointer. Simple union to avoid casts.
+ */
+union PixelPointer {
+    void*   puAny;
+    uint8*  puByte;
+    uint16* puWord;
+    uint32* puLong;
+    PixelPointer(): puAny(nullptr) {}
+};
+
+class Manager;
+
+class Error {
+
+};
+
+/**
+ * Context Handle
+ *
+ * This is the structure that is returned to the MC64 code on successful opening of a display.
+ */
+struct Context {
+
+    uint8 const*    puOnFrameVMEntry;
+    uint8 const*    puOnEventVMEntry;
+
+    PixelPointer    pDisplayBuffer;
+    uint16          uWidth;
+    uint16          uHeight;
+    uint16          uPixelFormat;
+    uint16          uFlags;
+
+    /**
+     * Points to the manager of this context.
+     */
+    Manager*        poManager;
+
+};
+
+/**
+ * Root interface for different display managers. Successful instantiation of a derived class is expected
+ * to create a viable display instance.
+ *
+ * To close the display, destroy the instance.
+ */
+class Manager {
+    public:
+        virtual ~Manager() {};
+        virtual Context* getContext()   = 0;
+        virtual void     runEventLoop() = 0;
+};
+
+Manager* createManager(uint16 uWidth, uint16 uHeight, PixelFormat uFormat, uint16 uFlags);
+
+}
+
+#endif

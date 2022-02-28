@@ -10,44 +10,52 @@
 ;
 ;   - 64-bit 680x0-inspired Virtual Machine and assembler -
 ;
-; Empty project - main.s
-
-.display_properties:
-    dc.w 1, 800, 600, 0x0000 ; format, width, height, flags
 
 main:
     hcf     io_init
     hcf     display_init
 
+    ; try to open the display
     move.q  .display_properties, r0
     hcf     display_open
+    biz.q   a0, exit
+    move.q  a0, -(sp) ; save the context
 
+    ; Populate the callback handlers
+    lea     on_frame, (a0)  ; this is called every frame
+    lea     on_event, 8(a0) ; this is called per input event
+
+    ; Begin the main event loop
+    hcf     display_begin
+
+    ; Close the display
+    move.q  (sp)+, a0
     hcf     display_close
 
-;    lea     on_frame, r8
-;    hcf     display_begin
-
-    move.q  #0xabadcafe, r7
-
-    ;lea     .exit_message, r8
-    ;hcf     io_print_string
-
 exit:
-    move.q  #0xdeadbeef, r6
     hcf     display_done
     hcf     io_done
     rts
 
 on_frame:
-    add.q   #1, r5
-    lea     .frame_message, r8
+    lea     .frame_message, a0
     hcf     io_print_string
     rts
 
+on_event:
+    lea     .event_message, a0
+    hcf     io_print_string
+    rts
 
+    @align  0, 8
+.display_properties:
+    dc.w 640, 480, PXL_ARGB, 0x0000 ; width, height, format, flags
 
 .frame_message:
-    dc.b "VM frame callback called\n\0"
+    dc.b "VM timer callback\n\0"
+
+.event_message:
+    dc.b "VM event callback\n\0"
 
 .exit_message:
     dc.b "Exited from native loop\n\0"

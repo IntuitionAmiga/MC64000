@@ -3,7 +3,7 @@
  *
  * Opens a window and runs a simple event loop that includes a timer interrupt.
  *
- * g++ -Ofast -Wall window.cpp -o window -lX11
+ * g++ -Ofast -Wall -Wextra window.cpp -o window -lX11
  */
 
 #include <cstdio>
@@ -16,16 +16,28 @@
 int main() {
 
     XEvent   oEvent;
+    fd_set   oInputFD;
     timeval  oTimeVal;
 
     Display* poDisplay;
     Window   hWindow;
     int      iWindowFD;
-    fd_set   iInputFD;
+
 
     // Get handle to the main display
     poDisplay = XOpenDisplay(nullptr);
 
+    if (Screen* poScreen = XDefaultScreenOfDisplay(poDisplay)) {
+
+        std::printf(
+            "Found main display @ %p, Screen %p %d x %d\n",
+            poDisplay,
+            poScreen,
+            poScreen->width,
+            poScreen->height
+        );
+
+    }
     // Create our window on it
     hWindow   = XCreateSimpleWindow(
         poDisplay,
@@ -53,34 +65,35 @@ int main() {
 
     // Event Loop. Use select() to react to both X11 events and timer.
     int iRunning = 1;
-    int iFrame   = 0;
+    int iEvents  = 0;
     while (iRunning) {
         // Create a File Description Set containing iWindowFD
-        FD_ZERO(&iInputFD);
-        FD_SET(iWindowFD, &iInputFD);
+        FD_ZERO(&oInputFD);
+        FD_SET(iWindowFD, &oInputFD);
 
-        oTimeVal.tv_usec = 100000; // tem times a second
+        oTimeVal.tv_usec = 100000; // ten times a second
         oTimeVal.tv_sec  = 0;
 
-        int iReadyFD = select(iWindowFD + 1, &iInputFD, nullptr, nullptr, &oTimeVal);
+        int iReadyFD = select(iWindowFD + 1, &oInputFD, nullptr, nullptr, &oTimeVal);
         if (iReadyFD > 0) {
-            std::printf("Event %d\r", iFrame);
+            std::printf("Event %d\r", iEvents);
         } else if (iReadyFD == 0) {
-            std::printf("Timer %d\r", iFrame);
+            ++iEvents;
+            std::printf("Timer %d\r", iEvents);
         } else {
-            std::printf("Error %d\r", iFrame);
+            std::printf("Error %d\r", iEvents);
         }
 
         // Handle XEvents and flush the input. If a key is pressed, we'll exit the main loop.
         while (XPending(poDisplay)) {
             XNextEvent(poDisplay, &oEvent);
+            ++iEvents;
             if (oEvent.type == KeyPress) {
                 iRunning = 0;
                 break;
             }
         }
         std::fflush(stdout);
-        ++iFrame;
     }
     XCloseDisplay(poDisplay);
     std::puts("\nAdios.");

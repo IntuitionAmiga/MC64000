@@ -15,7 +15,8 @@
 
     @def display_vector #3
 
-    @equ PXL_CLUT_8
+    @equ PXL_CLUT_8       0
+    @equ PXL_ARGB         1
 
     @equ display_init     #0, display_vector
     @equ display_done     #1, display_vector

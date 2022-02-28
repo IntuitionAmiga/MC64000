@@ -14,46 +14,19 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <new>
 #include <host/standard_test_host_mem.hpp>
 #include <host/standard_test_host_display.hpp>
+#include <host/display/context.hpp>
 #include <machine/register.hpp>
 
 using MC64K::Machine::Interpreter;
 
 namespace MC64K::StandardTestHost::Display {
 
-
-union PackedParams {
-    uint64 u64;
-    uint16 u16[4];
-    uint8  u8[8];
-};
-
-union PixelPointer {
-    void*   puAny;
-    uint8*  puByte;
-    uint16* puWord;
-    uint32* puLong;
-};
-
-struct Context {
-    PixelPointer pDisplayBuffer;
-    uint32 uFlags;
-    uint16 uWidth;
-    uint16 uHeight;
-    uint16 uHardwareWidth;
-    uint16 uHardwareHeight;
-    uint16 uPixelFormat;
-};
-
 char const* aFormatNames[] = {
     "8-bit CLUT",
     "32-bit ARGB",
-};
-
-const uint8 aPixelSize[] = {
-    1,
-    4
 };
 
 /**
@@ -67,15 +40,24 @@ const uint8 aPixelSize[] = {
  */
 Interpreter::Status runEventLoop() {
 
-    uint8 const* volatile puFrameHookByteCode = Interpreter::gpr<ABI::PTR_REG_0>().address<uint8 const>();
-    if (puFrameHookByteCode) {
-        for (int i = 0; i < 5; ++i) {
-            Interpreter::setProgramCounter(puFrameHookByteCode);
-            Interpreter::run();
-        }
-        return Interpreter::INITIALISED;
+    Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>();
+    if (!poContext || !poContext->poManager) {
+        Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NULL_PTR;
+        return Interpreter::RUNNING;
     }
-    return Interpreter::INVALID_ENTRYPOINT;
+    poContext->poManager->runEventLoop();
+    return Interpreter::INITIALISED;
+
+//     return Interpreter::RUNNING;
+//     uint8 const* volatile puFrameHookByteCode = Interpreter::gpr<ABI::PTR_REG_0>().address<uint8 const>();
+//     if (puFrameHookByteCode) {
+//         for (int i = 0; i < 5; ++i) {
+//             Interpreter::setProgramCounter(puFrameHookByteCode);
+//             Interpreter::run();
+//         }
+//         return Interpreter::INITIALISED;
+//     }
+//     return Interpreter::INVALID_ENTRYPOINT;
 }
 
 void openDisplay() {
@@ -84,11 +66,19 @@ void openDisplay() {
 
     oParams.u64 = Interpreter::gpr<ABI::INT_REG_0>().value<uint64>();
 
-    uint16 uFormat = oParams.u16[0];
-    uint16 uWidth  = oParams.u16[1];
-    uint16 uHeight = oParams.u16[2];
+    std::printf(
+        "openDisplay %d %d %d %d\n",
+        (int)oParams.u16[0],
+        (int)oParams.u16[1],
+        (int)oParams.u16[2],
+        (int)oParams.u16[3]
+    );
 
-    if (uFormat >= PF_MAX) {
+    uint16 uWidth  = oParams.u16[0];
+    uint16 uHeight = oParams.u16[1];
+    uint16 uFormat = oParams.u16[2];
+
+    if (uFormat >= PXL_MAX) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>()    = ERR_INVALID_FMT;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = 0;
         return;
@@ -106,38 +96,23 @@ void openDisplay() {
         return;
     }
 
-    size_t uBufferSize = uWidth * uHeight * aPixelSize[uFormat] + sizeof(Context);
-
-    if (void* pAllocation = std::malloc(uBufferSize)) {
-        std::printf(
-            "\nHCF: Open Display Requested %" PFU16 " x %" PFU16 " fmt: %s, size needed %zu bytes, allocated at %p\n",
-            uWidth,
-            uHeight,
-            aFormatNames[uFormat],
-            uBufferSize,
-            pAllocation
-        );
-        Context *poContext = (Context*)pAllocation;
-        poContext->pDisplayBuffer.puByte = ((uint8*)pAllocation) + sizeof(Context);
-        poContext->uFlags                = 0;
-        poContext->uHardwareWidth        = poContext->uWidth  = uWidth;
-        poContext->uHardwareHeight       = poContext->uHeight = uHeight;
-        poContext->uPixelFormat          = uFormat;
-        Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NONE;
-        Interpreter::gpr<ABI::PTR_REG_0>().pAny = pAllocation;
-    } else {
+    try {
+        // Obtain the appropriate manager for the host. This should use RAII semantics
+        Manager* poManager = createManager(uWidth, uHeight, (PixelFormat)uFormat, oParams.u16[3]);
+        Interpreter::gpr<ABI::PTR_REG_0>().pAny = poManager->getContext();
+    } catch (Error& roError) {
+        Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = Mem::ERR_NO_MEM;
+        Interpreter::gpr<ABI::PTR_REG_0>().pAny = 0;
+    } catch (std::bad_alloc&) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = Mem::ERR_NO_MEM;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = 0;
     }
 }
 
 void closeDisplay() {
-    if (Context* pContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>()) {
-        std::printf(
-            "\nHCF: Close Display at %p\n",
-            pContext
-        );
-        std::free(pContext);
+    if (Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>()) {
+        delete poContext->poManager;
+        poContext = nullptr;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = 0;
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NONE;
     } else {

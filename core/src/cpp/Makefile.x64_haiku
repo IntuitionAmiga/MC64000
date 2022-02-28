@@ -3,6 +3,8 @@
 # Target
 BIN      = bin/interpreter_x64
 
+# This sets the source file to use for the display context manager. Platform dependent.
+USE_DISP_CTX = dummy
 
 # Compiler settings
 CXXFLAGS = -Wall -Werror -Ofast -march=native -mtune=native -mavx2 -fPIC -pipe -Iinclude
