@@ -76,11 +76,10 @@ on_mouse_up:
     @align  0, 8
 .display_properties:
     ; width, height, format, input flags
-    dc.w 640, 480, PXL_ARGB, 0x00FF
+    dc.w 320, 240, PXL_ARGB, 0x00FF
 
 .frame_message:
     dc.b "VM frame\n\0"
-
 .key_down_message:
     dc.b "VM key pressed \0"
 .key_up_message:
