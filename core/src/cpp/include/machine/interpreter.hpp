@@ -34,6 +34,11 @@ class Interpreter {
 
     public:
         /**
+         * Explicit type for interpreter entry
+         */
+        typedef uint8 const* VMCodeEntryPoint;
+
+        /**
          * Status
          */
         enum Status {
@@ -96,7 +101,7 @@ class Interpreter {
         /**
          * Specify the bytecode location to begin execution from
          */
-        static void setProgramCounter(uint8 const* puNewProgramCounter);
+        static void setProgramCounter(VMCodeEntryPoint pByteCode);
 
         /**
          * Run!
@@ -147,7 +152,6 @@ class Interpreter {
     private:
         static GPRegister       aoGPR[GPRegister::MAX];
         static FPRegister       aoFPR[FPRegister::MAX];
-//        static uint8 const*     puProgramCounter;
         static void*            pDstEA;
         static void*            pSrcEA;
         static void*            pTmpEA;
@@ -155,7 +159,6 @@ class Interpreter {
         static uint8*           puStackBase;
         static HCFVector const* pcHCFVectors;
         static Loader::Symbol*  poImportSymbols;
-        //static int32            iCallDepth;
         static uint32           uNumHCFVectors;
         static uint32           uNumImportSymbols;
 

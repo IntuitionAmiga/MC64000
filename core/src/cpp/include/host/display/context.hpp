@@ -47,10 +47,14 @@ class Error {
  * This is the structure that is returned to the MC64 code on successful opening of a display.
  */
 struct Context {
+    /**
+     * VM frame entry callback. Populated by the VM
+     */
+    Interpreter::VMCodeEntryPoint apVMCall[CALL_MAX];
 
-    uint8 const*    puOnFrameVMEntry;
-    uint8 const*    puOnEventVMEntry;
-
+    /**
+     * Address of direct accessible pixel buffer
+     */
     PixelPointer    pDisplayBuffer;
     uint16          uWidth;
     uint16          uHeight;
@@ -58,10 +62,29 @@ struct Context {
     uint16          uFlags;
 
     /**
+     * Read by VM code
+     * For keyboard events, contains the enumeration of the key pressed or released.
+     * For mouse events, contains the enumeration of the button pressed or released.
+     */
+    uint16          uEventRawCode;
+
+    /**
+     * Read by VM code
+     * For all events, contains a mask of the currently active mouse buttons.
+     */
+    uint16          uEventRawMask;
+
+    /**
+     * Read by VM code
+     * For all events, contains the current mouse position.
+     */
+    uint16          uPositionX;
+    uint16          uPositionY;
+
+    /**
      * Points to the manager of this context.
      */
     Manager*        poManager;
-
 };
 
 /**

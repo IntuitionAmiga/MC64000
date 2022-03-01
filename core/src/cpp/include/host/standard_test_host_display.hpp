@@ -44,6 +44,25 @@ enum Dimension {
     HEIGHT_MAX = 16384,
 };
 
+enum Flags {
+    FLAG_FRAME    = 0x0001,
+    FLAG_KEY_DOWN = 0x0002,
+    FLAG_KEY_UP   = 0x0004,
+    FLAG_MOVE     = 0x0008,
+    FLAG_PRESS    = 0x0010,
+    FLAG_RELEASE  = 0x0020,
+};
+
+enum ContextCall {
+    CALL_FRAME          = 0,
+    CALL_KEY_PRESS      = 1,
+    CALL_KEY_RELEASE    = 2,
+    CALL_BUTTON_PRESS   = 3,
+    CALL_BUTTON_RELEASE = 4,
+    CALL_MOVEMENT       = 5,
+    CALL_MAX
+};
+
 /**
  * Error return values
  */
