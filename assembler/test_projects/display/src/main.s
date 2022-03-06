@@ -71,12 +71,19 @@ on_mouse_up:
     hcf     io_print_long
     lea     .newline, a0
     hcf     io_print_string
+    clr.l   d1
+    move.q  DISPLAY_REG_SOFT_BUFFER_ADDRESS(a2), a0
+    move.w  DISPLAY_REG_EVENT_CODE(a2), d0
+    move.l  DISPLAY_REG_SOFT_BUFFER_BYTES(a2), d1
+    hcf     mem_fill_byte
     rts
 
     @align  0, 8
 .display_properties:
-    ; width, height, format, input flags
-    dc.w 320, 240, PXL_ARGB, 0x00FF
+    ; width, height, flags
+    dc.w 640, 480, 0x000F
+    ; format, target refresh Hz
+    dc.b PXL_ARGB, 30
 
 .frame_message:
     dc.b "VM frame\n\0"

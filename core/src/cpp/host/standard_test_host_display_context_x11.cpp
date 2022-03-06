@@ -20,12 +20,14 @@
 #include <host/standard_test_host_display.hpp>
 #include <host/display/context.hpp>
 #include <machine/register.hpp>
+#include <machine/timing.hpp>
 
 #include <sys/select.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
 using MC64K::Machine::Interpreter;
+using MC64K::Machine::Nanoseconds;
 
 namespace MC64K::StandardTestHost::Display {
 
@@ -36,22 +38,22 @@ const uint8 aPixelSize[] = {
 /**
  * RAII Handle for Display Pointer
  */
-class X11Display {
+class DisplayHandle {
     private:
         ::Display* poDisplay;
 
     public:
-        X11Display(): poDisplay(::XOpenDisplay(nullptr)) {
+        DisplayHandle(): poDisplay(::XOpenDisplay(nullptr)) {
             if (!poDisplay) {
                 throw Error();
             }
-            std::fprintf(stderr, "X11Display RAII: Opened Display Handle %p\n", poDisplay);
+            std::fprintf(stderr, "DisplayHandle RAII: Opened Display Handle %p\n", poDisplay);
         }
 
-        ~X11Display() {
+        ~DisplayHandle() {
             if (poDisplay) {
                 ::XCloseDisplay(poDisplay);
-                std::fprintf(stderr, "X11Display RAII: Closed Display Handle %p\n", poDisplay);
+                std::fprintf(stderr, "DisplayHandle RAII: Closed Display Handle %p\n", poDisplay);
             }
         }
 
@@ -60,6 +62,42 @@ class X11Display {
          */
         ::Display* get() {
             return poDisplay;
+        }
+};
+
+/**
+ * RAII Handle for XImage Pointer. Destroys the data pointer so that the destroy function
+ * doesn't free our externally allocated image data for us as that's a double free waiting
+ * to happen.
+ */
+class XImageHandle {
+    private:
+        ::XImage* poImage;
+
+    public:
+        XImageHandle() : poImage(nullptr) {}
+
+        ~XImageHandle() {
+            if (poImage) {
+                // Don't allow X to destroy the buffer data as it's managed by us.
+                poImage->data = nullptr;
+                XDestroyImage(poImage);
+                std::fprintf(stderr, "XImageHandle RAII: Destoyed Image Handle %p\n", poImage);
+            }
+        }
+
+        /**
+         * Set the handle
+         */
+        void set(::XImage* poImage) {
+            this->poImage = poImage;
+        }
+
+        /**
+         * Obtain the handle
+         */
+        ::XImage* get() {
+            return poImage;
         }
 };
 
@@ -92,26 +130,28 @@ struct X11Context : public Context {
  */
 class X11Manager : public Manager {
     private:
-        X11Context oContext;
-        ::XEvent   oEvent;
-        ::fd_set   oInputFD;
-        ::timeval  oTimeVal;
-        X11Display oDisplay;
-        ::Window   uWindowID;
-        int        iWindowFD;
-
+        X11Context    oContext;
+        ::XEvent      oEvent;
+        DisplayHandle oDisplay;
+        XImageHandle  oImage;
+        ::Window      uWindowID;
+        ::Pixmap      uPixmapID;
+        GC            pGC;
+        int           iWindowFD, iWidth, iHeight, iDepth;
+;
     public:
         /**
          * Constructor. Follows RAII principle.
          *
          * @param  uint16 uWidth
          * @param  uint16 uHeight
-         * @param  PixelFormat uFormat
          * @param  uint16 uFlags
+         * @param  uint8  uFormat
+         * @param  uint8  uRateHz
          * @throws Error
          * @throws std::bad_alloc
          */
-        X11Manager(uint16 uWidth, uint16 uHeight, PixelFormat uFormat, uint16 uFlags);
+        X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
         virtual ~X11Manager();
 
         /**
@@ -135,9 +175,9 @@ class X11Manager : public Manager {
         }
 
         /**
-         * Set up the display input handling based on the flags
+         * Set up the display input handling based on the currently set callbacks
          */
-        void configureInput(uint16 uFlags);
+        long configureInputMask();
 
         /**
          * Handle an X11 event
@@ -153,24 +193,28 @@ class X11Manager : public Manager {
 /**
  * Constructor. We use RAII here and throw exceptions if a requirement can't be met.
  */
-X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, PixelFormat uFormat, uint16 uFlags):
+X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz):
     oContext(),
     oEvent(),
-    oInputFD(),
-    oTimeVal(),
     oDisplay(),
+    oImage(),
     uWindowID(0),
-    iWindowFD(0)
+    uPixmapID(0),
+    pGC(nullptr),
+    iWindowFD(0),
+    iWidth(uWidth),
+    iHeight(uHeight),
+    iDepth(aPixelSize[uFormat] << 3)
 {
     ::Display* poDisplay = oDisplay.get();
     std::fprintf(stderr, "X11Manager: Found Display at %p\n", poDisplay);
     uWindowID = ::XCreateSimpleWindow(
         poDisplay,
-        RootWindow(poDisplay, 0),
-        128, 128,
+        DefaultRootWindow(poDisplay),
+        0, 0,
         uWidth, uHeight,
         0,
-        BlackPixel(poDisplay, 0),
+        0,
         BlackPixel(poDisplay, 0)
     );
 
@@ -178,18 +222,56 @@ X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, PixelFormat uFormat, uint1
 
     ::XStoreName(poDisplay, uWindowID, "MC64K [Press Esc to exit]");
 
-    configureInput(uFlags);
+    int iX11Depth = DefaultDepth(poDisplay, 0);
+    std::fprintf(stderr, "Allocating Pixmap %d x %d x %d (bits)\n", iWidth, iHeight, iX11Depth);
+
+    uPixmapID = ::XCreatePixmap(
+        poDisplay,
+        uWindowID,
+        iWidth,
+        iHeight,
+        iX11Depth//iDepth
+    );
+
+    std::fprintf(stderr, "Allocated Pixmap ID %lu\n", uPixmapID);
+
+    pGC = ::XCreateGC(poDisplay, uPixmapID, 0, nullptr);
+    std::fprintf(stderr, "Graphics Context at %p\n", pGC);
+
+
+    oContext.uNumPixels   = uWidth * uHeight;
+    oContext.uNumBytes    = oContext.uNumPixels * aPixelSize[uFormat];
+    oContext.uWidth       = uWidth;
+    oContext.uHeight      = uHeight;
+    oContext.uFlags       = uFlags;
+    oContext.uPixelFormat = uFormat;
+    oContext.uRateHz      = uRateHz < 1 ? 1 : uRateHz;
+    oContext.poManager    = this;
+    oContext.allocateBuffer();
+
+    XImage* poImage = ::XCreateImage(
+        poDisplay,
+        DefaultVisual(poDisplay, DefaultScreen(poDisplay)),
+        iX11Depth,//iDepth,
+        ZPixmap,
+        0, // offset
+        (char*)oContext.pDisplayBuffer.puByte,
+        iWidth,
+        iHeight,
+        32, // bitmap_pad
+        iWidth * 4  // bytes_per_line
+    );
+    if (!poImage) {
+        throw Error();
+    }
+    oImage.set(poImage);
+
+    std::fprintf(stderr, "XImage allocated at %p\n", poImage);
 
     // Open the window
     ::XMapWindow(poDisplay, uWindowID);
     ::XFlush(poDisplay);
 
-    oContext.uWidth       = uWidth;
-    oContext.uHeight      = uHeight;
-    oContext.uFlags       = uFlags;
-    oContext.uPixelFormat = uFormat;
-    oContext.poManager    = this;
-    oContext.allocateBuffer();
     std::fprintf(stderr, "X11Manager: RAII Complete, we live at: %p\n", this);
 }
 
@@ -197,6 +279,9 @@ X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, PixelFormat uFormat, uint1
  * Destructor.
  */
 X11Manager::~X11Manager() {
+    if (uPixmapID) {
+        ::XFreePixmap(oDisplay.get(), uPixmapID);
+    }
     std::fprintf(stderr, "X11Manager destroyed\n");
 }
 
@@ -214,58 +299,86 @@ void X11Manager::runEventLoop() {
 
     ::Display* poDisplay = oDisplay.get();
 
+    long iCurrentXInputFlags = configureInputMask();
+    ::XSelectInput(poDisplay, uWindowID, iCurrentXInputFlags);
+
+    Nanoseconds::Value uFrametime = 1000000000 / oContext.uRateHz;
+
     // Get the file descriptor associated with the display
     iWindowFD = ConnectionNumber(poDisplay);
 
-    // Event Loop. Use select() to react to both X11 events and timer.
-    bool bRunning = true;
+    while (true) {
 
-    uint16 uCurrentFlags = oContext.uFlags;
+        Nanoseconds::Value uMark = Nanoseconds::mark();
 
-    while ( bRunning ) {
-        // Create a File Description Set containing iWindowFD
-        FD_ZERO(&oInputFD);
-        FD_SET(iWindowFD, &oInputFD);
-
-        oTimeVal.tv_usec = 0;
-        oTimeVal.tv_sec  = 1;
-
-        int iReadyFD = select(iWindowFD + 1, &oInputFD, nullptr, nullptr, &oTimeVal);
-        if (iReadyFD == 0 && oContext.apVMCall[CALL_FRAME]) {
-            invokeVMCallback(oContext.apVMCall[CALL_FRAME]);
-        }
-
-        // Handle XEvents and flush the input. If a key is pressed, we'll exit the main loop.
+        // Handle XEvents and flush the input..
         while (::XPending(poDisplay)) {
             ::XNextEvent(poDisplay, &oEvent);
             handleEvent();
             if (oEvent.type == KeyPress && event<::XKeyEvent>().keycode == 9) {
-                bRunning = false;
-                break;
+                return;
             }
         }
 
-        // Check to see if any of the VM code running has changed flags for our display that we need
-        // to know about.
-        if (oContext.uFlags != uCurrentFlags) {
-            uCurrentFlags = oContext.uFlags;
-            configureInput(uCurrentFlags);
+        // Check for changes to the handlers.
+        long iNewXInputFlags = configureInputMask();
+        if (iNewXInputFlags != iCurrentXInputFlags) {
+            iCurrentXInputFlags = iNewXInputFlags;
+            ::XSelectInput(poDisplay, uWindowID, iCurrentXInputFlags);
+        }
+
+        if (oContext.apVMCall[CALL_FRAME]) {
+            invokeVMCallback(oContext.apVMCall[CALL_FRAME]);
+        }
+
+        // Check if we need to copy the pixel buffer to the offscreen buffer
+        if (oContext.uFlags & (FLAG_DRAW_BUFFER_NEXT_FRAME|FLAG_DRAW_BUFFER_ALL_FRAMES)) {
+            ::XPutImage(
+                poDisplay,
+                uPixmapID,
+                pGC,
+                oImage.get(),
+                0, 0, 0, 0, iWidth, iHeight
+            );
+            oContext.uFlags &= (uint16)~FLAG_DRAW_BUFFER_NEXT_FRAME;
+        }
+
+        // Check if we need to flip the offscreen buffer
+        if (oContext.uFlags & (FLAG_FLIP_NEXT_FRAME|FLAG_FLIP_ALL_FRAMES)) {
+            ::XCopyArea(poDisplay, uPixmapID, uWindowID, pGC, 0, 0, iWidth, iHeight, 0, 0);
+            oContext.uFlags &= (uint16)~FLAG_FLIP_NEXT_FRAME;
+        }
+        Nanoseconds::Value uElapsed = Nanoseconds::mark() - uMark;
+
+        if (uElapsed < uFrametime) {
+            Nanoseconds::sleep(uFrametime - uElapsed);
         }
     }
 }
 
-void X11Manager::configureInput(uint16 uFlags) {
-    long int iXInputFlags = ExposureMask | StructureNotifyMask;
-    iXInputFlags |= (uFlags & FLAG_KEY_DOWN ? KeyPressMask      : 0);
-    iXInputFlags |= (uFlags & FLAG_KEY_UP   ? KeyReleaseMask    : 0);
-    iXInputFlags |= (uFlags & FLAG_MOVE     ? PointerMotionMask : 0);
-    iXInputFlags |= (uFlags & FLAG_PRESS    ? ButtonPressMask   : 0);
-    iXInputFlags |= (uFlags & FLAG_RELEASE  ? ButtonReleaseMask : 0);
-    ::XSelectInput(oDisplay.get(), uWindowID, iXInputFlags);
+/**
+ * Configures the X11 Input Mask based on which VM callbacks are set. For example. there is no point
+ * receiving mouse movements if there isn't a callback to handle them.
+ */
+long X11Manager::configureInputMask() {
+    long int iXInputMask = 0;
+    iXInputMask |= (oContext.apVMCall[CALL_KEY_PRESS]      ? KeyPressMask      : 0);
+    iXInputMask |= (oContext.apVMCall[CALL_KEY_RELEASE]    ? KeyReleaseMask    : 0);
+    iXInputMask |= (oContext.apVMCall[CALL_MOVEMENT]       ? PointerMotionMask : 0);
+    iXInputMask |= (oContext.apVMCall[CALL_BUTTON_PRESS]   ? ButtonPressMask   : 0);
+    iXInputMask |= (oContext.apVMCall[CALL_BUTTON_RELEASE] ? ButtonReleaseMask : 0);
+    return iXInputMask;
 }
 
+/**
+ * Handles an XEvent. Due to the nature of the protocol, we can't assume that just because we have
+ * disabled a VM handler we won't have any events still waiting for it. This means we still have to
+ * check each handler before we attempt to call it.
+ */
 void X11Manager::handleEvent() {
     switch (oEvent.type) {
+        case NoExpose:
+            break;
         case KeyPress:
             if (oContext.apVMCall[CALL_KEY_PRESS]) {
                 oContext.uEventRawCode = (uint16) event<::XKeyEvent>().keycode;
@@ -322,8 +435,8 @@ void X11Manager::invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode) {
     Interpreter::run();
 }
 
-Manager* createManager(uint16 uWidth, uint16 uHeight, PixelFormat uFormat, uint16 uFlags) {
-    return new X11Manager(uWidth, uHeight, uFormat, uFlags);
+Manager* createManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz) {
+    return new X11Manager(uWidth, uHeight, uFlags, uFormat, uRateHz);
 }
 
 } // namespace

@@ -47,17 +47,6 @@ Interpreter::Status runEventLoop() {
     }
     poContext->poManager->runEventLoop();
     return Interpreter::INITIALISED;
-
-//     return Interpreter::RUNNING;
-//     uint8 const* volatile puFrameHookByteCode = Interpreter::gpr<ABI::PTR_REG_0>().address<uint8 const>();
-//     if (puFrameHookByteCode) {
-//         for (int i = 0; i < 5; ++i) {
-//             Interpreter::setProgramCounter(puFrameHookByteCode);
-//             Interpreter::run();
-//         }
-//         return Interpreter::INITIALISED;
-//     }
-//     return Interpreter::INVALID_ENTRYPOINT;
 }
 
 void openDisplay() {
@@ -67,16 +56,19 @@ void openDisplay() {
     oParams.u64 = Interpreter::gpr<ABI::INT_REG_0>().value<uint64>();
 
     std::printf(
-        "openDisplay %d %d %d %d\n",
+        "openDisplay w:%d h:%d flags:%d fmt:%d, hz:%d\n",
         (int)oParams.u16[0],
         (int)oParams.u16[1],
         (int)oParams.u16[2],
-        (int)oParams.u16[3]
+        (int)oParams.u8[6],
+        (int)oParams.u8[7]
     );
 
     uint16 uWidth  = oParams.u16[0];
     uint16 uHeight = oParams.u16[1];
-    uint16 uFormat = oParams.u16[2];
+    uint16 uFlags  = oParams.u16[2];
+    uint8  uFormat = oParams.u8[6];
+    uint8  uRateHz = oParams.u8[7];
 
     if (uFormat >= PXL_MAX) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>()    = ERR_INVALID_FMT;
@@ -98,7 +90,13 @@ void openDisplay() {
 
     try {
         // Obtain the appropriate manager for the host. This should use RAII semantics
-        Manager* poManager = createManager(uWidth, uHeight, (PixelFormat)uFormat, oParams.u16[3]);
+        Manager* poManager = createManager(
+            uWidth,
+            uHeight,
+            uFlags,
+            uFormat,
+            uRateHz
+        );
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = poManager->getContext();
     } catch (Error& roError) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = Mem::ERR_NO_MEM;

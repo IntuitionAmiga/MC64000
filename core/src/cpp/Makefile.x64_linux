@@ -8,10 +8,10 @@ USE_DISP_CTX = x11
 
 # This sets a global register to reserve for the VM program counter, which is a big performance win (applied for gcc)
 VM_PC_RESERVE_REG = r12
-
+#VM_PC_RESERVE_REG = none
 
 # Compiler settings
-CXXFLAGS = -Wall -Wconversion -Werror -Ofast -march=native -mtune=native -mavx2 -fPIC -pipe -Iinclude -DALLOW_MISALIGNED_IMMEDIATE
+CXXFLAGS = --std=c++17 -Wall -Wconversion -Werror -Ofast -march=native -mtune=native -mavx2 -fPIC -pipe -Iinclude -DALLOW_MISALIGNED_IMMEDIATE
 GCC_CXXFLAGS = -fexpensive-optimizations -funroll-all-loops -DMESSAGE='"Compiled with GCC"'
 CLANG_CXXFLAGS = -v -funroll-loops -DMESSAGE='"Compiled with Clang"'
 UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'

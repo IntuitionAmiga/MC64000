@@ -56,10 +56,13 @@ struct Context {
      * Address of direct accessible pixel buffer
      */
     PixelPointer    pDisplayBuffer;
+    uint32          uNumPixels;
+    uint32          uNumBytes;
     uint16          uWidth;
     uint16          uHeight;
-    uint16          uPixelFormat;
     uint16          uFlags;
+    uint8           uPixelFormat;
+    uint8           uRateHz;
 
     /**
      * Read by VM code
@@ -100,7 +103,7 @@ class Manager {
         virtual void     runEventLoop() = 0;
 };
 
-Manager* createManager(uint16 uWidth, uint16 uHeight, PixelFormat uFormat, uint16 uFlags);
+Manager* createManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
 
 }
 

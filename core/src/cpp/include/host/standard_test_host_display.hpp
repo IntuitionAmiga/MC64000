@@ -45,12 +45,30 @@ enum Dimension {
 };
 
 enum Flags {
-    FLAG_FRAME    = 0x0001,
-    FLAG_KEY_DOWN = 0x0002,
-    FLAG_KEY_UP   = 0x0004,
-    FLAG_MOVE     = 0x0008,
-    FLAG_PRESS    = 0x0010,
-    FLAG_RELEASE  = 0x0020,
+    /**
+     * When set, this flag signals that the direct writable pixel buffer should be copied to the
+     * offscreen buffer on the next frame. This is cleared when the operation happens, making this
+     * flag useful for one-off updates.
+     */
+    FLAG_DRAW_BUFFER_NEXT_FRAME = 0x0001,
+
+    /**
+     * When set, this flag signals that the direct writable pixel buffer should be copied to the
+     * offscreen buffer on every frame, regardless of the state of FLAG_DRAW_BUFFER_NEXT_FRAME.
+     */
+    FLAG_DRAW_BUFFER_ALL_FRAMES = 0x0002,
+
+    /**
+     * When set, this flag signals that the visible and offscreen buffers should be flipped on the next
+     * frame. This is cleared when the operation happens, making this flag useful for one-off updates.
+     */
+    FLAG_FLIP_NEXT_FRAME = 0x0004,
+
+    /**
+     * When set, this flag signals that the visible and offscreen buffers should be flipped on every
+     * frame, regardless of the state of FLAG_FLIP_NEXT_FRAME.
+     */
+    FLAG_FLIP_ALL_FRAMES = 0x0008,
 };
 
 enum ContextCall {
