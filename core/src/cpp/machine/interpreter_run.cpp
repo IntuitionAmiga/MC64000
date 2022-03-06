@@ -617,6 +617,7 @@ void Interpreter::run() {
     }
 
     outputMIPSReport();
+
 }
 
 }

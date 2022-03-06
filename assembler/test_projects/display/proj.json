@@ -18,6 +18,7 @@
     "sources": [
         "lib:standard_test_host/v1.0.0/host.s",
         "lib:standard_test_host/v1.0.0/io.s",
+        "lib:standard_test_host/v1.0.0/mem.s",
         "lib:standard_test_host/v1.0.0/display.s",
         "src/main.s"
     ],
