@@ -303,9 +303,14 @@ void X11Manager::runEventLoop() {
     ::XSelectInput(poDisplay, uWindowID, iCurrentXInputFlags);
 
     Nanoseconds::Value uFrametime = 1000000000 / oContext.uRateHz;
+    Nanoseconds::Value uIdle  = 0;
+    Nanoseconds::Value uBegin = Nanoseconds::mark();
+
 
     // Get the file descriptor associated with the display
     iWindowFD = ConnectionNumber(poDisplay);
+
+    int iFrames = 0;
 
     while (true) {
 
@@ -316,6 +321,19 @@ void X11Manager::runEventLoop() {
             ::XNextEvent(poDisplay, &oEvent);
             handleEvent();
             if (oEvent.type == KeyPress && event<::XKeyEvent>().keycode == 9) {
+
+    Nanoseconds::Value uTotal = Nanoseconds::mark() - uBegin;
+
+    std::fprintf(
+        stderr,
+        "Total: %lu, Idle: %lu, Free: %0.2f%%, %d frames, %.2f fps\n",
+        uTotal,
+        uIdle,
+        (100.0 * (float64)uIdle)/(float64)uTotal,
+        iFrames,
+        1e9 * iFrames / (float64)uTotal
+    );
+
                 return;
             }
         }
@@ -351,9 +369,12 @@ void X11Manager::runEventLoop() {
         Nanoseconds::Value uElapsed = Nanoseconds::mark() - uMark;
 
         if (uElapsed < uFrametime) {
+            uIdle += (uFrametime - uElapsed);
             Nanoseconds::sleep(uFrametime - uElapsed);
         }
+        ++iFrames;
     }
+
 }
 
 /**
