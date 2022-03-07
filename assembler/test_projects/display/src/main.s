@@ -28,6 +28,8 @@ main:
     lea     on_mouse_down, DISPLAY_REG_CALL_BUTTON_PRESS(a0)
     lea     on_mouse_up,   DISPLAY_REG_CALL_BUTTON_RELEASE(a0)
 
+    clr.q   d2
+
     ; Begin the main event loop
     hcf     display_begin
 
@@ -41,8 +43,13 @@ exit:
     rts
 
 on_frame:
-    lea     .frame_message, a0
-    hcf     io_print_string
+    move.l  DISPLAY_REG_SOFT_BUFFER_PIXELS(a0), d0
+    move.q  DISPLAY_REG_SOFT_BUFFER_ADDRESS(a0), a0
+    move.l  #1, d1
+.fill:
+    move.l  d2, (a0)+
+    add.l   d1, d2
+    dbnz    d0, .fill
     rts
 
 on_key_down:
@@ -83,7 +90,7 @@ on_mouse_up:
     ; width, height, flags
     dc.w 640, 480, 0x000F
     ; format, target refresh Hz
-    dc.b PXL_ARGB, 30
+    dc.b PXL_ARGB, 60
 
 .frame_message:
     dc.b "VM frame\n\0"

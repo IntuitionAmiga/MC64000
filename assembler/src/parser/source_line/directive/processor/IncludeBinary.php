@@ -53,6 +53,7 @@ class IncludeBinary implements Directive\IProcessor {
                 dirname(State\Coordinator::get()->getCurrentFile()->getFilename()) . '/' .
                 $aMatches[1]
             );
+
             if (false === $str_path ||
                 !is_file($str_path) ||
                 !is_readable($str_path)
