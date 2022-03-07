@@ -17,6 +17,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\StackSize' => '/parser/source_line/directive/processor/StackSize.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\Flag' => '/parser/source_line/directive/processor/Flag.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\Undefine' => '/parser/source_line/directive/processor/Undefine.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\IncludeBinary' => '/parser/source_line/directive/processor/IncludeBinary.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\Define' => '/parser/source_line/directive/processor/Define.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Directive\\Processor\\Import' => '/parser/source_line/directive/processor/Import.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Label\\Exported' => '/parser/source_line/label/Exported.php',
