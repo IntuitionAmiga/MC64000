@@ -18,6 +18,8 @@
     @equ PXL_CLUT_8       0
     @equ PXL_ARGB         1
 
+
+
     ; Callback entry points
     @equ DISPLAY_REG_CALL_FRAME           0
     @equ DISPLAY_REG_CALL_KEY_PRESS       8
@@ -40,6 +42,12 @@
     @equ DISPLAY_REG_EVENT_MASK          74
     @equ DISPLAY_REG_POSITION_X          76
     @equ DISPLAY_REG_POSITION_Y          78
+
+    @equ DISPLAY_BIT_DRAW_BUFFER_NEXT_FRAME 0
+    @equ DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES 1
+    @equ DISPLAY_BIT_FLIP_NEXT_FRAME        2
+    @equ DISPLAY_BIT_FLIP_ALL_FRAMES        3
+    @equ DISPLAY_BIT_EVENT_LOOP_RUNNING    15
 
     @equ display_init     #0, display_vector
     @equ display_done     #1, display_vector

@@ -13,7 +13,7 @@
 
     @def STEP         #0.01
     @def ZOOM         #1.0
-    @def DISTANCE     #1.0
+    @def DISTANCE     #0.5
     @def TEXTURE_SIZE #128
 
 main:
@@ -105,6 +105,7 @@ on_frame:
     rts
 
 on_key_down:
+    bclr.w     #DISPLAY_BIT_EVENT_LOOP_RUNNING, DISPLAY_REG_FLAGS(a0)
     rts
 
 

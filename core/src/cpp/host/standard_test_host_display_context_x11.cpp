@@ -220,7 +220,7 @@ X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uForm
 
     std::fprintf(stderr, "X11Manager: Got window handle %u\n", (unsigned)uWindowID);
 
-    ::XStoreName(poDisplay, uWindowID, "MC64K [Press Esc to exit]");
+    ::XStoreName(poDisplay, uWindowID, "MC64K");
 
     int iX11Depth = DefaultDepth(poDisplay, 0);
     std::fprintf(stderr, "Allocating Pixmap %d x %d x %d (bits)\n", iWidth, iHeight, iX11Depth);
@@ -303,14 +303,15 @@ void X11Manager::runEventLoop() {
     ::XSelectInput(poDisplay, uWindowID, iCurrentXInputFlags);
 
     Nanoseconds::Value uFrametime = 1000000000 / oContext.uRateHz;
-    Nanoseconds::Value uIdle  = 0;
-    Nanoseconds::Value uBegin = Nanoseconds::mark();
-
+    Nanoseconds::Value uIdle    = 0;
+    Nanoseconds::Value uBegin   = Nanoseconds::mark();
 
     // Get the file descriptor associated with the display
     iWindowFD = ConnectionNumber(poDisplay);
 
-    int iFrames = 0;
+    ulong uFrames = 0;
+
+    oContext.uFlags |= FLAG_RUNNING;
 
     while (true) {
 
@@ -320,22 +321,11 @@ void X11Manager::runEventLoop() {
         while (::XPending(poDisplay)) {
             ::XNextEvent(poDisplay, &oEvent);
             handleEvent();
-            if (oEvent.type == KeyPress && event<::XKeyEvent>().keycode == 9) {
+        }
 
-    Nanoseconds::Value uTotal = Nanoseconds::mark() - uBegin;
-
-    std::fprintf(
-        stderr,
-        "Total: %lu, Idle: %lu, Free: %0.2f%%, %d frames, %.2f fps\n",
-        uTotal,
-        uIdle,
-        (100.0 * (float64)uIdle)/(float64)uTotal,
-        iFrames,
-        1e9 * iFrames / (float64)uTotal
-    );
-
-                return;
-            }
+        // Trap 1 : Maybe a keypress or something triggered exit condition
+        if (!(oContext.uFlags & FLAG_RUNNING)) {
+            break;
         }
 
         // Check for changes to the handlers.
@@ -347,8 +337,14 @@ void X11Manager::runEventLoop() {
 
         if (oContext.apVMCall[CALL_FRAME]) {
             invokeVMCallback(oContext.apVMCall[CALL_FRAME]);
+
+            // Trap 2 : Maybe main callback triggered exit condition
+            if (!(oContext.uFlags & FLAG_RUNNING)) {
+                break;
+            }
         }
 
+//        Nanoseconds::Value uMark2 = Nanoseconds::mark();
         // Check if we need to copy the pixel buffer to the offscreen buffer
         if (oContext.uFlags & (FLAG_DRAW_BUFFER_NEXT_FRAME|FLAG_DRAW_BUFFER_ALL_FRAMES)) {
             ::XPutImage(
@@ -366,15 +362,26 @@ void X11Manager::runEventLoop() {
             ::XCopyArea(poDisplay, uPixmapID, uWindowID, pGC, 0, 0, iWidth, iHeight, 0, 0);
             oContext.uFlags &= (uint16)~FLAG_FLIP_NEXT_FRAME;
         }
+
         Nanoseconds::Value uElapsed = Nanoseconds::mark() - uMark;
 
         if (uElapsed < uFrametime) {
             uIdle += (uFrametime - uElapsed);
             Nanoseconds::sleep(uFrametime - uElapsed);
         }
-        ++iFrames;
+        ++uFrames;
     }
 
+    Nanoseconds::Value uTotal = Nanoseconds::mark() - uBegin;
+    std::fprintf(
+        stderr,
+        "Total: %lu, Idle: %lu, Free: %0.2f%%, %lu frames, %.2f fps\n",
+        uTotal,
+        uIdle,
+        (100.0 * (float64)uIdle)/(float64)uTotal,
+        uFrames,
+        1e9 * (float64)uFrames / (float64)uTotal
+    );
 }
 
 /**
