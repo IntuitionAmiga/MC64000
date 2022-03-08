@@ -69,6 +69,13 @@ enum Flags {
      * frame, regardless of the state of FLAG_FLIP_NEXT_FRAME.
      */
     FLAG_FLIP_ALL_FRAMES = 0x0008,
+
+
+    /**
+     * Set when calling the BEGIN host vector. The VM signals that it wishes to exit the host native
+     * event loop by clearing this flag.
+     */
+    FLAG_RUNNING         = 0x8000
 };
 
 enum ContextCall {
