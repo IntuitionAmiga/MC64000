@@ -10,35 +10,98 @@
 ;
 ;   - 64-bit 680x0-inspired Virtual Machine and assembler -
 ;
-; Empty project - main.s
 
 main:
     hcf     io_init
     hcf     display_init
 
-    lea     on_frame, r8
+    ; try to open the display
+    move.q  .display_properties, r0
+    hcf     display_open
+    biz.q   a0, exit  ; no display?
+    move.q  a0, -(sp) ; save the context
 
+    ; Populate the callback handlers
+    lea     on_frame,      DISPLAY_REG_CALL_FRAME(a0)
+    lea     on_key_down,   DISPLAY_REG_CALL_KEY_PRESS(a0)
+    lea     on_key_up,     DISPLAY_REG_CALL_KEY_RELEASE(a0)
+    lea     on_mouse_down, DISPLAY_REG_CALL_BUTTON_PRESS(a0)
+    lea     on_mouse_up,   DISPLAY_REG_CALL_BUTTON_RELEASE(a0)
+
+    clr.q   d2
+
+    ; Begin the main event loop
     hcf     display_begin
 
-    move.q  #0xabadcafe, r7
-
-    lea     .exit_message, r8
-    hcf     io_print_string
+    ; Close the display
+    move.q  (sp)+, a0
+    hcf     display_close
 
 exit:
-    move.q  #0xdeadbeef, r6
     hcf     display_done
     hcf     io_done
     rts
 
 on_frame:
-    add.q   #1, r5
-    lea     .frame_message, r8
-    hcf     io_print_string
+    move.l  DISPLAY_REG_SOFT_BUFFER_PIXELS(a0), d0
+    move.q  DISPLAY_REG_SOFT_BUFFER_ADDRESS(a0), a0
+    move.l  #1, d1
+.fill:
+    move.l  d2, (a0)+
+    add.l   d1, d2
+    dbnz    d0, .fill
     rts
 
-.frame_message:
-    dc.b "VM frame callback called\n\0"
+on_key_down:
+    move.q  a0, a2
+    lea     .key_down_message, a0
+    bra     .button
 
-.exit_message:
-    dc.b "Exited from native loop\n\0"
+on_key_up:
+    move.q  a0, a2
+    lea     .key_up_message, a0
+    bra     .button
+
+on_mouse_down:
+    move.q  a0, a2
+    lea     .mouse_down_message, a0
+    bra     .button
+
+on_mouse_up:
+    move.q  a0, a2
+    lea     .mouse_up_message, a0
+.button:
+    hcf     io_print_string
+    clr.q   d0
+    clr.q   a0
+    move.w  DISPLAY_REG_EVENT_CODE(a2), d0 ; get the raw key code in d0
+    hcf     io_print_long
+    lea     .newline, a0
+    hcf     io_print_string
+    clr.l   d1
+    move.q  DISPLAY_REG_SOFT_BUFFER_ADDRESS(a2), a0
+    move.w  DISPLAY_REG_EVENT_CODE(a2), d0
+    move.l  DISPLAY_REG_SOFT_BUFFER_BYTES(a2), d1
+    hcf     mem_fill_byte
+    rts
+
+    @align  0, 8
+.display_properties:
+    ; width, height, flags
+    dc.w 640, 480, 0x000F
+    ; format, target refresh Hz
+    dc.b PXL_ARGB, 60
+
+.frame_message:
+    dc.b "VM frame\n\0"
+.key_down_message:
+    dc.b "VM key pressed \0"
+.key_up_message:
+    dc.b "VM key released \0"
+.mouse_down_message:
+    dc.b "VM button pressed \0"
+.mouse_up_message:
+    dc.b "VM button released \0"
+.newline:
+    dc.b "\n\0"
+

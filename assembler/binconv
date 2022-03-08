@@ -1,0 +1,43 @@
+#!/usr/bin/php
+<?php
+
+/**
+ *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
+ *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
+ *   88888b.d88888 888    888 888          d8P 888  888  d8P
+ *   888Y88888P888 888        888d888b.   d8P  888  888d88K
+ *   888 Y888P 888 888        888P "Y88b d88   888  8888888b
+ *   888  Y8P  888 888    888 888    888 8888888888 888  Y88b
+ *   888   "   888 Y88b  d88P Y88b  d88P       888  888   Y88b
+ *   888       888  "Y8888P"   "Y8888P"        888  888    Y88b
+ *
+ *    - 64-bit 680x0-inspired Virtual Machine and assembler -
+ */
+
+declare(strict_types = 1);
+
+$sSrcFmt = $_SERVER['argv'][1] ?? throw new Exception('Missing sorce format string');
+$sDstFmt = $_SERVER['argv'][2] ?? throw new Exception('Missing destination format string');
+$sInput  = $_SERVER['argv'][3] ?? throw new Exception('Missing source file');
+$sOutput = $_SERVER['argv'][4] ?? $sInput . '.out';
+
+
+$aSrcByteOrder    = str_split($sSrcFmt);
+$aSrcByteOrderKey = array_flip($aSrcByteOrder);
+$iSrcTupleSize    = count($aSrcByteOrderKey);
+($iSrcTupleSize   != count($aSrcByteOrder)) && throw new Exception('Source format cannot contain duplicates');
+$aDstByteOrder    = str_split($sDstFmt);
+
+(false === ($sInput_data = @file_get_contents($sInput))) && throw new Exception('Unable to load file');
+
+echo "Convert ", $sInput, " [byte order: ", $sSrcFmt, "] to ", $sOutput, " [byte order: ", $sDstFmt, "]\n";
+
+$sOutputBuffer = '';
+$aSrcTuples = str_split($sInput_data, $iSrcTupleSize);
+foreach ($aSrcTuples as $sSrcTuple) {
+    foreach ($aDstByteOrder as $sKey) {
+        $sOutputBuffer .= isset($aSrcByteOrderKey[$sKey]) ? ($sSrcTuple[$aSrcByteOrderKey[$sKey]] ?? '') : chr(0);
+    }
+}
+
+file_put_contents($sOutput, $sOutputBuffer);

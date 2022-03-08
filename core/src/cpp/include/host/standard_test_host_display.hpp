@@ -26,14 +26,77 @@ namespace MC64K::StandardTestHost::Display {
 enum Call {
     INIT = 0,
     DONE,
+    OPEN,
+    CLOSE,
     BEGIN
+};
+
+enum PixelFormat {
+    PXL_LUT_8   = 0,
+    PXL_ARGB_32 = 1,
+    PXL_MAX
+};
+
+enum Dimension {
+    WIDTH_MIN  = 320,
+    HEIGHT_MIN = 200,
+    WIDTH_MAX  = 16384,
+    HEIGHT_MAX = 16384,
+};
+
+enum Flags {
+    /**
+     * When set, this flag signals that the direct writable pixel buffer should be copied to the
+     * offscreen buffer on the next frame. This is cleared when the operation happens, making this
+     * flag useful for one-off updates.
+     */
+    FLAG_DRAW_BUFFER_NEXT_FRAME = 0x0001,
+
+    /**
+     * When set, this flag signals that the direct writable pixel buffer should be copied to the
+     * offscreen buffer on every frame, regardless of the state of FLAG_DRAW_BUFFER_NEXT_FRAME.
+     */
+    FLAG_DRAW_BUFFER_ALL_FRAMES = 0x0002,
+
+    /**
+     * When set, this flag signals that the visible and offscreen buffers should be flipped on the next
+     * frame. This is cleared when the operation happens, making this flag useful for one-off updates.
+     */
+    FLAG_FLIP_NEXT_FRAME = 0x0004,
+
+    /**
+     * When set, this flag signals that the visible and offscreen buffers should be flipped on every
+     * frame, regardless of the state of FLAG_FLIP_NEXT_FRAME.
+     */
+    FLAG_FLIP_ALL_FRAMES = 0x0008,
+
+
+    /**
+     * Set when calling the BEGIN host vector. The VM signals that it wishes to exit the host native
+     * event loop by clearing this flag.
+     */
+    FLAG_RUNNING         = 0x8000
+};
+
+enum ContextCall {
+    CALL_FRAME          = 0,
+    CALL_KEY_PRESS      = 1,
+    CALL_KEY_RELEASE    = 2,
+    CALL_BUTTON_PRESS   = 3,
+    CALL_BUTTON_RELEASE = 4,
+    CALL_MOVEMENT       = 5,
+    CALL_MAX
 };
 
 /**
  * Error return values
  */
 enum Result {
-    ERR_NO_DISPLAY = 1000,
+    ERR_NO_DISPLAY     = 1000,
+    ERR_INVALID_FMT    = 1001,
+    ERR_INVALID_WIDTH  = 1002,
+    ERR_INVALID_HEIGHT = 1003,
+    ERR_INVALID_ID     = 1010,
 };
 
 Interpreter::Status hostVector(uint8 uFunctionID);

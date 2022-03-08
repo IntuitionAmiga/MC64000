@@ -35,6 +35,14 @@ class Nanoseconds {
             Value  uMark = 1000000000UL * oCurrent.tv_sec ;
             return uMark + oCurrent.tv_nsec;
         }
+
+        static Value sleep(Value uTime) {
+            timespec oCurrent;
+            oCurrent.tv_sec  = 0;
+            oCurrent.tv_nsec = uTime;
+            nanosleep(&oCurrent, &oCurrent);
+            return oCurrent.tv_nsec;
+        }
 };
 
 } // namespace

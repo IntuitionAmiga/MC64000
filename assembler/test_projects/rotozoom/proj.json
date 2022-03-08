@@ -1,9 +1,9 @@
 {
     "target": {
-        "name": "Display",
+        "name": "Rotozoom",
         "version": "1.0.0",
-        "description": "Display Prototyping",
-        "output": "bin/display.64x",
+        "description": "Simple rotozoom demo",
+        "output": "bin/roto.64x",
         "host": {
             "name": "Standard Test Host",
             "version": "1.0.0"

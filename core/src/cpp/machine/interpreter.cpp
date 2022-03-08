@@ -22,25 +22,20 @@
 
 namespace MC64K::Machine {
 
-// As nice as this is, it's just too flaky with LTO
-#ifdef USE_GLOBAL_REGISTER
-register uint8 const* puProgramCounter __asm__("r12");
+#ifdef USE_GLOBAL_PC
+register uint8 const* puProgramCounter __asm__(USE_GLOBAL_PC);
 #else
 uint8 const* puProgramCounter;
 #endif
 
-//uint8 const* puProgramCounter = 0;
-
 GPRegister      Interpreter::aoGPR[GPRegister::MAX] = {};
 FPRegister      Interpreter::aoFPR[FPRegister::MAX] = {};
-//uint8 const*    Interpreter::puProgramCounter       = 0;
 void*           Interpreter::pDstEA                 = 0;
 void*           Interpreter::pSrcEA                 = 0;
 void*           Interpreter::pTmpEA                 = 0;
 uint8*          Interpreter::puStackTop             = 0;
 uint8*          Interpreter::puStackBase            = 0;
 Loader::Symbol* Interpreter::poImportSymbols        = 0;
-//int32           Interpreter::iCallDepth             = 0;
 uint32          Interpreter::uNumHCFVectors         = 0;
 uint32          Interpreter::uNumImportSymbols      = 0;
 
@@ -62,7 +57,6 @@ const char* asStatusNames[] = {
     "Unimplemented Host Call",
     "Invalid Entrypoint"
 };
-
 
 /**
  * @inheritDoc
@@ -113,8 +107,8 @@ void Interpreter::freeStack() {
 /**
  * @inheritDoc
  */
-void Interpreter::setProgramCounter(uint8 const* puNewProgramCounter) {
-    puProgramCounter = puNewProgramCounter;
+void Interpreter::setProgramCounter(Interpreter::VMCodeEntryPoint pByteCode) {
+    puProgramCounter = pByteCode;
 }
 
 /**
@@ -126,13 +120,11 @@ void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
             poStream,
             "Machine State\n"
             "\tProgram Counter: %p [... 0x%02X > 0x%02X < 0x%02X ...]\n"
-            //"\tCall Depth:      %d\n"
             "\tStatus:          %d [%s]\n\n",
             puProgramCounter,
             (uint32) *(puProgramCounter - 1),
             (uint32) *(puProgramCounter),
             (uint32) *(puProgramCounter + 1),
-            //iCallDepth,
             eStatus,
             asStatusNames[eStatus]
         );
@@ -140,9 +132,7 @@ void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
         std::fprintf(
             poStream,
             "Machine State\n"
-            //"\tCall Depth:      %d\n"
             "\tStatus:          %d [%s]\n\n",
-            //iCallDepth,
             eStatus,
             asStatusNames[eStatus]
         );

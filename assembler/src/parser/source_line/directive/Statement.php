@@ -49,6 +49,7 @@ class Statement implements SourceLine\IParser {
         $this->addDirective(new Processor\Import());
         $this->addDirective(new Processor\Align());
         $this->addDirective(new Processor\StackSize());
+        $this->addDirective(new Processor\IncludeBinary());
     }
 
     /**
