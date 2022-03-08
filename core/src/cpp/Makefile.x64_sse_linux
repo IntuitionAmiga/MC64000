@@ -3,15 +3,16 @@
 # Target
 BIN      = bin/interpreter_x64
 
+
 # Compiler settings
-CXXFLAGS = --std=c++17 -Wall -Werror -Ofast -march=native -mtune=native -mfpmath=sse -msse2 -fPIC -pipe -Iinclude
-GCC_CXXFLAGS = -fexpensive-optimizations -funroll-all-loops -DMESSAGE='"Compiled with GCC"'
-CLANG_CXXFLAGS = -funroll-loops -DMESSAGE='"Compiled with Clang"'
+CXXFLAGS = --std=c++17 -Wall -Wconversion -Werror -Ofast -march=native -mtune=native -mfpmath=sse -msse2 -fPIC -pipe -Iinclude
+GCC_CXXFLAGS = -fexpensive-optimizations -funroll-all-loops -DUSE_GLOBAL_REGISTERX -DMESSAGE='"Compiled with GCC"'
+CLANG_CXXFLAGS = -v -funroll-loops -DMESSAGE='"Compiled with Clang"'
 UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'
 
 ifeq ($(CXX),g++)
   CXXFLAGS += $(GCC_CXXFLAGS)
-else ifeq ($(CXX),clang)
+else ifeq ($(CXX),clang++)
   CXXFLAGS += $(CLANG_CXXFLAGS)
 else
   CXXFLAGS += $(UNKNOWN_CXXFLAGS)
