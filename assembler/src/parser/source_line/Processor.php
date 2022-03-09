@@ -19,7 +19,8 @@ namespace ABadCafe\MC64K\Parser\SourceLine;
 
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\IIntLimits;
-use function \preg_replace, \rtrim;
+use ABadCafe\MC64K\Parser\Utils;
+use function \preg_replace, \preg_replace_callback, \rtrim;
 
 /**
  * Processor
@@ -34,6 +35,8 @@ class Processor implements IParser {
     /** @var IParser[] $aParsers */
     private array $aParsers = [];
 
+    private Utils\ConstIntExpression $oConstIntExpression;
+
     public function __construct() {
         $this->aParsers = [
             new Directive\Statement(),
@@ -42,6 +45,7 @@ class Processor implements IParser {
             new Label\Local(),
             new Label\Exported()
         ];
+        $this->oConstIntExpression = new Utils\ConstIntExpression();
     }
 
     /**
@@ -76,10 +80,44 @@ class Processor implements IParser {
      * @return string
      */
     private function preprocessSourceLine(string $sSourceLine): string {
-        return State\Coordinator::get()
+
+        // 1. Protect string literals/labels (extract and replace with anchor).
+        $aPlaceholderMap = [];
+        $sIntermediate = $this->protectStrings($sSourceLine, $aPlaceholderMap);
+
+        // 2. Remove end of line comments
+        $sIntermediate = rtrim((string)preg_replace(self::COMMENT_MATCH, '', $sIntermediate));
+
+        // 3. Apply @equ/@def search/replace terms.
+        $sIntermediate = State\Coordinator::get()
             ->getDefinitionSet()
-            ->applyTo(
-                rtrim((string)preg_replace(self::COMMENT_MATCH, '', $sSourceLine))
-            );
+            ->applyTo($sIntermediate);
+
+        // 4. Identify any evaluatable constant expressions and substitute.
+        $sIntermediate = $this->oConstIntExpression->parse($sIntermediate);
+
+        // 5. Reinstate protected strings and return.
+        return str_replace(array_keys($aPlaceholderMap), array_values($aPlaceholderMap), $sIntermediate);
+    }
+
+    /**
+     * Replaces sensitive strings (literals, labels, etc) with anchors and builds a map of the anchor to
+     * original string.
+     *
+     * @param  string $sSourceLine
+     * @param  array<string, string> $aPlaceholderMap
+     * @return string
+     */
+    private function protectStrings(string $sSourceLine, array &$aPlaceholderMap): string {
+        static $iPlaceholderKey = 0;
+        return (string)preg_replace_callback(
+            '/".*?"|[a-zA-Z0-9_]+\:$/',
+            function(array $aMatches) use (&$iPlaceholderKey, &$aPlaceholderMap): string {
+                $sKey = '{S:' . $iPlaceholderKey++ . '}';
+                $aPlaceholderMap[$sKey] = $aMatches[0];
+                return $sKey;
+            },
+            $sSourceLine
+        );
     }
 }

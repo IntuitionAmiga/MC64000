@@ -54,3 +54,4 @@
     @equ display_open     #2, display_vector
     @equ display_close    #3, display_vector
     @equ display_begin    #4, display_vector
+    @equ display_update   #5, display_vector

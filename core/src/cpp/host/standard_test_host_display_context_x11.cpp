@@ -164,6 +164,11 @@ class X11Manager : public Manager {
          */
         void runEventLoop();
 
+        /**
+         * @inheritDoc
+         */
+        void updateDisplay();
+
     private:
         /**
          * Returns a read-only type-cast reference to the actual X11 event structure.
@@ -238,7 +243,6 @@ X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uForm
     pGC = ::XCreateGC(poDisplay, uPixmapID, 0, nullptr);
     std::fprintf(stderr, "Graphics Context at %p\n", pGC);
 
-
     oContext.uNumPixels   = uWidth * uHeight;
     oContext.uNumBytes    = oContext.uNumPixels * aPixelSize[uFormat];
     oContext.uWidth       = uWidth;
@@ -290,6 +294,21 @@ X11Manager::~X11Manager() {
  */
 Context* X11Manager::getContext() {
     return &oContext;
+}
+
+/**
+ * Update the display
+ */
+void X11Manager::updateDisplay() {
+    ::Display* poDisplay = oDisplay.get();
+    ::XPutImage(
+        poDisplay,
+        uPixmapID,
+        pGC,
+        oImage.get(),
+        0, 0, 0, 0, iWidth, iHeight
+    );
+    ::XCopyArea(poDisplay, uPixmapID, uWindowID, pGC, 0, 0, iWidth, iHeight, 0, 0);
 }
 
 /**

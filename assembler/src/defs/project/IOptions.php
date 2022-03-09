@@ -40,6 +40,7 @@ interface IOptions {
         LOG_LABEL_IMPORT  = 'log_label_import',
         LOG_LABEL_IEMODE  = 'log_label_iemode',
         LOG_CHUNK_INFO    = 'log_chunk_info',
+        LOG_EXPR_EVAL     = 'log_expression_eval',
         OPT_USE_FAST_PATH = 'opt_use_fast_path',
         APP_STACK_SIZE    = 'app_stack_size'
     ;
@@ -51,6 +52,8 @@ interface IOptions {
         self::LOG_LABEL_RESOLVE => self::TYPE_BOOL,
         self::LOG_LABEL_IMPORT  => self::TYPE_BOOL,
         self::LOG_LABEL_IEMODE  => self::TYPE_BOOL,
+        self::LOG_CHUNK_INFO    => self::TYPE_BOOL,
+        self::LOG_EXPR_EVAL     => self::TYPE_BOOL,
         self::OPT_USE_FAST_PATH => self::TYPE_BOOL,
         self::APP_STACK_SIZE    => self::TYPE_INT
     ];

@@ -55,39 +55,39 @@ struct Context {
     /**
      * Address of direct accessible pixel buffer
      */
-    PixelPointer    pDisplayBuffer;
-    uint32          uNumPixels;
-    uint32          uNumBytes;
-    uint16          uWidth;
-    uint16          uHeight;
-    uint16          uFlags;
-    uint8           uPixelFormat;
-    uint8           uRateHz;
+    PixelPointer pDisplayBuffer;
+    uint32       uNumPixels;
+    uint32       uNumBytes;
+    uint16       uWidth;
+    uint16       uHeight;
+    uint16       uFlags;
+    uint8        uPixelFormat;
+    uint8        uRateHz;
 
     /**
      * Read by VM code
      * For keyboard events, contains the enumeration of the key pressed or released.
      * For mouse events, contains the enumeration of the button pressed or released.
      */
-    uint16          uEventRawCode;
+    uint16 uEventRawCode;
 
     /**
      * Read by VM code
      * For all events, contains a mask of the currently active mouse buttons.
      */
-    uint16          uEventRawMask;
+    uint16 uEventRawMask;
 
     /**
      * Read by VM code
      * For all events, contains the current mouse position.
      */
-    uint16          uPositionX;
-    uint16          uPositionY;
+    uint16 uPositionX;
+    uint16 uPositionY;
 
     /**
      * Points to the manager of this context.
      */
-    Manager*        poManager;
+    Manager* poManager;
 };
 
 /**
@@ -99,8 +99,9 @@ struct Context {
 class Manager {
     public:
         virtual ~Manager() {};
-        virtual Context* getContext()   = 0;
-        virtual void     runEventLoop() = 0;
+        virtual Context* getContext()    = 0;
+        virtual void     runEventLoop()  = 0;
+        virtual void     updateDisplay() = 0;
 };
 
 Manager* createManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
