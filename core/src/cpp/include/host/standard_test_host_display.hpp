@@ -28,7 +28,8 @@ enum Call {
     DONE,
     OPEN,
     CLOSE,
-    BEGIN
+    BEGIN,
+    UPDATE
 };
 
 enum PixelFormat {

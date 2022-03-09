@@ -99,23 +99,7 @@ class DefinitionSet {
         if (empty($this->aDefinitions)) {
             return $sInput;
         }
-
-        // Protect any string literals or labels
-        $iPlaceholderKey = 0;
-        $aPlaceholderMap = [];
-        $sInput = (string)preg_replace_callback(
-            '/".*?"|[a-zA-Z0-9_]+\:$/',
-            function(array $aMatches) use (&$iPlaceholderKey, &$aPlaceholderMap): string {
-                $sKey = '{S:' . $iPlaceholderKey++ . '}';
-                $aPlaceholderMap[$sKey] = $aMatches[0];
-                return $sKey;
-            },
-            $sInput
-        );
-
         $aDefinitions = $this->getDefinitions();
-        $aDefinitions += $aPlaceholderMap;
-
         return str_replace(array_keys($aDefinitions), array_values($aDefinitions), $sInput);
     }
 }

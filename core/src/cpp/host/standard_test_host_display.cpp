@@ -29,15 +29,6 @@ char const* aFormatNames[] = {
     "32-bit ARGB",
 };
 
-/**
- * This is just a dummy proof of concept implementation for the moment. The idea will be that this will
- * form the basis of a "swap display buffer and gather input" event loop from the host that invokes the
- * user-supplied code address.
- *
- * TODO - The current mechanism is low latency as it just sets the PC and runs with it. We should probaby
- * validate that the address matches a designated known function ID before allowing it to be called back to.
- * This can be done before entering the loop.
- */
 Interpreter::Status runEventLoop() {
 
     Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>();
@@ -47,6 +38,15 @@ Interpreter::Status runEventLoop() {
     }
     poContext->poManager->runEventLoop();
     return Interpreter::INITIALISED;
+}
+
+void updateDisplay() {
+
+    Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>();
+    if (!poContext || !poContext->poManager) {
+        Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NULL_PTR;
+    }
+    poContext->poManager->updateDisplay();
 }
 
 void openDisplay() {
@@ -132,6 +132,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case BEGIN:
             return runEventLoop();
             break;
+        case UPDATE: updateDisplay(); break;
         default:
             std::fprintf(stderr, "Unknown Display operation %d\n", iOperation);
             return Interpreter::UNKNOWN_HOST_CALL;
