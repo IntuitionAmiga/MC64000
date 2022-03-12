@@ -1,0 +1,39 @@
+# Project: MC64000
+
+# Target
+BIN      = bin/interpreter_x64
+
+# This sets the source file to use for the display context manager. Platform dependent.
+USE_DISP_CTX = x11_gl
+
+# This sets a global register to reserve for the VM program counter, which is a big performance win (applied for gcc)
+VM_PC_RESERVE_REG = r12
+#VM_PC_RESERVE_REG = none
+
+# Compiler settings
+CXXFLAGS = --std=c++17 -Wall -Wconversion -Werror -Ofast -march=native -mtune=native -mavx2 -fPIC -pipe -Iinclude -DALLOW_MISALIGNED_IMMEDIATE
+GCC_CXXFLAGS = -fexpensive-optimizations -funroll-all-loops -DMESSAGE='"Compiled with GCC"'
+CLANG_CXXFLAGS = -v -funroll-loops -DMESSAGE='"Compiled with Clang"'
+UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'
+
+# Needed libraries
+LIBS = -lX11 -lGL
+
+ifeq ($(CXX),g++)
+  ifeq ($(VM_PC_RESERVE_REG),none)
+    GCC_EXTRA = -fwhole-program -flto
+  else
+    GCC_EXTRA = -DUSE_GLOBAL_PC='"$(VM_PC_RESERVE_REG)"' -ffixed-$(VM_PC_RESERVE_REG)
+  endif
+  CXXFLAGS += $(GCC_CXXFLAGS) $(GCC_EXTRA)
+else ifeq ($(CXX),clang++)
+  CXXFLAGS += $(CLANG_CXXFLAGS)
+else
+  CXXFLAGS += $(UNKNOWN_CXXFLAGS)
+endif
+
+# Makefile settings
+ARCH     = x64_linux
+MEXT     = $(ARCH)
+
+include mc64k.make

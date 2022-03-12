@@ -60,16 +60,20 @@ class ConstIntExpression implements IParser {
 
         // Extract from the string all the parts that look like they may be expressions.
         static $iPlaceholderKey = 0;
-        $aPlaceholderMap        = [];
+
+
+        $aPlaceholderMap = [];
         $sIntermediate = (string)preg_replace_callback(
             self::MATCH_FULL,
             function(array $aMatches) use (&$iPlaceholderKey, &$aPlaceholderMap): string {
                 $sKey = '{I:' . $iPlaceholderKey++ . '}';
-                $aPlaceholderMap[$sKey] = $aMatches[0];
+                $aPlaceholderMap[$sKey] = (string)$aMatches[0];
                 return $sKey;
             },
             $sSource
         );
+
+        /** @var array<string, string> $aPlaceholderMap : phpstan 1.4.9 gets confused here */
 
         // For each possible expression, first check that it still has digits and an operator and if it
         // does, try to evaluate it.
