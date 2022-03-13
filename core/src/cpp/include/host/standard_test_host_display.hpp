@@ -39,8 +39,8 @@ enum PixelFormat {
 };
 
 enum Dimension {
-    WIDTH_MIN  = 320,
-    HEIGHT_MIN = 200,
+    WIDTH_MIN  = 160,
+    HEIGHT_MIN = 100,
     WIDTH_MAX  = 16384,
     HEIGHT_MAX = 16384,
 };
