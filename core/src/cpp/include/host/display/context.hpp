@@ -55,7 +55,8 @@ struct Context {
     /**
      * Address of direct accessible pixel buffer
      */
-    PixelPointer pDisplayBuffer;
+    PixelPointer oDisplayBuffer;
+    uint32*      puPalette;
     uint32       uNumPixels;
     uint32       uNumBytes;
     uint16       uWidth;

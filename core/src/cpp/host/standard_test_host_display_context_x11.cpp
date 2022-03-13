@@ -22,9 +22,7 @@
 #include <machine/register.hpp>
 #include <machine/timing.hpp>
 
-#include <sys/select.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#include <host/display/x11/raii.hpp>
 
 using MC64K::Machine::Interpreter;
 using MC64K::Machine::Nanoseconds;
@@ -35,95 +33,6 @@ const uint8 aPixelSize[] = {
     1, 4
 };
 
-/**
- * RAII Handle for Display Pointer
- */
-class DisplayHandle {
-    private:
-        ::Display* poDisplay;
-
-    public:
-        DisplayHandle(): poDisplay(::XOpenDisplay(nullptr)) {
-            if (!poDisplay) {
-                throw Error();
-            }
-            std::fprintf(stderr, "DisplayHandle RAII: Opened Display Handle %p\n", poDisplay);
-        }
-
-        ~DisplayHandle() {
-            if (poDisplay) {
-                ::XCloseDisplay(poDisplay);
-                std::fprintf(stderr, "DisplayHandle RAII: Closed Display Handle %p\n", poDisplay);
-            }
-        }
-
-        /**
-         * Obtain the handle
-         */
-        ::Display* get() {
-            return poDisplay;
-        }
-};
-
-/**
- * RAII Handle for XImage Pointer. Destroys the data pointer so that the destroy function
- * doesn't free our externally allocated image data for us as that's a double free waiting
- * to happen.
- */
-class XImageHandle {
-    private:
-        ::XImage* poImage;
-
-    public:
-        XImageHandle() : poImage(nullptr) {}
-
-        ~XImageHandle() {
-            if (poImage) {
-                // Don't allow X to destroy the buffer data as it's managed by us.
-                poImage->data = nullptr;
-                XDestroyImage(poImage);
-                std::fprintf(stderr, "XImageHandle RAII: Destoyed Image Handle %p\n", poImage);
-            }
-        }
-
-        /**
-         * Set the handle
-         */
-        void set(::XImage* poImage) {
-            this->poImage = poImage;
-        }
-
-        /**
-         * Obtain the handle
-         */
-        ::XImage* get() {
-            return poImage;
-        }
-};
-
-/**
- * RAII Extension of Context to handle pixel buffer allocation
- */
-struct X11Context : public Context {
-
-    ~X11Context() {
-        if (pDisplayBuffer.puByte) {
-            delete[] pDisplayBuffer.puByte;
-            std::fprintf(stderr, "X11Context RAII: Freed Pixel Buffer\n");
-        }
-    }
-
-    void allocateBuffer() {
-        size_t uBufferSize = uWidth * uHeight * aPixelSize[uPixelFormat];
-        pDisplayBuffer.puByte = new uint8[uBufferSize];
-        std::fprintf(
-            stderr,
-            "X11Context RAII: Allocated Pixel Buffer %d x %d x %d at %p\n",
-            (int)uWidth, (int)uHeight, (int)aPixelSize[uPixelFormat],
-            pDisplayBuffer.puByte
-        );
-    }
-};
 
 /**
  * X11 Implementation of the Manager interface.
@@ -137,7 +46,7 @@ class X11Manager : public Manager {
         ::Window      uWindowID;
         ::Pixmap      uPixmapID;
         GC            pGC;
-        int           iWindowFD, iWidth, iHeight, iDepth;
+        int           iWidth, iHeight;
 ;
     public:
         /**
@@ -206,10 +115,8 @@ X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uForm
     uWindowID(0),
     uPixmapID(0),
     pGC(nullptr),
-    iWindowFD(0),
     iWidth(uWidth),
-    iHeight(uHeight),
-    iDepth(aPixelSize[uFormat] << 3)
+    iHeight(uHeight)
 {
     ::Display* poDisplay = oDisplay.get();
     std::fprintf(stderr, "X11Manager: Found Display at %p\n", poDisplay);
@@ -235,7 +142,7 @@ X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uForm
         uWindowID,
         iWidth,
         iHeight,
-        iX11Depth//iDepth
+        iX11Depth
     );
 
     std::fprintf(stderr, "Allocated Pixmap ID %lu\n", uPixmapID);
@@ -259,7 +166,7 @@ X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uForm
         iX11Depth,//iDepth,
         ZPixmap,
         0, // offset
-        (char*)oContext.pDisplayBuffer.puByte,
+        (char*)oContext.puImageBuffer,
         iWidth,
         iHeight,
         32, // bitmap_pad
@@ -325,8 +232,6 @@ void X11Manager::runEventLoop() {
     Nanoseconds::Value uIdle    = 0;
     Nanoseconds::Value uBegin   = Nanoseconds::mark();
 
-    // Get the file descriptor associated with the display
-    iWindowFD = ConnectionNumber(poDisplay);
 
     ulong uFrames = 0;
 
@@ -366,6 +271,7 @@ void X11Manager::runEventLoop() {
 //        Nanoseconds::Value uMark2 = Nanoseconds::mark();
         // Check if we need to copy the pixel buffer to the offscreen buffer
         if (oContext.uFlags & (FLAG_DRAW_BUFFER_NEXT_FRAME|FLAG_DRAW_BUFFER_ALL_FRAMES)) {
+            oContext.updateBuffers();
             ::XPutImage(
                 poDisplay,
                 uPixmapID,

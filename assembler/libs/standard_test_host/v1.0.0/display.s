@@ -18,8 +18,6 @@
     @equ PXL_CLUT_8       0
     @equ PXL_ARGB         1
 
-
-
     ; Callback entry points
     @equ DISPLAY_REG_CALL_FRAME           0
     @equ DISPLAY_REG_CALL_KEY_PRESS       8
@@ -30,18 +28,21 @@
 
     ; Display properties
     @equ DISPLAY_REG_SOFT_BUFFER_ADDRESS 48
-    @equ DISPLAY_REG_SOFT_BUFFER_PIXELS  56
-    @equ DISPLAY_REG_SOFT_BUFFER_BYTES   60
-    @equ DISPLAY_REG_WIDTH               64
-    @equ DISPLAY_REG_HEIGHT              66
-    @equ DISPLAY_REG_FLAGS               68
-    @equ DISPLAY_REG_PXL_FORMAT          70
-    @equ DISPLAY_REG_REFRESH_HZ          71
+    @equ DISPLAY_REG_PALETTE_ADDRESS     56
 
-    @equ DISPLAY_REG_EVENT_CODE          72
-    @equ DISPLAY_REG_EVENT_MASK          74
-    @equ DISPLAY_REG_POSITION_X          76
-    @equ DISPLAY_REG_POSITION_Y          78
+    @equ DISPLAY_REG_SOFT_BUFFER_PIXELS  64
+    @equ DISPLAY_REG_SOFT_BUFFER_BYTES   68
+
+    @equ DISPLAY_REG_WIDTH               72
+    @equ DISPLAY_REG_HEIGHT              74
+    @equ DISPLAY_REG_FLAGS               76
+    @equ DISPLAY_REG_PXL_FORMAT          78
+    @equ DISPLAY_REG_REFRESH_HZ          79
+
+    @equ DISPLAY_REG_EVENT_CODE          80
+    @equ DISPLAY_REG_EVENT_MASK          82
+    @equ DISPLAY_REG_POSITION_X          84
+    @equ DISPLAY_REG_POSITION_Y          86
 
     @equ DISPLAY_BIT_DRAW_BUFFER_NEXT_FRAME 0
     @equ DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES 1

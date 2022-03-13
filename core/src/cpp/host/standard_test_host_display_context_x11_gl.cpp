@@ -21,9 +21,8 @@
 #include <host/display/context.hpp>
 #include <machine/register.hpp>
 #include <machine/timing.hpp>
+#include <host/display/x11/raii.hpp>
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
 
@@ -34,61 +33,6 @@ namespace MC64K::StandardTestHost::Display {
 
 const uint8 aPixelSize[] = {
     1, 4
-};
-
-/**
- * RAII Handle for Display Pointer
- */
-class DisplayHandle {
-    private:
-        ::Display* poDisplay;
-
-    public:
-        DisplayHandle(): poDisplay(::XOpenDisplay(nullptr)) {
-            if (!poDisplay) {
-                throw Error();
-            }
-            std::fprintf(stderr, "DisplayHandle RAII: Opened Display Handle %p\n", poDisplay);
-        }
-
-        ~DisplayHandle() {
-            if (poDisplay) {
-                ::XCloseDisplay(poDisplay);
-                std::fprintf(stderr, "DisplayHandle RAII: Closed Display Handle %p\n", poDisplay);
-            }
-        }
-
-        /**
-         * Obtain the handle
-         */
-        ::Display* get() {
-            return poDisplay;
-        }
-};
-
-
-/**
- * RAII Extension of Context to handle pixel buffer allocation
- */
-struct X11Context : public Context {
-
-    ~X11Context() {
-        if (pDisplayBuffer.puByte) {
-            delete[] pDisplayBuffer.puByte;
-            std::fprintf(stderr, "X11Context RAII: Freed Pixel Buffer\n");
-        }
-    }
-
-    void allocateBuffer() {
-        size_t uBufferSize = uWidth * uHeight * aPixelSize[uPixelFormat];
-        pDisplayBuffer.puByte = new uint8[uBufferSize];
-        std::fprintf(
-            stderr,
-            "X11Context RAII: Allocated Pixel Buffer %d x %d x %d at %p\n",
-            (int)uWidth, (int)uHeight, (int)aPixelSize[uPixelFormat],
-            pDisplayBuffer.puByte
-        );
-    }
 };
 
 /**
@@ -250,7 +194,7 @@ X11GLManager::X11GLManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 u
         0,
         GL_BGRA,
         GL_UNSIGNED_BYTE,
-        oContext.pDisplayBuffer.puByte
+        oContext.puImageBuffer
     );
     ::glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     ::glDisable(GL_DEPTH_TEST);
@@ -361,7 +305,7 @@ void X11GLManager::runEventLoop() {
 //        Nanoseconds::Value uMark2 = Nanoseconds::mark();
         // Check if we need to copy the pixel buffer to the offscreen buffer
         if (oContext.uFlags & (FLAG_DRAW_BUFFER_NEXT_FRAME|FLAG_DRAW_BUFFER_ALL_FRAMES)) {
-
+            oContext.updateBuffers();
             // HERE GL Texture Update
             ::glTexSubImage2D(
                 GL_TEXTURE_2D,
@@ -370,9 +314,9 @@ void X11GLManager::runEventLoop() {
                 0, // y pos
                 oContext.uWidth,
                 oContext.uHeight,
-                GL_BGRA,                           // format
-                GL_UNSIGNED_BYTE,                  // type
-                oContext.pDisplayBuffer.puByte     // data
+                GL_BGRA,                   // format
+                GL_UNSIGNED_BYTE,          // type
+                oContext.puImageBuffer     // data
             );
             oContext.uFlags &= (uint16)~FLAG_DRAW_BUFFER_NEXT_FRAME;
         }
