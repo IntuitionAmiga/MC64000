@@ -6,6 +6,9 @@ BIN      = bin/interpreter_x64
 # This sets the source file to use for the display context manager. Platform dependent.
 USE_DISP_CTX = x11
 
+# This seds the source file to use for the audio output device. Platform dependent.
+USE_AUDIO_OUT = alsa
+
 # This sets a global register to reserve for the VM program counter, which is a big performance win (applied for gcc)
 VM_PC_RESERVE_REG = r12
 #VM_PC_RESERVE_REG = none
@@ -17,7 +20,7 @@ CLANG_CXXFLAGS = -v -funroll-loops -DMESSAGE='"Compiled with Clang"'
 UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'
 
 # Needed libraries
-LIBS = -lX11
+LIBS = -lX11 -lasound
 
 ifeq ($(CXX),g++)
   ifeq ($(VM_PC_RESERVE_REG),none)
