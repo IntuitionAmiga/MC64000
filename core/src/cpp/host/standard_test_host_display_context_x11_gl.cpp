@@ -46,9 +46,10 @@ class X11GLManager : public Manager {
         XVisualInfo*  pVisualInfo;
         GLXContext    pGLXContext;
         ::Window      uWindowID;
-        int           iWidth, iHeight, iDepth;
-        int           aGLAttributes[5];
-        unsigned int  uTextureID;
+        int32         aGLAttributes[5];
+        uint32        uTextureID;
+        float32       fMouseXScale;
+        float32       fMouseYScale;
 
     public:
         /**
@@ -104,6 +105,16 @@ class X11GLManager : public Manager {
          * Invoke a VM callback.
          */
         void invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode);
+
+        /**
+         * Updates mouse. Since the GL window is resizable, we have to scale the real coordinates
+         * back to virtual.
+         */
+        void updateMousePosition() {
+            oContext.uEventRawMask = (uint16) event<::XMotionEvent>().state;
+            oContext.uPositionX    = (uint16) ((float32)event<::XMotionEvent>().x * fMouseXScale);
+            oContext.uPositionY    = (uint16) ((float32)event<::XMotionEvent>().y * fMouseYScale);
+        }
 };
 
 /**
@@ -116,9 +127,6 @@ X11GLManager::X11GLManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 u
     pVisualInfo(nullptr),
     pGLXContext(nullptr),
     uWindowID(0),
-    iWidth(uWidth),
-    iHeight(uHeight),
-    iDepth(aPixelSize[uFormat] << 3),
     uTextureID(0)
 {
     ::Display* poDisplay = oDisplay.get();
@@ -205,6 +213,10 @@ X11GLManager::X11GLManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 u
     ::XMapWindow(poDisplay, uWindowID);
     ::XFlush(poDisplay);
 
+    fMouseYScale =
+    fMouseXScale = 1.0f / (float32)iScaleFactor;
+
+    // Todo - we should be using newer VBO operations and bypass all of this.
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
@@ -302,7 +314,6 @@ void X11GLManager::runEventLoop() {
             }
         }
 
-//        Nanoseconds::Value uMark2 = Nanoseconds::mark();
         // Check if we need to copy the pixel buffer to the offscreen buffer
         if (oContext.uFlags & (FLAG_DRAW_BUFFER_NEXT_FRAME|FLAG_DRAW_BUFFER_ALL_FRAMES)) {
             oContext.updateBuffers();
@@ -323,8 +334,6 @@ void X11GLManager::runEventLoop() {
 
         // Check if we need to flip the offscreen buffer
         if (oContext.uFlags & (FLAG_FLIP_NEXT_FRAME|FLAG_FLIP_ALL_FRAMES)) {
-
-            // HERE GL Flip Buffer
             updateDisplay();
             oContext.uFlags &= (uint16)~FLAG_FLIP_NEXT_FRAME;
         }
@@ -371,54 +380,46 @@ long X11GLManager::configureInputMask() {
  */
 void X11GLManager::handleEvent() {
     switch (oEvent.type) {
+        case NoExpose:
+            break;
         case Expose:
             XWindowAttributes oWinAttr;
             ::XGetWindowAttributes(oDisplay.get(), uWindowID, &oWinAttr);
             ::glViewport(0, 0, oWinAttr.width, oWinAttr.height);
-            break;
-        case NoExpose:
+            fMouseXScale = (float32)oContext.uWidth /  (float32) oWinAttr.width;
+            fMouseYScale = (float32)oContext.uHeight / (float32) oWinAttr.height;
             break;
         case KeyPress:
             if (oContext.apVMCall[CALL_KEY_PRESS]) {
                 oContext.uEventRawCode = (uint16) event<::XKeyEvent>().keycode;
-                oContext.uEventRawMask = (uint16) event<::XKeyEvent>().state;
-                oContext.uPositionX    = (uint16) event<::XKeyEvent>().x;
-                oContext.uPositionY    = (uint16) event<::XKeyEvent>().y;
+                updateMousePosition();
                 invokeVMCallback(oContext.apVMCall[CALL_KEY_PRESS]);
             }
             break;
         case KeyRelease:
             if (oContext.apVMCall[CALL_KEY_RELEASE]) {
                 oContext.uEventRawCode = (uint16) event<::XKeyEvent>().keycode;
-                oContext.uEventRawMask = (uint16) event<::XKeyEvent>().state;
-                oContext.uPositionX    = (uint16) event<::XKeyEvent>().x;
-                oContext.uPositionY    = (uint16) event<::XKeyEvent>().y;
+                updateMousePosition();
                 invokeVMCallback(oContext.apVMCall[CALL_KEY_RELEASE]);
             }
             break;
         case MotionNotify:
             if (oContext.apVMCall[CALL_MOVEMENT]) {
-                oContext.uEventRawMask = (uint16) event<::XKeyEvent>().state;
-                oContext.uPositionX    = (uint16) event<::XKeyEvent>().x;
-                oContext.uPositionY    = (uint16) event<::XKeyEvent>().y;
+                updateMousePosition();
                 invokeVMCallback(oContext.apVMCall[CALL_MOVEMENT]);
             }
             break;
         case ButtonPress:
             if (oContext.apVMCall[CALL_BUTTON_PRESS]) {
                 oContext.uEventRawCode = (uint16) event<::XButtonEvent>().button;
-                oContext.uEventRawMask = (uint16) event<::XButtonEvent>().state;
-                oContext.uPositionX    = (uint16) event<::XButtonEvent>().x;
-                oContext.uPositionY    = (uint16) event<::XButtonEvent>().y;
+                updateMousePosition();
                 invokeVMCallback(oContext.apVMCall[CALL_BUTTON_PRESS]);
             }
             break;
         case ButtonRelease:
             if (oContext.apVMCall[CALL_BUTTON_RELEASE]) {
                 oContext.uEventRawCode = (uint16) event<::XButtonEvent>().button;
-                oContext.uEventRawMask = (uint16) event<::XButtonEvent>().state;
-                oContext.uPositionX    = (uint16) event<::XButtonEvent>().x;
-                oContext.uPositionY    = (uint16) event<::XButtonEvent>().y;
+                updateMousePosition();
                 invokeVMCallback(oContext.apVMCall[CALL_BUTTON_RELEASE]);
             }
             break;
