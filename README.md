@@ -12,7 +12,7 @@
 ```
 ## About
 
-MC64K aims to implement a Virtual Machine and assembler syntax insired by the legendary 680x0 series of microprocessors from Motorola.
+MC64K aims to implement a Virtual Machine and assembler syntax inspired by the legendary 680x0 series of microprocessors from Motorola.
 
 ### Motivation
 * We want to write 680x0 style assembler for an imaginary 64-bit implementation of the 68000, because:
