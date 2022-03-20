@@ -18,10 +18,49 @@
 #include "host/runtime.hpp"
 #include "loader/error.hpp"
 
+#include "host/audio/config.hpp"
+#include "host/audio/output.hpp"
+
+#include <cmath>
+using namespace MC64K::StandardTestHost::Audio;
+
 /**
  * Entry point
  */
 int main(int iArgN, char const** aArgV) {
+
+    int16 *b = new int16[IConfig::PACKET_SIZE];
+
+    float32 f = (float32)(4.0*M_PI / (float32)IConfig::PACKET_SIZE);
+
+    for (unsigned u=0; u < IConfig::PACKET_SIZE; u++) {
+        b[u] = (int16)(4096.0 * std::sin(f * (float32)u));
+    }
+
+    std::fprintf(stderr, "Allocated 16-bit buffer at %p, filled with sine\n", b);
+
+    auto *p = createOutputPCMDevice(
+        OutputPCMDevice::CH_MONO,
+        OutputPCMDevice::RES_16_BIT,
+        48000
+    );
+
+    std::fprintf(stderr, "Attempting playback. Mind your ears...\n");
+
+    int const MAX_PACKETS = 1<<11;
+
+    for (int i = 0; i < MAX_PACKETS; ) {
+        p->write(b, IConfig::PACKET_SIZE);
+        std::fprintf(stderr, "\r         \r%d packets written", ++i);
+    }
+
+    std::fprintf(stderr, "\nWrote %d packets...\n", MAX_PACKETS);
+
+    delete p;
+
+    delete[] b;
+
+    return 0;
 
     if (iArgN < 2) {
         std::puts("Missing required parameter");
