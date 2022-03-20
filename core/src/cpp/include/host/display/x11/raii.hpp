@@ -1,5 +1,5 @@
-#ifndef __MC64K_STANDARD_TEST_HOST_DISPLAY_X11_RAII_HPP__
-    #define __MC64K_STANDARD_TEST_HOST_DISPLAY_X11_RAII_HPP__
+#ifndef MC64K_STANDARD_TEST_HOST_DISPLAY_X11_RAII_HPP
+    #define MC64K_STANDARD_TEST_HOST_DISPLAY_X11_RAII_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -38,26 +38,13 @@ class DisplayHandle {
         ::Display* poDisplay;
 
     public:
-        DisplayHandle(): poDisplay(::XOpenDisplay(nullptr)) {
-            if (!poDisplay) {
-                throw Error();
-            }
-            std::fprintf(stderr, "DisplayHandle RAII: Opened Display Handle %p\n", poDisplay);
-        }
+        DisplayHandle();
+        ~DisplayHandle();
+        DisplayHandle(DisplayHandle const&) = delete;
+        DisplayHandle& operator=(DisplayHandle const&) = delete;
 
-        ~DisplayHandle() {
-            if (poDisplay) {
-                ::XCloseDisplay(poDisplay);
-                std::fprintf(stderr, "DisplayHandle RAII: Closed Display Handle %p\n", poDisplay);
-            }
-        }
+        ::Display* get() const;
 
-        /**
-         * Obtain the handle
-         */
-        ::Display* get() {
-            return poDisplay;
-        }
 };
 
 /**
@@ -70,30 +57,13 @@ class XImageHandle {
         ::XImage* poImage;
 
     public:
-        XImageHandle() : poImage(nullptr) {}
+        XImageHandle();
+        ~XImageHandle();
+        XImageHandle(XImageHandle const&) = delete;
+        XImageHandle& operator=(XImageHandle const&) = delete;
 
-        ~XImageHandle() {
-            if (poImage) {
-                // Don't allow X to destroy the buffer data as it's managed by us.
-                poImage->data = nullptr;
-                XDestroyImage(poImage);
-                std::fprintf(stderr, "XImageHandle RAII: Destoyed Image Handle %p\n", poImage);
-            }
-        }
-
-        /**
-         * Set the handle
-         */
-        void set(::XImage* poImage) {
-            this->poImage = poImage;
-        }
-
-        /**
-         * Obtain the handle
-         */
-        ::XImage* get() {
-            return poImage;
-        }
+        void set(::XImage* poImage);
+        ::XImage* get() const;
 };
 
 /**
@@ -104,64 +74,126 @@ struct X11Context : public Context {
     uint8* puData;
     uint8* puImageBuffer;
 
-    X11Context(): Context(), puData(nullptr), puImageBuffer(nullptr) {}
+    X11Context();
+    ~X11Context();
+    X11Context(X11Context const&) = delete;
+    X11Context& operator=(X11Context const&) = delete;
 
-    ~X11Context() {
-        if (puData) {
-            delete[] puData;
-            std::fprintf(stderr, "X11Context RAII: Freed Buffers\n");
-        }
-    }
-
-    void allocateBuffer() {
-        uNumPixels = uWidth * uHeight;
-
-        switch (uPixelFormat) {
-            case PXL_ARGB_32: {
-                uNumBytes = uNumPixels * sizeof(uint32);
-                puPalette = nullptr;
-                oDisplayBuffer.puByte =
-                    puImageBuffer =
-                    puData        = new uint8[uNumBytes];
-                break;
-            }
-            case PXL_LUT_8: {
-                uNumBytes = uNumPixels;
-
-                // Align to an 8 byte size
-                size_t uBufferSize = (uNumPixels + 7) & ~7;
-
-                // Allocate space for 32-bit buffer, 256 32-bit palette entries and the 8-bit buffer
-                oDisplayBuffer.puByte =
-                    puData    = new uint8[((uBufferSize + 256) * sizeof(uint32)) + uBufferSize];
-                puPalette     = (uint32*)(puData + uBufferSize);
-                puImageBuffer = (uint8*)(puPalette + 256);
-                break;
-            }
-            default: {
-                throw Error();
-                break;
-            }
-        }
-        std::fprintf(
-            stderr,
-            "X11Context RAII: Allocated Pixel Buffer %d x %d x %d at %p\n",
-            (int)uWidth, (int)uHeight, (int)aPixelSize[uPixelFormat],
-            oDisplayBuffer.puByte
-        );
-    }
-
-    void updateBuffers() {
-        if (uPixelFormat == PXL_LUT_8 && puPalette) {
-            uint32* pDst = (uint32*)puImageBuffer;
-            uint8*  pSrc = oDisplayBuffer.puByte;
-            uint32  uCnt = uNumPixels;
-            while (uCnt--) {
-                *pDst++ = puPalette[*pSrc++];
-            }
-        }
-    }
+    void allocateBuffer();
+    void updateBuffers();
 };
+
+
+/**
+ * DisplayHandle inlines
+ */
+inline DisplayHandle::DisplayHandle() : poDisplay(::XOpenDisplay(nullptr)) {
+    if (!poDisplay) {
+        throw Error();
+    }
+    std::fprintf(stderr, "DisplayHandle RAII: Opened Display Handle %p\n", poDisplay);
+}
+
+inline DisplayHandle::~DisplayHandle() {
+    if (poDisplay) {
+        ::XCloseDisplay(poDisplay);
+        std::fprintf(stderr, "DisplayHandle RAII: Closed Display Handle %p\n", poDisplay);
+    }
+}
+
+inline ::Display*  DisplayHandle::get() const {
+    return poDisplay;
+}
+
+
+/**
+ * XImageHandle inlines
+ */
+inline XImageHandle::XImageHandle() : poImage(nullptr) {
+
+}
+
+inline XImageHandle::~XImageHandle() {
+    if (poImage) {
+        // Don't allow X to destroy the buffer data as it's managed by us.
+        poImage->data = nullptr;
+        XDestroyImage(poImage);
+        std::fprintf(stderr, "XImageHandle RAII: Destoyed Image Handle %p\n", poImage);
+    }
+}
+
+inline void XImageHandle::set(::XImage* poImage) {
+    this->poImage = poImage;
+}
+
+inline ::XImage* XImageHandle::get() const {
+    return poImage;
+}
+
+
+/**
+ * X11Context inlines
+ */
+
+X11Context::X11Context(): Context(), puData(nullptr), puImageBuffer(nullptr) {
+
+}
+
+X11Context::~X11Context() {
+    if (puData) {
+        delete[] puData;
+        std::fprintf(stderr, "X11Context RAII: Freed Buffers\n");
+    }
+}
+
+inline void X11Context::allocateBuffer() {
+    uNumPixels = uWidth * uHeight;
+
+    switch (uPixelFormat) {
+        case PXL_ARGB_32: {
+            uNumBytes = uNumPixels * sizeof(uint32);
+            puPalette = nullptr;
+            oDisplayBuffer.puByte =
+                puImageBuffer =
+                puData        = new uint8[uNumBytes];
+            break;
+        }
+        case PXL_LUT_8: {
+            uNumBytes = uNumPixels;
+
+            // Align to an 8 byte size
+            size_t uBufferSize = (uNumPixels + 7) & ~7;
+
+            // Allocate space for 32-bit buffer, 256 32-bit palette entries and the 8-bit buffer
+            oDisplayBuffer.puByte =
+                puData    = new uint8[((uBufferSize + 256) * sizeof(uint32)) + uBufferSize];
+            puPalette     = (uint32*)(puData + uBufferSize);
+            puImageBuffer = (uint8*)(puPalette + 256);
+            break;
+        }
+        default: {
+            throw Error();
+            break;
+        }
+    }
+    std::fprintf(
+        stderr,
+        "X11Context RAII: Allocated Pixel Buffer %d x %d x %d at %p\n",
+        (int)uWidth, (int)uHeight, (int)aPixelSize[uPixelFormat],
+        oDisplayBuffer.puByte
+    );
+}
+
+inline void X11Context::updateBuffers() {
+    if (uPixelFormat == PXL_LUT_8 && puPalette) {
+        uint32* pDst = (uint32*)puImageBuffer;
+        uint8*  pSrc = oDisplayBuffer.puByte;
+        uint32  uCnt = uNumPixels;
+        while (uCnt--) {
+            *pDst++ = puPalette[*pSrc++];
+        }
+    }
+}
 
 };
 #endif

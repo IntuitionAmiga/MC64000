@@ -1,7 +1,7 @@
-#ifndef __MC64K_BYTECODE_ADDRESSING_HPP__
-#   define __MC64K_BYTECODE_ADDRESSING_HPP__
+#ifndef MC64K_BYTECODE_ADDRESSING_HPP
+#   define MC64K_BYTECODE_ADDRESSING_HPP
 
-/**
+/**\
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
  *   8888b   d8888 d88P  Y88b d88P  Y88b    d8P888  888   d8P
  *   88888b.d88888 888    888 888          d8P 888  888  d8P

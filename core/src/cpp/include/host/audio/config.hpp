@@ -1,5 +1,5 @@
-#ifndef MC64K_LOADER_DEPENDENCY_HPP
-    #define MC64K_LOADER_DEPENDENCY_HPP
+#ifndef MC64K_STANDARD_TEST_HOST_AUDIO_CONFIG_HPP
+    #define MC64K_STANDARD_TEST_HOST_AUDIO_CONFIG_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,20 +14,17 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include <cstdio>
-#include <misc/version.hpp>
-
-namespace MC64K::Loader {
+#include <host/standard_test_host_audio.hpp>
 
 /**
- * Dependency
- *
- * Simple dependency data structure
+ * PDE to the rescue...
  */
-struct Dependency {
-    Misc::Version oVersion;
-    char const*   sName;
+namespace MC64K::StandardTestHost::Audio::IConfig {
+
+    int32   const PROCESS_RATE  = 48000;
+    size_t  const PACKET_SIZE   = 256;
+    float32 const SAMPLE_PERIOD = 1.0f / (float32)PROCESS_RATE;
+    float32 const PACKET_PERIOD = (float32)PACKET_SIZE / (float32)PROCESS_RATE;
 };
 
-} // namespace
 #endif

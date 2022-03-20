@@ -1,5 +1,5 @@
-#ifndef __MC64K_LOADER_BINARY_HPP__
-#   define __MC64K_LOADER_BINARY_HPP__
+#ifndef MC64K_LOADER_BINARY_HPP
+    #define MC64K_LOADER_BINARY_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -48,6 +48,9 @@ class Binary {
          */
         ~Binary();
 
+        Binary(Binary const&) = delete;
+        Binary& operator=(Binary const&) = delete;
+
         /**
          * Loader. Attempts to load the named binary file and return an executable structure.
          *
@@ -57,7 +60,6 @@ class Binary {
         Executable const* load(char const* sFileName);
 
     private:
-
         /**
          * Magic ID values. 64-bit word representation of 8 character strings
          */
@@ -112,9 +114,7 @@ class Binary {
          * @param  const size_t uSize
          * @return size_t
          */
-        size_t alignSize(const size_t uSize) const {
-            return (uSize + ALIGN_MASK) & ~ALIGN_MASK;
-        }
+        size_t alignSize(const size_t uSize) const;
 
         /**
          * Open the binary object file
@@ -166,6 +166,17 @@ class Binary {
          */
         bool validateTarget(uint8 const* puRawTarget);
 };
+
+/**
+ * Align an input size to the required boundary.
+ *
+ * @param  const size_t uSize
+ * @return size_t
+ */
+inline size_t Binary::alignSize(const size_t uSize) const {
+    return (uSize + ALIGN_MASK) & ~ALIGN_MASK;
+}
+
 
 } // namespace
 #endif

@@ -110,12 +110,14 @@ class X11GLManager : public Manager {
          * Updates mouse. Since the GL window is resizable, we have to scale the real coordinates
          * back to virtual.
          */
-        void updateMousePosition() {
-            oContext.uEventRawMask = (uint16) event<::XMotionEvent>().state;
-            oContext.uPositionX    = (uint16) ((float32)event<::XMotionEvent>().x * fMouseXScale);
-            oContext.uPositionY    = (uint16) ((float32)event<::XMotionEvent>().y * fMouseYScale);
-        }
+        void updateMousePosition();
 };
+
+inline void X11GLManager::updateMousePosition() {
+    oContext.uEventRawMask = (uint16) event<::XMotionEvent>().state;
+    oContext.uPositionX    = (uint16) ((float32)event<::XMotionEvent>().x * fMouseXScale);
+    oContext.uPositionY    = (uint16) ((float32)event<::XMotionEvent>().y * fMouseYScale);
+}
 
 /**
  * Constructor. We use RAII here and throw exceptions if a requirement can't be met.

@@ -1,5 +1,5 @@
-#ifndef __MC64K_MACHINE_TIMING_HPP__
-#   define __MC64K_MACHINE_TIMING_HPP__
+#ifndef MC64K_MACHINE_TIMING_HPP
+    #define MC64K_MACHINE_TIMING_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P

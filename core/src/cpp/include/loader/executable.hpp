@@ -1,5 +1,5 @@
-#ifndef __MC64K_LOADER_EXECUTABLE_HPP__
-#   define __MC64K_LOADER_EXECUTABLE_HPP__
+#ifndef MC64K_LOADER_EXECUTABLE_HPP
+    #define MC64K_LOADER_EXECUTABLE_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -53,18 +53,14 @@ class Executable {
          *
          * @return SymbolSet const*
          */
-        SymbolSet const* getImportedSymbolSet() const {
-            return &oImportedSymbols;
-        }
+        SymbolSet const* getImportedSymbolSet() const;
 
         /**
          * Obtain the set of exported symbols, i.e. those the executable exposes to the application host.
          *
          * @return SymbolSet const*
          */
-        SymbolSet const* getExportedSymbolSet() const {
-            return &oExportedSymbols;
-        }
+        SymbolSet const* getExportedSymbolSet() const;
 
         /**
          * Get the stack size indicated by the executable
@@ -75,6 +71,9 @@ class Executable {
          * Destructor
          */
         ~Executable();
+
+        Executable(Executable const&) = delete;
+        Executable& operator=(Executable const&) = delete;
 
     private:
         /**
@@ -109,6 +108,25 @@ class Executable {
          */
         char* processSymbolName(char * sSymbolName, uint64 & ruSymbolFlags);
 };
+
+
+/**
+ * Obtain the set of imported symbols, i.e. those the executable expects to be provided to it.
+ *
+ * @return SymbolSet const*
+ */
+inline SymbolSet const* Executable::getImportedSymbolSet() const {
+    return &oImportedSymbols;
+}
+
+/**
+ * Obtain the set of exported symbols, i.e. those the executable exposes to the application host.
+ *
+ * @return SymbolSet const*
+ */
+inline SymbolSet const* Executable::getExportedSymbolSet() const {
+    return &oExportedSymbols;
+}
 
 } // namespace
 #endif
