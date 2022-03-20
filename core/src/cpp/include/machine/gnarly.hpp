@@ -1,5 +1,5 @@
-#ifndef __MC64K_MACHINE_GNARLY_HPP__
-#   define __MC64K_MACHINE_GNARLY_HPP__
+#ifndef MC64K_MACHINE_GNARLY_HPP
+    #define MC64K_MACHINE_GNARLY_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -103,7 +103,7 @@
 #define asUQuad(ea)  *((uint64*)(ea))
 #define asSingle(ea) *((float32*)(ea))
 #define asDouble(ea) *((float64*)(ea))
-#define asBitPos(ea, m) (1 << (asUByte(ea) & m))
+#define asBitPos(ea, m) (1 << (asUByte(ea) & (m)))
 
 /**
  * Unpack a byte as a dest/src GPR pair and set the EA pointers directly.

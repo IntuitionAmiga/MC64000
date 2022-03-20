@@ -1,5 +1,5 @@
-#ifndef __MC64K_HOST_RUNTIME_HPP__
-#define __MC64K_HOST_RUNTIME_HPP__
+#ifndef MC64K_HOST_RUNTIME_HPP
+    #define MC64K_HOST_RUNTIME_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P

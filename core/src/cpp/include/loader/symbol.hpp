@@ -1,5 +1,5 @@
-#ifndef __MC64K_LOADER_SYMBOL_HPP__
-#   define __MC64K_LOADER_SYMBOL_HPP__
+#ifndef MC64K_LOADER_SYMBOL_HPP
+    #define MC64K_LOADER_SYMBOL_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -21,7 +21,7 @@
 namespace MC64K::Loader {
 
 #define IMPORT_SYMBOL(name, access)         { (name), {0}, (access) }
-#define EXPORT_SYMBOL(name, access, entity) { (name), { (void*)entity }, (access) }
+#define EXPORT_SYMBOL(name, access, entity) { (name), { (void*)(entity) }, (access) }
 
 /**
  * Symbol
@@ -58,6 +58,8 @@ struct Symbol {
      * Other properties
      */
     uint64 uFlags;
+
+    Symbol(Symbol const&) = delete;
 };
 
 
@@ -80,11 +82,7 @@ class SymbolSet {
          * @param  size_t const uIndex
          * @throws MC64K::OutOfRangeException
          */
-        void assertIndex(size_t const uIndex) const {
-            if (uIndex >= uNumSymbols) {
-                throw MC64K::OutOfRangeException("Invalid index");
-            }
-        }
+        void assertIndex(size_t const uIndex) const;
 
         /**
          * Protected constructor, to be invoked by derived classes only.
@@ -108,23 +106,22 @@ class SymbolSet {
          */
         virtual ~SymbolSet() = 0;
 
+        SymbolSet(SymbolSet const&) = delete;
+        SymbolSet& operator=(SymbolSet const&) = delete;
+
         /**
          * Return the number of symbols in the set.
          *
          * @return size_t
          */
-        size_t getCount() const {
-            return uNumSymbols;
-        }
+        size_t getCount() const;
 
         /**
          * Return a reference to the Symbol data
          *
          * @return Symbol*
          */
-        Symbol* getSymbols() const {
-            return poSymbols;
-        }
+        Symbol* getSymbols() const;
 
         /**
          * Array access (range checked)
@@ -133,10 +130,7 @@ class SymbolSet {
          * @return Symbol&
          * @throws MC64K::OutOfRangeException
          */
-        Symbol& operator[](size_t const uIndex) {
-            assertIndex(uIndex);
-            return poSymbols[uIndex];
-        }
+        Symbol& operator[](size_t const uIndex);
 
         /**
          * Array access (range checked)
@@ -145,10 +139,7 @@ class SymbolSet {
          * @return Symbol const&
          * @throws MC64K::OutOfRangeException
          */
-        Symbol const& operator[](size_t const uIndex) const {
-            assertIndex(uIndex);
-            return poSymbols[uIndex];
-        }
+        Symbol const& operator[](size_t const uIndex) const;
 
         /**
          * Try to find the Symbol for a given identifier that can satisfy the given access flags.
@@ -192,6 +183,9 @@ class InitialisedSymbolSet : public SymbolSet {
          * Destructor
          */
         ~InitialisedSymbolSet();
+
+        InitialisedSymbolSet(InitialisedSymbolSet const&) = delete;
+        InitialisedSymbolSet& operator=(InitialisedSymbolSet const&) = delete;
 };
 
 /**
@@ -228,7 +222,65 @@ class LoadedSymbolSet : public SymbolSet {
          * @throws MC64K::OutOfMemoryException
          */
         Symbol* allocate(size_t const uNumSymbols);
+
+        LoadedSymbolSet(LoadedSymbolSet const&) = delete;
+        LoadedSymbolSet& operator=(LoadedSymbolSet const&) = delete;
 };
+
+
+/**
+ * Check that the index is in range.
+ *
+ * @param  size_t const uIndex
+ * @throws MC64K::OutOfRangeException
+ */
+inline void SymbolSet::assertIndex(size_t const uIndex) const {
+    if (uIndex >= uNumSymbols) {
+        throw MC64K::OutOfRangeException("Invalid index");
+    }
+}
+
+/**
+ * Return the number of symbols in the set.
+ *
+ * @return size_t
+ */
+inline size_t SymbolSet::getCount() const {
+    return uNumSymbols;
+}
+
+/**
+ * Return a reference to the Symbol data
+ *
+ * @return Symbol*
+ */
+inline Symbol* SymbolSet::getSymbols() const {
+    return poSymbols;
+}
+
+/**
+ * Array access (range checked)
+ *
+ * @param  size_t const uIndex
+ * @return Symbol&
+ * @throws MC64K::OutOfRangeException
+ */
+inline Symbol& SymbolSet::operator[](size_t const uIndex) {
+    assertIndex(uIndex);
+    return poSymbols[uIndex];
+}
+
+/**
+ * Array access (range checked)
+ *
+ * @param  size_t const uIndex
+ * @return Symbol const&
+ * @throws MC64K::OutOfRangeException
+ */
+inline Symbol const& SymbolSet::operator[](size_t const uIndex) const {
+    assertIndex(uIndex);
+    return poSymbols[uIndex];
+}
 
 } // namespace
 #endif
