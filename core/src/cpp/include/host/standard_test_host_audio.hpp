@@ -1,5 +1,5 @@
-#ifndef __MC64K_STANDARD_TEST_HOST_AUDIO_HPP__
-    #define __MC64K_STANDARD_TEST_HOST_AUDIO_HPP__
+#ifndef MC64K_STANDARD_TEST_HOST_AUDIO_HPP
+    #define MC64K_STANDARD_TEST_HOST_AUDIO_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -27,7 +27,8 @@ enum Call {
     INIT = 0,
     DONE,
     OPEN,
-    CLOSE
+    CLOSE,
+    WRITE
 };
 
 /**

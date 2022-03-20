@@ -30,6 +30,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
             break;
         case OPEN:  break;
         case CLOSE: break;
+        case WRITE: break;
         default:
             std::fprintf(stderr, "Unknown Audio operation %d\n", iOperation);
             return Interpreter::UNKNOWN_HOST_CALL;
