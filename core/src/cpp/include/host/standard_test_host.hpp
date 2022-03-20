@@ -1,5 +1,5 @@
-#ifndef __MC64K_STANDARD_TEST_HOST_HPP__
-    #define __MC64K_STANDARD_TEST_HOST_HPP__
+#ifndef MC64K_STANDARD_TEST_HOST_HPP
+    #define MC64K_STANDARD_TEST_HOST_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -23,6 +23,14 @@ using MC64K::Machine::FPRegister;
 namespace MC64K::StandardTestHost {
 
 namespace ABI {
+
+enum Vector {
+    ID_IO      = 0,
+    ID_MEM     = 1,
+    ID_VMATH   = 2,
+    ID_DISPLAY = 3,
+    ID_AUDIO   = 4
+};
 
 /**
  * Enumeration of entry points the host expects to find in the loaded binary.
@@ -66,6 +74,22 @@ enum Result {
 void setCLIParameters(unsigned const uArgC, char const** pArgV);
 
 extern MC64K::Host::Definition instance;
+
+/**
+ * Calls from the VM may choose to package several small values into a single register. This union
+ * provides a simple way of extracting parameters that are based on packing together standard sized
+ * elements.
+ */
+union PackedParams {
+    uint64 u64;
+    int64  i64;
+    uint32 u32[2];
+    int32  i32[2];
+    uint16 u16[4];
+    int16  i16[4];
+    uint8  u8[8];
+    int8   i8[8];
+};
 
 }// namespace
 

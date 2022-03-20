@@ -1,5 +1,5 @@
-#ifndef __MC64K_STANDARD_TEST_HOST_DISPLAY_CONTEXT_HPP__
-    #define __MC64K_STANDARD_TEST_HOST_DISPLAY_CONTEXT_HPP__
+#ifndef MC64K_STANDARD_TEST_HOST_DISPLAY_CONTEXT_HPP
+    #define MC64K_STANDARD_TEST_HOST_DISPLAY_CONTEXT_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -17,12 +17,6 @@
 #include <host/standard_test_host_display.hpp>
 
 namespace MC64K::StandardTestHost::Display {
-
-union PackedParams {
-    uint64 u64;
-    uint16 u16[4];
-    uint8  u8[8];
-};
 
 /**
  * PixelPointer. Simple union to avoid casts.

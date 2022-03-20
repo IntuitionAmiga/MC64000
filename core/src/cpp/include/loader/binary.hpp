@@ -1,5 +1,5 @@
-#ifndef __MC64K_LOADER_BINARY_HPP__
-#   define __MC64K_LOADER_BINARY_HPP__
+#ifndef MC64K_LOADER_BINARY_HPP
+    #define MC64K_LOADER_BINARY_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
