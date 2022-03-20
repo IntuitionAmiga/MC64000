@@ -83,6 +83,7 @@ struct Context {
      * Points to the manager of this context.
      */
     Manager* poManager;
+
 };
 
 /**

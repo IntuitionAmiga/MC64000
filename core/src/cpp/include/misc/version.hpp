@@ -68,25 +68,41 @@ class Version {
         /**
          * @return uint32
          */
-        uint32 getMajor() const {
-            return (uPackedVersion >> (MINOR_BITS + PATCH_BITS)) & MAX_MAJOR;
-        }
+        uint32 getMajor() const;
 
         /**
          * @return uint32
          */
 
-        uint32 getMinor() const {
-            return (uPackedVersion >> MINOR_BITS) & MAX_MINOR;
-        }
+        uint32 getMinor() const;
 
         /**
          * @return uint32
          */
-        uint32 getPatch() const {
-            return (uPackedVersion & MAX_PATCH);
-        }
+        uint32 getPatch() const;
 };
+
+
+/**
+ * @return uint32
+ */
+inline uint32 Version::getMajor() const {
+    return (uPackedVersion >> (MINOR_BITS + PATCH_BITS)) & MAX_MAJOR;
+}
+
+/**
+ * @return uint32
+ */
+inline uint32 Version::getMinor() const {
+    return (uPackedVersion >> MINOR_BITS) & MAX_MINOR;
+}
+
+/**
+ * @return uint32
+ */
+inline uint32 Version::getPatch() const {
+    return (uPackedVersion & MAX_PATCH);
+}
 
 } // namespace
 

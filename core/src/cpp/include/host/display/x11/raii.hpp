@@ -38,11 +38,13 @@ class DisplayHandle {
         ::Display* poDisplay;
 
     public:
-        DisplayHandle(DisplayHandle const&) = delete;
-        DisplayHandle& operator=(DisplayHandle const&) = delete;
         DisplayHandle();
         ~DisplayHandle();
+        DisplayHandle(DisplayHandle const&) = delete;
+        DisplayHandle& operator=(DisplayHandle const&) = delete;
+
         ::Display* get() const;
+
 };
 
 /**
@@ -55,10 +57,11 @@ class XImageHandle {
         ::XImage* poImage;
 
     public:
-        XImageHandle(XImageHandle const&) = delete;
-        XImageHandle& operator=(XImageHandle const&) = delete;
         XImageHandle();
         ~XImageHandle();
+        XImageHandle(XImageHandle const&) = delete;
+        XImageHandle& operator=(XImageHandle const&) = delete;
+
         void set(::XImage* poImage);
         ::XImage* get() const;
 };
@@ -71,10 +74,10 @@ struct X11Context : public Context {
     uint8* puData;
     uint8* puImageBuffer;
 
-    X11Context(X11Context const&) = delete;
-    X11Context& operator=(X11Context const&) = delete;
     X11Context();
     ~X11Context();
+    X11Context(X11Context const&) = delete;
+    X11Context& operator=(X11Context const&) = delete;
 
     void allocateBuffer();
     void updateBuffers();

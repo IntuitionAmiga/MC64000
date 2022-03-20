@@ -25,9 +25,7 @@ class Exception {
     public:
         Exception(char const* sMessage = "Exception") : sMessage(sMessage) {}
 
-        char const* getMessage() const {
-            return sMessage;
-        }
+        char const* getMessage() const;
 };
 
 /**
@@ -42,6 +40,10 @@ class OutOfMemoryException : public Exception {
     public:
         OutOfMemoryException(char const* sMessage = "Insufficent memory") : Exception(sMessage) {}
 };
+
+inline char const* Exception::getMessage() const {
+    return sMessage;
+}
 
 }// namespace
 
