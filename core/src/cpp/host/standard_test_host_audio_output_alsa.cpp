@@ -28,6 +28,8 @@ namespace MC64K::StandardTestHost::Audio {
 class AlsaOutputPCMDevice : public OutputPCMDevice {
 
     private:
+        static ::
+
         ::snd_pcm_t*            poHandle;
         ::snd_pcm_hw_params_t*  poParams;
         ::snd_pcm_uframes_t     uFrames;
@@ -35,8 +37,15 @@ class AlsaOutputPCMDevice : public OutputPCMDevice {
         uint32                  uSampleRateHz;
         int32                   iDirection;
 
+        Context                 oContext;
+
     public:
-        AlsaOutputPCMDevice(ChannelMode iChannelMode, Resolution iResolution, uint16 fRateHz);
+        AlsaOutputPCMDevice(
+            uint16 uDesiredSampleRateHz,
+            uint16 uDesiredBufferLengthMs,
+            uint8  uChannelMode,
+            uint8  uSampleFormat
+        );
         ~AlsaOutputPCMDevice();
         void write(void const* pBuffer, size_t uLength);
 
@@ -51,14 +60,15 @@ AlsaOutputPCMDevice::~AlsaOutputPCMDevice() {
 }
 
 AlsaOutputPCMDevice::AlsaOutputPCMDevice(
-    ChannelMode iChannelMode,
-    Resolution iResolution,
-    uint16 uRateHz
+    uint16 uDesiredSampleRateHz,
+    uint16 uBufferLengthMs,
+    uint8  uChannelMode,
+    uint8  uSampleFormat
 ) :
     poHandle(nullptr),
     poParams(nullptr),
     uFrames(IConfig::PACKET_SIZE),
-    uSampleRateHz(uRateHz),
+    uSampleRateHz(uDesiredSampleRateHz),
     iDirection(0)
 {
     // Open PCM device for playback.
@@ -96,24 +106,24 @@ AlsaOutputPCMDevice::AlsaOutputPCMDevice(
     ::snd_pcm_hw_params_set_format(
         poHandle,
         poParams,
-        aSampleFormatMap[iResolution]
+        aSampleFormatMap[uSampleFormat]
     );
     std::fprintf(
         stderr,
         "\tFormat set to %d\n",
-        aSampleFormatMap[iResolution]
+        aSampleFormatMap[uSampleFormat]
     );
 
     // Set the channel count. Our enum maps directly
     ::snd_pcm_hw_params_set_channels(
         poHandle,
         poParams,
-        iChannelMode
+        uChannelMode
     );
     std::fprintf(
         stderr,
         "\tChannels set to %d\n",
-        iChannelMode
+        uChannelMode
     );
 
     // Set our target rate. This may be changed by the driver to an appropriate nearby value that
@@ -197,6 +207,19 @@ AlsaOutputPCMDevice::AlsaOutputPCMDevice(
         poHandle
     );
 
+    // Fill in the context structure, which is used by the VM
+    oContext.uSamplesSent    = 0;
+    oContext.uPacketLength   = (uint16)uFrames;
+    oContext.uSampleRateHz   = (uint16)uSampleRateHz;
+    oContext.uChannelMode    = uChannelMode;
+    oContext.uSampleFormat   = uSampleFormat;
+    //oContext.uBytesPerSample = (uint8)((iResolution + 1) * iChannelMode);
+    oContext.uReserved       = 0;
+    oContext.poOutputDevice  = this;
+}
+
+Context* AlsaOutputPCMDevice::getContext() {
+    return &oContext;
 }
 
 void AlsaOutputPCMDevice::write(void const* pBuffer, size_t uLength) {
@@ -205,12 +228,14 @@ void AlsaOutputPCMDevice::write(void const* pBuffer, size_t uLength) {
         /* EPIPE means underrun */
         std::fprintf(stderr, "AlsaOutputPCMDevice::write(): underrun occurred\n");
         ::snd_pcm_prepare(poHandle);
+        return;
     } else if (iResult < 0) {
         std::fprintf(
             stderr,
             "error from writei: %s\n",
             snd_strerror((int)iResult)
         );
+        return;
     } else if (iResult != (int64)uLength) {
         std::fprintf(
             stderr,
@@ -218,14 +243,16 @@ void AlsaOutputPCMDevice::write(void const* pBuffer, size_t uLength) {
             iResult
         );
     }
+    oContext.uSamplesSent += (uint64)iResult;
 }
 
 OutputPCMDevice* createOutputPCMDevice(
-    OutputPCMDevice::ChannelMode iChannelMode,
-    OutputPCMDevice::Resolution iResolution,
-    uint16 uRateHz
+    uint16 uDesiredSampleRateHz,
+    uint16 uDesiredBufferLengthMs,
+    Output::ChannelMode iChannelMode,
+    Output::Format      iSampleFormat
 ) {
-    return new AlsaOutputPCMDevice(iChannelMode, iResolution, uRateHz);
+    return new AlsaOutputPCMDevice(uDesiredSampleRateHz, uDesiredBufferLengthMs, iChannelMode, iSampleFormat);
 }
 
 

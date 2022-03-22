@@ -30,7 +30,6 @@ char const* aFormatNames[] = {
 };
 
 Interpreter::Status runEventLoop() {
-
     Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>();
     if (!poContext || !poContext->poManager) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NULL_PTR;
@@ -41,7 +40,6 @@ Interpreter::Status runEventLoop() {
 }
 
 void updateDisplay() {
-
     Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>();
     if (!poContext || !poContext->poManager) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NULL_PTR;
@@ -50,7 +48,6 @@ void updateDisplay() {
 }
 
 void openDisplay() {
-
     PackedParams oParams;
 
     oParams.u64 = Interpreter::gpr<ABI::INT_REG_0>().value<uint64>();

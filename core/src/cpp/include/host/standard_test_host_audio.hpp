@@ -38,6 +38,28 @@ enum Result {
     ERR_NO_AUDIO       = 1000,
 };
 
+/**
+ * Sub namespace for output related constants.
+ */
+namespace Output {
+
+    // Keeping it real simple for now
+    enum ChannelMode {
+        CH_MONO   = 1,
+        CH_STEREO = 2
+    };
+
+    enum Format {
+        INT_8  = 0,
+        INT_16 = 1
+    };
+
+    enum RateLimits {
+        MIN_HZ = 4000,
+        MAX_HZ = 48000
+    };
+
+};
 Interpreter::Status hostVector(uint8 uFunctionID);
 
 } // namespace

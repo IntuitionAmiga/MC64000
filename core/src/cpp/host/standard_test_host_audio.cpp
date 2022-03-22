@@ -13,11 +13,40 @@
 
 #include <cstdio>
 #include <host/standard_test_host_audio.hpp>
+#include <host/audio/output.hpp>
 #include <machine/register.hpp>
 
 using MC64K::Machine::Interpreter;
 
 namespace MC64K::StandardTestHost::Audio {
+
+void openAudio() {
+    PackedParams oParams;
+    oParams.u64 = Interpreter::gpr<ABI::INT_REG_0>().value<uint64>();
+
+    std::printf(
+        "openAudio rate:%d Hz, mode:%d resolution:%d\n",
+        (int)oParams.u16[0],
+        (int)oParams.u8[2],
+        (int)oParams.u8[3]
+    );
+}
+
+void closeAudio() {
+    Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>();
+    if (!poContext || !poContext->poOutputDevice) {
+        Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NULL_PTR;
+        return;
+    }
+}
+
+void writeAudio() {
+    Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>();
+    if (!poContext || !poContext->poOutputDevice) {
+        Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NULL_PTR;
+        return;
+    }
+}
 
 /**
  * Display::hostVector(uint8 uFunctionID)
@@ -28,9 +57,9 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case INIT:
         case DONE:
             break;
-        case OPEN:  break;
-        case CLOSE: break;
-        case WRITE: break;
+        case OPEN:  openAudio();  break;
+        case CLOSE: closeAudio(); break;
+        case WRITE: writeAudio(); break;
         default:
             std::fprintf(stderr, "Unknown Audio operation %d\n", iOperation);
             return Interpreter::UNKNOWN_HOST_CALL;
