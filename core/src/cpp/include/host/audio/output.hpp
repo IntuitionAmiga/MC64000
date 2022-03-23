@@ -52,7 +52,7 @@ class OutputPCMDevice {
 
 struct Context {
     SamplePointer    oBuffer;         // This is allocated for us
-    uint32           uBufferLength;   // The actual length of the buffer (will be a muptiple of packet length)
+    uint32           uBufferLength;   // The actual length of the buffer (will be a multiple of packet length)
     uint32           uSubmitLength;   // The number of sample frames to send in the next call to write
     uint64           uSamplesSent;    // The total number of sample frames sent so far
     uint16           uPacketLength;   // The smallest unit of audio. The buffer will be allocated as a multiple.

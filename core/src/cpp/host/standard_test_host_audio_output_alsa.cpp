@@ -20,15 +20,11 @@ using MC64K::Machine::Interpreter;
 
 namespace MC64K::StandardTestHost::Audio {
 
-::snd_pcm_format_t aSampleFormatMap[] = {
-    SND_PCM_FORMAT_S8,
-    SND_PCM_FORMAT_S16_LE
-};
-
 class AlsaOutputPCMDevice : public OutputPCMDevice {
 
     private:
-        static ::
+        static ::snd_pcm_format_t const aSampleFormatMap[];
+        static uint8 const              aBytesPerSample[];
 
         ::snd_pcm_t*            poHandle;
         ::snd_pcm_hw_params_t*  poParams;
@@ -47,8 +43,19 @@ class AlsaOutputPCMDevice : public OutputPCMDevice {
             uint8  uSampleFormat
         );
         ~AlsaOutputPCMDevice();
+        Context* getContext();
         void write(void const* pBuffer, size_t uLength);
+};
 
+::snd_pcm_format_t const AlsaOutputPCMDevice::aSampleFormatMap[] = {
+    SND_PCM_FORMAT_S8,
+    SND_PCM_FORMAT_S16_LE
+};
+
+
+uint8 const AlsaOutputPCMDevice::aBytesPerSample[] = {
+    1,
+    2
 };
 
 AlsaOutputPCMDevice::~AlsaOutputPCMDevice() {
@@ -56,6 +63,9 @@ AlsaOutputPCMDevice::~AlsaOutputPCMDevice() {
         ::snd_pcm_drain(poHandle);
         ::snd_pcm_close(poHandle);
         std::fprintf(stderr, "Closed audio device %p\n", poHandle);
+    }
+    if (oContext.oBuffer.piByte) {
+        delete[] oContext.oBuffer.piByte;
     }
 }
 
@@ -213,9 +223,34 @@ AlsaOutputPCMDevice::AlsaOutputPCMDevice(
     oContext.uSampleRateHz   = (uint16)uSampleRateHz;
     oContext.uChannelMode    = uChannelMode;
     oContext.uSampleFormat   = uSampleFormat;
-    //oContext.uBytesPerSample = (uint8)((iResolution + 1) * iChannelMode);
+    oContext.uBytesPerSample = aBytesPerSample[uSampleFormat] * uChannelMode;
     oContext.uReserved       = 0;
-    oContext.poOutputDevice  = this;
+
+    size_t uBufferSize = (uBufferLengthMs * uSampleRateHz) / 1000;
+
+    std::fprintf(
+        stderr,
+        "\tRequired buffer length for %u ms at %uHz is %zu\n",
+        (uint32)uBufferLengthMs,
+        (uint32)uSampleRateHz,
+        uBufferSize
+    );
+
+    // Round to frame size
+    uBufferSize = uFrames * ((uBufferSize + uFrames - 1) / uFrames);
+
+    oContext.uBufferLength  = (uint32)(uBufferSize * uFrames);
+    oContext.oBuffer.piByte = new int8[oContext.uBufferLength * oContext.uBytesPerSample];
+    oContext.poOutputDevice = this;
+
+    std::fprintf(
+        stderr,
+        "\tRounded buffer is %u, %u bytes/sample, total %u bytes\n",
+        (uint32)oContext.uBufferLength,
+        (uint32)oContext.uBytesPerSample,
+        (uint32)(oContext.uBufferLength * oContext.uBytesPerSample)
+    );
+
 }
 
 Context* AlsaOutputPCMDevice::getContext() {
