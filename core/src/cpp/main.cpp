@@ -18,6 +18,12 @@
 #include "host/runtime.hpp"
 #include "loader/error.hpp"
 
+#include "host/audio/config.hpp"
+#include "host/audio/output.hpp"
+
+#include <cmath>
+using namespace MC64K::StandardTestHost::Audio;
+
 /**
  * Entry point
  */
