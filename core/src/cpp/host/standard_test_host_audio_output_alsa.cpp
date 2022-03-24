@@ -11,76 +11,43 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include <cstdio>
-#include <host/audio/output.hpp>
-#include <host/audio/config.hpp>
-#include <alsa/asoundlib.h>
+#include <host/audio/alsa/device.hpp>
 
 using MC64K::Machine::Interpreter;
 
 namespace MC64K::StandardTestHost::Audio {
 
-class AlsaOutputPCMDevice : public OutputPCMDevice {
+namespace Alsa {
 
-    private:
-        static ::snd_pcm_format_t const aSampleFormatMap[];
-        static uint8 const              aBytesPerSample[];
-
-        ::snd_pcm_t*            poHandle;
-        ::snd_pcm_hw_params_t*  poParams;
-        ::snd_pcm_uframes_t     uFrames;
-        uint32                  uPeriod;
-        uint32                  uSampleRateHz;
-        int32                   iDirection;
-
-        Context                 oContext;
-
-    public:
-        AlsaOutputPCMDevice(
-            uint16 uDesiredSampleRateHz,
-            uint16 uDesiredBufferLengthMs,
-            uint8  uChannelMode,
-            uint8  uSampleFormat
-        );
-        ~AlsaOutputPCMDevice();
-        Context* getContext();
-        void write(void const* pBuffer, size_t uLength);
-};
-
-::snd_pcm_format_t const AlsaOutputPCMDevice::aSampleFormatMap[] = {
+::snd_pcm_format_t const OutputPCMDevice::aSampleFormatMap[] = {
     SND_PCM_FORMAT_S8,
     SND_PCM_FORMAT_S16_LE
 };
 
-
-uint8 const AlsaOutputPCMDevice::aBytesPerSample[] = {
+uint8 const OutputPCMDevice::aBytesPerSample[] = {
     1,
     2
 };
 
-AlsaOutputPCMDevice::~AlsaOutputPCMDevice() {
-    if (poHandle) {
-        ::snd_pcm_drain(poHandle);
-        ::snd_pcm_close(poHandle);
-        std::fprintf(stderr, "Closed audio device %p\n", poHandle);
-    }
+OutputPCMDevice::~OutputPCMDevice() {
     if (oContext.oBuffer.piByte) {
         delete[] oContext.oBuffer.piByte;
     }
 }
 
-AlsaOutputPCMDevice::AlsaOutputPCMDevice(
+OutputPCMDevice::OutputPCMDevice(
     uint16 uDesiredSampleRateHz,
     uint16 uBufferLengthMs,
     uint8  uChannelMode,
     uint8  uSampleFormat
 ) :
-    poHandle(nullptr),
+    oPCMHandle(),
     poParams(nullptr),
     uFrames(IConfig::PACKET_SIZE),
     uSampleRateHz(uDesiredSampleRateHz),
     iDirection(0)
 {
+    ::snd_pcm_t* poHandle = nullptr;
     // Open PCM device for playback.
     int iResult = ::snd_pcm_open(
         &poHandle,
@@ -101,6 +68,9 @@ AlsaOutputPCMDevice::AlsaOutputPCMDevice(
         stderr,
         "AlsaOutputPCMDevice: obtained handle at %p\n", poHandle
     );
+
+    // Own the handle. From this point on, it's managed by the PCMHandle.
+    oPCMHandle.set(poHandle);
 
     // this is a macro
     snd_pcm_hw_params_alloca(&poParams);
@@ -239,25 +209,27 @@ AlsaOutputPCMDevice::AlsaOutputPCMDevice(
     // Round to frame size
     uBufferSize = uFrames * ((uBufferSize + uFrames - 1) / uFrames);
 
-    oContext.uBufferLength  = (uint32)(uBufferSize * uFrames);
-    oContext.oBuffer.piByte = new int8[oContext.uBufferLength * oContext.uBytesPerSample];
+    oContext.uBufferLength  = (uint32)uBufferSize;
+    oContext.oBuffer.piByte = new int8[uBufferSize * oContext.uBytesPerSample];
     oContext.poOutputDevice = this;
 
     std::fprintf(
         stderr,
-        "\tRounded buffer is %u, %u bytes/sample, total %u bytes\n",
+        "\tRounded buffer is %u, %u bytes/sample, total %u bytes, allocated at %p\n",
         (uint32)oContext.uBufferLength,
         (uint32)oContext.uBytesPerSample,
-        (uint32)(oContext.uBufferLength * oContext.uBytesPerSample)
+        (uint32)(oContext.uBufferLength * oContext.uBytesPerSample),
+        oContext.oBuffer.piByte
     );
 
 }
 
-Context* AlsaOutputPCMDevice::getContext() {
+Context* OutputPCMDevice::getContext() {
     return &oContext;
 }
 
-void AlsaOutputPCMDevice::write(void const* pBuffer, size_t uLength) {
+void OutputPCMDevice::write(void const* pBuffer, size_t uLength) {
+    ::snd_pcm_t* poHandle = oPCMHandle.get();
     int64 iResult = ::snd_pcm_writei(poHandle, pBuffer, uLength);
     if (iResult == -EPIPE) {
         /* EPIPE means underrun */
@@ -281,15 +253,22 @@ void AlsaOutputPCMDevice::write(void const* pBuffer, size_t uLength) {
     oContext.uSamplesSent += (uint64)iResult;
 }
 
+} // end of Alsa namespace
+
+// Audio namespace
 OutputPCMDevice* createOutputPCMDevice(
     uint16 uDesiredSampleRateHz,
     uint16 uDesiredBufferLengthMs,
     Output::ChannelMode iChannelMode,
     Output::Format      iSampleFormat
 ) {
-    return new AlsaOutputPCMDevice(uDesiredSampleRateHz, uDesiredBufferLengthMs, iChannelMode, iSampleFormat);
+    return new Alsa::OutputPCMDevice(
+        uDesiredSampleRateHz,
+        uDesiredBufferLengthMs,
+        iChannelMode,
+        iSampleFormat
+    );
 }
-
 
 } // namespace
 

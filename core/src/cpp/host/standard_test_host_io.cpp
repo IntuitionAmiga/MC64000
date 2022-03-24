@@ -63,6 +63,13 @@ void openStream() {
     if (iMode > OPEN_APPEND_UPDATE) {
         Interpreter::gpr<ABI::PTR_REG_0>().sString = 0;
     } else {
+
+        std::fprintf(
+            stderr,
+            "Attempting to open %s\n",
+            Interpreter::gpr<ABI::PTR_REG_0>().sString
+        );
+
         std::FILE* pStream = std::fopen(
             Interpreter::gpr<ABI::PTR_REG_0>().sString,
             aOpenModes[iMode]
@@ -100,6 +107,15 @@ void readStream() {
     uint8*     pBuffer = Interpreter::gpr<ABI::PTR_REG_1>().puByte;
     if (pStream && pBuffer) {
         if (size_t uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
+
+//             std::fprintf(
+//                 stderr,
+//                 "About to read %zu bytes into address %p from file handle %p...\n",
+//                 uSize,
+//                 pBuffer,
+//                 pStream
+//             );
+
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = std::fread(
                 pBuffer,
                 1,
