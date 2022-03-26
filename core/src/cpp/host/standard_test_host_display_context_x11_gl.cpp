@@ -173,14 +173,14 @@ X11GLManager::X11GLManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 u
 
     ::XStoreName(poDisplay, uWindowID, "MC64K (GL)");
 
-    oContext.uNumPixels   = uWidth * uHeight;
-    oContext.uNumBytes    = oContext.uNumPixels * aPixelSize[uFormat];
-    oContext.uWidth       = uWidth;
-    oContext.uHeight      = uHeight;
-    oContext.uFlags       = uFlags;
-    oContext.uPixelFormat = uFormat;
-    oContext.uRateHz      = uRateHz < 1 ? 1 : uRateHz;
-    oContext.poManager    = this;
+    oContext.uNumBufferPixels = uWidth * uHeight;
+    oContext.uNumBufferBytes  = oContext.uNumBufferPixels * aPixelSize[uFormat];
+    oContext.uBufferWidth     = uWidth;
+    oContext.uBufferHeight    = uHeight;
+    oContext.uFlags           = uFlags;
+    oContext.uPixelFormat     = uFormat;
+    oContext.uRateHz          = uRateHz < 1 ? 1 : uRateHz;
+    oContext.poManager        = this;
     oContext.allocateBuffer();
 
     ::glXMakeCurrent(poDisplay, uWindowID, pGLXContext);
@@ -325,8 +325,8 @@ void X11GLManager::runEventLoop() {
                 0, // level
                 0, // x pos
                 0, // y pos
-                oContext.uWidth,
-                oContext.uHeight,
+                oContext.uBufferWidth,
+                oContext.uBufferHeight,
                 GL_BGRA,                   // format
                 GL_UNSIGNED_BYTE,          // type
                 oContext.puImageBuffer     // data
@@ -388,8 +388,8 @@ void X11GLManager::handleEvent() {
             XWindowAttributes oWinAttr;
             ::XGetWindowAttributes(oDisplay.get(), uWindowID, &oWinAttr);
             ::glViewport(0, 0, oWinAttr.width, oWinAttr.height);
-            fMouseXScale = (float32)oContext.uWidth /  (float32) oWinAttr.width;
-            fMouseYScale = (float32)oContext.uHeight / (float32) oWinAttr.height;
+            fMouseXScale = (float32)oContext.uBufferWidth /  (float32) oWinAttr.width;
+            fMouseYScale = (float32)oContext.uBufferHeight / (float32) oWinAttr.height;
             break;
         case KeyPress:
             if (oContext.apVMCall[CALL_KEY_PRESS]) {

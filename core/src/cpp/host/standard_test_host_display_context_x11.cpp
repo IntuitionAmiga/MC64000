@@ -150,14 +150,14 @@ X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uForm
     pGC = ::XCreateGC(poDisplay, uPixmapID, 0, nullptr);
     std::fprintf(stderr, "Graphics Context at %p\n", pGC);
 
-    oContext.uNumPixels   = uWidth * uHeight;
-    oContext.uNumBytes    = oContext.uNumPixels * aPixelSize[uFormat];
-    oContext.uWidth       = uWidth;
-    oContext.uHeight      = uHeight;
-    oContext.uFlags       = uFlags;
-    oContext.uPixelFormat = uFormat;
-    oContext.uRateHz      = uRateHz < 1 ? 1 : uRateHz;
-    oContext.poManager    = this;
+    oContext.uNumBufferPixels = uWidth * uHeight;
+    oContext.uNumBufferBytes  = oContext.uNumBufferPixels * aPixelSize[uFormat];
+    oContext.uBufferWidth     = uWidth;
+    oContext.uBufferHeight    = uHeight;
+    oContext.uFlags           = uFlags;
+    oContext.uPixelFormat     = uFormat;
+    oContext.uRateHz          = uRateHz < 1 ? 1 : uRateHz;
+    oContext.poManager        = this;
     oContext.allocateBuffer();
 
     XImage* poImage = ::XCreateImage(

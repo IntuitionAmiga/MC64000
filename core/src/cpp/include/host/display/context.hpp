@@ -51,10 +51,10 @@ struct Context {
      */
     PixelPointer oDisplayBuffer;
     uint32*      puPalette;
-    uint32       uNumPixels;
-    uint32       uNumBytes;
-    uint16       uWidth;
-    uint16       uHeight;
+    uint32       uNumBufferPixels;
+    uint32       uNumBufferBytes;
+    uint16       uBufferWidth;
+    uint16       uBufferHeight;
     uint16       uFlags;
     uint8        uPixelFormat;
     uint8        uRateHz;
