@@ -29,14 +29,16 @@
     @equ AUDIO_MIN_MS    5
     @equ AUDIO_MAX_MS    5000
 
-    @equ AUDIO_REG_BUFFER_ADDRESS  0
-    @equ AUDIO_REG_BUFFER_LENGTH   8
-    @equ AUDIO_REG_SUBMIT_LENGTH   12
-    @equ AUDIO_REG_SAMPLES_SENT    26
-    @equ AUDIO_REG_PACKET_LENGTH   24
-    @equ AUDIO_REG_SAMPLE_RATE_HZ  26
-    @equ AUDIO_REG_SAMPLE_FORMAT   28
-    @equ AUDIO_REG_SAMPLE_SIZE     29
+    @equ AUDIO_REG_BUFFER_ADDRESS     0
+    @equ AUDIO_REG_BUFFER_LENGTH      8
+    @equ AUDIO_REG_SUBMIT_LENGTH     12
+    @equ AUDIO_REG_BUFFER_SIZE_BYTES 16
+    @equ AUDIO_REG_PACKET_LENGTH     20
+    @equ AUDIO_REG_SAMPLE_RATE_HZ    22
+    @equ AUDIO_REG_SAMPLES_SENT      24
+    @equ AUDIO_REG_CHANNEL_FORMAT    32
+    @equ AUDIO_REG_SAMPLE_FORMAT     33
+    @equ AUDIO_REG_SAMPLE_SIZE       34
 
     @equ audio_init     #0, audio_vector
     @equ audio_done     #1, audio_vector

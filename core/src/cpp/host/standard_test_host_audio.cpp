@@ -29,13 +29,15 @@ void openAudio() {
     uint16 uBufferMs = oParams.u16[1];
     uint8  uMode     = oParams.u8[4];
     uint8  uFormat   = oParams.u8[5];
+    uint8  uFPSHint  = oParams.u8[6];
 
     std::printf(
-        "openAudio Requested rate:%d Hz, buffer:%d ms, mode:%d format:%d\n",
+        "openAudio Requested rate:%d Hz, buffer:%d ms, mode:%d format:%d, display fps hint:%d\n",
         (int)uRateHz,
         (int)uBufferMs,
         (int)uMode,
-        (int)uFormat
+        (int)uFormat,
+        (int)uFPSHint
     );
 
     if (uRateHz < Output::MIN_HZ || uRateHz > Output::MAX_HZ) {
