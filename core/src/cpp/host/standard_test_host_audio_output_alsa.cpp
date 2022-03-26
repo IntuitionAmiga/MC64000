@@ -208,9 +208,10 @@ OutputPCMDevice::OutputPCMDevice(
 
     // Round to frame size
     uBufferSize = uFrames * ((uBufferSize + uFrames - 1) / uFrames);
-
     oContext.uBufferLength  = (uint32)uBufferSize;
-    oContext.oBuffer.piByte = new int8[uBufferSize * oContext.uBytesPerSample];
+    uBufferSize *= oContext.uBytesPerSample;
+    oContext.oBuffer.piByte = new int8[uBufferSize];
+    oContext.uBufferSize    = (uint32)uBufferSize;
     oContext.poOutputDevice = this;
 
     std::fprintf(

@@ -54,9 +54,10 @@ struct Context {
     SamplePointer    oBuffer;         // This is allocated for us
     uint32           uBufferLength;   // The actual length of the buffer (will be a multiple of packet length)
     uint32           uSubmitLength;   // The number of sample frames to send in the next call to write
-    uint64           uSamplesSent;    // The total number of sample frames sent so far
+    uint32           uBufferSize;     // The buffer size in bytes
     uint16           uPacketLength;   // The smallest unit of audio. The buffer will be allocated as a multiple.
     uint16           uSampleRateHz;   // The sample rate. This may be adjusted from what was requested.
+    uint64           uSamplesSent;    // The total number of sample frames sent so far
     uint8            uChannelMode;    // The channel mode, see Output::ChannelMode
     uint8            uSampleFormat;   // The per sample format, see Output::Format
     uint8            uBytesPerSample; // The size of a single sample frame, in bytes

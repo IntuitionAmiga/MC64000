@@ -27,8 +27,7 @@ main:
     move.q  a0, a3
 
     clr.q   d2
-    move.l  AUDIO_REG_BUFFER_LENGTH(a2), d2
-    lsl.q   #1, d2 ; 2 bytes per sample...
+    move.l  AUDIO_REG_BUFFER_SIZE_BYTES(a2), d2
 
 .loop:
     move.q  AUDIO_REG_BUFFER_ADDRESS(a2), a1
