@@ -19,6 +19,7 @@
 #include <host/standard_test_host_mem.hpp>
 #include <host/standard_test_host_vector_math.hpp>
 #include <host/standard_test_host_display.hpp>
+#include <host/standard_test_host_audio.hpp>
 #include <loader/symbol.hpp>
 #include <machine/register.hpp>
 
@@ -55,7 +56,8 @@ Host::Definition instance(
         IO::hostVector,
         Mem::hostVector,
         VectorMath::hostVector,
-        Display::hostVector
+        Display::hostVector,
+        Audio::hostVector
     },
 
     // Symbols this host exports to the virtual code.
