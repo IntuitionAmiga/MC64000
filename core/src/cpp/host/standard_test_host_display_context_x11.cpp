@@ -22,7 +22,7 @@
 #include <machine/register.hpp>
 #include <machine/timing.hpp>
 
-#include <host/display/x11/raii.hpp>
+#include <host/display/x11/manager.hpp>
 
 using MC64K::Machine::Interpreter;
 using MC64K::Machine::Nanoseconds;
@@ -31,77 +31,6 @@ namespace MC64K::StandardTestHost::Display {
 
 const uint8 aPixelSize[] = {
     1, 4
-};
-
-
-/**
- * X11 Implementation of the Manager interface.
- */
-class X11Manager : public Manager {
-    private:
-        X11Context    oContext;
-        ::XEvent      oEvent;
-        DisplayHandle oDisplay;
-        XImageHandle  oImage;
-        ::Window      uWindowID;
-        ::Pixmap      uPixmapID;
-        GC            pGC;
-        int           iWidth, iHeight;
-;
-    public:
-        /**
-         * Constructor. Follows RAII principle.
-         *
-         * @param  uint16 uWidth
-         * @param  uint16 uHeight
-         * @param  uint16 uFlags
-         * @param  uint8  uFormat
-         * @param  uint8  uRateHz
-         * @throws Error
-         * @throws std::bad_alloc
-         */
-        X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
-        virtual ~X11Manager();
-
-        /**
-         * @inheritDoc
-         */
-        Context* getContext();
-
-        /**
-         * @inheritDoc
-         */
-        void runEventLoop();
-
-        /**
-         * @inheritDoc
-         */
-        void updateDisplay();
-
-    private:
-        /**
-         * Returns a read-only type-cast reference to the actual X11 event structure.
-         * We do this because XEvent is actually a union type of all possible X11 events.
-         */
-        template<typename T>
-        T const& event() const {
-            return *((T const*)&oEvent);
-        }
-
-        /**
-         * Set up the display input handling based on the currently set callbacks
-         */
-        long configureInputMask();
-
-        /**
-         * Handle an X11 event
-         */
-        void handleEvent();
-
-        /**
-         * Invoke a VM callback.
-         */
-        void invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode);
 };
 
 /**

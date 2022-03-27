@@ -21,7 +21,7 @@
 #include <host/display/context.hpp>
 #include <machine/register.hpp>
 #include <machine/timing.hpp>
-#include <host/display/x11/raii.hpp>
+#include <host/display/glx/manager.hpp>
 
 #include <GL/gl.h>
 #include <GL/glx.h>
@@ -35,83 +35,6 @@ const uint8 aPixelSize[] = {
     1, 4
 };
 
-/**
- * X11GL Implementation of the Manager interface.
- */
-class X11GLManager : public Manager {
-    private:
-        X11Context    oContext;
-        ::XEvent      oEvent;
-        DisplayHandle oDisplay;
-        XVisualInfo*  pVisualInfo;
-        GLXContext    pGLXContext;
-        ::Window      uWindowID;
-        int32         aGLAttributes[5];
-        uint32        uTextureID;
-        float32       fMouseXScale;
-        float32       fMouseYScale;
-
-    public:
-        /**
-         * Constructor. Follows RAII principle.
-         *
-         * @param  uint16 uWidth
-         * @param  uint16 uHeight
-         * @param  uint16 uFlags
-         * @param  uint8  uFormat
-         * @param  uint8  uRateHz
-         * @throws Error
-         * @throws std::bad_alloc
-         */
-        X11GLManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
-        virtual ~X11GLManager();
-
-        /**
-         * @inheritDoc
-         */
-        Context* getContext();
-
-        /**
-         * @inheritDoc
-         */
-        void runEventLoop();
-
-        /**
-         * @inheritDoc
-         */
-        void updateDisplay();
-
-    private:
-        /**
-         * Returns a read-only type-cast reference to the actual X11 event structure.
-         * We do this because XEvent is actually a union type of all possible X11 events.
-         */
-        template<typename T>
-        T const& event() const {
-            return *((T const*)&oEvent);
-        }
-
-        /**
-         * Set up the display input handling based on the currently set callbacks
-         */
-        long configureInputMask();
-
-        /**
-         * Handle an X11 event
-         */
-        void handleEvent();
-
-        /**
-         * Invoke a VM callback.
-         */
-        void invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode);
-
-        /**
-         * Updates mouse. Since the GL window is resizable, we have to scale the real coordinates
-         * back to virtual.
-         */
-        void updateMousePosition();
-};
 
 inline void X11GLManager::updateMousePosition() {
     oContext.uEventRawMask = (uint16) event<::XMotionEvent>().state;
