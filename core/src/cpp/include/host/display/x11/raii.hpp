@@ -28,7 +28,7 @@
 
 namespace MC64K::StandardTestHost::Display {
 
-extern const uint8 aPixelSize[];
+extern uint8 const aPixelSize[];
 
 /**
  * RAII Handle for Display Pointer

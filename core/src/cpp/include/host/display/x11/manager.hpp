@@ -16,12 +16,12 @@
 
 #include "raii.hpp"
 
-namespace MC64K::StandardTestHost::Display {
+namespace MC64K::StandardTestHost::Display::x11 {
 
 /**
  * X11 Implementation of the Manager interface.
  */
-class X11Manager : public Manager {
+class Manager : public Display::Manager {
     private:
         X11Context    oContext;
         ::XEvent      oEvent;
@@ -44,8 +44,8 @@ class X11Manager : public Manager {
          * @throws Error
          * @throws std::bad_alloc
          */
-        X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
-        virtual ~X11Manager();
+        Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
+        virtual ~Manager();
 
         /**
          * @inheritDoc

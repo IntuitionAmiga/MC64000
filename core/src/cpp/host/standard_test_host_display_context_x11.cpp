@@ -29,14 +29,16 @@ using MC64K::Machine::Nanoseconds;
 
 namespace MC64K::StandardTestHost::Display {
 
-const uint8 aPixelSize[] = {
+uint8 const aPixelSize[] = {
     1, 4
 };
+
+namespace x11 {
 
 /**
  * Constructor. We use RAII here and throw exceptions if a requirement can't be met.
  */
-X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz):
+Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz):
     oContext(),
     oEvent(),
     oDisplay(),
@@ -92,7 +94,7 @@ X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uForm
     XImage* poImage = ::XCreateImage(
         poDisplay,
         DefaultVisual(poDisplay, DefaultScreen(poDisplay)),
-        iX11Depth,//iDepth,
+        iX11Depth,
         ZPixmap,
         0, // offset
         (char*)oContext.puImageBuffer,
@@ -118,7 +120,7 @@ X11Manager::X11Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uForm
 /**
  * Destructor.
  */
-X11Manager::~X11Manager() {
+Manager::~Manager() {
     if (uPixmapID) {
         ::XFreePixmap(oDisplay.get(), uPixmapID);
     }
@@ -128,14 +130,14 @@ X11Manager::~X11Manager() {
 /**
  * Get the context.
  */
-Context* X11Manager::getContext() {
+Context* Manager::getContext() {
     return &oContext;
 }
 
 /**
  * Update the display
  */
-void X11Manager::updateDisplay() {
+void Manager::updateDisplay() {
     ::Display* poDisplay = oDisplay.get();
     ::XPutImage(
         poDisplay,
@@ -150,7 +152,7 @@ void X11Manager::updateDisplay() {
 /**
  * Run the event loop.
  */
-void X11Manager::runEventLoop() {
+void Manager::runEventLoop() {
 
     ::Display* poDisplay = oDisplay.get();
 
@@ -160,7 +162,6 @@ void X11Manager::runEventLoop() {
     Nanoseconds::Value uFrametime = 1000000000 / oContext.uRateHz;
     Nanoseconds::Value uIdle    = 0;
     Nanoseconds::Value uBegin   = Nanoseconds::mark();
-
 
     ulong uFrames = 0;
 
@@ -242,7 +243,7 @@ void X11Manager::runEventLoop() {
  * Configures the X11 Input Mask based on which VM callbacks are set. For example. there is no point
  * receiving mouse movements if there isn't a callback to handle them.
  */
-long X11Manager::configureInputMask() {
+long Manager::configureInputMask() {
     long int iXInputMask = 0;
     iXInputMask |= (oContext.apVMCall[CALL_KEY_PRESS]      ? KeyPressMask      : 0);
     iXInputMask |= (oContext.apVMCall[CALL_KEY_RELEASE]    ? KeyReleaseMask    : 0);
@@ -257,7 +258,7 @@ long X11Manager::configureInputMask() {
  * disabled a VM handler we won't have any events still waiting for it. This means we still have to
  * check each handler before we attempt to call it.
  */
-void X11Manager::handleEvent() {
+void Manager::handleEvent() {
     switch (oEvent.type) {
         case NoExpose:
             break;
@@ -311,14 +312,16 @@ void X11Manager::handleEvent() {
     }
 }
 
-void X11Manager::invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode) {
+void Manager::invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode) {
     Interpreter::setProgramCounter(pBytecode);
     Interpreter::gpr<ABI::PTR_REG_0>().pAny = &oContext;
     Interpreter::run();
 }
 
+} // End of x11 Namespace
+
 Manager* createManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz) {
-    return new X11Manager(uWidth, uHeight, uFlags, uFormat, uRateHz);
+    return new x11::Manager(uWidth, uHeight, uFlags, uFormat, uRateHz);
 }
 
 } // namespace

@@ -19,12 +19,12 @@
 #include <GL/gl.h>
 #include <GL/glx.h>
 
-namespace MC64K::StandardTestHost::Display {
+namespace MC64K::StandardTestHost::Display::xGL {
 
 /**
- * X11GL Implementation of the Manager interface.
+ * X11 / OpenGL Implementation of the Manager interface.
  */
-class X11GLManager : public Manager {
+class Manager : public Display::Manager {
     private:
         X11Context    oContext;
         ::XEvent      oEvent;
@@ -49,8 +49,8 @@ class X11GLManager : public Manager {
          * @throws Error
          * @throws std::bad_alloc
          */
-        X11GLManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
-        virtual ~X11GLManager();
+        Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
+        virtual ~Manager();
 
         /**
          * @inheritDoc

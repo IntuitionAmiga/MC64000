@@ -31,12 +31,13 @@ using MC64K::Machine::Nanoseconds;
 
 namespace MC64K::StandardTestHost::Display {
 
-const uint8 aPixelSize[] = {
+uint8 const aPixelSize[] = {
     1, 4
 };
 
+namespace xGL {
 
-inline void X11GLManager::updateMousePosition() {
+inline void Manager::updateMousePosition() {
     oContext.uEventRawMask = (uint16) event<::XMotionEvent>().state;
     oContext.uPositionX    = (uint16) ((float32)event<::XMotionEvent>().x * fMouseXScale);
     oContext.uPositionY    = (uint16) ((float32)event<::XMotionEvent>().y * fMouseYScale);
@@ -45,7 +46,7 @@ inline void X11GLManager::updateMousePosition() {
 /**
  * Constructor. We use RAII here and throw exceptions if a requirement can't be met.
  */
-X11GLManager::X11GLManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz):
+Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz):
     oContext(),
     oEvent(),
     oDisplay(),
@@ -157,7 +158,7 @@ X11GLManager::X11GLManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 u
 /**
  * Destructor.
  */
-X11GLManager::~X11GLManager() {
+Manager::~Manager() {
     if (pGLXContext) {
         if (uTextureID) {
             ::glDeleteTextures(1, &uTextureID);
@@ -172,14 +173,14 @@ X11GLManager::~X11GLManager() {
 /**
  * Get the context.
  */
-Context* X11GLManager::getContext() {
+Context* Manager::getContext() {
     return &oContext;
 }
 
 /**
  * Update the display
  */
-void X11GLManager::updateDisplay() {
+void Manager::updateDisplay() {
     // TODO this should use a VBO
     glBegin (GL_QUADS);
     glVertex3i(-1, 1, -1);  glTexCoord2i(1, 0);
@@ -193,7 +194,7 @@ void X11GLManager::updateDisplay() {
 /**
  * Run the event loop.
  */
-void X11GLManager::runEventLoop() {
+void Manager::runEventLoop() {
 
     ::Display* poDisplay = oDisplay.get();
 
@@ -288,7 +289,7 @@ void X11GLManager::runEventLoop() {
  * Configures the X11 Input Mask based on which VM callbacks are set. For example. there is no point
  * receiving mouse movements if there isn't a callback to handle them.
  */
-long X11GLManager::configureInputMask() {
+long Manager::configureInputMask() {
     long int iXInputMask = ExposureMask;
     iXInputMask |= (oContext.apVMCall[CALL_KEY_PRESS]      ? KeyPressMask      : 0);
     iXInputMask |= (oContext.apVMCall[CALL_KEY_RELEASE]    ? KeyReleaseMask    : 0);
@@ -303,7 +304,7 @@ long X11GLManager::configureInputMask() {
  * disabled a VM handler we won't have any events still waiting for it. This means we still have to
  * check each handler before we attempt to call it.
  */
-void X11GLManager::handleEvent() {
+void Manager::handleEvent() {
     switch (oEvent.type) {
         case NoExpose:
             break;
@@ -354,14 +355,16 @@ void X11GLManager::handleEvent() {
     }
 }
 
-void X11GLManager::invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode) {
+void Manager::invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode) {
     Interpreter::setProgramCounter(pBytecode);
     Interpreter::gpr<ABI::PTR_REG_0>().pAny = &oContext;
     Interpreter::run();
 }
 
+}
+
 Manager* createManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz) {
-    return new X11GLManager(uWidth, uHeight, uFlags, uFormat, uRateHz);
+    return new xGL::Manager(uWidth, uHeight, uFlags, uFormat, uRateHz);
 }
 
 } // namespace
