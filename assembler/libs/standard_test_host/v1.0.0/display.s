@@ -35,14 +35,16 @@
 
     @equ DISPLAY_REG_WIDTH               72
     @equ DISPLAY_REG_HEIGHT              74
-    @equ DISPLAY_REG_FLAGS               76
-    @equ DISPLAY_REG_PXL_FORMAT          78
-    @equ DISPLAY_REG_REFRESH_HZ          79
+    @equ DISPLAY_REG_FILTH               88
 
-    @equ DISPLAY_REG_EVENT_CODE          80
-    @equ DISPLAY_REG_EVENT_MASK          82
-    @equ DISPLAY_REG_POSITION_X          84
-    @equ DISPLAY_REG_POSITION_Y          86
+    @equ DISPLAY_REG_FLAGS               96
+    @equ DISPLAY_REG_PXL_FORMAT          98
+    @equ DISPLAY_REG_REFRESH_HZ          99
+
+    @equ DISPLAY_REG_EVENT_CODE          100
+    @equ DISPLAY_REG_EVENT_MASK          102
+    @equ DISPLAY_REG_POSITION_X          104
+    @equ DISPLAY_REG_POSITION_Y          106
 
     @equ DISPLAY_BIT_DRAW_BUFFER_NEXT_FRAME 0
     @equ DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES 1

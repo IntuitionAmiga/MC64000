@@ -55,6 +55,14 @@ struct Context {
     uint32       uNumBufferBytes;
     uint16       uBufferWidth;
     uint16       uBufferHeight;
+
+    uint32       uNumViewPixels;
+    uint16       uViewWidth;
+    uint16       uViewHeight;
+    int16        iViewXOffset;
+    int16        iViewYOffset;
+    uint8 const* puFilthScript;
+
     uint16       uFlags;
     uint8        uPixelFormat;
     uint8        uRateHz;
