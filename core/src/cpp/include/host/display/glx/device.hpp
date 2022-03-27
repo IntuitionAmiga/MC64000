@@ -24,7 +24,7 @@ namespace MC64K::StandardTestHost::Display::xGL {
 /**
  * X11 / OpenGL Implementation of the Manager interface.
  */
-class Manager : public Display::Manager {
+class Device : public Display::Device {
     private:
         X11Context    oContext;
         ::XEvent      oEvent;
@@ -41,16 +41,12 @@ class Manager : public Display::Manager {
         /**
          * Constructor. Follows RAII principle.
          *
-         * @param  uint16 uWidth
-         * @param  uint16 uHeight
-         * @param  uint16 uFlags
-         * @param  uint8  uFormat
-         * @param  uint8  uRateHz
+         * @param  Display::OpenParams const& roOpenParams
          * @throws Error
          * @throws std::bad_alloc
          */
-        Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
-        virtual ~Manager();
+        Device(Display::OpenParams const& roOpenParams);
+        virtual ~Device();
 
         /**
          * @inheritDoc

@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_DISPLAY_X11_MANAGER_HPP
-    #define MC64K_STANDARD_TEST_HOST_DISPLAY_X11_MANAGER_HPP
+#ifndef MC64K_STANDARD_TEST_HOST_DISPLAY_X11_DEVICE_HPP
+    #define MC64K_STANDARD_TEST_HOST_DISPLAY_X11_DEVICE_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -19,9 +19,9 @@
 namespace MC64K::StandardTestHost::Display::x11 {
 
 /**
- * X11 Implementation of the Manager interface.
+ * X11 Implementation of the Device interface.
  */
-class Manager : public Display::Manager {
+class Device : public Display::Device {
     private:
         X11Context    oContext;
         ::XEvent      oEvent;
@@ -30,22 +30,18 @@ class Manager : public Display::Manager {
         ::Window      uWindowID;
         ::Pixmap      uPixmapID;
         GC            pGC;
-        int           iWidth, iHeight;
+        unsigned int  uWidth, uHeight;
 ;
     public:
         /**
          * Constructor. Follows RAII principle.
          *
-         * @param  uint16 uWidth
-         * @param  uint16 uHeight
-         * @param  uint16 uFlags
-         * @param  uint8  uFormat
-         * @param  uint8  uRateHz
+         * @param  Display::OpenParams const& roOpenParams
          * @throws Error
          * @throws std::bad_alloc
          */
-        Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
-        virtual ~Manager();
+        Device(Display::OpenParams const& roOpenParams);
+        virtual ~Device();
 
         /**
          * @inheritDoc

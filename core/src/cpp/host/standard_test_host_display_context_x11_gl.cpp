@@ -21,7 +21,7 @@
 #include <host/display/context.hpp>
 #include <machine/register.hpp>
 #include <machine/timing.hpp>
-#include <host/display/glx/manager.hpp>
+#include <host/display/glx/device.hpp>
 
 #include <GL/gl.h>
 #include <GL/glx.h>
@@ -37,7 +37,7 @@ uint8 const aPixelSize[] = {
 
 namespace xGL {
 
-inline void Manager::updateMousePosition() {
+inline void Device::updateMousePosition() {
     oContext.uEventRawMask = (uint16) event<::XMotionEvent>().state;
     oContext.uPositionX    = (uint16) ((float32)event<::XMotionEvent>().x * fMouseXScale);
     oContext.uPositionY    = (uint16) ((float32)event<::XMotionEvent>().y * fMouseYScale);
@@ -46,7 +46,7 @@ inline void Manager::updateMousePosition() {
 /**
  * Constructor. We use RAII here and throw exceptions if a requirement can't be met.
  */
-Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz):
+Device::Device(Display::OpenParams const& roOpenParams):
     oContext(),
     oEvent(),
     oDisplay(),
@@ -56,7 +56,7 @@ Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, ui
     uTextureID(0)
 {
     ::Display* poDisplay = oDisplay.get();
-    std::fprintf(stderr, "X11GLManager: Found Display at %p\n", poDisplay);
+    std::fprintf(stderr, "xGL::Device: Found Display at %p\n", poDisplay);
 
     aGLAttributes[0] = GLX_RGBA;
     aGLAttributes[1] = GLX_DEPTH_SIZE;
@@ -69,42 +69,42 @@ Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, ui
         throw Error();
     }
 
-    std::fprintf(stderr, "X11GLManager: Visual at %p\n", pVisualInfo);
+    std::fprintf(stderr, "xGL::Device: Visual at %p\n", pVisualInfo);
 
     if (!(pGLXContext = ::glXCreateContext(poDisplay, pVisualInfo, nullptr, GL_TRUE))) {
         std::fprintf(stderr, "Failed to allocate GLXContext\n");
         throw Error();
     }
-    std::fprintf(stderr, "X11GLManager: GLXContext at %p\n", pGLXContext);
+    std::fprintf(stderr, "xGL::Device: GLXContext at %p\n", pGLXContext);
 
     ::Screen* pScreen = DefaultScreenOfDisplay(poDisplay);
 
-    int iScaleFactor = pScreen->height / uHeight;
+    int iScaleFactor = pScreen->height / roOpenParams.uViewHeight;
     std::fprintf(stderr, "Using Integer Scale Factor: %d\n", iScaleFactor);
 
     uWindowID = ::XCreateSimpleWindow(
         poDisplay,
         DefaultRootWindow(poDisplay),
         0, 0,
-        iScaleFactor * uWidth, iScaleFactor * uHeight,
+        iScaleFactor * roOpenParams.uViewWidth, iScaleFactor * roOpenParams.uViewHeight,
         0,
         0,
         BlackPixel(poDisplay, 0)
     );
 
 
-    std::fprintf(stderr, "X11GLManager: Got window handle %u\n", (unsigned)uWindowID);
+    std::fprintf(stderr, "xGL::Device: Got window handle %u\n", (unsigned)uWindowID);
 
     ::XStoreName(poDisplay, uWindowID, "MC64K (GL)");
 
-    oContext.uNumBufferPixels = uWidth * uHeight;
-    oContext.uNumBufferBytes  = oContext.uNumBufferPixels * aPixelSize[uFormat];
-    oContext.uBufferWidth     = uWidth;
-    oContext.uBufferHeight    = uHeight;
-    oContext.uFlags           = uFlags;
-    oContext.uPixelFormat     = uFormat;
-    oContext.uRateHz          = uRateHz < 1 ? 1 : uRateHz;
-    oContext.poManager        = this;
+    oContext.uNumBufferPixels = roOpenParams.uBufferWidth * roOpenParams.uBufferHeight;
+    oContext.uNumBufferBytes  = oContext.uNumBufferPixels * aPixelSize[roOpenParams.uPixelFormat];
+    oContext.uBufferWidth     = roOpenParams.uBufferWidth;
+    oContext.uBufferHeight    = roOpenParams.uBufferHeight;
+    oContext.uFlags           = roOpenParams.uFlags;
+    oContext.uPixelFormat     = roOpenParams.uPixelFormat;
+    oContext.uRateHz          = roOpenParams.uRateHz < 1 ? 1 : roOpenParams.uRateHz;
+    oContext.poDevice        = this;
     oContext.allocateBuffer();
 
     ::glXMakeCurrent(poDisplay, uWindowID, pGLXContext);
@@ -123,8 +123,8 @@ Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, ui
         GL_TEXTURE_2D,
         0,
         GL_RGBA,
-        uWidth,
-        uHeight,
+        roOpenParams.uViewWidth,
+        roOpenParams.uViewHeight,
         0,
         GL_BGRA,
         GL_UNSIGNED_BYTE,
@@ -133,7 +133,12 @@ Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, ui
     ::glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     ::glDisable(GL_DEPTH_TEST);
     ::glEnable(GL_TEXTURE_2D);
-    ::glViewport(0, 0, iScaleFactor * uWidth, iScaleFactor * uHeight);
+    ::glViewport(
+        0,
+        0,
+        iScaleFactor * roOpenParams.uViewWidth,
+        iScaleFactor * roOpenParams.uViewHeight
+    );
 
     // Open the window
     ::XMapWindow(poDisplay, uWindowID);
@@ -152,35 +157,35 @@ Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, ui
 
     updateDisplay();
 
-    std::fprintf(stderr, "X11GLManager: RAII Complete, we live at: %p\n", this);
+    std::fprintf(stderr, "xGL::Device: RAII Complete, we live at: %p\n", this);
 }
 
 /**
  * Destructor.
  */
-Manager::~Manager() {
+Device::~Device() {
     if (pGLXContext) {
         if (uTextureID) {
             ::glDeleteTextures(1, &uTextureID);
         }
         ::glXMakeCurrent(oDisplay.get(), None, nullptr);
         ::glXDestroyContext(oDisplay.get(), pGLXContext);
-        std::fprintf(stderr, "X11GLManager GLXContext destroyed\n");
+        std::fprintf(stderr, "xGL::Device GLXContext destroyed\n");
     }
-    std::fprintf(stderr, "X11GLManager destroyed\n");
+    std::fprintf(stderr, "X11GLDevice destroyed\n");
 }
 
 /**
  * Get the context.
  */
-Context* Manager::getContext() {
+Context* Device::getContext() {
     return &oContext;
 }
 
 /**
  * Update the display
  */
-void Manager::updateDisplay() {
+void Device::updateDisplay() {
     // TODO this should use a VBO
     glBegin (GL_QUADS);
     glVertex3i(-1, 1, -1);  glTexCoord2i(1, 0);
@@ -194,7 +199,7 @@ void Manager::updateDisplay() {
 /**
  * Run the event loop.
  */
-void Manager::runEventLoop() {
+void Device::runEventLoop() {
 
     ::Display* poDisplay = oDisplay.get();
 
@@ -289,7 +294,7 @@ void Manager::runEventLoop() {
  * Configures the X11 Input Mask based on which VM callbacks are set. For example. there is no point
  * receiving mouse movements if there isn't a callback to handle them.
  */
-long Manager::configureInputMask() {
+long Device::configureInputMask() {
     long int iXInputMask = ExposureMask;
     iXInputMask |= (oContext.apVMCall[CALL_KEY_PRESS]      ? KeyPressMask      : 0);
     iXInputMask |= (oContext.apVMCall[CALL_KEY_RELEASE]    ? KeyReleaseMask    : 0);
@@ -304,7 +309,7 @@ long Manager::configureInputMask() {
  * disabled a VM handler we won't have any events still waiting for it. This means we still have to
  * check each handler before we attempt to call it.
  */
-void Manager::handleEvent() {
+void Device::handleEvent() {
     switch (oEvent.type) {
         case NoExpose:
             break;
@@ -355,7 +360,7 @@ void Manager::handleEvent() {
     }
 }
 
-void Manager::invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode) {
+void Device::invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode) {
     Interpreter::setProgramCounter(pBytecode);
     Interpreter::gpr<ABI::PTR_REG_0>().pAny = &oContext;
     Interpreter::run();
@@ -363,8 +368,8 @@ void Manager::invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode) {
 
 }
 
-Manager* createManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz) {
-    return new xGL::Manager(uWidth, uHeight, uFlags, uFormat, uRateHz);
+Device* createDevice(OpenParams const& roOpenParams) {
+    return new xGL::Device(roOpenParams);
 }
 
 } // namespace

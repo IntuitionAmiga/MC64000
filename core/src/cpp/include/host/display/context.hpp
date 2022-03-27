@@ -29,7 +29,7 @@ union PixelPointer {
     PixelPointer(): puAny(nullptr) {}
 };
 
-class Manager;
+class Device;
 
 class Error {
 
@@ -93,9 +93,9 @@ struct Context {
     uint16 uPositionY;
 
     /**
-     * Points to the manager of this context.
+     * Points to the device of this context.
      */
-    Manager* poManager;
+    Device* poDevice;
 
 };
 
@@ -115,20 +115,20 @@ struct OpenParams {
 };
 
 /**
- * Root interface for different display managers. Successful instantiation of a derived class is expected
+ * Root interface for different display device. Successful instantiation of a derived class is expected
  * to create a viable display instance.
  *
  * To close the display, destroy the instance.
  */
-class Manager {
+class Device {
     public:
-        virtual ~Manager() {};
+        virtual ~Device() {};
         virtual Context* getContext()    = 0;
         virtual void     runEventLoop()  = 0;
         virtual void     updateDisplay() = 0;
 };
 
-Manager* createManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
+Device* createDevice(OpenParams const& roOpenParams);
 
 }
 

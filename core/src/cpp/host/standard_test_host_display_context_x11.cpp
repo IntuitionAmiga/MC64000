@@ -22,7 +22,7 @@
 #include <machine/register.hpp>
 #include <machine/timing.hpp>
 
-#include <host/display/x11/manager.hpp>
+#include <host/display/x11/device.hpp>
 
 using MC64K::Machine::Interpreter;
 using MC64K::Machine::Nanoseconds;
@@ -38,7 +38,7 @@ namespace x11 {
 /**
  * Constructor. We use RAII here and throw exceptions if a requirement can't be met.
  */
-Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz):
+Device::Device(Display::OpenParams const& roOpenParams):
     oContext(),
     oEvent(),
     oDisplay(),
@@ -46,11 +46,11 @@ Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, ui
     uWindowID(0),
     uPixmapID(0),
     pGC(nullptr),
-    iWidth(uWidth),
-    iHeight(uHeight)
+    uWidth(roOpenParams.uViewWidth),
+    uHeight(roOpenParams.uViewHeight)
 {
     ::Display* poDisplay = oDisplay.get();
-    std::fprintf(stderr, "X11Manager: Found Display at %p\n", poDisplay);
+    std::fprintf(stderr, "x11::Device: Found Display at %p\n", poDisplay);
     uWindowID = ::XCreateSimpleWindow(
         poDisplay,
         DefaultRootWindow(poDisplay),
@@ -61,34 +61,38 @@ Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, ui
         BlackPixel(poDisplay, 0)
     );
 
-    std::fprintf(stderr, "X11Manager: Got window handle %u\n", (unsigned)uWindowID);
+    std::fprintf(stderr, "x11::Device: Got window handle %u\n", (unsigned)uWindowID);
 
     ::XStoreName(poDisplay, uWindowID, "MC64K");
 
     int iX11Depth = DefaultDepth(poDisplay, 0);
-    std::fprintf(stderr, "Allocating Pixmap %d x %d x %d (bits)\n", iWidth, iHeight, iX11Depth);
+    std::fprintf(stderr, "Allocating Pixmap %u x %u x %d (bits)\n", uWidth, uHeight, iX11Depth);
 
     uPixmapID = ::XCreatePixmap(
         poDisplay,
         uWindowID,
-        iWidth,
-        iHeight,
+        uWidth,
+        uHeight,
         iX11Depth
     );
+
 
     std::fprintf(stderr, "Allocated Pixmap ID %lu\n", uPixmapID);
 
     pGC = ::XCreateGC(poDisplay, uPixmapID, 0, nullptr);
     std::fprintf(stderr, "Graphics Context at %p\n", pGC);
 
-    oContext.uNumBufferPixels = uWidth * uHeight;
-    oContext.uNumBufferBytes  = oContext.uNumBufferPixels * aPixelSize[uFormat];
-    oContext.uBufferWidth     = uWidth;
-    oContext.uBufferHeight    = uHeight;
-    oContext.uFlags           = uFlags;
-    oContext.uPixelFormat     = uFormat;
-    oContext.uRateHz          = uRateHz < 1 ? 1 : uRateHz;
-    oContext.poManager        = this;
+    oContext.uNumViewPixels   = uWidth * uHeight;
+    oContext.uViewWidth       = roOpenParams.uViewWidth;
+    oContext.uViewHeight      = roOpenParams.uViewHeight;
+    oContext.uNumBufferPixels = roOpenParams.uBufferWidth * roOpenParams.uBufferHeight;
+    oContext.uNumBufferBytes  = oContext.uNumBufferPixels * aPixelSize[roOpenParams.uPixelFormat];
+    oContext.uBufferWidth     = roOpenParams.uBufferWidth;
+    oContext.uBufferHeight    = roOpenParams.uBufferHeight;
+    oContext.uFlags           = roOpenParams.uFlags;
+    oContext.uPixelFormat     = roOpenParams.uPixelFormat;
+    oContext.uRateHz          = roOpenParams.uRateHz < 1 ? 1 : roOpenParams.uRateHz;
+    oContext.poDevice         = this;
     oContext.allocateBuffer();
 
     XImage* poImage = ::XCreateImage(
@@ -98,10 +102,10 @@ Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, ui
         ZPixmap,
         0, // offset
         (char*)oContext.puImageBuffer,
-        iWidth,
-        iHeight,
+        uWidth,
+        uHeight,
         32, // bitmap_pad
-        iWidth * 4  // bytes_per_line
+        uWidth * 4  // bytes_per_line
     );
     if (!poImage) {
         throw Error();
@@ -114,45 +118,45 @@ Manager::Manager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, ui
     ::XMapWindow(poDisplay, uWindowID);
     ::XFlush(poDisplay);
 
-    std::fprintf(stderr, "X11Manager: RAII Complete, we live at: %p\n", this);
+    std::fprintf(stderr, "X11Device: RAII Complete, we live at: %p\n", this);
 }
 
 /**
  * Destructor.
  */
-Manager::~Manager() {
+Device::~Device() {
     if (uPixmapID) {
         ::XFreePixmap(oDisplay.get(), uPixmapID);
     }
-    std::fprintf(stderr, "X11Manager destroyed\n");
+    std::fprintf(stderr, "X11Device destroyed\n");
 }
 
 /**
  * Get the context.
  */
-Context* Manager::getContext() {
+Context* Device::getContext() {
     return &oContext;
 }
 
 /**
  * Update the display
  */
-void Manager::updateDisplay() {
+void Device::updateDisplay() {
     ::Display* poDisplay = oDisplay.get();
     ::XPutImage(
         poDisplay,
         uPixmapID,
         pGC,
         oImage.get(),
-        0, 0, 0, 0, iWidth, iHeight
+        0, 0, 0, 0, uWidth, uHeight
     );
-    ::XCopyArea(poDisplay, uPixmapID, uWindowID, pGC, 0, 0, iWidth, iHeight, 0, 0);
+    ::XCopyArea(poDisplay, uPixmapID, uWindowID, pGC, 0, 0, uWidth, uHeight, 0, 0);
 }
 
 /**
  * Run the event loop.
  */
-void Manager::runEventLoop() {
+void Device::runEventLoop() {
 
     ::Display* poDisplay = oDisplay.get();
 
@@ -207,14 +211,14 @@ void Manager::runEventLoop() {
                 uPixmapID,
                 pGC,
                 oImage.get(),
-                0, 0, 0, 0, iWidth, iHeight
+                0, 0, 0, 0, uWidth, uHeight
             );
             oContext.uFlags &= (uint16)~FLAG_DRAW_BUFFER_NEXT_FRAME;
         }
 
         // Check if we need to flip the offscreen buffer
         if (oContext.uFlags & (FLAG_FLIP_NEXT_FRAME|FLAG_FLIP_ALL_FRAMES)) {
-            ::XCopyArea(poDisplay, uPixmapID, uWindowID, pGC, 0, 0, iWidth, iHeight, 0, 0);
+            ::XCopyArea(poDisplay, uPixmapID, uWindowID, pGC, 0, 0, uWidth, uHeight, 0, 0);
             oContext.uFlags &= (uint16)~FLAG_FLIP_NEXT_FRAME;
         }
 
@@ -243,7 +247,7 @@ void Manager::runEventLoop() {
  * Configures the X11 Input Mask based on which VM callbacks are set. For example. there is no point
  * receiving mouse movements if there isn't a callback to handle them.
  */
-long Manager::configureInputMask() {
+long Device::configureInputMask() {
     long int iXInputMask = 0;
     iXInputMask |= (oContext.apVMCall[CALL_KEY_PRESS]      ? KeyPressMask      : 0);
     iXInputMask |= (oContext.apVMCall[CALL_KEY_RELEASE]    ? KeyReleaseMask    : 0);
@@ -258,7 +262,7 @@ long Manager::configureInputMask() {
  * disabled a VM handler we won't have any events still waiting for it. This means we still have to
  * check each handler before we attempt to call it.
  */
-void Manager::handleEvent() {
+void Device::handleEvent() {
     switch (oEvent.type) {
         case NoExpose:
             break;
@@ -312,7 +316,7 @@ void Manager::handleEvent() {
     }
 }
 
-void Manager::invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode) {
+void Device::invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode) {
     Interpreter::setProgramCounter(pBytecode);
     Interpreter::gpr<ABI::PTR_REG_0>().pAny = &oContext;
     Interpreter::run();
@@ -320,8 +324,8 @@ void Manager::invokeVMCallback(Interpreter::VMCodeEntryPoint pBytecode) {
 
 } // End of x11 Namespace
 
-Manager* createManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz) {
-    return new x11::Manager(uWidth, uHeight, uFlags, uFormat, uRateHz);
+Device* createDevice(OpenParams const& roOpenParams) {
+    return new x11::Device(roOpenParams);
 }
 
 } // namespace

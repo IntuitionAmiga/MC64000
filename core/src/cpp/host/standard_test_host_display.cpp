@@ -31,20 +31,20 @@ char const* aFormatNames[] = {
 
 Interpreter::Status runEventLoop() {
     Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>();
-    if (!poContext || !poContext->poManager) {
+    if (!poContext || !poContext->poDevice) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NULL_PTR;
         return Interpreter::RUNNING;
     }
-    poContext->poManager->runEventLoop();
+    poContext->poDevice->runEventLoop();
     return Interpreter::INITIALISED;
 }
 
 void updateDisplay() {
     Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>();
-    if (!poContext || !poContext->poManager) {
+    if (!poContext || !poContext->poDevice) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NULL_PTR;
     }
-    poContext->poManager->updateDisplay();
+    poContext->poDevice->updateDisplay();
 }
 
 
@@ -82,12 +82,11 @@ void openDisplay() {
         return;
     }
 
-    uint16 uViewWidth = (uint16)((poParams->uViewWidth + WIDTH_ALIGN_MASK) & ~WIDTH_ALIGN_MASK);
-
-    uint16 uBufferWidth = poParams->uBufferWidth < uViewWidth ?
-        uViewWidth :
-        (uint16)((poParams->uBufferWidth + WIDTH_ALIGN_MASK) & ~WIDTH_ALIGN_MASK)
-    ;
+    if (poParams->uViewHeight < HEIGHT_MIN || poParams->uViewHeight > HEIGHT_MAX) {
+        Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ERR_INVALID_HEIGHT;
+        Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
+        return;
+    }
 
     if (poParams->uViewHeight < HEIGHT_MIN || poParams->uViewHeight > HEIGHT_MAX) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ERR_INVALID_HEIGHT;
@@ -95,30 +94,32 @@ void openDisplay() {
         return;
     }
 
-    uint16 uViewHeight   = poParams->uViewHeight;
-    uint16 uBufferHeight = poParams->uBufferHeight < uViewHeight ?
-        uViewHeight :
+    // Create a sanitised copy of the paramters and apply any roundint or other
+    // modification
+    OpenParams oOpenParams = *poParams;
+    oOpenParams.uViewWidth   = (uint16)((poParams->uViewWidth + WIDTH_ALIGN_MASK) & ~WIDTH_ALIGN_MASK);
+    oOpenParams.uBufferWidth = poParams->uBufferWidth < oOpenParams.uViewWidth ?
+        oOpenParams.uViewWidth :
+        (uint16)((poParams->uBufferWidth + WIDTH_ALIGN_MASK) & ~WIDTH_ALIGN_MASK)
+    ;
+
+    oOpenParams.uBufferHeight = poParams->uBufferHeight < poParams->uViewHeight ?
+        poParams->uViewHeight :
         poParams->uBufferHeight
     ;
 
     std::printf(
         "openDisplay aligned view:%d x %d, buffer:%d x %d\n",
-        (int)uViewWidth,
-        (int)uViewHeight,
-        (int)uBufferWidth,
-        (int)uBufferHeight
+        (int)oOpenParams.uViewWidth,
+        (int)oOpenParams.uViewHeight,
+        (int)oOpenParams.uBufferWidth,
+        (int)oOpenParams.uBufferHeight
     );
 
     try {
-        // Obtain the appropriate manager for the host. This should use RAII semantics
-        Manager* poManager = createManager(
-            uViewWidth,
-            uViewHeight,
-            poParams->uFlags,
-            poParams->uPixelFormat,
-            poParams->uRateHz
-        );
-        Interpreter::gpr<ABI::PTR_REG_0>().pAny = poManager->getContext();
+        // Obtain the appropriate device for the host. This should use RAII semantics
+        Device* poDevice = createDevice(oOpenParams);
+        Interpreter::gpr<ABI::PTR_REG_0>().pAny = poDevice->getContext();
     } catch (Error& roError) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = Mem::ERR_NO_MEM;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
@@ -130,7 +131,7 @@ void openDisplay() {
 
 void closeDisplay() {
     if (Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>()) {
-        delete poContext->poManager;
+        delete poContext->poDevice;
         poContext = nullptr;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NONE;
