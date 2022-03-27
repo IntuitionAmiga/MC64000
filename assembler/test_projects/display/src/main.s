@@ -15,7 +15,7 @@ main:
     hcf     display_init
 
     ; try to open the display. The vector expects the parameters packed into d0
-    move.q  .display_properties, d0
+    lea     .display_properties, a0
     hcf     display_open
     biz.q   a0, exit  ; no display?
     move.q  a0, -(sp) ; save the context on the stack for safe keeping
@@ -104,8 +104,11 @@ on_key_down:
 
     @align  0, 8
 .display_properties:
-    ; dimensions
+    ; view dimensions
     dc.w 320, 240
+
+    ; buffer dimensions and view offset
+    dc.w 320, 240, 0, 0
 
     ; flags
     dc.w 1 << DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES | 1 << DISPLAY_BIT_FLIP_ALL_FRAMES

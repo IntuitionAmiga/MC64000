@@ -23,7 +23,7 @@
 main:
     ; try to open the display
     hcf     display_init
-    move.q  .display_properties, d0
+    lea     .display_properties, a0
     hcf     display_open
     biz.q   a0, exit  ; no display?
     move.q  a0, -(sp) ; save the context on the stack
@@ -111,8 +111,14 @@ on_key_down: ; a0 contains display context
 ; data
     @align  0, 8
 .display_properties:
-    ; width, height, flags
-    dc.w 640, 480, 1 << DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES | 1 << DISPLAY_BIT_FLIP_ALL_FRAMES
+    ; view width, height
+    dc.w 640, 480
+
+    ; buffer width, height, offsets
+    dc.w 640, 480, 0, 0
+
+    ; flags
+    dc.w 1 << DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES | 1 << DISPLAY_BIT_FLIP_ALL_FRAMES
     ; format, target refresh Hz
     dc.b PXL_ARGB, 30
 
