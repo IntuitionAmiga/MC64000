@@ -35,6 +35,11 @@ class Error {
 
 };
 
+enum {
+    WIDTH_ALIGN      = 32,
+    WIDTH_ALIGN_MASK = WIDTH_ALIGN - 1
+};
+
 /**
  * Context Handle
  *
@@ -92,6 +97,21 @@ struct Context {
      */
     Manager* poManager;
 
+};
+
+/**
+ * Parameters required for display opening
+ */
+struct OpenParams {
+    uint16 uViewWidth;
+    uint16 uViewHeight;
+    uint16 uBufferWidth;
+    uint16 uBufferHeight;
+    int16  iViewXOffset;
+    int16  iViewYOffset;
+    uint16 uFlags;
+    uint8  uPixelFormat;
+    uint8  uRateHz;
 };
 
 /**

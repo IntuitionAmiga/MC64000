@@ -47,52 +47,76 @@ void updateDisplay() {
     poContext->poManager->updateDisplay();
 }
 
+
 void openDisplay() {
-    PackedParams oParams;
-
-    oParams.u64 = Interpreter::gpr<ABI::INT_REG_0>().value<uint64>();
-
-    uint16 uWidth  = oParams.u16[0];
-    uint16 uHeight = oParams.u16[1];
-    uint16 uFlags  = oParams.u16[2];
-    uint8  uFormat = oParams.u8[6];
-    uint8  uRateHz = oParams.u8[7];
+    OpenParams const* poParams = Interpreter::gpr<ABI::PTR_REG_0>().address<OpenParams>();
 
     std::printf(
-        "openDisplay w:%d h:%04X flags:%d fmt:%d, hz:%d\n",
-        (int)uWidth,
-        (unsigned)uHeight,
-        (int)uFlags,
-        (int)uFormat,
-        (int)uRateHz
+        "openDisplay view:%d x %d, buffer:%d x %d, offsets:%d x %d, flags:%04X, fmt:%d, hz:%d\n",
+        (int)poParams->uViewWidth,
+        (int)poParams->uViewHeight,
+        (int)poParams->uBufferWidth,
+        (int)poParams->uBufferHeight,
+        (int)poParams->iViewXOffset,
+        (int)poParams->iViewYOffset,
+        (unsigned)poParams->uFlags,
+        (int)poParams->uPixelFormat,
+        (int)poParams->uRateHz
     );
 
-    if (uFormat >= PXL_MAX) {
+    if (poParams->uPixelFormat >= PXL_MAX) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>()    = ERR_INVALID_FMT;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
         return;
     }
 
-    if (uWidth < WIDTH_MIN || uWidth > WIDTH_MAX) {
+    if (poParams->uViewWidth < WIDTH_MIN || poParams->uViewWidth > WIDTH_MAX) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ERR_INVALID_WIDTH;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
         return;
     }
 
-    if (uHeight < HEIGHT_MIN || uHeight > HEIGHT_MAX) {
+    if (poParams->uBufferWidth > WIDTH_MAX) {
+        Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ERR_INVALID_WIDTH;
+        Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
+        return;
+    }
+
+    uint16 uViewWidth = (uint16)((poParams->uViewWidth + WIDTH_ALIGN_MASK) & ~WIDTH_ALIGN_MASK);
+
+    uint16 uBufferWidth = poParams->uBufferWidth < uViewWidth ?
+        uViewWidth :
+        (uint16)((poParams->uBufferWidth + WIDTH_ALIGN_MASK) & ~WIDTH_ALIGN_MASK)
+    ;
+
+    if (poParams->uViewHeight < HEIGHT_MIN || poParams->uViewHeight > HEIGHT_MAX) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ERR_INVALID_HEIGHT;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
         return;
     }
 
+    uint16 uViewHeight   = poParams->uViewHeight;
+    uint16 uBufferHeight = poParams->uBufferHeight < uViewHeight ?
+        uViewHeight :
+        poParams->uBufferHeight
+    ;
+
+    std::printf(
+        "openDisplay aligned view:%d x %d, buffer:%d x %d\n",
+        (int)uViewWidth,
+        (int)uViewHeight,
+        (int)uBufferWidth,
+        (int)uBufferHeight
+    );
+
     try {
         // Obtain the appropriate manager for the host. This should use RAII semantics
         Manager* poManager = createManager(
-            uWidth,
-            uHeight,
-            uFlags,
-            uFormat,
-            uRateHz
+            uViewWidth,
+            uViewHeight,
+            poParams->uFlags,
+            poParams->uPixelFormat,
+            poParams->uRateHz
         );
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = poManager->getContext();
     } catch (Error& roError) {
