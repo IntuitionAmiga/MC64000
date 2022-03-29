@@ -26,14 +26,12 @@
 #include <GL/gl.h>
 #include <GL/glx.h>
 
+#include "standard_test_host_display_context_x11_common.cpp"
+
 using MC64K::Machine::Interpreter;
 using MC64K::Machine::Nanoseconds;
 
 namespace MC64K::StandardTestHost::Display {
-
-uint8 const aPixelSize[] = {
-    1, 4
-};
 
 namespace xGL {
 
@@ -97,8 +95,8 @@ Device::Device(Display::OpenParams const& roOpenParams):
 
     ::XStoreName(poDisplay, uWindowID, "MC64K (GL)");
 
-    oContext.uNumBufferPixels = roOpenParams.uBufferWidth * roOpenParams.uBufferHeight;
-    oContext.uNumBufferBytes  = oContext.uNumBufferPixels * aPixelSize[roOpenParams.uPixelFormat];
+    oContext.uViewWidth       = roOpenParams.uViewWidth;
+    oContext.uViewHeight      = roOpenParams.uViewHeight;
     oContext.uBufferWidth     = roOpenParams.uBufferWidth;
     oContext.uBufferHeight    = roOpenParams.uBufferHeight;
     oContext.uFlags           = roOpenParams.uFlags;
@@ -247,7 +245,7 @@ void Device::runEventLoop() {
 
         // Check if we need to copy the pixel buffer to the offscreen buffer
         if (oContext.uFlags & (FLAG_DRAW_BUFFER_NEXT_FRAME|FLAG_DRAW_BUFFER_ALL_FRAMES)) {
-            oContext.updateBuffers();
+            void* pData = oContext.updateBuffers();
             // HERE GL Texture Update
             ::glTexSubImage2D(
                 GL_TEXTURE_2D,
@@ -256,9 +254,9 @@ void Device::runEventLoop() {
                 0, // y pos
                 oContext.uBufferWidth,
                 oContext.uBufferHeight,
-                GL_BGRA,                   // format
-                GL_UNSIGNED_BYTE,          // type
-                oContext.puImageBuffer     // data
+                GL_BGRA,          // format
+                GL_UNSIGNED_BYTE, // type
+                pData             // data
             );
             oContext.uFlags &= (uint16)~FLAG_DRAW_BUFFER_NEXT_FRAME;
         }

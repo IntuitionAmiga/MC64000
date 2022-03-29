@@ -23,7 +23,7 @@ namespace MC64K::StandardTestHost::Display::x11 {
  */
 class Device : public Display::Device {
     private:
-        X11Context    oContext;
+        Context       oContext;
         ::XEvent      oEvent;
         DisplayHandle oDisplay;
         XImageHandle  oImage;

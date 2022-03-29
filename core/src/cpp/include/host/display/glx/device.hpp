@@ -26,16 +26,16 @@ namespace MC64K::StandardTestHost::Display::xGL {
  */
 class Device : public Display::Device {
     private:
-        X11Context    oContext;
-        ::XEvent      oEvent;
-        DisplayHandle oDisplay;
-        XVisualInfo*  pVisualInfo;
-        GLXContext    pGLXContext;
-        ::Window      uWindowID;
-        int32         aGLAttributes[5];
-        uint32        uTextureID;
-        float32       fMouseXScale;
-        float32       fMouseYScale;
+        x11::Context       oContext;
+        ::XEvent           oEvent;
+        x11::DisplayHandle oDisplay;
+        XVisualInfo*       pVisualInfo;
+        GLXContext         pGLXContext;
+        ::Window           uWindowID;
+        int32              aGLAttributes[5];
+        uint32             uTextureID;
+        float32            fMouseXScale;
+        float32            fMouseYScale;
 
     public:
         /**

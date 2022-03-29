@@ -26,7 +26,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-namespace MC64K::StandardTestHost::Display {
+namespace MC64K::StandardTestHost::Display::x11 {
 
 extern uint8 const aPixelSize[];
 
@@ -69,18 +69,25 @@ class XImageHandle {
 /**
  * RAII Extension of Context to handle pixel buffer allocation
  */
-struct X11Context : public Context {
+struct Context : public Display::Context {
 
+    /**
+     * Main allocation
+     */
     uint8* puData;
+
+    /**
+     * Image buffer location. This is is what the VM writes to. This has the dimensions uBufferWidth x uBufferHeight
+     */
     uint8* puImageBuffer;
 
-    X11Context();
-    ~X11Context();
-    X11Context(X11Context const&) = delete;
-    X11Context& operator=(X11Context const&) = delete;
+    Context();
+    ~Context();
+    Context(Context const&) = delete;
+    Context& operator=(Context const&) = delete;
 
     void allocateBuffer();
-    void updateBuffers();
+    void* updateBuffers();
 };
 
 
@@ -135,65 +142,17 @@ inline ::XImage* XImageHandle::get() const {
  * X11Context inlines
  */
 
-X11Context::X11Context(): Context(), puData(nullptr), puImageBuffer(nullptr) {
+Context::Context(): Display::Context(), puData(nullptr), puImageBuffer(nullptr) {
 
 }
 
-X11Context::~X11Context() {
+Context::~Context() {
     if (puData) {
         delete[] puData;
         std::fprintf(stderr, "X11Context RAII: Freed Buffers\n");
     }
 }
 
-inline void X11Context::allocateBuffer() {
-    uNumBufferPixels = uBufferWidth * uBufferHeight;
-
-    switch (uPixelFormat) {
-        case PXL_ARGB_32: {
-            uNumBufferBytes = uNumBufferPixels * sizeof(uint32);
-            puPalette = nullptr;
-            oDisplayBuffer.puByte =
-                puImageBuffer =
-                puData        = new uint8[uNumBufferBytes];
-            break;
-        }
-        case PXL_LUT_8: {
-            uNumBufferBytes = uNumBufferPixels;
-
-            // Align to an 8 byte size
-            size_t uBufferSize = (uNumBufferPixels + 7) & ~7;
-
-            // Allocate space for 32-bit buffer, 256 32-bit palette entries and the 8-bit buffer
-            oDisplayBuffer.puByte =
-                puData    = new uint8[((uBufferSize + 256) * sizeof(uint32)) + uBufferSize];
-            puPalette     = (uint32*)(puData + uBufferSize);
-            puImageBuffer = (uint8*)(puPalette + 256);
-            break;
-        }
-        default: {
-            throw Error();
-            break;
-        }
-    }
-    std::fprintf(
-        stderr,
-        "X11Context RAII: Allocated Pixel Buffer %d x %d x %d at %p\n",
-        (int)uBufferWidth, (int)uBufferHeight, (int)aPixelSize[uPixelFormat],
-        oDisplayBuffer.puByte
-    );
-}
-
-inline void X11Context::updateBuffers() {
-    if (uPixelFormat == PXL_LUT_8 && puPalette) {
-        uint32* pDst = (uint32*)puImageBuffer;
-        uint8*  pSrc = oDisplayBuffer.puByte;
-        uint32  uCnt = uNumBufferPixels;
-        while (uCnt--) {
-            *pDst++ = puPalette[*pSrc++];
-        }
-    }
-}
 
 };
 #endif

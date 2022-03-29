@@ -24,14 +24,13 @@
 
 #include <host/display/x11/device.hpp>
 
+#include "standard_test_host_display_context_x11_common.cpp"
+
 using MC64K::Machine::Interpreter;
 using MC64K::Machine::Nanoseconds;
 
-namespace MC64K::StandardTestHost::Display {
 
-uint8 const aPixelSize[] = {
-    1, 4
-};
+namespace MC64K::StandardTestHost::Display {
 
 namespace x11 {
 
@@ -82,11 +81,8 @@ Device::Device(Display::OpenParams const& roOpenParams):
     pGC = ::XCreateGC(poDisplay, uPixmapID, 0, nullptr);
     std::fprintf(stderr, "Graphics Context at %p\n", pGC);
 
-    oContext.uNumViewPixels   = uWidth * uHeight;
     oContext.uViewWidth       = roOpenParams.uViewWidth;
     oContext.uViewHeight      = roOpenParams.uViewHeight;
-    oContext.uNumBufferPixels = roOpenParams.uBufferWidth * roOpenParams.uBufferHeight;
-    oContext.uNumBufferBytes  = oContext.uNumBufferPixels * aPixelSize[roOpenParams.uPixelFormat];
     oContext.uBufferWidth     = roOpenParams.uBufferWidth;
     oContext.uBufferHeight    = roOpenParams.uBufferHeight;
     oContext.uFlags           = roOpenParams.uFlags;
@@ -205,7 +201,9 @@ void Device::runEventLoop() {
 //        Nanoseconds::Value uMark2 = Nanoseconds::mark();
         // Check if we need to copy the pixel buffer to the offscreen buffer
         if (oContext.uFlags & (FLAG_DRAW_BUFFER_NEXT_FRAME|FLAG_DRAW_BUFFER_ALL_FRAMES)) {
-            oContext.updateBuffers();
+
+            oImage.get()->data = (char*)oContext.updateBuffers(); // pure dirt
+
             ::XPutImage(
                 poDisplay,
                 uPixmapID,

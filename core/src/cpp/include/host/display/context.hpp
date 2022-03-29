@@ -128,6 +128,7 @@ class Device {
         virtual void     updateDisplay() = 0;
 };
 
+
 Device* createDevice(OpenParams const& roOpenParams);
 
 }
