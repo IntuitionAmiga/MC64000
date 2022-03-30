@@ -93,6 +93,138 @@ void* Context::updateBuffers() {
 
 }
 
+/**
+ * Transfer routine for:
+ *
+ * Pixel Format  == LUT8
+ * Buffer Size   == View Size
+ * X Offset      == 0
+ * Y Offset      == 0
+ * Filth Script  == nullptr
+ */
+void* updateLUT8Simple(Context& roContext) {
+    uint32*       pDst = (uint32*)roContext.puImageBuffer;
+    uint8 const*  pSrc = roContext.oDisplayBuffer.puByte;
+    uint32        uCnt = roContext.uNumBufferPixels;
+    while (uCnt--) {
+        *pDst++ = roContext.puPalette[*pSrc++];
+    }
+    return roContext.puImageBuffer;
+}
+
+/**
+ * Transfer routine for:
+ *
+ * Pixel Format  == LUT8
+ * Buffer Size   != View Size
+ * X Offset      != 0
+ * Y Offset      != 0
+ * Filth Script  == nullptr
+ */
+void* updateLUT8Generic(Context& roContext) {
+    uint32* pDst = (uint32*)roContext.puImageBuffer;
+    unsigned y1 = 0;
+    for (
+        unsigned y2 = roContext.uViewYOffset;
+        y2 < roContext.uBufferHeight && y1 < roContext.uViewHeight;
+        ++y1, ++y2
+    ) {
+
+        // Start at uViewXOffset, uViewYOffset
+        uint8 const* pSrc = roContext.oDisplayBuffer.puByte + (y2 * roContext.uBufferWidth) +
+            roContext.uViewXOffset;
+
+        // Upper left quadrant
+        unsigned x1 = 0;
+        for (
+            unsigned x2 = roContext.uViewXOffset;
+            x2 < roContext.uBufferWidth && x1 < roContext.uViewWidth;
+            ++x1, ++x2
+        ) {
+            *pDst++ = roContext.puPalette[*pSrc++];
+        }
+
+        if (x1 < roContext.uViewWidth) {
+            // Start at 0, uViewYOffset
+            pSrc = roContext.oDisplayBuffer.puByte + (y2 * roContext.uBufferWidth);
+
+            // Upper right quadrant
+            for (
+                unsigned x2 = 0;
+                x1 < roContext.uViewWidth;
+                ++x1, ++x2
+            ) {
+                *pDst++ = roContext.puPalette[*pSrc++];
+            }
+        }
+    }
+
+    if (y1 < roContext.uViewHeight) {
+        for (
+            unsigned y2 = 0;
+            y1 < roContext.uViewHeight;
+            ++y1, ++y2
+        ) {
+            // Start at uViewXOffset, 0
+            uint8 const* pSrc = roContext.oDisplayBuffer.puByte + roContext.uViewXOffset;
+
+            // Lower left quadrant
+            unsigned x1 = 0;
+            for (
+                unsigned x2 = roContext.uViewXOffset;
+                x2 < roContext.uBufferWidth && x1 < roContext.uViewWidth;
+                ++x1, ++x2
+            ) {
+                *pDst++ = roContext.puPalette[*pSrc++];
+            }
+
+            if (x1 < roContext.uViewWidth) {
+
+                // Start at 0, 0
+                pSrc = roContext.oDisplayBuffer.puByte;
+
+                // Lower right quadrant
+                for (
+                    unsigned x2 = 0;
+                    x1 < roContext.uViewWidth;
+                    ++x1, ++x2
+                ) {
+                    *pDst++ = roContext.puPalette[*pSrc++];
+                }
+            }
+        }
+    }
+    return roContext.puImageBuffer;
+}
+
+void* updateLUT8Filth(Context& roContext) {
+    // TODO
+    return roContext.puImageBuffer;
+}
+
+
+/**
+ * Transfer routine for:
+ *
+ * Pixel Format  == ARGB_32
+ * Buffer Size   == View Size
+ * X Offset      == 0
+ * Y Offset      == 0
+ * Filth Script  == nullptr
+ */
+void* updateARGB32Simple(Context& roContext) {
+    return roContext.puImageBuffer; // Just return the display buffer as-is
+}
+
+void* updateARGB32Generic(Context& roContext) {
+    return roContext.puImageBuffer; // Just return the display buffer as-is
+}
+
+void* updateARGB32Filth(Context& roContext) {
+    // TODO
+    return roContext.puImageBuffer;
+}
+
 
 } // namespace
 

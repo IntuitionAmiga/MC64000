@@ -64,8 +64,8 @@ struct Context {
     uint32       uNumViewPixels;
     uint16       uViewWidth;
     uint16       uViewHeight;
-    int16        iViewXOffset;
-    int16        iViewYOffset;
+    uint16       uViewXOffset;
+    uint16       uViewYOffset;
     uint8 const* puFilthScript;
 
     uint16       uFlags;
@@ -107,8 +107,8 @@ struct OpenParams {
     uint16 uViewHeight;
     uint16 uBufferWidth;
     uint16 uBufferHeight;
-    int16  iViewXOffset;
-    int16  iViewYOffset;
+    uint16 uViewXOffset;
+    uint16 uViewYOffset;
     uint16 uFlags;
     uint8  uPixelFormat;
     uint8  uRateHz;

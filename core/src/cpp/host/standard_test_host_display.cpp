@@ -57,8 +57,8 @@ void openDisplay() {
         (int)poParams->uViewHeight,
         (int)poParams->uBufferWidth,
         (int)poParams->uBufferHeight,
-        (int)poParams->iViewXOffset,
-        (int)poParams->iViewYOffset,
+        (int)poParams->uViewXOffset,
+        (int)poParams->uViewYOffset,
         (unsigned)poParams->uFlags,
         (int)poParams->uPixelFormat,
         (int)poParams->uRateHz
