@@ -35,6 +35,15 @@
 
     @equ DISPLAY_REG_WIDTH               72
     @equ DISPLAY_REG_HEIGHT              74
+
+    @equ DISPLAY_REG_VIEW_PIXELS         76
+    @equ DISPLAY_REG_VIEW_WIDTH          80
+    @equ DISPLAY_REG_VIEW_HEIGHT         82
+
+    @equ DISPLAY_REG_VIEW_X_OFFSET       84
+    @equ DISPLAY_REG_VIEW_Y_OFFSET       86
+
+
     @equ DISPLAY_REG_FILTH               88
 
     @equ DISPLAY_REG_FLAGS               96

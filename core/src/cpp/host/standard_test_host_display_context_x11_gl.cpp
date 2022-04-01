@@ -252,8 +252,8 @@ void Device::runEventLoop() {
                 0, // level
                 0, // x pos
                 0, // y pos
-                oContext.uBufferWidth,
-                oContext.uBufferHeight,
+                oContext.uViewWidth,
+                oContext.uViewHeight,
                 GL_BGRA,          // format
                 GL_UNSIGNED_BYTE, // type
                 pData             // data

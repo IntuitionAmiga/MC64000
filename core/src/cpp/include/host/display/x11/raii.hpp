@@ -88,6 +88,7 @@ struct Context : public Display::Context {
 
     void allocateBuffer();
     void* updateBuffers();
+
 };
 
 

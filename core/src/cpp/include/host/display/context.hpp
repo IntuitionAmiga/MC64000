@@ -40,6 +40,37 @@ enum {
     WIDTH_ALIGN_MASK = WIDTH_ALIGN - 1
 };
 
+enum FilthCommand {
+    FC_END             = 0x00, // End of script
+    FC_WAIT            = 0x01, // Wait until beam position
+
+    // Palette commands
+    FC_SET_PALETTE     = 0x02, // Set a full RGB value for a palette entry
+    FC_ADD_PALETTE_RGB = 0x03, // Adds an RGB value to a palette entry
+    FC_SUB_PALETTE_RGB = 0x04, // Subtracts an RGB value from a palette entry
+
+    FC_SET_PALETTE_R   = 0x05,
+    FC_ADD_PALETTE_R   = 0x06, // Increments the red component of a palette entry
+    FC_SUB_PALETTE_R   = 0x07, // Decrements the red component of a palette entry
+
+    FC_SET_PALETTE_G   = 0x08,
+    FC_ADD_PALETTE_G   = 0x09, // Increments the green component of a palette entry
+    FC_SUB_PALETTE_G   = 0x0A, // Decrements the green component of a palette entry
+
+    FC_SET_PALETTE_B   = 0x0B,
+    FC_ADD_PALETTE_B   = 0x0C, // Increments the blue component of a palette entry
+    FC_SUB_PALETTE_B   = 0x0D, // Decrements the blue component of a palette entry
+
+    // View offset commands
+    FC_SET_VIEW_X      = 0x0E, // Sets the View X offset
+    FC_ADD_VIEW_X      = 0x0F, // Increases the View X offset
+    FC_SUB_VIEW_X      = 0x10, // Decreases the View X offset
+    FC_SET_VIEW_Y      = 0x11, // Sets the View Y offset
+    FC_ADD_VIEW_Y      = 0x12, // Increases the View Y offset
+    FC_SUB_VIEW_Y      = 0x13, // Decreases the View Y offset
+
+};
+
 /**
  * Context Handle
  *
