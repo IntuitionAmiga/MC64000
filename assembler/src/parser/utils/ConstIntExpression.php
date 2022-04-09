@@ -38,10 +38,10 @@ class ConstIntExpression implements IParser {
     private const MATCH_FIRST   = '[0-9\+\-\~\[]';
 
     // Further charcters can be digits, binary operators, open or closing parenthesis or space
-    private const MATCH_FURTHER = '[0-9\+\-\*\\/\%\<\>\&\|\~\^\[\]\s]{0,}';
+    private const MATCH_FURTHER = '[0-9xa-fA-F\+\-\*\\/\%\<\>\&\|\~\^\[\]\s]{0,}';
 
     // Final character can be a digit, closing parenthesis or lvalue unary operator (none defined)
-    private const MATCH_LAST    = '[0-9\]]';
+    private const MATCH_LAST    = '[0-9a-fA-F\]]';
 
     // Final match expression
     private const MATCH_FULL    = '/(' . self::MATCH_FIRST . self::MATCH_FURTHER . self::MATCH_LAST . ')/';

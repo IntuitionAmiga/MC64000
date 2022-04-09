@@ -245,7 +245,11 @@ void Device::runEventLoop() {
 
         // Check if we need to copy the pixel buffer to the offscreen buffer
         if (oContext.uFlags & (FLAG_DRAW_BUFFER_NEXT_FRAME|FLAG_DRAW_BUFFER_ALL_FRAMES)) {
+
+            //Nanoseconds::Value uTime = Nanoseconds::mark();
             void* pData = oContext.updateBuffers();
+
+
             // HERE GL Texture Update
             ::glTexSubImage2D(
                 GL_TEXTURE_2D,
@@ -258,6 +262,10 @@ void Device::runEventLoop() {
                 GL_UNSIGNED_BYTE, // type
                 pData             // data
             );
+
+            //uTime = Nanoseconds::mark() - uTime;
+
+            //std::printf("%lu,%lu\n", uFrames, uTime);
             oContext.uFlags &= (uint16)~FLAG_DRAW_BUFFER_NEXT_FRAME;
         }
 

@@ -54,13 +54,25 @@ void* updateLUT8Filth(Context& roContext) {
                                 break;
                             }
 
-                            case FC_ADD_PALETTE_RGB:
-                                // todo
+                            case FC_ADD_PALETTE_RGB: {
+                                // todo - this sucks
+                                uint8 uIndex = *puCode++;
+                                ((uint8*)(&puPalette[uIndex]))[0] += puCode[0];
+                                ((uint8*)(&puPalette[uIndex]))[1] += puCode[1];
+                                ((uint8*)(&puPalette[uIndex]))[2] += puCode[2];
+                                puCode += sizeof(uint32);
                                 break;
+                            }
 
-                            case FC_SUB_PALETTE_RGB:
-                                // todo
+                            case FC_SUB_PALETTE_RGB: {
+                                // todo - this sucks
+                                uint8 uIndex = *puCode++;
+                                ((uint8*)(&puPalette[uIndex]))[0] -= puCode[0];
+                                ((uint8*)(&puPalette[uIndex]))[1] -= puCode[1];
+                                ((uint8*)(&puPalette[uIndex]))[2] -= puCode[2];
+                                puCode += sizeof(uint32);
                                 break;
+                            }
 
                             case FC_SET_PALETTE_R: {
                                 uint32 uIndex = *puCode++;
@@ -113,6 +125,15 @@ void* updateLUT8Filth(Context& roContext) {
                             case FC_SUB_PALETTE_B: {
                                 uint32 uIndex = *puCode++;
                                 ((uint8*)(&puPalette[uIndex]))[0] -= *puCode++;
+                                break;
+                            }
+
+                            case FC_SWP_PALETTE: {
+                                uint32 uIndexA = *puCode++;
+                                uint32 uIndexB = *puCode++;
+                                uint32 uRGB = puPalette[uIndexA];
+                                puPalette[uIndexA] = puPalette[uIndexB];
+                                puPalette[uIndexB] = uRGB;
                                 break;
                             }
 

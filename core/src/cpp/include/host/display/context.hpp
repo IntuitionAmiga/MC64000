@@ -61,13 +61,15 @@ enum FilthCommand {
     FC_ADD_PALETTE_B   = 0x0C, // Increments the blue component of a palette entry
     FC_SUB_PALETTE_B   = 0x0D, // Decrements the blue component of a palette entry
 
+    FC_SWP_PALETTE     = 0x0E, // Swaps a pair of palette entries
+
     // View offset commands
-    FC_SET_VIEW_X      = 0x0E, // Sets the View X offset
-    FC_ADD_VIEW_X      = 0x0F, // Increases the View X offset
-    FC_SUB_VIEW_X      = 0x10, // Decreases the View X offset
-    FC_SET_VIEW_Y      = 0x11, // Sets the View Y offset
-    FC_ADD_VIEW_Y      = 0x12, // Increases the View Y offset
-    FC_SUB_VIEW_Y      = 0x13, // Decreases the View Y offset
+    FC_SET_VIEW_X      = 0x0F, // Sets the View X offset
+    FC_ADD_VIEW_X      = 0x10, // Increases the View X offset
+    FC_SUB_VIEW_X      = 0x11, // Decreases the View X offset
+    FC_SET_VIEW_Y      = 0x12, // Sets the View Y offset
+    FC_ADD_VIEW_Y      = 0x13, // Increases the View Y offset
+    FC_SUB_VIEW_Y      = 0x14, // Decreases the View Y offset
 
 };
 

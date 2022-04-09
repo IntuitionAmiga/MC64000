@@ -128,10 +128,10 @@ on_key_down: ; a0 contains display context
 
 .filth:
     dc.w    0, 110 ; beam position 0, 100
-    dc.b    0x0E   ; set view x offset
+    dc.b    0x0F   ; set view x offset
     dc.w    160    ; 160
     dc.b    0x01   ; wait
     dc.w    0, 130 ; beam position 0, 130
-    dc.b    0x0E   ; set view x offset
+    dc.b    0x0F   ; set view x offset
     dc.w    0      ; 0
     dc.b    0x01   ; end
