@@ -19,12 +19,41 @@
 
 namespace MC64K::StandardTestHost::Display::x11 {
 
+template<typename T>
+inline size_t setValue(uint8* puCode, uint8* puBase) {
+    // Next 16-bit value is the script offst in bytes
+    uint16 uOffset = *((uint16*)puCode);
+
+    // Next sizeof(T) value is the word
+    *((T*)(puBase + uOffset)) = *((T*)(puCode + sizeof(uint16)));
+    return sizeof(T) + sizeof(uint16);
+}
+
+template<typename T>
+inline size_t addValue(uint8* puCode, uint8* puBase) {
+    // Next 16-bit value is the script offst in bytes
+    uint16 uOffset = *((uint16*)puCode);
+
+    // Next sizeof(T) value is the word
+    *((T*)(puBase + uOffset)) += *((T*)(puCode + sizeof(uint16)));
+    return sizeof(T) + sizeof(uint16);
+}
+
+template<typename T>
+inline size_t subValue(uint8* puCode, uint8* puBase) {
+    // Next 16-bit value is the script offst in bytes
+    uint16 uOffset = *((uint16*)puCode);
+
+    // Next sizeof(T) value is the word
+    *((T*)(puBase + uOffset)) -= *((T*)(puCode + sizeof(uint16)));
+    return sizeof(T) + sizeof(uint16);
+}
 
 void* updateLUT8Filth(Context& roContext) {
     if (uint32* puPalette = roContext.puPalette) {
         uint32* pDst        = (uint32*)roContext.puImageBuffer;
-        uint8 const* pSrc   = roContext.oDisplayBuffer.puByte;
-        uint8 const* puCode = roContext.puFilthScript;
+        uint8* pSrc         = roContext.oDisplayBuffer.puByte;
+        uint8* puCode       = roContext.puFilthScript;
         uint16 uViewXOffset = roContext.uViewXOffset;
         uint16 uViewYOffset = roContext.uViewYOffset;
 
@@ -167,6 +196,42 @@ void* updateLUT8Filth(Context& roContext) {
                                 puCode += sizeof(uint16);
                                 break;
 
+                            case FC_SET_BYTE:
+                                puCode += setValue<uint8>(puCode, roContext.puFilthScript);
+                                break;
+
+                            case FC_SET_WORD:
+                                puCode += setValue<uint16>(puCode, roContext.puFilthScript);
+                                break;
+
+                            case FC_SET_LONG:
+                                puCode += setValue<uint32>(puCode, roContext.puFilthScript);
+                                break;
+
+                            case FC_ADD_BYTE:
+                                puCode += addValue<uint8>(puCode, roContext.puFilthScript);
+                                break;
+
+                            case FC_ADD_WORD:
+                                puCode += addValue<uint16>(puCode, roContext.puFilthScript);
+                                break;
+
+                            case FC_ADD_LONG:
+                                puCode += addValue<uint32>(puCode, roContext.puFilthScript);
+                                break;
+
+                            case FC_SUB_BYTE:
+                                puCode += subValue<uint8>(puCode, roContext.puFilthScript);
+                                break;
+
+                            case FC_SUB_WORD:
+                                puCode += subValue<uint16>(puCode, roContext.puFilthScript);
+                                break;
+
+                            case FC_SUB_LONG:
+                                puCode += subValue<uint32>(puCode, roContext.puFilthScript);
+                                break;
+
                             default:
                                 break;
                         }
@@ -191,10 +256,12 @@ void* updateLUT8Filth(Context& roContext) {
     return roContext.puImageBuffer;
 }
 
+
+
 void* updateARGB32Filth(Context& roContext) {
     uint32* pDst        = (uint32*)roContext.puImageBuffer;
     uint32 const* pSrc  = roContext.oDisplayBuffer.puLong;
-    uint8 const* puCode = roContext.puFilthScript;
+    uint8* puCode       = roContext.puFilthScript;
     uint16 uViewXOffset = roContext.uViewXOffset;
     uint16 uViewYOffset = roContext.uViewYOffset;
 
@@ -218,33 +285,75 @@ void* updateARGB32Filth(Context& roContext) {
                             break; // Assume puCode now points at next beam position
 
                         case FC_SET_VIEW_X:
+                            // Next 16-bit value is the new View X
                             uViewXOffset = *((uint16*)puCode);// % roContext.uBufferWidth;
                             puCode += sizeof(uint16);
                             break;
 
                         case FC_ADD_VIEW_X:
+                            // Next 16-bit value is the new View X
                             uViewXOffset += *((uint16*)puCode);// % roContext.uBufferWidth;
                             puCode += sizeof(uint16);
                             break;
 
                         case FC_SUB_VIEW_X:
+                            // Next 16-bit value is the new View X
                             uViewXOffset -= *((uint16*)puCode);// % roContext.uBufferWidth;
                             puCode += sizeof(uint16);
                             break;
 
                         case FC_SET_VIEW_Y:
+                            // Next 16-bit value is the new View Y
                             uViewYOffset = *((uint16*)puCode);// % roContext.uBufferHeight;
                             puCode += sizeof(uint16);
                             break;
 
                         case FC_ADD_VIEW_Y:
+                            // Next 16-bit value is the new View Y
                             uViewYOffset += *((uint16*)puCode);// % roContext.uBufferWidth;
                             puCode += sizeof(uint16);
                             break;
 
                         case FC_SUB_VIEW_Y:
+                            // Next 16-bit value is the new View Y
                             uViewYOffset -= *((uint16*)puCode);// % roContext.uBufferWidth;
                             puCode += sizeof(uint16);
+                            break;
+
+                        case FC_SET_BYTE:
+                            puCode += setValue<uint8>(puCode, roContext.puFilthScript);
+                            break;
+
+                        case FC_SET_WORD:
+                            puCode += setValue<uint16>(puCode, roContext.puFilthScript);
+                            break;
+
+                        case FC_SET_LONG:
+                            puCode += setValue<uint32>(puCode, roContext.puFilthScript);
+                            break;
+
+                        case FC_ADD_BYTE:
+                            puCode += addValue<uint8>(puCode, roContext.puFilthScript);
+                            break;
+
+                        case FC_ADD_WORD:
+                            puCode += addValue<uint16>(puCode, roContext.puFilthScript);
+                            break;
+
+                        case FC_ADD_LONG:
+                            puCode += addValue<uint32>(puCode, roContext.puFilthScript);
+                            break;
+
+                        case FC_SUB_BYTE:
+                            puCode += subValue<uint8>(puCode, roContext.puFilthScript);
+                            break;
+
+                        case FC_SUB_WORD:
+                            puCode += subValue<uint16>(puCode, roContext.puFilthScript);
+                            break;
+
+                        case FC_SUB_LONG:
+                            puCode += subValue<uint32>(puCode, roContext.puFilthScript);
                             break;
 
                         default:

@@ -71,6 +71,17 @@ enum FilthCommand {
     FC_ADD_VIEW_Y      = 0x13, // Increases the View Y offset
     FC_SUB_VIEW_Y      = 0x14, // Decreases the View Y offset
 
+    // Really, really dirty. These allow self-modification
+    FC_SET_BYTE        = 0x15, // Replace script byte at offset
+    FC_SET_WORD        = 0x16, // Replace script word at offset
+    FC_SET_LONG        = 0x17, // Replace script long at offset
+    FC_ADD_BYTE        = 0x18, // Increment script byte at offset
+    FC_ADD_WORD        = 0x19, // Increment script word at offset
+    FC_ADD_LONG        = 0x1A, // Increment script long at offset
+    FC_SUB_BYTE        = 0x1B, // Decrement script byte at offset
+    FC_SUB_WORD        = 0x1C, // Decrement script word at offset
+    FC_SUB_LONG        = 0x1D, // Decrement script long at offset
+
 };
 
 /**
@@ -99,7 +110,7 @@ struct Context {
     uint16       uViewHeight;
     uint16       uViewXOffset;
     uint16       uViewYOffset;
-    uint8 const* puFilthScript;
+    uint8*       puFilthScript;
 
     uint16       uFlags;
     uint8        uPixelFormat;

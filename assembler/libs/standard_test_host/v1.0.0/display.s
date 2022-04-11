@@ -82,12 +82,22 @@
     @equ DISPLAY_FC_SWP_PALETTE     0x0E
 
     // View offset commands
-    @equ FC_SET_VIEW_X      0x0F
-    @equ FC_ADD_VIEW_X      0x10
-    @equ FC_SUB_VIEW_X      0x11
-    @equ FC_SET_VIEW_Y      0x12
-    @equ FC_ADD_VIEW_Y      0x13
-    @equ FC_SUB_VIEW_Y      0x14
+    @equ DISPLAY_FC_SET_VIEW_X      0x0F
+    @equ DISPLAY_FC_ADD_VIEW_X      0x10
+    @equ DISPLAY_FC_SUB_VIEW_X      0x11
+    @equ DISPLAY_FC_SET_VIEW_Y      0x12
+    @equ DISPLAY_FC_ADD_VIEW_Y      0x13
+    @equ DISPLAY_FC_SUB_VIEW_Y      0x14
+
+    @equ DISPLAY_FC_SET_BYTE        0x15
+    @equ DISPLAY_FC_SET_WORD        0x16
+    @equ DISPLAY_FC_SET_LONG        0x17
+    @equ DISPLAY_FC_ADD_BYTE        0x18
+    @equ DISPLAY_FC_ADD_WORD        0x19
+    @equ DISPLAY_FC_ADD_LONG        0x1A
+    @equ DISPLAY_FC_SUB_BYTE        0x1B
+    @equ DISPLAY_FC_SUB_WORD        0x1C
+    @equ DISPLAY_FC_SUB_LONG        0x1D
 
     @equ display_init     #0, display_vector
     @equ display_done     #1, display_vector
