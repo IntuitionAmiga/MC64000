@@ -22,6 +22,11 @@ using MC64K::Machine::Interpreter;
 
 namespace MC64K::StandardTestHost::Mem {
 
+
+typedef uint8  u8x16 __attribute__ ((vector_size (16)));
+typedef uint16 u16x8 __attribute__ ((vector_size (16)));
+typedef uint32 u32x4 __attribute__ ((vector_size (16)));
+
 /**
  * Fill a word aligned block with words. If the base adddess is not aligned, filling starts from the next aligned
  * address with one fewer element.

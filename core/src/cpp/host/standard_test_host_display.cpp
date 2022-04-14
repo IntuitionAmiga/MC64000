@@ -31,70 +31,95 @@ char const* aFormatNames[] = {
 
 Interpreter::Status runEventLoop() {
     Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>();
-    if (!poContext || !poContext->poManager) {
+    if (!poContext || !poContext->poDevice) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NULL_PTR;
         return Interpreter::RUNNING;
     }
-    poContext->poManager->runEventLoop();
+    poContext->poDevice->runEventLoop();
     return Interpreter::INITIALISED;
 }
 
 void updateDisplay() {
     Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>();
-    if (!poContext || !poContext->poManager) {
+    if (!poContext || !poContext->poDevice) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NULL_PTR;
     }
-    poContext->poManager->updateDisplay();
+    poContext->poDevice->updateDisplay();
 }
 
+
 void openDisplay() {
-    PackedParams oParams;
-
-    oParams.u64 = Interpreter::gpr<ABI::INT_REG_0>().value<uint64>();
-
-    uint16 uWidth  = oParams.u16[0];
-    uint16 uHeight = oParams.u16[1];
-    uint16 uFlags  = oParams.u16[2];
-    uint8  uFormat = oParams.u8[6];
-    uint8  uRateHz = oParams.u8[7];
+    OpenParams const* poParams = Interpreter::gpr<ABI::PTR_REG_0>().address<OpenParams>();
 
     std::printf(
-        "openDisplay w:%d h:%04X flags:%d fmt:%d, hz:%d\n",
-        (int)uWidth,
-        (unsigned)uHeight,
-        (int)uFlags,
-        (int)uFormat,
-        (int)uRateHz
+        "openDisplay view:%d x %d, buffer:%d x %d, offsets:%d x %d, flags:%04X, fmt:%d, hz:%d\n",
+        (int)poParams->uViewWidth,
+        (int)poParams->uViewHeight,
+        (int)poParams->uBufferWidth,
+        (int)poParams->uBufferHeight,
+        (int)poParams->uViewXOffset,
+        (int)poParams->uViewYOffset,
+        (unsigned)poParams->uFlags,
+        (int)poParams->uPixelFormat,
+        (int)poParams->uRateHz
     );
 
-    if (uFormat >= PXL_MAX) {
+    if (poParams->uPixelFormat >= PXL_MAX) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>()    = ERR_INVALID_FMT;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
         return;
     }
 
-    if (uWidth < WIDTH_MIN || uWidth > WIDTH_MAX) {
+    if (poParams->uViewWidth < WIDTH_MIN || poParams->uViewWidth > WIDTH_MAX) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ERR_INVALID_WIDTH;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
         return;
     }
 
-    if (uHeight < HEIGHT_MIN || uHeight > HEIGHT_MAX) {
+    if (poParams->uBufferWidth > WIDTH_MAX) {
+        Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ERR_INVALID_WIDTH;
+        Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
+        return;
+    }
+
+    if (poParams->uViewHeight < HEIGHT_MIN || poParams->uViewHeight > HEIGHT_MAX) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ERR_INVALID_HEIGHT;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
         return;
     }
 
+    if (poParams->uViewHeight < HEIGHT_MIN || poParams->uViewHeight > HEIGHT_MAX) {
+        Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ERR_INVALID_HEIGHT;
+        Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
+        return;
+    }
+
+    // Create a sanitised copy of the paramters and apply any roundint or other
+    // modification
+    OpenParams oOpenParams = *poParams;
+    oOpenParams.uViewWidth   = (uint16)((poParams->uViewWidth + WIDTH_ALIGN_MASK) & ~WIDTH_ALIGN_MASK);
+    oOpenParams.uBufferWidth = poParams->uBufferWidth < oOpenParams.uViewWidth ?
+        oOpenParams.uViewWidth :
+        (uint16)((poParams->uBufferWidth + WIDTH_ALIGN_MASK) & ~WIDTH_ALIGN_MASK)
+    ;
+
+    oOpenParams.uBufferHeight = poParams->uBufferHeight < poParams->uViewHeight ?
+        poParams->uViewHeight :
+        poParams->uBufferHeight
+    ;
+
+    std::printf(
+        "openDisplay aligned view:%d x %d, buffer:%d x %d\n",
+        (int)oOpenParams.uViewWidth,
+        (int)oOpenParams.uViewHeight,
+        (int)oOpenParams.uBufferWidth,
+        (int)oOpenParams.uBufferHeight
+    );
+
     try {
-        // Obtain the appropriate manager for the host. This should use RAII semantics
-        Manager* poManager = createManager(
-            uWidth,
-            uHeight,
-            uFlags,
-            uFormat,
-            uRateHz
-        );
-        Interpreter::gpr<ABI::PTR_REG_0>().pAny = poManager->getContext();
+        // Obtain the appropriate device for the host. This should use RAII semantics
+        Device* poDevice = createDevice(oOpenParams);
+        Interpreter::gpr<ABI::PTR_REG_0>().pAny = poDevice->getContext();
     } catch (Error& roError) {
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = Mem::ERR_NO_MEM;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
@@ -106,7 +131,7 @@ void openDisplay() {
 
 void closeDisplay() {
     if (Context* poContext = Interpreter::gpr<ABI::PTR_REG_0>().address<Context>()) {
-        delete poContext->poManager;
+        delete poContext->poDevice;
         poContext = nullptr;
         Interpreter::gpr<ABI::PTR_REG_0>().pAny = nullptr;
         Interpreter::gpr<ABI::INT_REG_0>().value<uint64>() = ABI::ERR_NONE;

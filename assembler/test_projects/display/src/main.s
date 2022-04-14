@@ -15,39 +15,10 @@ main:
     hcf     display_init
 
     ; try to open the display. The vector expects the parameters packed into d0
-    move.q  .display_properties, d0
+    lea     .display_properties, a0
     hcf     display_open
     biz.q   a0, exit  ; no display?
     move.q  a0, -(sp) ; save the context on the stack for safe keeping
-
-    ; Display context structure (X denotes read-only field)
-    ;
-    ; DISPLAY_REG_CALL_FRAME             address - if set, called once per frame, before refresh
-    ; DISPLAY_REG_CALL_KEY_PRESS         address - if set, called per event before frame
-    ; DISPLAY_REG_CALL_KEY_RELEASE       address - if set, called per event before frame
-    ; DISPLAY_REG_CALL_BUTTON_PRESS      address - if set, called per event before frame
-    ; DISPLAY_REG_CALL_BUTTON_RELEASE    address - if set, called per event before frame
-    ; DISPLAY_REG_CALL_MOVEMENT          address - if set, called per event before frame
-    ;
-    ; ; Display properties
-    ; DISPLAY_REG_SOFT_BUFFER_ADDRESS  X address - contains the address of the framebuffer
-    ; DISPLAY_REG_PALETTE_ADDRESS        address - contains the address of the palette, for 256 colour
-    ;
-    ; DISPLAY_REG_SOFT_BUFFER_PIXELS   X long    - contains the number of pixels in the framebuffer
-    ; DISPLAY_REG_SOFT_BUFFER_BYTES    X long    - contains the size of the framebuffer, in bytes
-    ;
-    ; DISPLAY_REG_WIDTH                X word    - contains the width of the framebuffer in pixels
-    ; DISPLAY_REG_HEIGHT               X word    - contains the height of the framebuffer in pixels
-    ; DISPLAY_REG_FLAGS                  word    - contains flags
-    ; DISPLAY_REG_PXL_FORMAT           X byte    - contains the pixel format
-    ; DISPLAY_REG_REFRESH_HZ           X byte    - contains the target refresh rate in Hz
-    ;
-    ; DISPLAY_REG_EVENT_CODE           X word    - contains the raw event code for a key/mouse press
-    ; DISPLAY_REG_EVENT_MASK           X word    - contains the mask of pressed buttons / modifiers
-    ; DISPLAY_REG_POSITION_X           X word    - contains the current cursor X position
-    ; DISPLAY_REG_POSITION_Y           X word    - contains the current cursor Y positoin
-
-
 
     ; Initialise palette here
     ;
@@ -67,6 +38,9 @@ main:
     ; Populate the callback handlers
     lea     on_frame,      DISPLAY_REG_CALL_FRAME(a0)     ; called every frame before refresh
     lea     on_key_down,   DISPLAY_REG_CALL_KEY_PRESS(a0) ; called before every frame for keypresses
+
+    lea     .copperlist,   DISPLAY_REG_FILTH(a0)
+
 
     ; Begin the main event loop
     hcf     display_begin
@@ -104,8 +78,11 @@ on_key_down:
 
     @align  0, 8
 .display_properties:
-    ; dimensions
+    ; view dimensions
     dc.w 320, 240
+
+    ; buffer dimensions and view offset
+    dc.w 320, 240, 0, 0
 
     ; flags
     dc.w 1 << DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES | 1 << DISPLAY_BIT_FLIP_ALL_FRAMES
@@ -114,5 +91,74 @@ on_key_down:
     dc.b PXL_CLUT_8
 
     ; target refresh rate (Hz)
-    dc.b 30
+    dc.b 60
 
+.copperlist:
+    dc.w    0, 0          ; beam position x, y
+    dc.b    DISPLAY_FC_SET_PALETTE, 0
+    dc.l    0x0005060A    ; begin
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 4          ; beam position
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A    ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 8          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A    ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 12          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A    ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 16          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A    ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 20          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 24          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A * 2 ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 28          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A * 2 ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 32          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A * 2  ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 36          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A * 2 ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 40          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A * 3 ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 44          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A * 3 ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 48          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A * 3  ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 52          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A * 3   ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 56          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A * 3   ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 60          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A * 4   ; sky delta
+    dc.b    DISPLAY_FC_WAIT
+    dc.w    0, 64          ; beam position x, y
+    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
+    dc.l    0x0005060A * 4    ; sky delta
+    dc.b    DISPLAY_FC_END

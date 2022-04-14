@@ -20,7 +20,7 @@ main:
     ; a3 - audio file
     ; a4 - display context
 
-    move.q  .display_properties, d0
+    lea     .display_properties, a0
     hcf     display_open
     biz.q   a0, exit
     move.q  a0, a4
@@ -93,8 +93,11 @@ on_frame:
     dc.b AUDIO_CH_MONO, AUDIO_INT_16, 60, 0
 
 .display_properties:
-    ; dimensions
+    ; view dimensions
     dc.w 256, 256
+
+    ; buffer dimensions and offset
+    dc.w 256, 256, 0, 0
 
     ; flags
     dc.w 1 << DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES | 1 << DISPLAY_BIT_FLIP_ALL_FRAMES

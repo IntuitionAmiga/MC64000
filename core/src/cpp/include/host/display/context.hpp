@@ -29,9 +29,58 @@ union PixelPointer {
     PixelPointer(): puAny(nullptr) {}
 };
 
-class Manager;
+class Device;
 
 class Error {
+
+};
+
+enum {
+    WIDTH_ALIGN      = 32,
+    WIDTH_ALIGN_MASK = WIDTH_ALIGN - 1
+};
+
+enum FilthCommand {
+    FC_END             = 0x00, // End of script
+    FC_WAIT            = 0x01, // Wait until beam position
+
+    // Palette commands
+    FC_SET_PALETTE     = 0x02, // Set a full RGB value for a palette entry
+    FC_ADD_PALETTE_RGB = 0x03, // Adds an RGB value to a palette entry
+    FC_SUB_PALETTE_RGB = 0x04, // Subtracts an RGB value from a palette entry
+
+    FC_SET_PALETTE_R   = 0x05,
+    FC_ADD_PALETTE_R   = 0x06, // Increments the red component of a palette entry
+    FC_SUB_PALETTE_R   = 0x07, // Decrements the red component of a palette entry
+
+    FC_SET_PALETTE_G   = 0x08,
+    FC_ADD_PALETTE_G   = 0x09, // Increments the green component of a palette entry
+    FC_SUB_PALETTE_G   = 0x0A, // Decrements the green component of a palette entry
+
+    FC_SET_PALETTE_B   = 0x0B,
+    FC_ADD_PALETTE_B   = 0x0C, // Increments the blue component of a palette entry
+    FC_SUB_PALETTE_B   = 0x0D, // Decrements the blue component of a palette entry
+
+    FC_SWP_PALETTE     = 0x0E, // Swaps a pair of palette entries
+
+    // View offset commands
+    FC_SET_VIEW_X      = 0x0F, // Sets the View X offset
+    FC_ADD_VIEW_X      = 0x10, // Increases the View X offset
+    FC_SUB_VIEW_X      = 0x11, // Decreases the View X offset
+    FC_SET_VIEW_Y      = 0x12, // Sets the View Y offset
+    FC_ADD_VIEW_Y      = 0x13, // Increases the View Y offset
+    FC_SUB_VIEW_Y      = 0x14, // Decreases the View Y offset
+
+    // Really, really dirty. These allow self-modification
+    FC_SET_BYTE        = 0x15, // Replace script byte at offset
+    FC_SET_WORD        = 0x16, // Replace script word at offset
+    FC_SET_LONG        = 0x17, // Replace script long at offset
+    FC_ADD_BYTE        = 0x18, // Increment script byte at offset
+    FC_ADD_WORD        = 0x19, // Increment script word at offset
+    FC_ADD_LONG        = 0x1A, // Increment script long at offset
+    FC_SUB_BYTE        = 0x1B, // Decrement script byte at offset
+    FC_SUB_WORD        = 0x1C, // Decrement script word at offset
+    FC_SUB_LONG        = 0x1D, // Decrement script long at offset
 
 };
 
@@ -51,10 +100,18 @@ struct Context {
      */
     PixelPointer oDisplayBuffer;
     uint32*      puPalette;
-    uint32       uNumPixels;
-    uint32       uNumBytes;
-    uint16       uWidth;
-    uint16       uHeight;
+    uint32       uNumBufferPixels;
+    uint32       uNumBufferBytes;
+    uint16       uBufferWidth;
+    uint16       uBufferHeight;
+
+    uint32       uNumViewPixels;
+    uint16       uViewWidth;
+    uint16       uViewHeight;
+    uint16       uViewXOffset;
+    uint16       uViewYOffset;
+    uint8*       puFilthScript;
+
     uint16       uFlags;
     uint8        uPixelFormat;
     uint8        uRateHz;
@@ -80,27 +137,43 @@ struct Context {
     uint16 uPositionY;
 
     /**
-     * Points to the manager of this context.
+     * Points to the device of this context.
      */
-    Manager* poManager;
+    Device* poDevice;
 
 };
 
 /**
- * Root interface for different display managers. Successful instantiation of a derived class is expected
+ * Parameters required for display opening
+ */
+struct OpenParams {
+    uint16 uViewWidth;
+    uint16 uViewHeight;
+    uint16 uBufferWidth;
+    uint16 uBufferHeight;
+    uint16 uViewXOffset;
+    uint16 uViewYOffset;
+    uint16 uFlags;
+    uint8  uPixelFormat;
+    uint8  uRateHz;
+};
+
+/**
+ * Root interface for different display device. Successful instantiation of a derived class is expected
  * to create a viable display instance.
  *
  * To close the display, destroy the instance.
  */
-class Manager {
+class Device {
     public:
-        virtual ~Manager() {};
+        virtual ~Device() {};
         virtual Context* getContext()    = 0;
         virtual void     runEventLoop()  = 0;
         virtual void     updateDisplay() = 0;
 };
 
-Manager* createManager(uint16 uWidth, uint16 uHeight, uint16 uFlags, uint8 uFormat, uint8 uRateHz);
+
+Device* createDevice(OpenParams const& roOpenParams);
 
 }
 

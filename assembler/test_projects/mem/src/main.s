@@ -12,39 +12,117 @@
 ;
 ; Empty project - main.s
 
-    @def MEM_BUFFER_SIZE 16777216
+    @def nanotime dc.b 0xF0 ; super undocumented opcodes ftw
+
+    @def MEM_BUFFER_SIZE 1 << 28
+    @def LOOP_COUNT      1 << 8
+
+    @def TOTAL_BYTES MEM_BUFFER_SIZE * LOOP_COUNT
+    @def TOTAL_GIGABYTES TOTAL_BYTES >> 30
 
 main:
-    move.q  #MEM_BUFFER_SIZE, d7
-    move.q  d7, d0
+    hcf io_init
+    hcf mem_init
+
+    move.q  #MEM_BUFFER_SIZE, d2
+    move.q  d2, d0
     hcf     mem_alloc
-    bnz.q   a0, .allocated
-    lea     .err_no_memory_1, a0
+    biz.q   a0, .bad_alloc
+    move.q  a0, a2
+
+    lea     .txt_memory_1, a0
     hcf     io_print_string
-    move.q  d7, d0
+    clr.q   a0
+    move.q  d2, d0
     hcf     io_print_quad
-    lea     .err_no_memory_2, a0
+    lea     .txt_memory_2, a0
+    hcf     io_print_string
+
+    clr.q   d3
+    move.q  #LOOP_COUNT, d4
+    move.q  #1, d5
+    clr.q   r12
+
+    lsr.q   #1, d2 ; setting words
+
+.loop:
+    move.q  a2, a0
+    move.q  d2, d1
+    move.b  d3, d0
+    nanotime                  ; writes current nanotime to r14
+    move.q  r14, r13          ; start
+    hcf     mem_fill_word
+    nanotime
+    sub.q   r13,  r14         ; elapsed
+    add.q   r14,  r12         ; total
+    add.q   d5, d3
+    dbnz    d4, .loop
+
+
+    lea     .txt_elapsed_1, a0
+    hcf     io_print_string
+    clr.q   a0
+    move.q  r12, d0
+    hcf     io_print_quad
+    lea     .txt_elapsed_2, a0
+    hcf     io_print_string
+
+    lea     .txt_memory_3, a0
+    hcf     io_print_string
+    move.q  #TOTAL_GIGABYTES, d0
+    clr.q   a0
+    hcf     io_print_quad
+    lea     .txt_memory_4, a0
+    hcf     io_print_string
+
+    fmoveq.d  #TOTAL_GIGABYTES, fp0
+    fmoveq.d  r12, fp1
+    fmul.d    #1.e-9, fp1 ; nanoseconds to seconds
+    fdiv.d    fp1, fp0
+
+    lea     .txt_through_1, a0
+    hcf     io_print_string
+    clr.q   a0
+    hcf     io_print_double
+    lea     .txt_through_2, a0
+    hcf     io_print_string
+
+    move.q  a2, a0
+    hcf     mem_free
+    bra     exit
+
+.bad_alloc:
+    lea     .txt_err_no_memory, a0
+    hcf     io_print_string
+    clr.q   a0
+    move.q  d2, d0
+    hcf     io_print_quad
+    lea     .txt_memory_2, a0
     hcf     io_print_string
     bra     exit
 
-.allocated:
-    move.l  #255,  d6
 
-.loop:
-    move.q  a0,     a6
-    move.q  d6,     d0
-    move.q  d7,     d1
-    hcf     mem_fill_byte
-    dbnz    d6,     .loop
 
 exit:
-    ; free buffer (null safe)
-    move.q      a6,     a0
-    hcf         mem_free
-
+    hcf mem_done
+    hcf io_done
     rts
 
-.err_no_memory_1:
+.txt_err_no_memory:
     dc.b "Error: Couldn't allocate \0"
-.err_no_memory_2:
+.txt_memory_1:
+    dc.b "Allocated \0"
+.txt_memory_2:
     dc.b " bytes of memory for buffer.\n\0"
+.txt_memory_3:
+    dc.b "Total size written \0"
+.txt_memory_4:
+    dc.b " GiB\n\0"
+.txt_elapsed_1:
+    dc.b "Took \0"
+.txt_elapsed_2:
+    dc.b " nanoseconds\n\0"
+.txt_through_1:
+    dc.b "Throughput \0"
+.txt_through_2:
+    dc.b "GiB/s\n\0"

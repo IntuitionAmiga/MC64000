@@ -23,7 +23,7 @@
 main:
     ; try to open the display
     hcf     display_init
-    move.q  .display_properties, d0
+    lea     .display_properties, a0
     hcf     display_open
     biz.q   a0, exit  ; no display?
     move.q  a0, -(sp) ; save the context on the stack
@@ -31,6 +31,7 @@ main:
     ; Populate the callback handlers
     lea     on_frame,    DISPLAY_REG_CALL_FRAME(a0)
     lea     on_key_down, DISPLAY_REG_CALL_KEY_PRESS(a0)
+    lea     .filth,      DISPLAY_REG_FILTH(a0)
 
     ; Set parameters
     lea     .texel_data,  a2
@@ -111,10 +112,28 @@ on_key_down: ; a0 contains display context
 ; data
     @align  0, 8
 .display_properties:
-    ; width, height, flags
-    dc.w 640, 480, 1 << DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES | 1 << DISPLAY_BIT_FLIP_ALL_FRAMES
+    ; view width, height
+    dc.w 320, 240
+
+    ; buffer width, height, offsets
+    dc.w 320, 240, 0, 0
+
+    ; flags
+    dc.w 1 << DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES | 1 << DISPLAY_BIT_FLIP_ALL_FRAMES
     ; format, target refresh Hz
-    dc.b PXL_ARGB, 30
+    dc.b PXL_ARGB, 60
 
 .texel_data:
     @incbin "../res/img.bin"
+
+.filth:
+    dc.w    0, 80                ; beam position 0, 80
+    dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
+    dc.w    0                     ; x offset value
+    dc.b    DISPLAY_FC_WAIT       ; wait
+    dc.w    0, 160                ; beam position 0, 160
+    dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
+    dc.w    0                     ; x offset value
+    dc.b    DISPLAY_FC_ADD_WORD
+    dc.w    5, 1                  ; increment word at offset 5 (the x offset value)
+    dc.b    DISPLAY_FC_END   ; end
