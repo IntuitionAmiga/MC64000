@@ -18,29 +18,48 @@
     @equ ERR_NO_MEM  100
     @equ ERR_MEM     101
 
-    @def mem_vector      #1
+    @def mem_vector         #1
 
-    @equ mem_init        #0, mem_vector
-    @equ mem_done        #1, mem_vector
-    @equ mem_alloc       #2, mem_vector
-    @equ mem_free        #3, mem_vector
-    @equ mem_copy        #4, mem_vector
-    @equ mem_fill_byte   #5, mem_vector
-    @equ mem_fill_word   #6, mem_vector
-    @equ mem_fill_long   #7, mem_vector
-    @equ mem_fill_quad   #8, mem_vector
+    @equ mem_init           #0, mem_vector
+    @equ mem_done           #1, mem_vector
+    @equ mem_alloc          #2, mem_vector
+    @equ mem_free           #3, mem_vector
 
-    @equ mem_and_byte   #9,  mem_vector
-    @equ mem_and_word   #10, mem_vector
-    @equ mem_and_long   #11, mem_vector
-    @equ mem_and_quad   #12, mem_vector
+    @equ mem_alloc_buffer   #4, mem_vector
+    @equ mem_free_buffer    #5, mem_vector
+    @equ mem_alloc_element  #6, mem_vector
+    @equ mem_free_element   #7, mem_vector
 
-    @equ mem_or_byte    #13, mem_vector
-    @equ mem_or_word    #14, mem_vector
-    @equ mem_or_long    #15, mem_vector
-    @equ mem_or_quad    #16, mem_vector
+    @equ mem_copy           #8, mem_vector
+    @equ mem_swap_word      #9, mem_vector
+    @equ mem_swap_long     #10, mem_vector
+    @equ mem_swap_quad     #11, mem_vector
 
-    @equ mem_eor_byte   #17, mem_vector
-    @equ mem_eor_word   #18, mem_vector
-    @equ mem_eor_long   #19, mem_vector
-    @equ mem_eor_quad   #20, mem_vector
+
+    @equ mem_fill_byte     #12, mem_vector
+    @equ mem_fill_word     #13, mem_vector
+    @equ mem_fill_long     #14, mem_vector
+    @equ mem_fill_quad     #15, mem_vector
+
+    @equ mem_and_byte      #16, mem_vector
+    @equ mem_and_word      #17, mem_vector
+    @equ mem_and_long      #18, mem_vector
+    @equ mem_and_quad      #19, mem_vector
+
+    @equ mem_or_byte       #20, mem_vector
+    @equ mem_or_word       #21, mem_vector
+    @equ mem_or_long       #22, mem_vector
+    @equ mem_or_quad       #23, mem_vector
+
+    @equ mem_eor_byte      #24, mem_vector
+    @equ mem_eor_word      #25, mem_vector
+    @equ mem_eor_long      #26, mem_vector
+    @equ mem_eor_quad      #27, mem_vector
+
+    @equ mem_find_byte     #28, mem_vector
+    @equ mem_find_word     #29, mem_vector
+    @equ mem_find_long     #30, mem_vector
+    @equ mem_find_quad     #31, mem_vector
+
+    @equ mem_strlen        #32, mem_vector
+    @equ mem_strcmp        #33, mem_vector
