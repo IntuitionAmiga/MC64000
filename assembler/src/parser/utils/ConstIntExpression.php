@@ -61,7 +61,6 @@ class ConstIntExpression implements IParser {
         // Extract from the string all the parts that look like they may be expressions.
         static $iPlaceholderKey = 0;
 
-
         $aPlaceholderMap = [];
         $sIntermediate = (string)preg_replace_callback(
             self::MATCH_FULL,

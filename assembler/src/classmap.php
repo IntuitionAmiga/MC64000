@@ -8,6 +8,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\Utils\\FloatingPoint' => '/parser/utils/FloatingPoint.php',
   'ABadCafe\\MC64K\\Parser\\Utils\\ConstIntExpression' => '/parser/utils/ConstIntExpression.php',
   'ABadCafe\\MC64K\\Parser\\Utils\\Integer' => '/parser/utils/Integer.php',
+  'ABadCafe\\MC64K\\Parser\\Utils\\ConstFloatExpression' => '/parser/utils/ConstFloatExpression.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\TParser' => '/parser/source_line/TParser.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\IParser' => '/parser/source_line/IParser.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Processor' => '/parser/source_line/Processor.php',
