@@ -15,13 +15,157 @@
 #include <cstdlib>
 #include <cstring>
 #include <misc/scalar.hpp>
-
-
+#include <host/memory.hpp>
 namespace MC64K::Host::Memory {
 
 typedef uint8  u8x16 __attribute__ ((vector_size (16)));
 typedef uint16 u16x8 __attribute__ ((vector_size (16)));
 typedef uint32 u32x4 __attribute__ ((vector_size (16)));
+
+
+/**
+ * Returns a one-time initialised magic value
+ */
+uint64 ElementBuffer::getMagic(ElementBuffer const* pBuffer) {
+    static uint64 uElementBufferMagic = 0;
+    if (!uElementBufferMagic) {
+        uElementBufferMagic = (uint64)&uElementBufferMagic;
+        uElementBufferMagic ^= ((uint64)std::rand()) << 32 | (uint64)std::rand();
+    }
+    return uElementBufferMagic ^ (uint64)pBuffer;
+}
+
+ElementBuffer* ElementBuffer::validate(ElementBuffer* pBuffer) {
+    if (pBuffer && getMagic(pBuffer) == pBuffer->uMagic) {
+        return pBuffer;
+    }
+    return nullptr;
+}
+
+/***
+ * Allocate an element buffer. This is a buffer of up to 65536 elements of up to 65536 bytes each.
+ * The elements are aligned to a 64 bit boundary.
+ */
+ElementBuffer* ElementBuffer::allocateBuffer(uint16 uElementCount, uint16 uElementSize) {
+
+    // Treat a zero element count as the maximum
+    size_t uAllocCount      = uElementCount ? uElementCount : 65536;
+
+    // Round up the count to the nearest 64 as we use a bitmap based allocator that operates on
+    // 64-bit words.
+    uAllocCount             = (uAllocCount + 63) & ~63;
+    size_t uMapCount        = uAllocCount >> 6;
+
+    // Treat a zero element size as the maximum
+    size_t uAllocSize       = uElementSize ? uElementSize : 65536;
+
+    // Round up the size to the nearest 8-bytes.
+    uAllocSize              = (uAllocSize + 7) & ~7;
+
+    // Determine the header size. This is the element buffer, with the map entry extended to have
+    // enough bits to cover the rounded element count.
+    size_t uHeaderSize      = sizeof(ElementBuffer) + (uMapCount - 1) * sizeof(uint64);
+    ElementBuffer* pBuffer  = (ElementBuffer*)std::calloc(uHeaderSize + uAllocCount * uAllocSize, sizeof(uint8));
+
+    // Record the actual allocation count and size
+    if (pBuffer) {
+        pBuffer->uMagic        = getMagic(pBuffer);
+        pBuffer->uElementCount = uElementCount;
+        pBuffer->uAlignedCount = (uint16)uAllocCount;
+        pBuffer->uElementSize  = uElementSize;
+        pBuffer->uAlignedSize  = (uint16)uAllocSize;
+
+        // Fill the map with ones.
+        std::memset(&pBuffer->aMap, -1, uMapCount * sizeof(uint64));
+
+        std::fprintf(
+            stderr,
+            "Element Buffer Allocated at %p\n"
+            "\tMagic: %016lX\n"
+            "\tCount: %u [%u]\n"
+            "\tSize:  %u [%u]\n"
+            "\tMap:   %u\n",
+            pBuffer,
+            pBuffer->uMagic,
+            (unsigned)pBuffer->uElementCount,
+            (unsigned)uAllocCount,
+            (unsigned)pBuffer->uElementSize,
+            (unsigned)uAllocSize,
+            (unsigned)uMapCount
+        );
+    }
+    return pBuffer;
+}
+
+/**
+ * Free the entire element buffer. Null safe.
+ */
+bool ElementBuffer::freeBuffer(ElementBuffer* pBuffer) {
+    // Make sure we are pointing at an actual buffer.
+    if ( (pBuffer = validate(pBuffer)) ) {
+        std::fprintf(
+            stderr,
+            "Freeing Element Buffer Allocated at %p\n"
+            "\tMagic: %016lX\n"
+            "\tCount: %u [%u]\n"
+            "\tSize:  %u [%u]\n",
+            pBuffer,
+            pBuffer->uMagic,
+            (unsigned)pBuffer->uElementCount,
+            (unsigned)pBuffer->uAlignedCount,
+            (unsigned)pBuffer->uElementSize,
+            (unsigned)pBuffer->uAlignedSize
+        );
+        pBuffer->uMagic = 0;
+        std::free(pBuffer);
+        return true;
+    }
+    return false;
+}
+
+uint8* ElementBuffer::getElementBase() const {
+    return (uint8*)(&aMap[uAlignedCount >> 6]);
+}
+
+/**
+ * Alocate the next available element from the buffer. If the buffer is full, nullptr
+ */
+void* ElementBuffer::alloc() {
+    if (getMagic(this) == uMagic) {
+        unsigned uMapSize = uAlignedCount >> 6;
+
+        // TODO - go for a 2 level bitmap, which will significantly reduce the search space.
+        for (unsigned uIndex = 0; uIndex < uMapSize; ++uIndex) {
+            if (uint64 uBitmap = aMap[uIndex]) {
+                int iFree = __builtin_ffsl(uBitmap) - 1;
+                // Clear the bit to mark as allocated
+                aMap[uIndex] ^= 1UL << iFree;
+
+                uint8* pElement  = getElementBase();
+                unsigned uOffset = (uIndex << 6 | iFree);
+                pElement        += uOffset * uAlignedSize;
+                std::fprintf(
+                    stderr,
+                    "Found free entry at index %u:%d [%u] => %p\n",
+                    uIndex,
+                    iFree,
+                    uOffset,
+                    pElement
+                );
+                return pElement;
+            }
+        }
+    }
+    return nullptr;
+}
+
+uint64 ElementBuffer::free(void* pElement) {
+    if (getMagic(this) == uMagic) {
+
+    }
+    return 0;
+}
+
 
 /**
  * Fill a word aligned block with words. If the base adddess is not aligned, filling starts from the next aligned

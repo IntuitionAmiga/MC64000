@@ -20,6 +20,8 @@
 
 using MC64K::Machine::Interpreter;
 
+using MC64K::Host::Memory::ElementBuffer;
+
 namespace MC64K::StandardTestHost::Mem {
 
 /**
@@ -50,14 +52,52 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
             Interpreter::gpr<ABI::PTR_REG_0>().pAny = 0;
             break;
 
-        case ALLOC_BUFFER:
+        case ALLOC_BUFFER: {
+            uint32 uParams = Interpreter::gpr<ABI::INT_REG_0>().uLong;
+            ElementBuffer* pBuffer = ElementBuffer::allocateBuffer(
+                (uint16)(uParams >> 16),
+                (uint16)(uParams & 0xFFFF)
+            );
+            Interpreter::gpr<ABI::PTR_REG_0>().pAny  = pBuffer;
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = pBuffer ?
+                (uint64)ABI::ERR_NONE :
+                (uint64)ERR_NO_MEM;
             break;
+        }
 
-        case FREE_BUFFER:
+        case FREE_BUFFER: {
+            ElementBuffer* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().address<ElementBuffer>();
+            if (pBuffer) {
+                if ( (pBuffer = ElementBuffer::validate(pBuffer)) ) {
+                    ElementBuffer::freeBuffer(pBuffer);
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
+                } else {
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = ERR_MEM_INVALID_BUFFER;
+                }
+            } else {
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+            }
             break;
-
-        case ALLOC_ELEMENT:
+        }
+        case ALLOC_ELEMENT: {
+            ElementBuffer* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().address<ElementBuffer>();
+            if (pBuffer) {
+                if ( (pBuffer = ElementBuffer::validate(pBuffer)) ) {
+                    void *pElement = pBuffer->alloc();
+                    Interpreter::gpr<ABI::PTR_REG_0>().pAny  = pElement;
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = pElement ?
+                        (uint64)ABI::ERR_NONE :
+                        (uint64)ERR_MEM_BUFFER_FULL;
+                } else {
+                    Interpreter::gpr<ABI::PTR_REG_0>().pAny  = nullptr;
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = ERR_MEM_INVALID_BUFFER;
+                }
+            } else {
+                Interpreter::gpr<ABI::PTR_REG_0>().pAny  = nullptr;
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+            }
             break;
+        }
 
         case FREE_ELEMENT:
             break;

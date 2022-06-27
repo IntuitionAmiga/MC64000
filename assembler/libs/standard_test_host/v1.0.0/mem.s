@@ -15,20 +15,23 @@
 ; Defines used by the Mem ABI
 
     ; Mem specific errors
-    @equ ERR_NO_MEM  100
-    @equ ERR_MEM     101
+    @equ ERR_NO_MEM             100
+    @equ ERR_MEM                101
+    @equ ERR_MEM_INVALID_BUFFER 102
 
     @def mem_vector         #1
 
     @equ mem_init           #0, mem_vector
     @equ mem_done           #1, mem_vector
-    @equ mem_alloc          #2, mem_vector
-    @equ mem_free           #3, mem_vector
 
     @equ mem_alloc_buffer   #4, mem_vector
     @equ mem_free_buffer    #5, mem_vector
     @equ mem_alloc_element  #6, mem_vector
     @equ mem_free_element   #7, mem_vector
+
+    ; todo - deal with the order of definition problem for def/equ
+    @equ mem_alloc          #2, mem_vector
+    @equ mem_free           #3, mem_vector
 
     @equ mem_copy           #8, mem_vector
     @equ mem_swap_word      #9, mem_vector

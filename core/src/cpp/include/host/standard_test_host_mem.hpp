@@ -42,7 +42,7 @@ enum Call {
     FREE,
 
     /**
-     * func mem_alloc_buffer(r0/d0 uint16:uint16 buffer_length:element_size) => r8/a0 Buffer* buffer, r0/d0 uint64 error
+     * func mem_alloc_buffer(r0/d0 uint16:uint16 buffer_count:element_size) => r8/a0 Buffer* buffer, r0/d0 uint64 error
      *
      * Creates a fixed count buffer of elements of a set size that can then be independently allocated and released
      * from the buffer. A single buffer can hold a maximum of 65536 elements of up to 65528 bytes in size, allocated
@@ -50,10 +50,10 @@ enum Call {
      *
      * The requested element size is rounded to the nearest 8 bytes. There is an overhead of 8 bytes per element.
      * The smallest element size is 24 bytes.
-     * The buffer length is rounded to 64.
-     * The smallest buffer length is 64.
+     * The buffer count is rounded to 64.
+     * A requested buffer count of 0 is interpreted as 65536
      *
-     * The desired element size and buffer length are packed into the lowest 16 bit pair of r0.
+     * The desired element size and buffer count are packed into the lowest 16 bit pair of r0.
      *
      * The primary motivation for this is for the management of frequently recycled structure instances.
      *
@@ -162,7 +162,9 @@ enum Call {
  */
 enum Result {
     ERR_NO_MEM = 100,
-    ERR_MEM
+    ERR_MEM,
+    ERR_MEM_INVALID_BUFFER,
+    ERR_MEM_BUFFER_FULL,
 };
 
 Interpreter::Status hostVector(uint8 uFunctionID);
