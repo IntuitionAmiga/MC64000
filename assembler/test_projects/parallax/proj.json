@@ -1,0 +1,26 @@
+{
+    "target": {
+        "name": "Parallax",
+        "version": "1.0.0",
+        "description": "Parallax Demo",
+        "output": "bin/parallax.64x",
+        "host": {
+            "name": "Standard Test Host",
+            "version": "1.0.0"
+        }
+    },
+    "options": {
+        "log_code_folds": false,
+        "log_label_add": false,
+        "log_label_ref": false,
+        "log_label_resolve": false
+    },
+    "sources": [
+        "lib:standard_test_host/v1.0.0/host.s",
+        "lib:standard_test_host/v1.0.0/mem.s",
+        "lib:standard_test_host/v1.0.0/display.s",
+        "src/main.s"
+    ],
+    "defines": {
+    }
+}
