@@ -165,6 +165,7 @@ enum Result {
     ERR_MEM,
     ERR_MEM_INVALID_BUFFER,
     ERR_MEM_BUFFER_FULL,
+    ERR_MEM_INVALID_ELEMENT
 };
 
 Interpreter::Status hostVector(uint8 uFunctionID);

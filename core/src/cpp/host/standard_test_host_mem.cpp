@@ -68,7 +68,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case FREE_BUFFER: {
             ElementBuffer* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().address<ElementBuffer>();
             if (pBuffer) {
-                if ( (pBuffer = ElementBuffer::validate(pBuffer)) ) {
+                if ( (ElementBuffer::SUCCESS == ElementBuffer::validate(pBuffer)) ) {
                     ElementBuffer::freeBuffer(pBuffer);
                     Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
                 } else {
@@ -82,7 +82,7 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
         case ALLOC_ELEMENT: {
             ElementBuffer* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().address<ElementBuffer>();
             if (pBuffer) {
-                if ( (pBuffer = ElementBuffer::validate(pBuffer)) ) {
+                if ( (ElementBuffer::SUCCESS == ElementBuffer::validate(pBuffer)) ) {
                     void *pElement = pBuffer->alloc();
                     Interpreter::gpr<ABI::PTR_REG_0>().pAny  = pElement;
                     Interpreter::gpr<ABI::INT_REG_0>().uQuad = pElement ?
@@ -99,8 +99,24 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
             break;
         }
 
-        case FREE_ELEMENT:
+        case FREE_ELEMENT: {
+            ElementBuffer* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().address<ElementBuffer>();
+            void *pElement = Interpreter::gpr<ABI::PTR_REG_1>().pAny;
+            if (pBuffer && pElement) {
+                if ( (ElementBuffer::SUCCESS == ElementBuffer::validate(pBuffer)) ) {
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = (ElementBuffer::SUCCESS == pBuffer->free(pElement)) ?
+                        (uint64)ABI::ERR_NONE :
+                        (uint64)ERR_MEM_INVALID_ELEMENT;
+                } else {
+                    Interpreter::gpr<ABI::PTR_REG_0>().pAny  = nullptr;
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = ERR_MEM_INVALID_BUFFER;
+                }
+            } else {
+                Interpreter::gpr<ABI::PTR_REG_0>().pAny  = nullptr;
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+            }
             break;
+        }
 
         case COPY:
             if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {

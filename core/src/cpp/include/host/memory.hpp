@@ -22,19 +22,30 @@ namespace MC64K::Host::Memory {
 
 class ElementBuffer {
     private:
+        enum {
+            ELEMENT_ALIGN      = sizeof(uint64),
+            ELEMENT_ALIGN_MASK = ELEMENT_ALIGN - 1,
+            BITMASK_SIZE       = sizeof(uint64) * 8,
+            BITMASK_ALIGN_MASK = BITMASK_SIZE - 1,
+            BITMASK_SIZE_EXP   = 6
+        };
+
         /** Identifier */
         uint64 uMagic;
+
+        uint8* pBase;
+        uint8* pTop;
 
         /** The requested number of elements */
         uint16 uElementCount;
 
-        /** The right-sized number of elements, nearest multiple of 64 */
+        /** The right-sized number of elements, nearest multiple of BITMASK_SIZE */
         uint16 uAlignedCount;
 
         /** The requested per element size */
         uint16 uElementSize;
 
-        /** The right-sized per element size, nearest multiple of 8 */
+        /** The right-sized per element size, nearest multiple of ELEMENT_ALIGN */
         uint16 uAlignedSize;
 
         /** The allocation bitmap */
@@ -42,22 +53,25 @@ class ElementBuffer {
 
         static uint64 getMagic(ElementBuffer const* pBuffer = nullptr);
 
-        uint8* getElementBase() const;
-
     public:
+        enum Result {
+            SUCCESS = 0,
+            INVALID_BUFFER,
+            INVALID_ELEMENT
+        };
+
         /** Allocate a new buffer */
         static ElementBuffer* allocateBuffer(uint16 uElementCount, uint16 uElementSize);
-        static bool freeBuffer(ElementBuffer* pBuffer);
+        static Result freeBuffer(ElementBuffer* pBuffer);
 
-        /** Check that cast raw memory back from the VM really references a legal instance */
-        static ElementBuffer* validate(ElementBuffer* pBuffer);
+        /** Check that a raw memory back from the VM really references a legal instance */
+        static Result validate(void const* pRawBuffer);
 
         /** Allocate the next free element in the buffer */
         void* alloc();
 
-
         /** Free the element back to the buffer */
-        uint64 free(void* pElement);
+        Result free(void* pElement);
 };
 
 

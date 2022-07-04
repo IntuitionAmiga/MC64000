@@ -22,7 +22,6 @@ typedef uint8  u8x16 __attribute__ ((vector_size (16)));
 typedef uint16 u16x8 __attribute__ ((vector_size (16)));
 typedef uint32 u32x4 __attribute__ ((vector_size (16)));
 
-
 /**
  * Returns a one-time initialised magic value
  */
@@ -35,14 +34,25 @@ uint64 ElementBuffer::getMagic(ElementBuffer const* pBuffer) {
     return uElementBufferMagic ^ (uint64)pBuffer;
 }
 
-ElementBuffer* ElementBuffer::validate(ElementBuffer* pBuffer) {
-    if (pBuffer && getMagic(pBuffer) == pBuffer->uMagic) {
-        return pBuffer;
+/**
+ * Valdates that a raw address seems to be a valid ElementBuffer
+ */
+ElementBuffer::Result ElementBuffer::validate(void const* pRawBuffer) {
+    if (
+        !pRawBuffer ||
+        ((uint64)pRawBuffer) & (alignof(ElementBuffer) - 1)
+    ) {
+        return INVALID_BUFFER;
     }
-    return nullptr;
+    // Check the magic
+    ElementBuffer const* pBuffer = (ElementBuffer const*)pRawBuffer;
+    if (getMagic(pBuffer) != pBuffer->uMagic) {
+        return INVALID_BUFFER;
+    }
+    return SUCCESS;
 }
 
-/***
+/**
  * Allocate an element buffer. This is a buffer of up to 65536 elements of up to 65536 bytes each.
  * The elements are aligned to a 64 bit boundary.
  */
@@ -53,14 +63,14 @@ ElementBuffer* ElementBuffer::allocateBuffer(uint16 uElementCount, uint16 uEleme
 
     // Round up the count to the nearest 64 as we use a bitmap based allocator that operates on
     // 64-bit words.
-    uAllocCount             = (uAllocCount + 63) & ~63;
-    size_t uMapCount        = uAllocCount >> 6;
+    uAllocCount             = (uAllocCount + BITMASK_ALIGN_MASK) & ~BITMASK_ALIGN_MASK;
+    size_t uMapCount        = uAllocCount >> BITMASK_SIZE_EXP;
 
     // Treat a zero element size as the maximum
     size_t uAllocSize       = uElementSize ? uElementSize : 65536;
 
     // Round up the size to the nearest 8-bytes.
-    uAllocSize              = (uAllocSize + 7) & ~7;
+    uAllocSize              = (uAllocSize + ELEMENT_ALIGN_MASK) & ~ELEMENT_ALIGN_MASK;
 
     // Determine the header size. This is the element buffer, with the map entry extended to have
     // enough bits to cover the rounded element count.
@@ -78,34 +88,49 @@ ElementBuffer* ElementBuffer::allocateBuffer(uint16 uElementCount, uint16 uEleme
         // Fill the map with ones.
         std::memset(&pBuffer->aMap, -1, uMapCount * sizeof(uint64));
 
+        // Set the element buffer base and top
+        pBuffer->pBase = (uint8*)(&pBuffer->aMap[uAllocCount >> BITMASK_SIZE_EXP]);
+        pBuffer->pTop  = pBuffer->pBase + uAllocCount * uAllocSize;
+
         std::fprintf(
             stderr,
             "Element Buffer Allocated at %p\n"
             "\tMagic: %016lX\n"
             "\tCount: %u [%u]\n"
             "\tSize:  %u [%u]\n"
-            "\tMap:   %u\n",
+            "\tMap:   %u\n"
+            "\tBase:  %p\n"
+            "\tTop:   %p\n",
             pBuffer,
             pBuffer->uMagic,
             (unsigned)pBuffer->uElementCount,
             (unsigned)uAllocCount,
             (unsigned)pBuffer->uElementSize,
             (unsigned)uAllocSize,
-            (unsigned)uMapCount
+            (unsigned)uMapCount,
+            pBuffer->pBase,
+            pBuffer->pTop
         );
     }
     return pBuffer;
 }
 
 /**
- * Free the entire element buffer. Null safe.
+ * Free the entire element buffer.
  */
-bool ElementBuffer::freeBuffer(ElementBuffer* pBuffer) {
+ElementBuffer::Result ElementBuffer::freeBuffer(ElementBuffer* pBuffer) {
     // Make sure we are pointing at an actual buffer.
-    if ( (pBuffer = validate(pBuffer)) ) {
+    Result eResult = validate(pBuffer);
+    if (SUCCESS != eResult) {
         std::fprintf(
             stderr,
-            "Freeing Element Buffer Allocated at %p\n"
+            "Error freeing ElementBuffer: %d\n",
+            eResult
+        );
+    } else {
+        std::fprintf(
+            stderr,
+            "Freeing Element Buffer at %p\n"
             "\tMagic: %016lX\n"
             "\tCount: %u [%u]\n"
             "\tSize:  %u [%u]\n",
@@ -116,15 +141,10 @@ bool ElementBuffer::freeBuffer(ElementBuffer* pBuffer) {
             (unsigned)pBuffer->uElementSize,
             (unsigned)pBuffer->uAlignedSize
         );
-        pBuffer->uMagic = 0;
+        pBuffer->uMagic = 0; // should help protect against double-free
         std::free(pBuffer);
-        return true;
     }
-    return false;
-}
-
-uint8* ElementBuffer::getElementBase() const {
-    return (uint8*)(&aMap[uAlignedCount >> 6]);
+    return eResult;
 }
 
 /**
@@ -132,8 +152,8 @@ uint8* ElementBuffer::getElementBase() const {
  */
 void* ElementBuffer::alloc() {
     if (getMagic(this) == uMagic) {
-        unsigned uMapSize = uAlignedCount >> 6;
-
+        unsigned uMapSize = uAlignedCount >> BITMASK_SIZE_EXP;
+        unsigned uSize    = uAlignedSize ? uAlignedSize : 65536;
         // TODO - go for a 2 level bitmap, which will significantly reduce the search space.
         for (unsigned uIndex = 0; uIndex < uMapSize; ++uIndex) {
             if (uint64 uBitmap = aMap[uIndex]) {
@@ -141,17 +161,9 @@ void* ElementBuffer::alloc() {
                 // Clear the bit to mark as allocated
                 aMap[uIndex] ^= 1UL << iFree;
 
-                uint8* pElement  = getElementBase();
-                unsigned uOffset = (uIndex << 6 | iFree);
-                pElement        += uOffset * uAlignedSize;
-                std::fprintf(
-                    stderr,
-                    "Found free entry at index %u:%d [%u] => %p\n",
-                    uIndex,
-                    iFree,
-                    uOffset,
-                    pElement
-                );
+                uint8* pElement  = pBase;
+                unsigned uOffset = (uIndex << BITMASK_SIZE_EXP | iFree);
+                pElement        += uOffset * uSize;
                 return pElement;
             }
         }
@@ -159,16 +171,70 @@ void* ElementBuffer::alloc() {
     return nullptr;
 }
 
-uint64 ElementBuffer::free(void* pElement) {
-    if (getMagic(this) == uMagic) {
-
+/**
+ * Attempt to free an element. May not belong to a buffer.
+ */
+ElementBuffer::Result ElementBuffer::free(void* pElement) {
+    if (
+        !pElement ||
+        ((uint64)pElement) & ELEMENT_ALIGN_MASK
+    ) {
+        std::fprintf(
+            stderr,
+            "Invalid element address %p (null/min align)\n",
+            pElement
+        );
+        return INVALID_ELEMENT;
     }
-    return 0;
+
+    uint8* pElementAddress = (uint8*)pElement;
+
+    if (pElementAddress < pBase || pElementAddress >= pTop) {
+        std::fprintf(
+            stderr,
+            "Invalid element address %p\n (range [%p - %p])\n",
+            pElementAddress,
+            pBase,
+            pTop
+        );
+        return INVALID_ELEMENT;
+    }
+
+    // Identify the position in the bitmap, selecting the index and masking out the bit of interest
+    uint64 uSize  = uAlignedSize ? uAlignedSize : 65536;
+    uint64 uIndex = ((uint64)pElementAddress - (uint64)pBase)/uSize;
+    uint64 uFree  = (1ULL << (uSize & BITMASK_ALIGN_MASK));
+    uIndex        >>= BITMASK_SIZE_EXP;
+
+    // Set the "free" bit
+    aMap[uIndex] |= uFree;
+
+    return SUCCESS;
 }
 
 
+template<typename T>
+inline T* alignBlock(void* pAddress, uint64& uSize) {
+    uint64 uAddress = (uint64)pAddress;
+    if (uAddress & (sizeof(T) - 1)) {
+        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
+        --uSize;
+    }
+    return (T*)uAddress;
+}
+
+template<typename T>
+inline T const* alignBlock(void const* pAddress, uint64& uSize) {
+    uint64 uAddress = (uint64)pAddress;
+    if (uAddress & (sizeof(T) - 1)) {
+        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
+        --uSize;
+    }
+    return (T const*)uAddress;
+}
+
 /**
- * Fill a word aligned block with words. If the base adddess is not aligned, filling starts from the next aligned
+ * Fill a word aligned block with words. If the base addess is not aligned, filling starts from the next aligned
  * address with one fewer element.
  *
  * @todo - explicit vectorisation of larger blocks.
@@ -178,12 +244,7 @@ uint64 ElementBuffer::free(void* pElement) {
  * @param uint64 uSize
  */
 void fillWord(void* pBuffer, uint16 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 1) {
-        --uSize;
-        ++uRawAddress;
-    }
-    uint16 *p = (uint16*)uRawAddress;
+    uint16* p = (uint16*)__builtin_assume_aligned(alignBlock<uint16>(pBuffer, uSize), sizeof(uint16));
     while (uSize--) {
         *p++ = uValue;
     }
@@ -200,12 +261,7 @@ void fillWord(void* pBuffer, uint16 uValue, uint64 uSize) {
  * @param uint64 uSize
  */
 void fillLong(void* pBuffer, uint32 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 3) {
-        --uSize;
-        uRawAddress = (uRawAddress + 3) & ~3ULL;
-    }
-    uint32 *p = (uint32*)uRawAddress;
+    uint32* p = (uint32*)__builtin_assume_aligned(alignBlock<uint32>(pBuffer, uSize), sizeof(uint32));
     while (uSize--) {
         *p++ = uValue;
     }
@@ -222,12 +278,7 @@ void fillLong(void* pBuffer, uint32 uValue, uint64 uSize) {
  * @param uint64 uSize
  */
 void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 7) {
-        --uSize;
-        uRawAddress = (uRawAddress + 7) & ~7ULL;
-    }
-    uint64 *p = (uint64*)uRawAddress;
+    uint64* p = (uint64*)__builtin_assume_aligned(alignBlock<uint64>(pBuffer, uSize), sizeof(uint64));
     while (uSize--) {
         *p++ = uValue;
     }
@@ -245,12 +296,7 @@ void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
  * @return uint16 const*  pFound
  */
 uint16 const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 1) {
-        --uSize;
-        ++uRawAddress;
-    }
-    uint16 const *p = (uint16 const*)uRawAddress;
+    uint16 const* p = (uint16 const*)__builtin_assume_aligned(alignBlock<uint16>(pBuffer, uSize), sizeof(uint16));
     while (uSize--) {
         if (uValue == *p) {
             return p;
@@ -272,12 +318,7 @@ uint16 const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize) {
  * @return uint32 const*  pFound
  */
 uint32 const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 3) {
-        --uSize;
-        uRawAddress = (uRawAddress + 3) & ~3ULL;
-    }
-    uint32 const *p = (uint32 const*)uRawAddress;
+    uint32 const* p = (uint32 const*)__builtin_assume_aligned(alignBlock<uint32>(pBuffer, uSize), sizeof(uint32));
     while (uSize--) {
         if (uValue == *p) {
             return p;
@@ -299,12 +340,7 @@ uint32 const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize) {
  * @return uint64 const* pFound
  */
 uint64 const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 7) {
-        --uSize;
-        uRawAddress = (uRawAddress + 7) & ~7ULL;
-    }
-    uint64 const *p = (uint64 const*)uRawAddress;
+    uint64 const* p = (uint64 const*)__builtin_assume_aligned(alignBlock<uint64>(pBuffer, uSize), sizeof(uint64));
     while (uSize--) {
         if (uValue == *p) {
             return p;
@@ -315,15 +351,27 @@ uint64 const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize) {
 }
 
 void byteswapWord(void* pDestination, void const* pSource, uint64 uCount) {
-
+    uint16*       pDstWord = (uint16*)pDestination;
+    uint16 const* pSrcWord = (uint16 const*)pSource;
+    for (uint64 u=0; u < uCount; ++u) {
+        pDstWord[u] = __builtin_bswap16(pSrcWord[u]);
+    }
 }
 
 void byteswapLong(void* pDestination, void const* pSource, uint64 uCount) {
-
+    uint32*       pDstWord = (uint32*)pDestination;
+    uint32 const* pSrcWord = (uint32 const*)pSource;
+    for (uint64 u=0; u < uCount; ++u) {
+        pDstWord[u] = __builtin_bswap32(pSrcWord[u]);
+    }
 }
 
 void byteswapQuad(void* pDestination, void const* pSource, uint64 uCount) {
-
+    uint64*       pDstWord = (uint64*)pDestination;
+    uint64 const* pSrcWord = (uint64 const*)pSource;
+    for (uint64 u=0; u < uCount; ++u) {
+        pDstWord[u] = __builtin_bswap64(pSrcWord[u]);
+    }
 }
 
 } // namespace

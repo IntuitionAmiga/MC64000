@@ -27,6 +27,9 @@ main:
 .bad:
     move.q  a2, a0
     hcf     mem_alloc_element
+    move.q  a0, a1
+    move.q  a2, a0
+    hcf     mem_free_element
     dbnz    d2, .bad
 
     move.q a2, a0
