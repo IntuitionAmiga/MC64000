@@ -31,10 +31,10 @@ class ElementBuffer {
         };
 
         /** Identifier */
-        uint64 uMagic;
-
-        uint8* pBase;
-        uint8* pTop;
+        uint64  uMagic;
+        uint8*  pBase;
+        uint8*  pTop;
+        float64 fInvSize;
 
         /** The requested number of elements */
         uint16 uElementCount;
