@@ -23,10 +23,13 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
  * Maps mnemonic names to their corresponding bytecode values
  */
 interface IMatches {
+
+    // Direct opcode matches (one byte)
     const MATCHES = [
+        'halt'    => IControl::STOP,
 
         // Flow control group
-        'hcf'     => IControl::HCF,
+        'hcf'     => IControl::HOST,
         'bra.b'   => IControl::BRA_B,
         'bra'     => IControl::BRA,
         'bsr.b'   => IControl::BSR_B,
@@ -34,100 +37,6 @@ interface IMatches {
         'jmp'     => IControl::JMP,
         'jsr'     => IControl::JSR,
         'rts'     => IControl::RTS,
-
-        // Single operand conditional branches
-
-        // Branch if <ea> == 0
-        'biz.b'   => IControl::BIZ_B,
-        'biz.w'   => IControl::BIZ_W,
-        'biz.l'   => IControl::BIZ_L,
-        'biz.q'   => IControl::BIZ_Q,
-        'fbiz.s'  => IControl::FBIZ_S,
-        'fbiz.d'  => IControl::FBIZ_D,
-
-        // Branch if <ea> != 0
-        'bnz.b'   => IControl::BNZ_B,
-        'bnz.w'   => IControl::BNZ_W,
-        'bnz.l'   => IControl::BNZ_L,
-        'bnz.q'   => IControl::BNZ_Q,
-        'fbnz.s'  => IControl::FBNZ_S,
-        'fbnz.d'  => IControl::FBNZ_D,
-
-        // Branch if <ea> < 0
-        'bmi.b'   => IControl::BMI_B,
-        'bmi.w'   => IControl::BMI_W,
-        'bmi.l'   => IControl::BMI_L,
-        'bmi.q'   => IControl::BMI_Q,
-        'fbmi.s'  => IControl::FBMI_S,
-        'fbmi.d'  => IControl::FBMI_D,
-
-        // Branch if <ea> > 0
-        'bpl.b'   => IControl::BPL_B,
-        'bpl.w'   => IControl::BPL_W,
-        'bpl.l'   => IControl::BPL_L,
-        'bpl.q'   => IControl::BPL_Q,
-        'fbpl.s'  => IControl::FBPL_S,
-        'fbpl.d'  => IControl::FBPL_D,
-
-        // Branch if <ea(s)> < <ea(d)>
-        'blt.b'   => IControl::BLT_B,
-        'blt.w'   => IControl::BLT_W,
-        'blt.l'   => IControl::BLT_L,
-        'blt.q'   => IControl::BLT_Q,
-        'fblt.s'  => IControl::FBLT_S,
-        'fblt.d'  => IControl::FBLT_D,
-
-        // Branch if <ea(s)> <= <ea(d)>
-        'ble.b'   => IControl::BLE_B,
-        'ble.w'   => IControl::BLE_W,
-        'ble.l'   => IControl::BLE_L,
-        'ble.q'   => IControl::BLE_Q,
-        'fble.s'  => IControl::FBLE_S,
-        'fble.d'  => IControl::FBLE_D,
-
-        // Branch if <ea(s)> == <ea(d)>
-        'beq.b'   => IControl::BEQ_B,
-        'beq.w'   => IControl::BEQ_W,
-        'beq.l'   => IControl::BEQ_L,
-        'beq.q'   => IControl::BEQ_Q,
-        'fbeq.s'  => IControl::FBEQ_S,
-        'fbeq.d'  => IControl::FBEQ_D,
-
-        // Branch if <ea(s)> >= <ea(d)>
-        'bge.b'   => IControl::BGE_B,
-        'bge.w'   => IControl::BGE_W,
-        'bge.l'   => IControl::BGE_L,
-        'bge.q'   => IControl::BGE_Q,
-        'fbge.s'  => IControl::FBGE_S,
-        'fbge.d'  => IControl::FBGE_D,
-
-        // Branch if <ea(s)> > <ea(d)>
-        'bgt.b'   => IControl::BGT_B,
-        'bgt.w'   => IControl::BGT_W,
-        'bgt.l'   => IControl::BGT_L,
-        'bgt.q'   => IControl::BGT_Q,
-        'fbgt.s'  => IControl::FBGT_S,
-        'fbgt.d'  => IControl::FBGT_D,
-
-        // Branch if <ea(s)> != <ea(d)>
-        'bne.b'   => IControl::BNE_B,
-        'bne.w'   => IControl::BNE_W,
-        'bne.l'   => IControl::BNE_L,
-        'bne.q'   => IControl::BNE_Q,
-        'fbne.s'  => IControl::FBNE_S,
-        'fbne.d'  => IControl::FBNE_D,
-
-        // Branch if bit set
-        'bbs.b'   => IControl::BBS_B,
-        'bbs.w'   => IControl::BBS_W,
-        'bbs.l'   => IControl::BBS_L,
-        'bbs.q'   => IControl::BBS_Q,
-
-        // Branch if bit clear
-        'bbc.b'   => IControl::BBC_B,
-        'bbc.w'   => IControl::BBC_W,
-        'bbc.l'   => IControl::BBC_L,
-        'bbc.q'   => IControl::BBC_Q,
 
         // Go on, why not?
         'dbnz'    => IControl::DBNZ,
@@ -159,11 +68,11 @@ interface IMatches {
         'clr.w'    => IDataMove::CLR_W,
         'clr.l'    => IDataMove::CLR_L,
         'clr.q'    => IDataMove::CLR_Q,
-        'exg'      => IDataMove::EXG,
-        'fexg'     => IDataMove::FEXG,
-        'swap'     => IDataMove::SWAP,
-        'swap.l'   => IDataMove::SWAP_L,
-        'swap.q'   => IDataMove::SWAP_Q,
+        'exg'      => IDataMove::R2R_EXG,
+        'fexg'     => IDataMove::R2R_FEXG,
+        'swap'     => IDataMove::R2R_SWAP,
+        'swap.l'   => IDataMove::R2R_SWAP_L,
+        'swap.q'   => IDataMove::R2R_SWAP_Q,
         'link'     => IDataMove::LINK,
         'unlk'     => IDataMove::UNLK,
         'lea'      => IDataMove::LEA,
@@ -172,7 +81,7 @@ interface IMatches {
         'finfo.s'  => IDataMove::FINFO_S,
         'finfo.d'  => IDataMove::FINFO_D,
 
-// Logical
+        // Logical
         'and.b'    => ILogical::AND_B,
         'and.w'    => ILogical::AND_W,
         'and.l'    => ILogical::AND_L,
@@ -219,7 +128,7 @@ interface IMatches {
         'bfffo'    => ILogical::BFFFO,
         'bfcnt'    => ILogical::BFCNT,
 
-// Arithmetic
+        // Arithmetic
         'extb.w'    => IArithmetic::EXTB_W,
         'extb.l'    => IArithmetic::EXTB_L,
         'extb.q'    => IArithmetic::EXTB_Q,
@@ -314,5 +223,122 @@ interface IMatches {
         'reserved10',
         'reserved11',
 */
+    ];
+
+    // Subopcode matches (2 bytes)
+    const MATCHES_SUBOPCODE = [
+
+        // Branch if <ea> == 0
+        'biz.b'   => [IControl::BMC, ICondition::IEQ_B],
+        'biz.w'   => [IControl::BMC, ICondition::IEQ_W],
+        'biz.l'   => [IControl::BMC, ICondition::IEQ_L],
+        'biz.q'   => [IControl::BMC, ICondition::IEQ_Q],
+        'fbiz.s'  => [IControl::BMC, ICondition::FEQ_S],
+        'fbiz.d'  => [IControl::BMC, ICondition::FEQ_D],
+
+        // Branch if <ea> != 0
+        'bnz.b'   => [IControl::BMC, ICondition::INE_B],
+        'bnz.w'   => [IControl::BMC, ICondition::INE_W],
+        'bnz.l'   => [IControl::BMC, ICondition::INE_L],
+        'bnz.q'   => [IControl::BMC, ICondition::INE_Q],
+        'fbnz.s'  => [IControl::BMC, ICondition::FNE_S],
+        'fbnz.d'  => [IControl::BMC, ICondition::FNE_D],
+
+        // Branch if <ea> < 0
+        'bmi.b'   => [IControl::BMC, ICondition::ILT_B],
+        'bmi.w'   => [IControl::BMC, ICondition::ILT_W],
+        'bmi.l'   => [IControl::BMC, ICondition::ILT_L],
+        'bmi.q'   => [IControl::BMC, ICondition::ILT_Q],
+        'fbmi.s'  => [IControl::BMC, ICondition::FLT_S],
+        'fbmi.d'  => [IControl::BMC, ICondition::FLT_D],
+
+        // Branch if <ea> > 0
+        'bpl.b'   => [IControl::BMC, ICondition::IGT_B],
+        'bpl.w'   => [IControl::BMC, ICondition::IGT_W],
+        'bpl.l'   => [IControl::BMC, ICondition::IGT_L],
+        'bpl.q'   => [IControl::BMC, ICondition::IGT_Q],
+        'fbpl.s'  => [IControl::BMC, ICondition::FGT_S],
+        'fbpl.d'  => [IControl::BMC, ICondition::FGT_D],
+
+        // Branch if <ea(s)> < <ea(d)>
+        'blo.b'   => [IControl::BDC, ICondition::ULT_B], // unsigned: Lower
+        'blo.w'   => [IControl::BDC, ICondition::ULT_W],
+        'blo.l'   => [IControl::BDC, ICondition::ULT_L],
+        'blo.q'   => [IControl::BDC, ICondition::ULT_Q],
+
+        'blt.b'   => [IControl::BDC, ICondition::ILT_B], // signed: Less Than
+        'blt.w'   => [IControl::BDC, ICondition::ILT_W],
+        'blt.l'   => [IControl::BDC, ICondition::ILT_L],
+        'blt.q'   => [IControl::BDC, ICondition::ILT_Q],
+        'fblt.s'  => [IControl::BDC, ICondition::FLT_S],
+        'fblt.d'  => [IControl::BDC, ICondition::FLT_D],
+
+        // Branch if <ea(s)> <= <ea(d)>
+        'bls.b'   => [IControl::BDC, ICondition::ULE_B], // unsigned: Lower or Same
+        'bls.w'   => [IControl::BDC, ICondition::ULE_W],
+        'bls.l'   => [IControl::BDC, ICondition::ULE_L],
+        'bls.q'   => [IControl::BDC, ICondition::ULE_Q],
+
+        'ble.b'   => [IControl::BDC, ICondition::ILE_B], // signed: Less or Equal
+        'ble.w'   => [IControl::BDC, ICondition::ILE_W],
+        'ble.l'   => [IControl::BDC, ICondition::ILE_L],
+        'ble.q'   => [IControl::BDC, ICondition::ILE_Q],
+        'fble.s'  => [IControl::BDC, ICondition::FLE_S],
+        'fble.d'  => [IControl::BDC, ICondition::FLE_D],
+
+        // Branch if <ea(s)> == <ea(d)>
+        'beq.b'   => [IControl::BDC, ICondition::IEQ_B],
+        'beq.w'   => [IControl::BDC, ICondition::IEQ_W],
+        'beq.l'   => [IControl::BDC, ICondition::IEQ_L],
+        'beq.q'   => [IControl::BDC, ICondition::IEQ_Q],
+        'fbeq.s'  => [IControl::BDC, ICondition::FEQ_S],
+        'fbeq.d'  => [IControl::BDC, ICondition::FEQ_D],
+
+        // Branch if <ea(s)> >= <ea(d)>
+        'bhs.b'   => [IControl::BDC, ICondition::UGE_B], // unsigned: Higher or Same
+        'bhs.w'   => [IControl::BDC, ICondition::UGE_W],
+        'bhs.l'   => [IControl::BDC, ICondition::UGE_L],
+        'bhs.q'   => [IControl::BDC, ICondition::UGE_Q],
+
+        'bge.b'   => [IControl::BDC, ICondition::IGE_B], // signed: Greater or Equal
+        'bge.w'   => [IControl::BDC, ICondition::IGE_W],
+        'bge.l'   => [IControl::BDC, ICondition::IGE_L],
+        'bge.q'   => [IControl::BDC, ICondition::IGE_Q],
+        'fbge.s'  => [IControl::BDC, ICondition::FGE_S],
+        'fbge.d'  => [IControl::BDC, ICondition::FGE_D],
+
+        // Branch if <ea(s)> > <ea(d)>
+        'bhi.b'   => [IControl::BDC, ICondition::UGT_B], // unsigned: Higher
+        'bhi.w'   => [IControl::BDC, ICondition::UGT_W],
+        'bhi.l'   => [IControl::BDC, ICondition::UGT_L],
+        'bhi.q'   => [IControl::BDC, ICondition::UGT_Q],
+
+        'bgt.b'   => [IControl::BDC, ICondition::IGT_B], // signed: Greater Than
+        'bgt.w'   => [IControl::BDC, ICondition::IGT_W],
+        'bgt.l'   => [IControl::BDC, ICondition::IGT_L],
+        'bgt.q'   => [IControl::BDC, ICondition::IGT_Q],
+        'fbgt.s'  => [IControl::BDC, ICondition::FGT_S],
+        'fbgt.d'  => [IControl::BDC, ICondition::FGT_D],
+
+        // Branch if <ea(s)> != <ea(d)>
+        'bne.b'   => [IControl::BDC, ICondition::INE_B],
+        'bne.w'   => [IControl::BDC, ICondition::INE_W],
+        'bne.l'   => [IControl::BDC, ICondition::INE_L],
+        'bne.q'   => [IControl::BDC, ICondition::INE_Q],
+        'fbne.s'  => [IControl::BDC, ICondition::FNE_S],
+        'fbne.d'  => [IControl::BDC, ICondition::FNE_D],
+
+        // Branch if bit set
+        'bbs.b'   => [IControl::BDC, ICondition::BPS_B],
+        'bbs.w'   => [IControl::BDC, ICondition::BPS_B],
+        'bbs.l'   => [IControl::BDC, ICondition::BPS_B],
+        'bbs.q'   => [IControl::BDC, ICondition::BPS_B],
+
+        // Branch if bit clear
+        'bbc.b'   => [IControl::BDC, ICondition::BPC_B],
+        'bbc.w'   => [IControl::BDC, ICondition::BPC_B],
+        'bbc.l'   => [IControl::BDC, ICondition::BPC_B],
+        'bbc.q'   => [IControl::BDC, ICondition::BPC_B],
+
     ];
 }

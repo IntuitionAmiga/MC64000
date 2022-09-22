@@ -25,39 +25,40 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
  *
  */
 interface ICondition {
-	const
-		// Integer Equal
-		// Dyadic e.g. beq
-		// Monadic e.g. biz
-		IEQ_B = 0,
-		IEQ_W = 1,
-		IEQ_L = 2,
-		IEQ_Q = 3,
 
-		// Float Equal
-		// Dyadic e.g. fbeq
-		// Monadic e.g. fbiz
-		FEQ_S = 4,
-		FEQ_D = 5,
+    const
+        // Integer Equal
+        // Dyadic e.g. beq
+        // Monadic e.g. biz
+        IEQ_B = 0,
+        IEQ_W = 1,
+        IEQ_L = 2,
+        IEQ_Q = 3,
 
-		// Integer Not Equal
-		// Dyadic e.g. bne
-		// Monadic e.g. bnz
-		INE_B = 6,
-		INE_W = 7,
-		INE_L = 8,
-		INE_Q = 9,
+        // Float Equal
+        // Dyadic e.g. fbeq
+        // Monadic e.g. fbiz
+        FEQ_S = 4,
+        FEQ_D = 5,
 
-		// Float Not Equal
-		// Dyadic e.g. fbne
-		// Monadic e.g fbnz
-		FNE_S = 10,
-		FNE_D = 11,
+        // Integer Not Equal
+        // Dyadic e.g. bne
+        // Monadic e.g. bnz
+        INE_B = 6,
+        INE_W = 7,
+        INE_L = 8,
+        INE_Q = 9,
+
+        // Float Not Equal
+        // Dyadic e.g. fbne
+        // Monadic e.g fbnz
+        FNE_S = 10,
+        FNE_D = 11,
 
 
-		// Signed Integer Less Than
-		// Dyadic e.g. blt
-		// Monadic e.g bmi
+        // Signed Integer Less Than
+        // Dyadic e.g. blt
+        // Monadic e.g bmi
         ILT_B  = 12,
         ILT_W  = 13,
         ILT_L  = 14,
@@ -134,15 +135,15 @@ interface ICondition {
         FGT_D  = 51,
 
 		// Integer Bit position set
-        IBS_B  = 52,
-        IBS_W  = 53,
-        IBS_L  = 54,
-        IBS_Q  = 55,
+        BPS_B  = 52,
+        BPS_W  = 53,
+        BPS_L  = 54,
+        BPS_Q  = 55,
 
         // Integer Bit position clear
-        IBC_B  = 56,
-        IBC_W  = 57,
-        IBC_L  = 58,
-        IBC_Q  = 59
+        BPC_B  = 56,
+        BPC_W  = 57,
+        BPC_L  = 58,
+        BPC_Q  = 59
 	;
 }
