@@ -95,22 +95,22 @@ interface ICondition {
         FLE_S  = 30,
         FLE_D  = 31,
 
-		// Signed Integer Greater Or Equal
-		// Dyadic e.g. bge
+        // Signed Integer Greater Or Equal
+        // Dyadic e.g. bge
         IGE_B  = 32,
         IGE_W  = 33,
         IGE_L  = 34,
         IGE_Q  = 35,
 
-		// Unsigned Integer Greater Or Equal
-		// Dyadic e.g. bhs
+        // Unsigned Integer Greater Or Equal
+        // Dyadic e.g. bhs
         UGE_B  = 36,
         UGE_W  = 37,
         UGE_L  = 38,
         UGE_Q  = 39,
 
-		// Float Greater Or Equal
-		// Dyadic e.g. fbge
+        // Float Greater Or Equal
+        // Dyadic e.g. fbge
         FGE_S  = 40,
         FGE_D  = 41,
 
@@ -129,12 +129,12 @@ interface ICondition {
         UGT_L  = 48,
         UGT_Q  = 49,
 
-		// Float Greater Than
-		// Dyadic e.g. fbgt
+        // Float Greater Than
+        // Dyadic e.g. fbgt
         FGT_S  = 50,
         FGT_D  = 51,
 
-		// Integer Bit position set
+        // Integer Bit position set
         BPS_B  = 52,
         BPS_W  = 53,
         BPS_L  = 54,
