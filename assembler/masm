@@ -44,6 +44,6 @@ try {
         ->secondPass()
         ->writeBinary();
 } catch (Parser\SourceError $oError) {
-    Log::write($oError->getMessage() . "\n");
+    Log::write($oError->getMessage() . "\n" . $oError->getTraceAsString());
 }
 

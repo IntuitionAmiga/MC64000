@@ -26,9 +26,9 @@ interface IByteCodeGroups {
     const
         OFS_CONTROL    = 0,
         OFS_DATA_MOVE  = 12,
-        OFS_LOGICAL    = 12 + 44,
-        OFS_ARITHMETIC = 12 + 44 + 54,
-        OFS_OTHER      = 12 + 44 + 54 + 110,
+        OFS_LOGICAL    = 12 + 45,
+        OFS_ARITHMETIC = 12 + 45 + 54,
+        OFS_OTHER      = 12 + 45 + 54 + 110,
         OFS_MAX        = 255
     ;
 }

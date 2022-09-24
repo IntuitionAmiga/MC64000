@@ -29,10 +29,10 @@ use ABadCafe\MC64K\Defs\Mnemonic\ILogical;
 class PackedGPRPair extends PackedRegisterPair {
 
     const OPCODES = [
-        IDataMove::EXG,
-        IDataMove::SWAP,
-        IDataMove::SWAP_L,
-        IDataMove::SWAP_Q,
+        IDataMove::R2R_EXG,
+        IDataMove::R2R_SWAP,
+        IDataMove::R2R_SWAP_L,
+        IDataMove::R2R_SWAP_Q,
         ILogical::BFFFO,
         ILogical::BFCNT,
     ];

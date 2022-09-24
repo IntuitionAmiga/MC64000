@@ -49,6 +49,7 @@ interface IDataMove extends IByteCodeGroups {
         FMOVEB_S     = self::OFS_DATA_MOVE + 17,
         FMOVEB_D     = self::OFS_DATA_MOVE + 18,
         FMOVEW_S     = self::OFS_DATA_MOVE + 19,
+
         FMOVEW_D     = self::OFS_DATA_MOVE + 20,
         FMOVEL_S     = self::OFS_DATA_MOVE + 21,
         FMOVEL_D     = self::OFS_DATA_MOVE + 22,
@@ -59,6 +60,7 @@ interface IDataMove extends IByteCodeGroups {
         FMOVES_D     = self::OFS_DATA_MOVE + 27,
         FMOVED_L     = self::OFS_DATA_MOVE + 28,
         FMOVED_Q     = self::OFS_DATA_MOVE + 29,
+
         FMOVED_S     = self::OFS_DATA_MOVE + 30,
         FMOVE_S      = self::OFS_DATA_MOVE + 31,
         FMOVE_D      = self::OFS_DATA_MOVE + 32,
@@ -69,10 +71,12 @@ interface IDataMove extends IByteCodeGroups {
         CLR_L        = self::OFS_DATA_MOVE + 37,
         CLR_Q        = self::OFS_DATA_MOVE + 38,
         LINK         = self::OFS_DATA_MOVE + 39,
+
         UNLK         = self::OFS_DATA_MOVE + 40,
         LEA          = self::OFS_DATA_MOVE + 41,
         PEA          = self::OFS_DATA_MOVE + 42,
-        SCC          = self::OFS_DATA_MOVE + 43 // set conditional
+        SCM          = self::OFS_DATA_MOVE + 43, // set conditional (monadic compare)
+        SCD          = self::OFS_DATA_MOVE + 44  // set conditional (dyadic compare)
     ;
 
 }

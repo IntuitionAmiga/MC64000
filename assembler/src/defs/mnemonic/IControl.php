@@ -40,7 +40,7 @@ interface IControl extends IByteCodeGroups {
         // Branch on condition: dyadic. Compares <ea:src> to <ea:dst>
         BDC    = self::OFS_CONTROL + 10,
 
-        // Decrement and branch if not zero
+        // Decrement and branch if not zero (64-bit register counter only)
         DBNZ   = self::OFS_CONTROL + 11
     ;
 }

@@ -26,99 +26,6 @@ interface IOperandSizes {
     const MAP = [
 
         // Single operand conditional branches
-
-        // Branch if <ea> == 0
-        IControl::BIZ_B  => [1],
-        IControl::BIZ_W  => [2],
-        IControl::BIZ_L  => [4],
-        IControl::BIZ_Q  => [8],
-        IControl::FBIZ_S => [4],
-        IControl::FBIZ_D => [8],
-
-        // Branch if <ea> != 0
-        IControl::BNZ_B  => [1],
-        IControl::BNZ_W  => [2],
-        IControl::BNZ_L  => [4],
-        IControl::BNZ_Q  => [8],
-        IControl::FBNZ_S => [4],
-        IControl::FBNZ_D => [8],
-
-        // Branch if <ea> < 0
-        IControl::BMI_B  => [1],
-        IControl::BMI_W  => [2],
-        IControl::BMI_L  => [4],
-        IControl::BMI_Q  => [8],
-        IControl::FBMI_S => [4],
-        IControl::FBMI_D => [8],
-
-        // Branch if <ea> > 0
-        IControl::BPL_B  => [1],
-        IControl::BPL_W  => [2],
-        IControl::BPL_L  => [4],
-        IControl::BPL_Q  => [8],
-        IControl::FBPL_S => [4],
-        IControl::FBPL_D => [8],
-
-        // Branch if <ea(s)> < <ea(d)>
-        IControl::BLT_B  => [1, 1],
-        IControl::BLT_W  => [2, 2],
-        IControl::BLT_L  => [4, 4],
-        IControl::BLT_Q  => [8, 8],
-        IControl::FBLT_S => [4, 4],
-        IControl::FBLT_D => [8, 8],
-
-        // Branch if <ea(s)> <= <ea(d)>
-        IControl::BLE_B  => [1, 1],
-        IControl::BLE_W  => [2, 2],
-        IControl::BLE_L  => [4, 4],
-        IControl::BLE_Q  => [8, 8],
-        IControl::FBLE_S => [4, 4],
-        IControl::FBLE_D => [8, 8],
-
-        // Branch if <ea(s)> == <ea(d)>
-        IControl::BEQ_B  => [1, 1],
-        IControl::BEQ_W  => [2, 2],
-        IControl::BEQ_L  => [4, 4],
-        IControl::BEQ_Q  => [8, 8],
-        IControl::FBEQ_S => [4, 4],
-        IControl::FBEQ_D => [8, 8],
-
-        // Branch if <ea(s)> >= <ea(d)>
-        IControl::BGE_B  => [1, 1],
-        IControl::BGE_W  => [2, 2],
-        IControl::BGE_L  => [4, 4],
-        IControl::BGE_Q  => [8, 8],
-        IControl::FBGE_S => [4, 4],
-        IControl::FBGE_D => [8, 8],
-
-        // Branch if <ea(s)> > <ea(d)>
-        IControl::BGT_B  => [1, 1],
-        IControl::BGT_W  => [2, 2],
-        IControl::BGT_L  => [4, 4],
-        IControl::BGT_Q  => [8, 8],
-        IControl::FBGT_S => [4, 4],
-        IControl::FBGT_D => [8, 8],
-
-        // Branch if <ea(s)> != <ea(d)>
-        IControl::BNE_B  => [1, 1],
-        IControl::BNE_W  => [2, 2],
-        IControl::BNE_L  => [4, 4],
-        IControl::BNE_Q  => [8, 8],
-        IControl::FBNE_S => [4, 4],
-        IControl::FBNE_D => [8, 8],
-
-        // Branch if bit set
-        IControl::BBS_B => [1, 1],
-        IControl::BBS_W => [1, 2],
-        IControl::BBS_L => [1, 4],
-        IControl::BBS_Q => [1, 8],
-
-        // Branch if bit clear
-        IControl::BBC_B => [1, 1],
-        IControl::BBC_W => [1, 2],
-        IControl::BBC_L => [1, 4],
-        IControl::BBC_Q => [1, 8],
-
         // Go on, why not?
         IControl::DBNZ  => [4],
 
@@ -296,5 +203,101 @@ interface IOperandSizes {
         IArithmetic::FLOG2_D   => [8, 8],
         IArithmetic::FTWOTOX_S => [4, 4],
         IArithmetic::FTWOTOX_D => [8, 8],
+    ];
+
+    // Operand sizes implied by conditional subopcode
+    const CC_MAP = [
+        // Branch if <ea> == 0
+//         IControl::BIZ_B  => [1],
+//         IControl::BIZ_W  => [2],
+//         IControl::BIZ_L  => [4],
+//         IControl::BIZ_Q  => [8],
+//         IControl::FBIZ_S => [4],
+//         IControl::FBIZ_D => [8],
+//
+//         // Branch if <ea> != 0
+//         IControl::BNZ_B  => [1],
+//         IControl::BNZ_W  => [2],
+//         IControl::BNZ_L  => [4],
+//         IControl::BNZ_Q  => [8],
+//         IControl::FBNZ_S => [4],
+//         IControl::FBNZ_D => [8],
+//
+//         // Branch if <ea> < 0
+//         IControl::BMI_B  => [1],
+//         IControl::BMI_W  => [2],
+//         IControl::BMI_L  => [4],
+//         IControl::BMI_Q  => [8],
+//         IControl::FBMI_S => [4],
+//         IControl::FBMI_D => [8],
+//
+//         // Branch if <ea> > 0
+//         IControl::BPL_B  => [1],
+//         IControl::BPL_W  => [2],
+//         IControl::BPL_L  => [4],
+//         IControl::BPL_Q  => [8],
+//         IControl::FBPL_S => [4],
+//         IControl::FBPL_D => [8],
+//
+//         // Branch if <ea(s)> < <ea(d)>
+//         IControl::BLT_B  => [1, 1],
+//         IControl::BLT_W  => [2, 2],
+//         IControl::BLT_L  => [4, 4],
+//         IControl::BLT_Q  => [8, 8],
+//         IControl::FBLT_S => [4, 4],
+//         IControl::FBLT_D => [8, 8],
+//
+//         // Branch if <ea(s)> <= <ea(d)>
+//         IControl::BLE_B  => [1, 1],
+//         IControl::BLE_W  => [2, 2],
+//         IControl::BLE_L  => [4, 4],
+//         IControl::BLE_Q  => [8, 8],
+//         IControl::FBLE_S => [4, 4],
+//         IControl::FBLE_D => [8, 8],
+//
+//         // Branch if <ea(s)> == <ea(d)>
+//         IControl::BEQ_B  => [1, 1],
+//         IControl::BEQ_W  => [2, 2],
+//         IControl::BEQ_L  => [4, 4],
+//         IControl::BEQ_Q  => [8, 8],
+//         IControl::FBEQ_S => [4, 4],
+//         IControl::FBEQ_D => [8, 8],
+//
+//         // Branch if <ea(s)> >= <ea(d)>
+//         IControl::BGE_B  => [1, 1],
+//         IControl::BGE_W  => [2, 2],
+//         IControl::BGE_L  => [4, 4],
+//         IControl::BGE_Q  => [8, 8],
+//         IControl::FBGE_S => [4, 4],
+//         IControl::FBGE_D => [8, 8],
+//
+//         // Branch if <ea(s)> > <ea(d)>
+//         IControl::BGT_B  => [1, 1],
+//         IControl::BGT_W  => [2, 2],
+//         IControl::BGT_L  => [4, 4],
+//         IControl::BGT_Q  => [8, 8],
+//         IControl::FBGT_S => [4, 4],
+//         IControl::FBGT_D => [8, 8],
+//
+//         // Branch if <ea(s)> != <ea(d)>
+//         IControl::BNE_B  => [1, 1],
+//         IControl::BNE_W  => [2, 2],
+//         IControl::BNE_L  => [4, 4],
+//         IControl::BNE_Q  => [8, 8],
+//         IControl::FBNE_S => [4, 4],
+//         IControl::FBNE_D => [8, 8],
+//
+//         // Branch if bit set
+//         IControl::BBS_B => [1, 1],
+//         IControl::BBS_W => [1, 2],
+//         IControl::BBS_L => [1, 4],
+//         IControl::BBS_Q => [1, 8],
+//
+//         // Branch if bit clear
+//         IControl::BBC_B => [1, 1],
+//         IControl::BBC_W => [1, 2],
+//         IControl::BBC_L => [1, 4],
+//         IControl::BBC_Q => [1, 8],
+
     ];
 }
