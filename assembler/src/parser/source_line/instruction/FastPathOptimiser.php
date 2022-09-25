@@ -217,31 +217,6 @@ class FastPathOptimiser {
         return $sBytecode;
     }
 
-    /**
-     * Special case handler for dbnz rX, #displacement
-     *
-     * Fast path prefixed code is 1 byte longer so backwards displacements require an adjustment.
-     */
-    private function handleDBNZ(int $iOpcode, string $sOperandByteCode): void {
-        $aDisplacement = unpack(Defs\IIntLimits::LONG_BIN_FORMAT, substr($sOperandByteCode, 1));
-        if (false === $aDisplacement) {
-            throw new \Exception('Unexpected bytecode during dbnz expansion');
-        }
-        $iDisplacement = reset($aDisplacement);
-
-        if ($iDisplacement > Defs\IIntLimits::LONG_MAX_SIGNED) {
-            $iDisplacement -= (Defs\IIntLimits::LONG_MAX_UNSIGNED + 2);
-        }
-
-        // We could just return the code, but throwing as a code fold allows us to log it
-        throw new FastPathFoldedException(
-            "dbnz register decrement fast path",
-            chr(self::FAST_INT_PREFIX) .
-            chr(ord($sOperandByteCode[0]) & 0x0F) .
-            chr($iOpcode) .
-            pack(Defs\IIntLimits::LONG_BIN_FORMAT, $iDisplacement)
-        );
-    }
 
     private function encodeOpcode(int $iOpcode): string {
         $sOpcode = '';
