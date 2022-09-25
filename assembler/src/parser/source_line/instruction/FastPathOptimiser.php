@@ -45,7 +45,7 @@ class FastPathOptimiser {
 
     const MONADIC_FAST_PATH = [
         IControl::DBNZ     => IControl::DBNZ_R,
-        IDataMove::CLR_Q   => IDataMove::R2R_CLR_L,
+        IDataMove::CLR_L   => IDataMove::R2R_CLR_L,
         IDataMove::CLR_Q   => IDataMove::R2R_CLR_Q,
     ];
 
@@ -204,9 +204,16 @@ class FastPathOptimiser {
         return $sOpcode . $sOperandByteCode;
     }
 
+    /**
+     * Trampoline method that attempts a fast path optimsiation for the output of an earlier code fold. Examples are
+     * where an instruction has been replaced by a general clear or set operation, which then can be optimised as a
+     * clear or register type operation.
+     */
     public function attemptOnFolded(CodeFoldException $oFolded): string {
         $sBytecode = $oFolded->getAlternativeBytecode();
-        $this->attempt(ord($sBytecode[0]), substr($sBytecode, 1));
+        if (strlen($sBytecode) > 1) {
+            $this->attempt(ord($sBytecode[0]), substr($sBytecode, 1));
+        }
         return $sBytecode;
     }
 

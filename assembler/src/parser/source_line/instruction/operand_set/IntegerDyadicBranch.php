@@ -70,6 +70,25 @@ class IntegerDyadicBranch extends DyadicBranch {
         IControl::BDC << 8 | ICondition::BPC_W => 'foldImmediateBitClearWord',
         IControl::BDC << 8 | ICondition::BPC_L => 'foldImmediateBitClearLong',
         IControl::BDC << 8 | ICondition::BPC_Q => 'foldImmediateBitClearQuad',
+
+        // TODO - the immediate folding here likely needs redefining
+        IControl::BDC << 8 | ICondition::ULT_B => 'foldImmediateIsLessThan',
+        IControl::BDC << 8 | ICondition::ULT_W => 'foldImmediateIsLessThan',
+        IControl::BDC << 8 | ICondition::ULT_L => 'foldImmediateIsLessThan',
+        IControl::BDC << 8 | ICondition::ULT_Q => 'foldImmediateIsLessThan',
+        IControl::BDC << 8 | ICondition::ULE_B => 'foldImmediateIsLessOrEqual',
+        IControl::BDC << 8 | ICondition::ULE_W => 'foldImmediateIsLessOrEqual',
+        IControl::BDC << 8 | ICondition::ULE_L => 'foldImmediateIsLessOrEqual',
+        IControl::BDC << 8 | ICondition::ULE_Q => 'foldImmediateIsLessOrEqual',
+        IControl::BDC << 8 | ICondition::UGE_B => 'foldImmediateIsGreaterOrEqual',
+        IControl::BDC << 8 | ICondition::UGE_W => 'foldImmediateIsGreaterOrEqual',
+        IControl::BDC << 8 | ICondition::UGE_L => 'foldImmediateIsGreaterOrEqual',
+        IControl::BDC << 8 | ICondition::UGE_Q => 'foldImmediateIsGreaterOrEqual',
+        IControl::BDC << 8 | ICondition::UGT_B => 'foldImmediateIsGreaterThan',
+        IControl::BDC << 8 | ICondition::UGT_W => 'foldImmediateIsGreaterThan',
+        IControl::BDC << 8 | ICondition::UGT_L => 'foldImmediateIsGreaterThan',
+        IControl::BDC << 8 | ICondition::UGT_Q => 'foldImmediateIsGreaterThan',
+
     ];
 
     /**

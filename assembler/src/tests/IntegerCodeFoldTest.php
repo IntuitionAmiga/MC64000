@@ -167,8 +167,8 @@ class IntegerCodeFoldTest extends TestCase {
         $aFoldBytecode = [
             self::CLEAR_B => chr(Defs\Mnemonic\IDataMove::CLR_B) . chr(0),
             self::CLEAR_W => chr(Defs\Mnemonic\IDataMove::CLR_W) . chr(0),
-            self::CLEAR_L => chr(Defs\Mnemonic\IDataMove::CLR_L) . chr(0),
-            self::CLEAR_Q => chr(Defs\Mnemonic\IDataMove::CLR_Q) . chr(0)
+            self::CLEAR_L => chr(Defs\Mnemonic\IDataMove::R2R_CLR_L) . chr(0),
+            self::CLEAR_Q => chr(Defs\Mnemonic\IDataMove::R2R_CLR_Q) . chr(0)
         ];
 
         foreach (self::CLEAR_TEST_CASES as $sInput => $iExpect) {

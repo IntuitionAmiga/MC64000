@@ -37,6 +37,7 @@ main:
 
     move.q  #0, d7
 
+    bhi.l   d1, d2, main
 
     @export exit x
 exit:

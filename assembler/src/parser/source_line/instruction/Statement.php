@@ -138,6 +138,8 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
 
             $aSizes = Defs\Mnemonic\IOperandSizes::MAP[$iOpcode] ?? [];
             try {
+                // Note that code optimisation exceptions can be triggered by both the optimiser and the original
+                // statement under evaluation.
                 return $this->oOptimiser->attempt(
                     $iOpcode,
                     $this->aOperandParsers[$iOpcode]->parse(
@@ -147,8 +149,15 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
                     )
                 );
             } catch (FastPathFoldedException $oFold) {
+                // We found a fast path alternative, typically this is a variation that does not require any runtime
+                // effective address calculations due to having a register direct form available.
                 return $this->handleFastPath($oFold, $sSource);
             } catch (CodeFoldException $oFold) {
+                // A deeper code fold was found, e.g. a total replacement for an operation. This could be anything
+                // from a no-op to an alternative instruction for the same task. However, the generated instruction
+                // may also have a fast path alternative we can evaluate here. For example, a muls.q #0, d0 should
+                // result in a substitution to clr.q d0, however this will be using the generic effective address
+                // variant of that operation. The fast path optimiser can replace it with a register direct variant.
                 try {
                     if (State\Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_CODE_FOLD)) {
                         Log::printf(
