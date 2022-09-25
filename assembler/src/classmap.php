@@ -25,6 +25,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Label\\Local' => '/parser/source_line/label/Local.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\CodeFoldException' => '/parser/source_line/instruction/CodeFoldException.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\FastPathOptimiser' => '/parser/source_line/instruction/FastPathOptimiser.php',
+  'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\FastPathFoldedException' => '/parser/source_line/instruction/FastPathFoldedException.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\IOperandSetParser' => '/parser/source_line/instruction/IOperandSetParser.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\UnhandledCodeFoldException' => '/parser/source_line/instruction/UnhandledCodeFoldException.php',
   'ABadCafe\\MC64K\\Parser\\SourceLine\\Instruction\\Statement' => '/parser/source_line/instruction/Statement.php',

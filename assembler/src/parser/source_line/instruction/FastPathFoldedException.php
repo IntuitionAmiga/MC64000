@@ -15,20 +15,11 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Defs\Mnemonic;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction;
 
 /**
- * IByteCodeGroups
- *
- * Enumerates the group offsets for different opcode classes.
+ * FastPathFoldedException
  */
-interface IByteCodeGroups {
-    const
-        OFS_CONTROL    = 0,
-        OFS_DATA_MOVE  = 13,
-        OFS_LOGICAL    = 13 + 45,
-        OFS_ARITHMETIC = 13 + 45 + 54,
-        OFS_OTHER      = 13 + 45 + 54 + 110,
-        OFS_MAX        = 255
-    ;
+class FastPathFoldedException extends CodeFoldException {
+
 }

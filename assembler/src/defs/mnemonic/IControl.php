@@ -41,6 +41,9 @@ interface IControl extends IByteCodeGroups {
         BDC    = self::OFS_CONTROL + 10,
 
         // Decrement and branch if not zero (64-bit register counter only)
-        DBNZ   = self::OFS_CONTROL + 11
+        DBNZ   = self::OFS_CONTROL + 11,
+
+        // Register only variant
+        DBNZ_R = self::OFS_CONTROL + 12
     ;
 }

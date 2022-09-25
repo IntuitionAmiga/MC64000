@@ -26,6 +26,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Tokeniser;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
+use ABadCafe\MC64K\Utils\Binary;
 use ABadCafe\MC64K\Utils\Log;
 use ABadCafe\MC64K\Defs\EffectiveAddress\IRegisterDirect;
 use ABadCafe\MC64K\Defs\EffectiveAddress\IOther;
@@ -43,6 +44,7 @@ use function \strlen, \ord, \chr, \substr, \reset, \unpack, \pack;
 class FastPathOptimiser {
 
     const MONADIC_FAST_PATH = [
+        IControl::DBNZ     => IControl::DBNZ_R,
         IDataMove::CLR_Q   => IDataMove::R2R_CLR_L,
         IDataMove::CLR_Q   => IDataMove::R2R_CLR_Q,
     ];
@@ -154,21 +156,22 @@ class FastPathOptimiser {
         if (State\Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::OPT_USE_FAST_PATH)) {
             if (
                 isset(self::MONADIC_FAST_PATH[$iOpcode]) &&
-                1 == strlen($sOperandByteCode)
+                1 <= strlen($sOperandByteCode)
             ) {
                 $iOperand = ord($sOperandByteCode);
                 if (isset(self::OPERANDS[$iOperand])) {
                     // We could just return the code, but throwing as a code fold allows us to log it
-                    throw new CodeFoldException(
+                    throw new FastPathFoldedException(
                         "Register monadic fast path",
                         chr(self::MONADIC_FAST_PATH[$iOpcode]) .
-                        chr(($iOperand & 0x0F))
+                        chr(($iOperand & 0x0F)) .
+                        substr($sOperandByteCode, 1)
                     );
                 }
             }
             else if (
                 isset(self::DYADIC_FAST_PATH[$iOpcode]) &&
-                2 == strlen($sOperandByteCode)
+                2 <= strlen($sOperandByteCode)
             ) {
                 // Extract the operands to check if they are full on register to reister
                 $iDstOperand = ord($sOperandByteCode[0]);
@@ -182,13 +185,14 @@ class FastPathOptimiser {
                     isset(self::OPERANDS[$iSrcOperand])
                 ) {
                     // We could just return the code, but throwing as a code fold allows us to log it
-                    throw new CodeFoldException(
+                    throw new FastPathFoldedException(
                         "Register to register dyadic fast path",
                         chr(self::DYADIC_FAST_PATH[$iOpcode]) .
                         chr(
                             ($iDstOperand & 0x0F) |
                             (($iSrcOperand & 0x0F) << 4)
-                        )
+                        ) .
+                        substr($sOperandByteCode, 2)
                     );
                 }
             } else if (isset(self::SPECIAL_CASES[$iOpcode])) {
@@ -198,6 +202,12 @@ class FastPathOptimiser {
         }
 
         return $sOpcode . $sOperandByteCode;
+    }
+
+    public function attemptOnFolded(CodeFoldException $oFolded): string {
+        $sBytecode = $oFolded->getAlternativeBytecode();
+        $this->attempt(ord($sBytecode[0]), substr($sBytecode, 1));
+        return $sBytecode;
     }
 
     /**
@@ -217,7 +227,7 @@ class FastPathOptimiser {
         }
 
         // We could just return the code, but throwing as a code fold allows us to log it
-        throw new CodeFoldException(
+        throw new FastPathFoldedException(
             "dbnz register decrement fast path",
             chr(self::FAST_INT_PREFIX) .
             chr(ord($sOperandByteCode[0]) & 0x0F) .

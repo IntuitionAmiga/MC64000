@@ -33,6 +33,8 @@ main:
     move.q  d0, d2   ; 2
     bmi.q   d0, main ; 7 (opcode, subopcode, EA, <displacement>), expect -11 displacement
 
+    dbnz    d6, main
+
     move.q  #0, d7
 
 

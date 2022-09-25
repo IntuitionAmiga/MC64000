@@ -146,19 +146,37 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
                         $aSizes
                     )
                 );
+            } catch (FastPathFoldedException $oFold) {
+                return $this->handleFastPath($oFold, $sSource);
             } catch (CodeFoldException $oFold) {
-                if (State\Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_CODE_FOLD)) {
-                    Log::printf(
-                        'Folding \'%s\' to \'%s\' (%s)',
-                        trim($sSource),
-                        Binary::format($oFold->getAlternativeBytecode()),
-                        $oFold->getMessage()
-                    );
+                try {
+                    if (State\Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_CODE_FOLD)) {
+                        Log::printf(
+                            'Substitute \'%s\' to \'%s\' (%s)',
+                            trim($sSource),
+                            Binary::format($oFold->getAlternativeBytecode()),
+                            $oFold->getMessage()
+                        );
+                    }
+                    return $this->oOptimiser->attemptOnFolded($oFold);
+                } catch (FastPathFoldedException $oFold) {
+                    return $this->handleFastPath($oFold, $sSource);
                 }
-                return $oFold->getAlternativeBytecode();
             }
         }
         return null;
+    }
+
+    private function handleFastPath(FastPathFoldedException $oFold, string $sSource): string {
+        if (State\Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_CODE_FOLD)) {
+            Log::printf(
+                'Fast Path \'%s\' to \'%s\' (%s)',
+                trim($sSource),
+                Binary::format($oFold->getAlternativeBytecode()),
+                $oFold->getMessage()
+            );
+        }
+        return $oFold->getAlternativeBytecode();
     }
 
     /**
