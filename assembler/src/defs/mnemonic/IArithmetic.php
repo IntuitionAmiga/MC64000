@@ -43,8 +43,8 @@ interface IArithmetic extends IByteCodeGroups {
         R2R_FADD_D  = self::OFS_ARITHMETIC + 14,
         R2R_SUB_L   = self::OFS_ARITHMETIC + 15,
         R2R_SUB_Q   = self::OFS_ARITHMETIC + 16,
-        R2R_FSUB_L  = self::OFS_ARITHMETIC + 17,
-        R2R_FSUB_Q  = self::OFS_ARITHMETIC + 18,
+        R2R_FSUB_S  = self::OFS_ARITHMETIC + 17,
+        R2R_FSUB_D  = self::OFS_ARITHMETIC + 18,
         R2R_MULS_L  = self::OFS_ARITHMETIC + 19,
 
         R2R_MULS_Q  = self::OFS_ARITHMETIC + 20,

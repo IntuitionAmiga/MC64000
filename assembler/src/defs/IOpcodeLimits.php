@@ -24,8 +24,9 @@ namespace ABadCafe\MC64K\Defs;
  */
 interface IOpcodeLimits {
     const
-        MIN  = 0,
-        MAX  = 255,
-        SIZE = 1
+        MIN      = 0,
+        MAX      = 255,
+        SIZE     = 1,
+        SIZE_SUB = 2
     ;
 }

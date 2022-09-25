@@ -62,12 +62,12 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
         $this->addOperandSetParser(new OperandSet\BranchDisplacementOnly());
         $this->addOperandSetParser(new OperandSet\IntegerMonadicAddress());
         $this->addOperandSetParser(new OperandSet\IntegerMonadic());
-//        $this->addOperandSetParser(new OperandSet\IntegerMonadicBranch());
-//        $this->addOperandSetParser(new OperandSet\FloatMonadicBranch());
+        $this->addOperandSetParser(new OperandSet\IntegerMonadicBranch());
+        $this->addOperandSetParser(new OperandSet\FloatMonadicBranch());
         $this->addOperandSetParser(new OperandSet\IntegerDyadic());
-//        $this->addOperandSetParser(new OperandSet\IntegerDyadicBranch());
+        $this->addOperandSetParser(new OperandSet\IntegerDyadicBranch());
         $this->addOperandSetParser(new OperandSet\FloatDyadic());
-//        $this->addOperandSetParser(new OperandSet\FloatDyadicBranch());
+        $this->addOperandSetParser(new OperandSet\FloatDyadicBranch());
         $this->addOperandSetParser(new OperandSet\FloatToIntegerDyadic());
         $this->addOperandSetParser(new OperandSet\IntegerToFloatDyadic());
         $this->addOperandSetParser(new OperandSet\PackedGPRPair());
@@ -116,9 +116,7 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
         $this->addOperandSetParser(new OperandSet\CustomDyadic(
             [IControl::HOST],
             new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::BYTE)),
-            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::BYTE)),
-            [IControl::HOST => chr(0xFF)],
-            false
+            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::BYTE))
         ));
     }
 

@@ -21,18 +21,27 @@
     ; in the code but it makes sense to put it just before the declaration.
     @export main x
 main:
-    hcf     io_init
+;    hcf     io_init
     ; And off we go!
-    lea     .hello_string, a0       ; the print routine expects the string address in a0.
-    hcf     io_print_string         ; trigger the vector.
+;    lea     .hello_string, a0       ; the print routine expects the string address in a0.
+;    hcf     io_print_string         ; trigger the vector.
 
     ; The standard test host expects exit to be exported as executable.
+
+
+    add.q   d1, d0   ; 2
+    move.q  d0, d2   ; 2
+    bmi.q   d0, main ; 7 (opcode, subopcode, EA, <displacement>), expect -11 displacement
+
+    move.q  #0, d7
+
+
     @export exit x
 exit:
-    hcf     io_done
+;    hcf     io_done
     ; We are done.
     rts
 
     ; Our data...
-.hello_string:
-    dc.b "Hello world!\n\0"         ; This isn't C. You provide your own null termination!
+;.hello_string:
+;    dc.b "Hello world!\n\0"         ; This isn't C. You provide your own null termination!

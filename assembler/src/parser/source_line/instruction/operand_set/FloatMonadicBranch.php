@@ -20,6 +20,7 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\Defs\Mnemonic\ICondition;
 
 use function \array_keys;
 
@@ -34,14 +35,14 @@ class FloatMonadicBranch extends MonadicBranch {
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IControl::FBIZ_S => 'foldIsZero',
-        IControl::FBIZ_D => 'foldIsZero',
-        IControl::FBNZ_S => 'foldIsNotZero',
-        IControl::FBNZ_D => 'foldIsNotZero',
-        IControl::FBMI_S => 'foldIsMinus',
-        IControl::FBMI_D => 'foldIsMinus',
-        IControl::FBPL_S => 'foldIsPlus',
-        IControl::FBPL_D => 'foldIsPlus',
+        IControl::BMC << 8 | ICondition::FEQ_S => 'foldIsZero',
+        IControl::BMC << 8 | ICondition::FEQ_D => 'foldIsZero',
+        IControl::BMC << 8 | ICondition::FEQ_S => 'foldIsNotZero',
+        IControl::BMC << 8 | ICondition::FEQ_D => 'foldIsNotZero',
+        IControl::BMC << 8 | ICondition::FNE_S => 'foldIsMinus',
+        IControl::BMC << 8 | ICondition::FNE_D => 'foldIsMinus',
+        IControl::BMC << 8 | ICondition::FNE_S => 'foldIsPlus',
+        IControl::BMC << 8 | ICondition::FNE_D => 'foldIsPlus',
     ];
 
     /**

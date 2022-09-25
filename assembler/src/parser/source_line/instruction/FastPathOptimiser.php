@@ -42,47 +42,66 @@ use function \strlen, \ord, \chr, \substr, \reset, \unpack, \pack;
  */
 class FastPathOptimiser {
 
-    const
-        FAST_INT_PREFIX   = 254,
-        FAST_FLOAT_PREFIX = 255
-    ;
+    const MONADIC_FAST_PATH = [
+        IDataMove::CLR_Q   => IDataMove::R2R_CLR_L,
+        IDataMove::CLR_Q   => IDataMove::R2R_CLR_Q,
+    ];
 
     const DYADIC_FAST_PATH = [
-        IDataMove::MOVE_L   => self::FAST_INT_PREFIX,
-        IDataMove::MOVE_Q   => self::FAST_INT_PREFIX,
-        ILogical::AND_L     => self::FAST_INT_PREFIX,
-        ILogical::AND_Q     => self::FAST_INT_PREFIX,
-        ILogical::OR_L      => self::FAST_INT_PREFIX,
-        ILogical::OR_Q      => self::FAST_INT_PREFIX,
-        IArithmetic::EXTB_L => self::FAST_INT_PREFIX,
-        IArithmetic::EXTB_Q => self::FAST_INT_PREFIX,
-        IArithmetic::EXTW_L => self::FAST_INT_PREFIX,
-        IArithmetic::EXTW_Q => self::FAST_INT_PREFIX,
-        IArithmetic::ADD_L  => self::FAST_INT_PREFIX,
-        IArithmetic::ADD_Q  => self::FAST_INT_PREFIX,
-        IArithmetic::SUB_L  => self::FAST_INT_PREFIX,
-        IArithmetic::SUB_Q  => self::FAST_INT_PREFIX,
-        IArithmetic::MULS_L => self::FAST_INT_PREFIX,
-        IArithmetic::MULS_Q => self::FAST_INT_PREFIX,
-        IArithmetic::MULU_L => self::FAST_INT_PREFIX,
-        IArithmetic::MULU_Q => self::FAST_INT_PREFIX,
+        IDataMove::MOVE_L  => IDataMove::R2R_MOVE_L,
+        IDataMove::MOVE_Q  => IDataMove::R2R_MOVE_Q,
+        IDataMove::FMOVE_S => IDataMove::R2R_FMOVE_S,
+        IDataMove::FMOVE_D => IDataMove::R2R_FMOVE_D,
 
-        IDataMove::FMOVE_S  => self::FAST_FLOAT_PREFIX,
-        IDataMove::FMOVE_D  => self::FAST_FLOAT_PREFIX,
-        IArithmetic::FADD_S => self::FAST_FLOAT_PREFIX,
-        IArithmetic::FADD_D => self::FAST_FLOAT_PREFIX,
-        IArithmetic::FSUB_S => self::FAST_FLOAT_PREFIX,
-        IArithmetic::FSUB_D => self::FAST_FLOAT_PREFIX,
-        IArithmetic::FNEG_S => self::FAST_FLOAT_PREFIX,
-        IArithmetic::FNEG_D => self::FAST_FLOAT_PREFIX,
-        IArithmetic::FMUL_S => self::FAST_FLOAT_PREFIX,
-        IArithmetic::FMUL_D => self::FAST_FLOAT_PREFIX,
-        IArithmetic::FDIV_S => self::FAST_FLOAT_PREFIX,
-        IArithmetic::FDIV_D => self::FAST_FLOAT_PREFIX,
+        ILogical::AND_L => ILogical::R2R_AND_L,
+        ILogical::AND_Q => ILogical::R2R_AND_Q,
+        ILogical::OR_L  => ILogical::R2R_OR_L,
+        ILogical::OR_Q  => ILogical::R2R_OR_Q,
+        ILogical::EOR_L => ILogical::R2R_EOR_L,
+        ILogical::EOR_Q => ILogical::R2R_EOR_Q,
+        ILogical::NOT_L => ILogical::R2R_NOT_L,
+        ILogical::NOT_Q => ILogical::R2R_NOT_Q,
+        ILogical::LSL_L => ILogical::R2R_LSL_L,
+        ILogical::LSL_Q => ILogical::R2R_LSL_Q,
+        ILogical::LSR_L => ILogical::R2R_LSR_L,
+        ILogical::LSR_Q => ILogical::R2R_LSR_Q,
+
+        IArithmetic::EXTB_L  => IArithmetic::R2R_EXTB_L,
+        IArithmetic::EXTB_Q  => IArithmetic::R2R_EXTB_Q,
+        IArithmetic::EXTW_L  => IArithmetic::R2R_EXTW_L,
+        IArithmetic::EXTW_Q  => IArithmetic::R2R_EXTW_Q,
+        IArithmetic::EXTL_Q  => IArithmetic::R2R_EXTL_Q,
+        IArithmetic::NEG_L   => IArithmetic::R2R_NEG_L,
+        IArithmetic::NEG_Q   => IArithmetic::R2R_NEG_Q,
+        IArithmetic::FNEG_S  => IArithmetic::R2R_FNEG_S,
+        IArithmetic::FNEG_D  => IArithmetic::R2R_FNEG_D,
+        IArithmetic::FABS_S  => IArithmetic::R2R_FABS_S,
+        IArithmetic::FABS_D  => IArithmetic::R2R_FABS_D,
+        IArithmetic::ADD_L   => IArithmetic::R2R_ADD_L,
+        IArithmetic::ADD_Q   => IArithmetic::R2R_ADD_Q,
+        IArithmetic::FADD_S  => IArithmetic::R2R_FADD_S,
+        IArithmetic::FADD_D  => IArithmetic::R2R_FADD_D,
+        IArithmetic::SUB_L   => IArithmetic::R2R_SUB_L,
+        IArithmetic::SUB_Q   => IArithmetic::R2R_SUB_Q,
+        IArithmetic::FSUB_S  => IArithmetic::R2R_FSUB_S,
+        IArithmetic::FSUB_D  => IArithmetic::R2R_FSUB_D,
+        IArithmetic::MULS_L  => IArithmetic::R2R_MULS_L,
+        IArithmetic::MULS_Q  => IArithmetic::R2R_MULS_Q,
+        IArithmetic::MULU_L  => IArithmetic::R2R_MULU_L,
+        IArithmetic::MULU_Q  => IArithmetic::R2R_MULU_Q,
+        IArithmetic::FMUL_S  => IArithmetic::R2R_FMUL_S,
+        IArithmetic::FMUL_D  => IArithmetic::R2R_FMUL_D,
+        IArithmetic::FDIV_S  => IArithmetic::R2R_FDIV_S,
+        IArithmetic::FDIV_D  => IArithmetic::R2R_FDIV_D,
+        IArithmetic::FMOD_S  => IArithmetic::R2R_FMOD_S,
+        IArithmetic::FMOD_D  => IArithmetic::R2R_FMOD_D,
+        IArithmetic::FSQRT_S => IArithmetic::R2R_FSQRT_S,
+        IArithmetic::FSQRT_D => IArithmetic::R2R_FSQRT_D,
+
     ];
 
     const SPECIAL_CASES = [
-        IControl::DBNZ => 'handleDBNZ',
+        //IControl::DBNZ => 'handleDBNZ',
     ];
 
     const OPERANDS = [
@@ -122,15 +141,32 @@ class FastPathOptimiser {
 
     /**
      * Attempt to find a fast path code fold option for the current opcode / encoded operand string. If a code fold is
-     * found, a CodeFoldException for the complete statement is raised. Otheriwise the vanilla bytecode is returned.
+     * found, a CodeFoldException for the complete statement is raised. Otherwise the vanilla bytecode is returned.
      *
      * @param  int    $iOpcode
      * @param  string $sOperandByteCode
      * @return string
      */
     public function attempt(int $iOpcode, string $sOperandByteCode): string {
+
+        $sOpcode = $this->encodeOpcode($iOpcode);
+
         if (State\Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::OPT_USE_FAST_PATH)) {
             if (
+                isset(self::MONADIC_FAST_PATH[$iOpcode]) &&
+                1 == strlen($sOperandByteCode)
+            ) {
+                $iOperand = ord($sOperandByteCode);
+                if (isset(self::OPERANDS[$iOperand])) {
+                    // We could just return the code, but throwing as a code fold allows us to log it
+                    throw new CodeFoldException(
+                        "Register monadic fast path",
+                        chr(self::MONADIC_FAST_PATH[$iOpcode]) .
+                        chr(($iOperand & 0x0F))
+                    );
+                }
+            }
+            else if (
                 isset(self::DYADIC_FAST_PATH[$iOpcode]) &&
                 2 == strlen($sOperandByteCode)
             ) {
@@ -152,8 +188,7 @@ class FastPathOptimiser {
                         chr(
                             ($iDstOperand & 0x0F) |
                             (($iSrcOperand & 0x0F) << 4)
-                        ) .
-                        chr($iOpcode)
+                        )
                     );
                 }
             } else if (isset(self::SPECIAL_CASES[$iOpcode])) {
@@ -161,7 +196,8 @@ class FastPathOptimiser {
                 $cHandler($iOpcode, $sOperandByteCode);
             }
         }
-        return chr($iOpcode) . $sOperandByteCode;
+
+        return $sOpcode . $sOperandByteCode;
     }
 
     /**
@@ -188,5 +224,14 @@ class FastPathOptimiser {
             chr($iOpcode) .
             pack(Defs\IIntLimits::LONG_BIN_FORMAT, $iDisplacement)
         );
+    }
+
+    private function encodeOpcode(int $iOpcode): string {
+        $sOpcode = '';
+        do {
+            $sOpcode = chr($iOpcode & 0xFF) . $sOpcode;
+            $iOpcode >>= 8;
+        } while ($iOpcode);
+        return $sOpcode;
     }
 }
