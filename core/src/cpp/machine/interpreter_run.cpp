@@ -251,7 +251,8 @@ void Interpreter::run() {
 
             case Opcode::DBNZ_R: {
                 unpackGPR();
-                readDisplacement(); bcc(--asULong(pDstEA));
+                readDisplacement();
+                bcc(--asULong(pDstEA));
                 goto skip_status_check;
             }
 
