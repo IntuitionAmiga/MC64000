@@ -116,7 +116,9 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
         $this->addOperandSetParser(new OperandSet\CustomDyadic(
             [IControl::HOST],
             new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::BYTE)),
-            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::BYTE))
+            new EffectiveAddress\Custom(new Operand\FixedInteger(Defs\IIntLimits::BYTE)),
+            [],
+            false
         ));
     }
 

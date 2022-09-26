@@ -105,6 +105,15 @@
 #define asDouble(ea) *((float64*)(ea))
 #define asBitPos(ea, m) (1 << (asUByte(ea) & (m)))
 
+#define unpackGPR() { \
+    pDstEA = &aoGPR[(*puProgramCounter++) & 0xF]; \
+}
+
+#define unpackFPR() { \
+    pDstEA = &aoFPR[(*puProgramCounter++) & 0xF]; \
+}
+
+
 /**
  * Unpack a byte as a dest/src GPR pair and set the EA pointers directly.
  */

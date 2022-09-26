@@ -200,7 +200,9 @@ class Interpreter {
          */
         static void  restoreRegisters(uint32 const uMask, uint8 const uEAMode);
 
-        static void  handleHCF();
+        static void  handleHost();
+        static void  handleBMC();
+        static void  handleBDC();
 };
 
 /**
