@@ -25,99 +25,116 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
 interface IOperandSizes {
     const MAP = [
 
-        // Single operand conditional branches
-
-        // Branch if <ea> == 0
-        IControl::BIZ_B  => [1],
-        IControl::BIZ_W  => [2],
-        IControl::BIZ_L  => [4],
-        IControl::BIZ_Q  => [8],
-        IControl::FBIZ_S => [4],
-        IControl::FBIZ_D => [8],
+        IControl::BMC << 8 | ICondition::IEQ_B => [1],
+        IControl::BMC << 8 | ICondition::IEQ_W => [2],
+        IControl::BMC << 8 | ICondition::IEQ_L => [4],
+        IControl::BMC << 8 | ICondition::IEQ_Q => [8],
+        IControl::BMC << 8 | ICondition::FEQ_S => [4],
+        IControl::BMC << 8 | ICondition::FEQ_D => [8],
 
         // Branch if <ea> != 0
-        IControl::BNZ_B  => [1],
-        IControl::BNZ_W  => [2],
-        IControl::BNZ_L  => [4],
-        IControl::BNZ_Q  => [8],
-        IControl::FBNZ_S => [4],
-        IControl::FBNZ_D => [8],
+        IControl::BMC << 8 | ICondition::INE_B => [1],
+        IControl::BMC << 8 | ICondition::INE_W => [2],
+        IControl::BMC << 8 | ICondition::INE_L => [4],
+        IControl::BMC << 8 | ICondition::INE_Q => [8],
+        IControl::BMC << 8 | ICondition::FNE_S => [4],
+        IControl::BMC << 8 | ICondition::FNE_D => [8],
 
         // Branch if <ea> < 0
-        IControl::BMI_B  => [1],
-        IControl::BMI_W  => [2],
-        IControl::BMI_L  => [4],
-        IControl::BMI_Q  => [8],
-        IControl::FBMI_S => [4],
-        IControl::FBMI_D => [8],
+        IControl::BMC << 8 | ICondition::ILT_B => [1],
+        IControl::BMC << 8 | ICondition::ILT_W => [2],
+        IControl::BMC << 8 | ICondition::ILT_L => [4],
+        IControl::BMC << 8 | ICondition::ILT_Q => [8],
+        IControl::BMC << 8 | ICondition::FLT_S => [4],
+        IControl::BMC << 8 | ICondition::FLT_D => [8],
 
         // Branch if <ea> > 0
-        IControl::BPL_B  => [1],
-        IControl::BPL_W  => [2],
-        IControl::BPL_L  => [4],
-        IControl::BPL_Q  => [8],
-        IControl::FBPL_S => [4],
-        IControl::FBPL_D => [8],
+        IControl::BMC << 8 | ICondition::IGT_B => [1],
+        IControl::BMC << 8 | ICondition::IGT_W => [2],
+        IControl::BMC << 8 | ICondition::IGT_L => [4],
+        IControl::BMC << 8 | ICondition::IGT_Q => [8],
+        IControl::BMC << 8 | ICondition::FGT_S => [4],
+        IControl::BMC << 8 | ICondition::FGT_D => [8],
 
         // Branch if <ea(s)> < <ea(d)>
-        IControl::BLT_B  => [1, 1],
-        IControl::BLT_W  => [2, 2],
-        IControl::BLT_L  => [4, 4],
-        IControl::BLT_Q  => [8, 8],
-        IControl::FBLT_S => [4, 4],
-        IControl::FBLT_D => [8, 8],
+        IControl::BDC << 8 | ICondition::ULT_B => [1, 1], // unsigned: Lower
+        IControl::BDC << 8 | ICondition::ULT_W => [2, 2],
+        IControl::BDC << 8 | ICondition::ULT_L => [4, 4],
+        IControl::BDC << 8 | ICondition::ULT_Q => [8, 8],
+
+        IControl::BDC << 8 | ICondition::ILT_B => [1, 1], // signed: Less Than
+        IControl::BDC << 8 | ICondition::ILT_W => [2, 2],
+        IControl::BDC << 8 | ICondition::ILT_L => [4, 4],
+        IControl::BDC << 8 | ICondition::ILT_Q => [8, 8],
+        IControl::BDC << 8 | ICondition::FLT_S => [4, 4],
+        IControl::BDC << 8 | ICondition::FLT_D => [8, 8],
 
         // Branch if <ea(s)> <= <ea(d)>
-        IControl::BLE_B  => [1, 1],
-        IControl::BLE_W  => [2, 2],
-        IControl::BLE_L  => [4, 4],
-        IControl::BLE_Q  => [8, 8],
-        IControl::FBLE_S => [4, 4],
-        IControl::FBLE_D => [8, 8],
+        IControl::BDC << 8 | ICondition::ULE_B => [1, 1], // unsigned: Lower or Same
+        IControl::BDC << 8 | ICondition::ULE_W => [2, 2],
+        IControl::BDC << 8 | ICondition::ULE_L => [4, 4],
+        IControl::BDC << 8 | ICondition::ULE_Q => [8, 8],
+
+        IControl::BDC << 8 | ICondition::ILE_B => [1, 1], // signed: Less or Equal
+        IControl::BDC << 8 | ICondition::ILE_W => [2, 2],
+        IControl::BDC << 8 | ICondition::ILE_L => [4, 4],
+        IControl::BDC << 8 | ICondition::ILE_Q => [8, 8],
+        IControl::BDC << 8 | ICondition::FLE_S => [4, 4],
+        IControl::BDC << 8 | ICondition::FLE_D => [8, 8],
 
         // Branch if <ea(s)> == <ea(d)>
-        IControl::BEQ_B  => [1, 1],
-        IControl::BEQ_W  => [2, 2],
-        IControl::BEQ_L  => [4, 4],
-        IControl::BEQ_Q  => [8, 8],
-        IControl::FBEQ_S => [4, 4],
-        IControl::FBEQ_D => [8, 8],
+        IControl::BDC << 8 | ICondition::IEQ_B => [1, 1],
+        IControl::BDC << 8 | ICondition::IEQ_W => [2, 2],
+        IControl::BDC << 8 | ICondition::IEQ_L => [4, 4],
+        IControl::BDC << 8 | ICondition::IEQ_Q => [8, 8],
+        IControl::BDC << 8 | ICondition::FEQ_S => [4, 4],
+        IControl::BDC << 8 | ICondition::FEQ_D => [8, 8],
 
         // Branch if <ea(s)> >= <ea(d)>
-        IControl::BGE_B  => [1, 1],
-        IControl::BGE_W  => [2, 2],
-        IControl::BGE_L  => [4, 4],
-        IControl::BGE_Q  => [8, 8],
-        IControl::FBGE_S => [4, 4],
-        IControl::FBGE_D => [8, 8],
+        IControl::BDC << 8 | ICondition::UGE_B => [1, 1], // unsigned: Higher or Same
+        IControl::BDC << 8 | ICondition::UGE_W => [2, 2],
+        IControl::BDC << 8 | ICondition::UGE_L => [4, 4],
+        IControl::BDC << 8 | ICondition::UGE_Q => [8, 8],
+
+        IControl::BDC << 8 | ICondition::IGE_B => [1, 1], // signed: Greater or Equal
+        IControl::BDC << 8 | ICondition::IGE_W => [2, 2],
+        IControl::BDC << 8 | ICondition::IGE_L => [4, 4],
+        IControl::BDC << 8 | ICondition::IGE_Q => [8, 8],
+        IControl::BDC << 8 | ICondition::FGE_S => [4, 4],
+        IControl::BDC << 8 | ICondition::FGE_D => [8, 8],
 
         // Branch if <ea(s)> > <ea(d)>
-        IControl::BGT_B  => [1, 1],
-        IControl::BGT_W  => [2, 2],
-        IControl::BGT_L  => [4, 4],
-        IControl::BGT_Q  => [8, 8],
-        IControl::FBGT_S => [4, 4],
-        IControl::FBGT_D => [8, 8],
+        IControl::BDC << 8 | ICondition::UGT_B => [1, 1], // unsigned: Higher
+        IControl::BDC << 8 | ICondition::UGT_W => [2, 2],
+        IControl::BDC << 8 | ICondition::UGT_L => [4, 4],
+        IControl::BDC << 8 | ICondition::UGT_Q => [8, 8],
+
+        IControl::BDC << 8 | ICondition::IGT_B => [1, 1], // signed: Greater Than
+        IControl::BDC << 8 | ICondition::IGT_W => [2, 2],
+        IControl::BDC << 8 | ICondition::IGT_L => [4, 4],
+        IControl::BDC << 8 | ICondition::IGT_Q => [8, 8],
+        IControl::BDC << 8 | ICondition::FGT_S => [4, 4],
+        IControl::BDC << 8 | ICondition::FGT_D => [8, 8],
 
         // Branch if <ea(s)> != <ea(d)>
-        IControl::BNE_B  => [1, 1],
-        IControl::BNE_W  => [2, 2],
-        IControl::BNE_L  => [4, 4],
-        IControl::BNE_Q  => [8, 8],
-        IControl::FBNE_S => [4, 4],
-        IControl::FBNE_D => [8, 8],
+        IControl::BDC << 8 | ICondition::INE_B => [1, 1],
+        IControl::BDC << 8 | ICondition::INE_W => [2, 2],
+        IControl::BDC << 8 | ICondition::INE_L => [4, 4],
+        IControl::BDC << 8 | ICondition::INE_Q => [8, 8],
+        IControl::BDC << 8 | ICondition::FNE_S => [4, 4],
+        IControl::BDC << 8 | ICondition::FNE_D => [8, 8],
 
         // Branch if bit set
-        IControl::BBS_B => [1, 1],
-        IControl::BBS_W => [1, 2],
-        IControl::BBS_L => [1, 4],
-        IControl::BBS_Q => [1, 8],
+        IControl::BDC << 8 | ICondition::BPS_B => [1, 1],
+        IControl::BDC << 8 | ICondition::BPS_W => [1, 2],
+        IControl::BDC << 8 | ICondition::BPS_L => [1, 4],
+        IControl::BDC << 8 | ICondition::BPS_Q => [1, 8],
 
         // Branch if bit clear
-        IControl::BBC_B => [1, 1],
-        IControl::BBC_W => [1, 2],
-        IControl::BBC_L => [1, 4],
-        IControl::BBC_Q => [1, 8],
+        IControl::BDC << 8 | ICondition::BPC_B => [1, 1],
+        IControl::BDC << 8 | ICondition::BPC_W => [1, 2],
+        IControl::BDC << 8 | ICondition::BPC_L => [1, 4],
+        IControl::BDC << 8 | ICondition::BPC_B => [1, 8],
 
         // Go on, why not?
         IControl::DBNZ  => [4],
@@ -152,8 +169,6 @@ interface IOperandSizes {
         IDataMove::CLR_Q    => [8, 8],
         IDataMove::LINK     => [8, 4],
         IDataMove::UNLK     => [8],
-
-
 
         // Logical
         ILogical::AND_B => [1, 1],
@@ -199,7 +214,6 @@ interface IOperandSizes {
         ILogical::BSET_W => [1, 2],
         ILogical::BSET_L => [1, 4],
         ILogical::BSET_Q => [1, 8],
-
 
         // Sign extension
         IArithmetic::EXTB_W => [1, 2],
@@ -297,4 +311,6 @@ interface IOperandSizes {
         IArithmetic::FTWOTOX_S => [4, 4],
         IArithmetic::FTWOTOX_D => [8, 8],
     ];
+
+
 }

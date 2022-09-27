@@ -23,10 +23,13 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
  * Maps mnemonic names to their corresponding bytecode values
  */
 interface IMatches {
+
+    // Direct opcode matches (one byte)
     const MATCHES = [
+        'stop'    => IControl::STOP,
 
         // Flow control group
-        'hcf'     => IControl::HCF,
+        'hcf'     => IControl::HOST,
         'bra.b'   => IControl::BRA_B,
         'bra'     => IControl::BRA,
         'bsr.b'   => IControl::BSR_B,
@@ -34,8 +37,6 @@ interface IMatches {
         'jmp'     => IControl::JMP,
         'jsr'     => IControl::JSR,
         'rts'     => IControl::RTS,
-
-        // Single operand conditional branches
 
         // Branch if <ea> == 0
         'biz.b'   => IControl::BIZ_B,
@@ -67,10 +68,15 @@ interface IMatches {
         'bpl.l'   => IControl::BPL_L,
         'bpl.q'   => IControl::BPL_Q,
         'fbpl.s'  => IControl::FBPL_S,
-        'fbpl.d'  => IControl::FBPL_D,
+        'fbpl.d'  => IControl::FBPL_Q,
 
         // Branch if <ea(s)> < <ea(d)>
-        'blt.b'   => IControl::BLT_B,
+        'blo.b'   => IControl::BLO_B, // unsigned: Lower
+        'blo.w'   => IControl::BLO_W,
+        'blo.l'   => IControl::BLO_L,
+        'blo.q'   => IControl::BLO_Q,
+
+        'blt.b'   => IControl::BLT_B, // signed: Less Than
         'blt.w'   => IControl::BLT_W,
         'blt.l'   => IControl::BLT_L,
         'blt.q'   => IControl::BLT_Q,
@@ -78,7 +84,12 @@ interface IMatches {
         'fblt.d'  => IControl::FBLT_D,
 
         // Branch if <ea(s)> <= <ea(d)>
-        'ble.b'   => IControl::BLE_B,
+        'bls.b'   => IControl::BLS_B, // unsigned: Lower or Same
+        'bls.w'   => IControl::BLS_W,
+        'bls.l'   => IControl::BLS_L,
+        'bls.q'   => IControl::BLS_Q,
+
+        'ble.b'   => IControl::BLE_B, // signed: Less or Equal
         'ble.w'   => IControl::BLE_W,
         'ble.l'   => IControl::BLE_L,
         'ble.q'   => IControl::BLE_Q,
@@ -94,7 +105,12 @@ interface IMatches {
         'fbeq.d'  => IControl::FBEQ_D,
 
         // Branch if <ea(s)> >= <ea(d)>
-        'bge.b'   => IControl::BGE_B,
+        'bhs.b'   => IControl::BHS_B, // unsigned: Higher or Same
+        'bhs.w'   => IControl::BHS_W,
+        'bhs.l'   => IControl::BHS_L,
+        'bhs.q'   => IControl::BHS_Q,
+
+        'bge.b'   => IControl::BGE_B, // signed: Greater or Equal
         'bge.w'   => IControl::BGE_W,
         'bge.l'   => IControl::BGE_L,
         'bge.q'   => IControl::BGE_Q,
@@ -102,18 +118,23 @@ interface IMatches {
         'fbge.d'  => IControl::FBGE_D,
 
         // Branch if <ea(s)> > <ea(d)>
-        'bgt.b'   => IControl::BGT_B,
-        'bgt.w'   => IControl::BGT_W,
-        'bgt.l'   => IControl::BGT_L,
-        'bgt.q'   => IControl::BGT_Q,
+        'bhi.b'   => IControl::BHI_B, // unsigned: Higher
+        'bhi.w'   => IControl::BHI_W,
+        'bhi.l'   => IControl::BHI_L,
+        'bhi.q'   => IControl::BHI_Q,
+
+        'bgt.b'   => IControl::BGT_B , // signed: Greater Than
+        'bgt.w'   => IControl::BGT_W ,
+        'bgt.l'   => IControl::BGT_L ,
+        'bgt.q'   => IControl::BGT_Q ,
         'fbgt.s'  => IControl::FBGT_S,
         'fbgt.d'  => IControl::FBGT_D,
 
         // Branch if <ea(s)> != <ea(d)>
-        'bne.b'   => IControl::BNE_B,
-        'bne.w'   => IControl::BNE_W,
-        'bne.l'   => IControl::BNE_L,
-        'bne.q'   => IControl::BNE_Q,
+        'bne.b'   => IControl::BNE_B ,
+        'bne.w'   => IControl::BNE_W ,
+        'bne.l'   => IControl::BNE_L ,
+        'bne.q'   => IControl::BNE_Q ,
         'fbne.s'  => IControl::FBNE_S,
         'fbne.d'  => IControl::FBNE_D,
 
@@ -128,6 +149,7 @@ interface IMatches {
         'bbc.w'   => IControl::BBC_W,
         'bbc.l'   => IControl::BBC_L,
         'bbc.q'   => IControl::BBC_Q,
+
 
         // Go on, why not?
         'dbnz'    => IControl::DBNZ,
@@ -159,11 +181,11 @@ interface IMatches {
         'clr.w'    => IDataMove::CLR_W,
         'clr.l'    => IDataMove::CLR_L,
         'clr.q'    => IDataMove::CLR_Q,
-        'exg'      => IDataMove::EXG,
-        'fexg'     => IDataMove::FEXG,
-        'swap'     => IDataMove::SWAP,
-        'swap.l'   => IDataMove::SWAP_L,
-        'swap.q'   => IDataMove::SWAP_Q,
+        'exg'      => IDataMove::R2R_EXG,
+        'fexg'     => IDataMove::R2R_FEXG,
+        'swap'     => IDataMove::R2R_SWAP,
+        'swap.l'   => IDataMove::R2R_SWAP_L,
+        'swap.q'   => IDataMove::R2R_SWAP_Q,
         'link'     => IDataMove::LINK,
         'unlk'     => IDataMove::UNLK,
         'lea'      => IDataMove::LEA,
@@ -172,7 +194,7 @@ interface IMatches {
         'finfo.s'  => IDataMove::FINFO_S,
         'finfo.d'  => IDataMove::FINFO_D,
 
-// Logical
+        // Logical
         'and.b'    => ILogical::AND_B,
         'and.w'    => ILogical::AND_W,
         'and.l'    => ILogical::AND_L,
@@ -219,7 +241,7 @@ interface IMatches {
         'bfffo'    => ILogical::BFFFO,
         'bfcnt'    => ILogical::BFCNT,
 
-// Arithmetic
+        // Arithmetic
         'extb.w'    => IArithmetic::EXTB_W,
         'extb.l'    => IArithmetic::EXTB_L,
         'extb.q'    => IArithmetic::EXTB_Q,
@@ -314,5 +336,12 @@ interface IMatches {
         'reserved10',
         'reserved11',
 */
+    ];
+
+    // Subopcode matches (2 bytes)
+    const MATCHES_SUBOPCODE = [
+
+
+
     ];
 }

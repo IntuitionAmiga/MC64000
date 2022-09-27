@@ -24,94 +24,149 @@ namespace ABadCafe\MC64K\Defs\Mnemonic;
  */
 interface IControl extends IByteCodeGroups {
     const
-        HCF    = self::OFS_CONTROL +  0,
-        BRA_B  = self::OFS_CONTROL +  1,
-        BRA    = self::OFS_CONTROL +  2,
-        BSR_B  = self::OFS_CONTROL +  3,
-        BSR    = self::OFS_CONTROL +  4,
-        JMP    = self::OFS_CONTROL +  5,
-        JSR    = self::OFS_CONTROL +  6,
-        RTS    = self::OFS_CONTROL +  7,
+        STOP    = self::OFS_CONTROL +  0, // Execution will halt on encountering 0x00
+        HOST    = self::OFS_CONTROL +  1,
+        BRA_B   = self::OFS_CONTROL +  2,
+        BRA     = self::OFS_CONTROL +  3,
+        BSR_B   = self::OFS_CONTROL +  4,
+        BSR     = self::OFS_CONTROL +  5,
+        JMP     = self::OFS_CONTROL +  6,
+        JSR     = self::OFS_CONTROL +  7,
+        RTS     = self::OFS_CONTROL +  8,
 
-        BIZ_B  = self::OFS_CONTROL +  8,
-        BIZ_W  = self::OFS_CONTROL +  9,
-        BIZ_L  = self::OFS_CONTROL + 10,
-        BIZ_Q  = self::OFS_CONTROL + 11,
-        FBIZ_S = self::OFS_CONTROL + 12,
-        FBIZ_D = self::OFS_CONTROL + 13,
+        // Branch on condition: monadic. Compares <ea> to zero.
+        BMC	    = self::OFS_CONTROL +  9,
 
-        BNZ_B  = self::OFS_CONTROL + 14,
-        BNZ_W  = self::OFS_CONTROL + 15,
-        BNZ_L  = self::OFS_CONTROL + 16,
-        BNZ_Q  = self::OFS_CONTROL + 17,
-        FBNZ_S = self::OFS_CONTROL + 18,
-        FBNZ_D = self::OFS_CONTROL + 19,
+        // Branch on condition: dyadic. Compares <ea:src> to <ea:dst>
+        BDC     = self::OFS_CONTROL + 10,
 
-        BMI_B  = self::OFS_CONTROL + 20,
-        BMI_W  = self::OFS_CONTROL + 21,
-        BMI_L  = self::OFS_CONTROL + 22,
-        BMI_Q  = self::OFS_CONTROL + 23,
-        FBMI_S = self::OFS_CONTROL + 24,
-        FBMI_D = self::OFS_CONTROL + 25,
+        // Decrement and branch if not zero
+        DBNZ    = self::OFS_CONTROL + 11,
 
-        BPL_B  = self::OFS_CONTROL + 26,
-        BPL_W  = self::OFS_CONTROL + 27,
-        BPL_L  = self::OFS_CONTROL + 28,
-        BPL_Q  = self::OFS_CONTROL + 29,
-        FBPL_S = self::OFS_CONTROL + 30,
-        FBPL_D = self::OFS_CONTROL + 31,
+        // Branch on condition: monadic. Compares register to zero.
+        R_BMC   = self::OFS_CONTROL + 12,
 
-        BLT_B  = self::OFS_CONTROL + 32,
-        BLT_W  = self::OFS_CONTROL + 33,
-        BLT_L  = self::OFS_CONTROL + 34,
-        BLT_Q  = self::OFS_CONTROL + 35,
-        FBLT_S = self::OFS_CONTROL + 36,
-        FBLT_D = self::OFS_CONTROL + 37,
+        // Branch on condition: dyadic. Compares register pair
+        R2R_BDC = self::OFS_CONTROL + 13,
 
-        BLE_B  = self::OFS_CONTROL + 38,
-        BLE_W  = self::OFS_CONTROL + 39,
-        BLE_L  = self::OFS_CONTROL + 40,
-        BLE_Q  = self::OFS_CONTROL + 41,
-        FBLE_S = self::OFS_CONTROL + 42,
-        FBLE_D = self::OFS_CONTROL + 43,
+        // Decrement and branch if not zero, register only
+        R_DBNZ  = self::OFS_CONTROL + 14,
 
-        BEQ_B  = self::OFS_CONTROL + 44,
-        BEQ_W  = self::OFS_CONTROL + 45,
-        BEQ_L  = self::OFS_CONTROL + 46,
-        BEQ_Q  = self::OFS_CONTROL + 47,
-        FBEQ_S = self::OFS_CONTROL + 48,
-        FBEQ_D = self::OFS_CONTROL + 49,
+        // Extended compound opcodes for monadic test and branch
 
-        BGE_B  = self::OFS_CONTROL + 50,
-        BGE_W  = self::OFS_CONTROL + 51,
-        BGE_L  = self::OFS_CONTROL + 52,
-        BGE_Q  = self::OFS_CONTROL + 53,
-        FBGE_S = self::OFS_CONTROL + 54,
-        FBGE_D = self::OFS_CONTROL + 55,
+        // Branch if <ea> == 0
+        BIZ_B   = self::BMC << 8 | ICondition::IEQ_B,
+        BIZ_W   = self::BMC << 8 | ICondition::IEQ_W,
+        BIZ_L   = self::BMC << 8 | ICondition::IEQ_L,
+        BIZ_Q   = self::BMC << 8 | ICondition::IEQ_Q,
+        FBIZ_S  = self::BMC << 8 | ICondition::FEQ_S,
+        FBIZ_D  = self::BMC << 8 | ICondition::FEQ_D,
 
-        BGT_B  = self::OFS_CONTROL + 56,
-        BGT_W  = self::OFS_CONTROL + 57,
-        BGT_L  = self::OFS_CONTROL + 58,
-        BGT_Q  = self::OFS_CONTROL + 59,
-        FBGT_S = self::OFS_CONTROL + 60,
-        FBGT_D = self::OFS_CONTROL + 61,
+        // Branch if <ea> != 0
+        BNZ_B   = self::BMC << 8 | ICondition::INE_B,
+        BNZ_W   = self::BMC << 8 | ICondition::INE_W,
+        BNZ_L   = self::BMC << 8 | ICondition::INE_L,
+        BNZ_Q   = self::BMC << 8 | ICondition::INE_Q,
+        FBNZ_S  = self::BMC << 8 | ICondition::FNE_S,
+        FBNZ_D  = self::BMC << 8 | ICondition::FNE_D,
 
-        BNE_B  = self::OFS_CONTROL + 62,
-        BNE_W  = self::OFS_CONTROL + 63,
-        BNE_L  = self::OFS_CONTROL + 64,
-        BNE_Q  = self::OFS_CONTROL + 65,
-        FBNE_S = self::OFS_CONTROL + 66,
-        FBNE_D = self::OFS_CONTROL + 67,
+        // Branch if <ea> < 0
+        BMI_B   = self::BMC << 8 | ICondition::ILT_B,
+        BMI_W   = self::BMC << 8 | ICondition::ILT_W,
+        BMI_L   = self::BMC << 8 | ICondition::ILT_L,
+        BMI_Q   = self::BMC << 8 | ICondition::ILT_Q,
+        FBMI_S  = self::BMC << 8 | ICondition::FLT_S,
+        FBMI_D  = self::BMC << 8 | ICondition::FLT_D,
 
-        BBS_B  = self::OFS_CONTROL + 68,
-        BBS_W  = self::OFS_CONTROL + 69,
-        BBS_L  = self::OFS_CONTROL + 70,
-        BBS_Q  = self::OFS_CONTROL + 71,
-        BBC_B  = self::OFS_CONTROL + 72,
+        // Branch if <ea> > 0
+        BPL_B   = self::BMC << 8 | ICondition::IGT_B,
+        BPL_W   = self::BMC << 8 | ICondition::IGT_W,
+        BPL_L   = self::BMC << 8 | ICondition::IGT_L,
+        BPL_Q   = self::BMC << 8 | ICondition::IGT_Q,
+        FBPL_S  = self::BMC << 8 | ICondition::FGT_S,
+        FBPL_Q  = self::BMC << 8 | ICondition::FGT_D,
 
-        BBC_W  = self::OFS_CONTROL + 73,
-        BBC_L  = self::OFS_CONTROL + 74,
-        BBC_Q  = self::OFS_CONTROL + 75,
-        DBNZ   = self::OFS_CONTROL + 76
+        // Extended compound opcodes for dyadic compare and branch
+
+        // Branch if <ea(s)> < <ea(d)>
+        BLO_B   = IControl::BDC << 8 | ICondition::ULT_B, // unsigned: Lower
+        BLO_W   = IControl::BDC << 8 | ICondition::ULT_W,
+        BLO_L   = IControl::BDC << 8 | ICondition::ULT_L,
+        BLO_Q   = IControl::BDC << 8 | ICondition::ULT_Q,
+
+        BLT_B   = IControl::BDC << 8 | ICondition::ILT_B, // signed: Less Than
+        BLT_W   = IControl::BDC << 8 | ICondition::ILT_W,
+        BLT_L   = IControl::BDC << 8 | ICondition::ILT_L,
+        BLT_Q   = IControl::BDC << 8 | ICondition::ILT_Q,
+        FBLT_S  = IControl::BDC << 8 | ICondition::FLT_S,
+        FBLT_D  = IControl::BDC << 8 | ICondition::FLT_D,
+
+        // Branch if <ea(s)> <= <ea(d)>
+        BLS_B   = IControl::BDC << 8 | ICondition::ULE_B, // unsigned: Lower or Same
+        BLS_W   = IControl::BDC << 8 | ICondition::ULE_W,
+        BLS_L   = IControl::BDC << 8 | ICondition::ULE_L,
+        BLS_Q   = IControl::BDC << 8 | ICondition::ULE_Q,
+
+        BLE_B   = IControl::BDC << 8 | ICondition::ILE_B, // signed: Less or Equal
+        BLE_W   = IControl::BDC << 8 | ICondition::ILE_W,
+        BLE_L   = IControl::BDC << 8 | ICondition::ILE_L,
+        BLE_Q   = IControl::BDC << 8 | ICondition::ILE_Q,
+        FBLE_S  = IControl::BDC << 8 | ICondition::FLE_S,
+        FBLE_D  = IControl::BDC << 8 | ICondition::FLE_D,
+
+        // Branch if <ea(s)> == <ea(d)>
+        BEQ_B   = IControl::BDC << 8 | ICondition::IEQ_B,
+        BEQ_W   = IControl::BDC << 8 | ICondition::IEQ_W,
+        BEQ_L   = IControl::BDC << 8 | ICondition::IEQ_L,
+        BEQ_Q   = IControl::BDC << 8 | ICondition::IEQ_Q,
+        FBEQ_S  = IControl::BDC << 8 | ICondition::FEQ_S,
+        FBEQ_D  = IControl::BDC << 8 | ICondition::FEQ_D,
+
+        // Branch if <ea(s)> >= <ea(d)>
+        BHS_B   = IControl::BDC << 8 | ICondition::UGE_B, // unsigned: Higher or Same
+        BHS_W   = IControl::BDC << 8 | ICondition::UGE_W,
+        BHS_L   = IControl::BDC << 8 | ICondition::UGE_L,
+        BHS_Q   = IControl::BDC << 8 | ICondition::UGE_Q,
+
+        BGE_B   = IControl::BDC << 8 | ICondition::IGE_B, // signed: Greater or Equal
+        BGE_W   = IControl::BDC << 8 | ICondition::IGE_W,
+        BGE_L   = IControl::BDC << 8 | ICondition::IGE_L,
+        BGE_Q   = IControl::BDC << 8 | ICondition::IGE_Q,
+        FBGE_S  = IControl::BDC << 8 | ICondition::FGE_S,
+        FBGE_D  = IControl::BDC << 8 | ICondition::FGE_D,
+
+        // Branch if <ea(s)> > <ea(d)>
+        BHI_B   = IControl::BDC << 8 | ICondition::UGT_B, // unsigned: Higher
+        BHI_W   = IControl::BDC << 8 | ICondition::UGT_W,
+        BHI_L   = IControl::BDC << 8 | ICondition::UGT_L,
+        BHI_Q   = IControl::BDC << 8 | ICondition::UGT_Q,
+
+        BGT_B   = IControl::BDC << 8 | ICondition::IGT_B, // signed: Greater Than
+        BGT_W   = IControl::BDC << 8 | ICondition::IGT_W,
+        BGT_L   = IControl::BDC << 8 | ICondition::IGT_L,
+        BGT_Q   = IControl::BDC << 8 | ICondition::IGT_Q,
+        FBGT_S  = IControl::BDC << 8 | ICondition::FGT_S,
+        FBGT_D  = IControl::BDC << 8 | ICondition::FGT_D,
+
+        // Branch if <ea(s)> != <ea(d)>
+        BNE_B   = IControl::BDC << 8 | ICondition::INE_B,
+        BNE_W   = IControl::BDC << 8 | ICondition::INE_W,
+        BNE_L   = IControl::BDC << 8 | ICondition::INE_L,
+        BNE_Q   = IControl::BDC << 8 | ICondition::INE_Q,
+        FBNE_S  = IControl::BDC << 8 | ICondition::FNE_S,
+        FBNE_D  = IControl::BDC << 8 | ICondition::FNE_D,
+
+        // Branch if bit set
+        BBS_B   = IControl::BDC << 8 | ICondition::BPS_B,
+        BBS_W   = IControl::BDC << 8 | ICondition::BPS_W,
+        BBS_L   = IControl::BDC << 8 | ICondition::BPS_L,
+        BBS_Q   = IControl::BDC << 8 | ICondition::BPS_Q,
+
+        // Branch if bit clear
+        BBC_B   = IControl::BDC << 8 | ICondition::BPC_B,
+        BBC_W   = IControl::BDC << 8 | ICondition::BPC_W,
+        BBC_L   = IControl::BDC << 8 | ICondition::BPC_L,
+        BBC_Q   = IControl::BDC << 8 | ICondition::BPC_Q
+
     ;
 }

@@ -61,6 +61,8 @@ class LabelLocation {
     /** @var int[] $aLabelIEQualification */
     private array $aLabelIEQualification = [];
 
+    private array $aLastUnresolved = [];
+
     /** @const string[] IE_MODES */
     const IE_MODES = [
         '---', // Not really valid.
@@ -279,6 +281,47 @@ class LabelLocation {
             );
         }
         $this->aUnresolvedLabels[$sCurrentFilename][$sLabel][$iCurrentLineNumber] = $iLocation;
+
+        // Make a note of this unresolved location as we may need to adjust it during the
+        // fast path optimisation later...
+        $this->aLastUnresolved = [
+            'file'  => $sCurrentFilename,
+            'label' => $sLabel,
+            'line'  => $iCurrentLineNumber
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Adjusts the injection position of the most recently recorded unresolved label. This is used
+     * only when an fast path optimisation to a conditional operation on an as yet unresolved
+     * forwards reference changes the instruction length. This is considered something of a hack.
+     */
+    public function adjustLastUnresolved(int $iOffset): self {
+        if (empty($this->aLastUnresolved)) {
+            throw new \Exception('Cannot modify recorded branch offset');
+        }
+
+        $sFile  = $this->aLastUnresolved['file'];
+        $sLabel = $this->aLastUnresolved['label'];
+        $iLine  = $this->aLastUnresolved['line'];
+
+        if (!isset(
+            $this->aUnresolvedLabels[$sFile][$sLabel][$iLine]
+        )) {
+            throw new \LogicException("Last unresolved record doesn't match a known entry");
+        }
+
+        if (Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::LOG_LABEL_ADD)) {
+            Log::printf(
+                "Adjusting reference to unresolved label '%s' at BCP #%d by %d",
+                $sLabel,
+                $this->aUnresolvedLabels[$sFile][$sLabel][$iLine],
+                $iOffset
+            );
+        }
+        $this->aUnresolvedLabels[$sFile][$sLabel][$iLine] += $iOffset;
         return $this;
     }
 

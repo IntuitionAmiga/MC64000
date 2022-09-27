@@ -69,7 +69,7 @@ abstract class DyadicBranch extends Dyadic {
 
         $oState = State\Coordinator::get();
         $oState->setCurrentStatementLength(
-            Defs\IOpcodeLimits::SIZE +
+            Defs\IOpcodeLimits::SIZE_SUB +
             Defs\IBranchLimits::DISPLACEMENT_SIZE +
             strlen($sDstBytecode . $sSrcBytecode)
         );

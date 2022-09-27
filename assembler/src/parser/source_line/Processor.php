@@ -67,7 +67,8 @@ class Processor implements IParser {
         }
         foreach ($this->aParsers as $oParser) {
             if ($oParser->checkLine($sSourceLine)) {
-                return $oParser->parse($sSourceLine);
+                $sResult = $oParser->parse($sSourceLine);
+                return $sResult;
             }
         }
         return '';
