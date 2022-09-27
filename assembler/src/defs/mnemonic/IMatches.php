@@ -39,116 +39,116 @@ interface IMatches {
         'rts'     => IControl::RTS,
 
         // Branch if <ea> == 0
-        'biz.b'   => IControl::BMC << 8 | ICondition::IEQ_B,
-        'biz.w'   => IControl::BMC << 8 | ICondition::IEQ_W,
-        'biz.l'   => IControl::BMC << 8 | ICondition::IEQ_L,
-        'biz.q'   => IControl::BMC << 8 | ICondition::IEQ_Q,
-        'fbiz.s'  => IControl::BMC << 8 | ICondition::FEQ_S,
-        'fbiz.d'  => IControl::BMC << 8 | ICondition::FEQ_D,
+        'biz.b'   => IControl::BIZ_B,
+        'biz.w'   => IControl::BIZ_W,
+        'biz.l'   => IControl::BIZ_L,
+        'biz.q'   => IControl::BIZ_Q,
+        'fbiz.s'  => IControl::FBIZ_S,
+        'fbiz.d'  => IControl::FBIZ_D,
 
         // Branch if <ea> != 0
-        'bnz.b'   => IControl::BMC << 8 | ICondition::INE_B,
-        'bnz.w'   => IControl::BMC << 8 | ICondition::INE_W,
-        'bnz.l'   => IControl::BMC << 8 | ICondition::INE_L,
-        'bnz.q'   => IControl::BMC << 8 | ICondition::INE_Q,
-        'fbnz.s'  => IControl::BMC << 8 | ICondition::FNE_S,
-        'fbnz.d'  => IControl::BMC << 8 | ICondition::FNE_D,
+        'bnz.b'   => IControl::BNZ_B,
+        'bnz.w'   => IControl::BNZ_W,
+        'bnz.l'   => IControl::BNZ_L,
+        'bnz.q'   => IControl::BNZ_Q,
+        'fbnz.s'  => IControl::FBNZ_S,
+        'fbnz.d'  => IControl::FBNZ_D,
 
         // Branch if <ea> < 0
-        'bmi.b'   => IControl::BMC << 8 | ICondition::ILT_B,
-        'bmi.w'   => IControl::BMC << 8 | ICondition::ILT_W,
-        'bmi.l'   => IControl::BMC << 8 | ICondition::ILT_L,
-        'bmi.q'   => IControl::BMC << 8 | ICondition::ILT_Q,
-        'fbmi.s'  => IControl::BMC << 8 | ICondition::FLT_S,
-        'fbmi.d'  => IControl::BMC << 8 | ICondition::FLT_D,
+        'bmi.b'   => IControl::BMI_B,
+        'bmi.w'   => IControl::BMI_W,
+        'bmi.l'   => IControl::BMI_L,
+        'bmi.q'   => IControl::BMI_Q,
+        'fbmi.s'  => IControl::FBMI_S,
+        'fbmi.d'  => IControl::FBMI_D,
 
         // Branch if <ea> > 0
-        'bpl.b'   => IControl::BMC << 8 | ICondition::IGT_B,
-        'bpl.w'   => IControl::BMC << 8 | ICondition::IGT_W,
-        'bpl.l'   => IControl::BMC << 8 | ICondition::IGT_L,
-        'bpl.q'   => IControl::BMC << 8 | ICondition::IGT_Q,
-        'fbpl.s'  => IControl::BMC << 8 | ICondition::FGT_S,
-        'fbpl.d'  => IControl::BMC << 8 | ICondition::FGT_D,
+        'bpl.b'   => IControl::BPL_B,
+        'bpl.w'   => IControl::BPL_W,
+        'bpl.l'   => IControl::BPL_L,
+        'bpl.q'   => IControl::BPL_Q,
+        'fbpl.s'  => IControl::FBPL_S,
+        'fbpl.d'  => IControl::FBPL_Q,
 
         // Branch if <ea(s)> < <ea(d)>
-        'blo.b'   => IControl::BDC << 8 | ICondition::ULT_B, // unsigned: Lower
-        'blo.w'   => IControl::BDC << 8 | ICondition::ULT_W,
-        'blo.l'   => IControl::BDC << 8 | ICondition::ULT_L,
-        'blo.q'   => IControl::BDC << 8 | ICondition::ULT_Q,
+        'blo.b'   => IControl::BLO_B, // unsigned: Lower
+        'blo.w'   => IControl::BLO_W,
+        'blo.l'   => IControl::BLO_L,
+        'blo.q'   => IControl::BLO_Q,
 
-        'blt.b'   => IControl::BDC << 8 | ICondition::ILT_B, // signed: Less Than
-        'blt.w'   => IControl::BDC << 8 | ICondition::ILT_W,
-        'blt.l'   => IControl::BDC << 8 | ICondition::ILT_L,
-        'blt.q'   => IControl::BDC << 8 | ICondition::ILT_Q,
-        'fblt.s'  => IControl::BDC << 8 | ICondition::FLT_S,
-        'fblt.d'  => IControl::BDC << 8 | ICondition::FLT_D,
+        'blt.b'   => IControl::BLT_B, // signed: Less Than
+        'blt.w'   => IControl::BLT_W,
+        'blt.l'   => IControl::BLT_L,
+        'blt.q'   => IControl::BLT_Q,
+        'fblt.s'  => IControl::FBLT_S,
+        'fblt.d'  => IControl::FBLT_D,
 
         // Branch if <ea(s)> <= <ea(d)>
-        'bls.b'   => IControl::BDC << 8 | ICondition::ULE_B, // unsigned: Lower or Same
-        'bls.w'   => IControl::BDC << 8 | ICondition::ULE_W,
-        'bls.l'   => IControl::BDC << 8 | ICondition::ULE_L,
-        'bls.q'   => IControl::BDC << 8 | ICondition::ULE_Q,
+        'bls.b'   => IControl::BLS_B, // unsigned: Lower or Same
+        'bls.w'   => IControl::BLS_W,
+        'bls.l'   => IControl::BLS_L,
+        'bls.q'   => IControl::BLS_Q,
 
-        'ble.b'   => IControl::BDC << 8 | ICondition::ILE_B, // signed: Less or Equal
-        'ble.w'   => IControl::BDC << 8 | ICondition::ILE_W,
-        'ble.l'   => IControl::BDC << 8 | ICondition::ILE_L,
-        'ble.q'   => IControl::BDC << 8 | ICondition::ILE_Q,
-        'fble.s'  => IControl::BDC << 8 | ICondition::FLE_S,
-        'fble.d'  => IControl::BDC << 8 | ICondition::FLE_D,
+        'ble.b'   => IControl::BLE_B, // signed: Less or Equal
+        'ble.w'   => IControl::BLE_W,
+        'ble.l'   => IControl::BLE_L,
+        'ble.q'   => IControl::BLE_Q,
+        'fble.s'  => IControl::FBLE_S,
+        'fble.d'  => IControl::FBLE_D,
 
         // Branch if <ea(s)> == <ea(d)>
-        'beq.b'   => IControl::BDC << 8 | ICondition::IEQ_B,
-        'beq.w'   => IControl::BDC << 8 | ICondition::IEQ_W,
-        'beq.l'   => IControl::BDC << 8 | ICondition::IEQ_L,
-        'beq.q'   => IControl::BDC << 8 | ICondition::IEQ_Q,
-        'fbeq.s'  => IControl::BDC << 8 | ICondition::FEQ_S,
-        'fbeq.d'  => IControl::BDC << 8 | ICondition::FEQ_D,
+        'beq.b'   => IControl::BEQ_B,
+        'beq.w'   => IControl::BEQ_W,
+        'beq.l'   => IControl::BEQ_L,
+        'beq.q'   => IControl::BEQ_Q,
+        'fbeq.s'  => IControl::FBEQ_S,
+        'fbeq.d'  => IControl::FBEQ_D,
 
         // Branch if <ea(s)> >= <ea(d)>
-        'bhs.b'   => IControl::BDC << 8 | ICondition::UGE_B, // unsigned: Higher or Same
-        'bhs.w'   => IControl::BDC << 8 | ICondition::UGE_W,
-        'bhs.l'   => IControl::BDC << 8 | ICondition::UGE_L,
-        'bhs.q'   => IControl::BDC << 8 | ICondition::UGE_Q,
+        'bhs.b'   => IControl::BHS_B, // unsigned: Higher or Same
+        'bhs.w'   => IControl::BHS_W,
+        'bhs.l'   => IControl::BHS_L,
+        'bhs.q'   => IControl::BHS_Q,
 
-        'bge.b'   => IControl::BDC << 8 | ICondition::IGE_B, // signed: Greater or Equal
-        'bge.w'   => IControl::BDC << 8 | ICondition::IGE_W,
-        'bge.l'   => IControl::BDC << 8 | ICondition::IGE_L,
-        'bge.q'   => IControl::BDC << 8 | ICondition::IGE_Q,
-        'fbge.s'  => IControl::BDC << 8 | ICondition::FGE_S,
-        'fbge.d'  => IControl::BDC << 8 | ICondition::FGE_D,
+        'bge.b'   => IControl::BGE_B, // signed: Greater or Equal
+        'bge.w'   => IControl::BGE_W,
+        'bge.l'   => IControl::BGE_L,
+        'bge.q'   => IControl::BGE_Q,
+        'fbge.s'  => IControl::FBGE_S,
+        'fbge.d'  => IControl::FBGE_D,
 
         // Branch if <ea(s)> > <ea(d)>
-        'bhi.b'   => IControl::BDC << 8 | ICondition::UGT_B, // unsigned: Higher
-        'bhi.w'   => IControl::BDC << 8 | ICondition::UGT_W,
-        'bhi.l'   => IControl::BDC << 8 | ICondition::UGT_L,
-        'bhi.q'   => IControl::BDC << 8 | ICondition::UGT_Q,
+        'bhi.b'   => IControl::BHI_B, // unsigned: Higher
+        'bhi.w'   => IControl::BHI_W,
+        'bhi.l'   => IControl::BHI_L,
+        'bhi.q'   => IControl::BHI_Q,
 
-        'bgt.b'   => IControl::BDC << 8 | ICondition::IGT_B, // signed: Greater Than
-        'bgt.w'   => IControl::BDC << 8 | ICondition::IGT_W,
-        'bgt.l'   => IControl::BDC << 8 | ICondition::IGT_L,
-        'bgt.q'   => IControl::BDC << 8 | ICondition::IGT_Q,
-        'fbgt.s'  => IControl::BDC << 8 | ICondition::FGT_S,
-        'fbgt.d'  => IControl::BDC << 8 | ICondition::FGT_D,
+        'bgt.b'   => IControl::BGT_B , // signed: Greater Than
+        'bgt.w'   => IControl::BGT_W ,
+        'bgt.l'   => IControl::BGT_L ,
+        'bgt.q'   => IControl::BGT_Q ,
+        'fbgt.s'  => IControl::FBGT_S,
+        'fbgt.d'  => IControl::FBGT_D,
 
         // Branch if <ea(s)> != <ea(d)>
-        'bne.b'   => IControl::BDC << 8 | ICondition::INE_B,
-        'bne.w'   => IControl::BDC << 8 | ICondition::INE_W,
-        'bne.l'   => IControl::BDC << 8 | ICondition::INE_L,
-        'bne.q'   => IControl::BDC << 8 | ICondition::INE_Q,
-        'fbne.s'  => IControl::BDC << 8 | ICondition::FNE_S,
-        'fbne.d'  => IControl::BDC << 8 | ICondition::FNE_D,
+        'bne.b'   => IControl::BNE_B ,
+        'bne.w'   => IControl::BNE_W ,
+        'bne.l'   => IControl::BNE_L ,
+        'bne.q'   => IControl::BNE_Q ,
+        'fbne.s'  => IControl::FBNE_S,
+        'fbne.d'  => IControl::FBNE_D,
 
         // Branch if bit set
-        'bbs.b'   => IControl::BDC << 8 | ICondition::BPS_B,
-        'bbs.w'   => IControl::BDC << 8 | ICondition::BPS_W,
-        'bbs.l'   => IControl::BDC << 8 | ICondition::BPS_L,
-        'bbs.q'   => IControl::BDC << 8 | ICondition::BPS_Q,
+        'bbs.b'   => IControl::BBS_B,
+        'bbs.w'   => IControl::BBS_W,
+        'bbs.l'   => IControl::BBS_L,
+        'bbs.q'   => IControl::BBS_Q,
 
         // Branch if bit clear
-        'bbc.b'   => IControl::BDC << 8 | ICondition::BPC_B,
-        'bbc.w'   => IControl::BDC << 8 | ICondition::BPC_W,
-        'bbc.l'   => IControl::BDC << 8 | ICondition::BPC_L,
-        'bbc.q'   => IControl::BDC << 8 | ICondition::BPC_Q,
+        'bbc.b'   => IControl::BBC_B,
+        'bbc.w'   => IControl::BBC_W,
+        'bbc.l'   => IControl::BBC_L,
+        'bbc.q'   => IControl::BBC_Q,
 
 
         // Go on, why not?
