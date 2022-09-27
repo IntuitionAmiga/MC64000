@@ -26,7 +26,7 @@ interface IOpcodeLimits {
     const
         MIN      = 0,
         MAX      = 255,
-        SIZE     = 1,
-        SIZE_SUB = 2
+        SIZE     = 1, // Opcode are usually 1 byte...
+        SIZE_SUB = 2  // ...unless they have a subopcode, e.g. bcc and friends.
     ;
 }

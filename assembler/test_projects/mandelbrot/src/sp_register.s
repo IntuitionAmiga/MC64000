@@ -78,7 +78,9 @@ calculate:
     fadd.s      fp12,   fp5
     fmove.s     fp5,   fp10         ; fZImaginary = 2 * fZReal * fZImaginay + fCurrImaginary
     fmove.s     fp6,    fp9         ; fZReal      = fNewZReal
+
     fbgt.s      fp8,    fp13, .bailout
+
     dbnz        d2,     .iteration
 
 .bailout:

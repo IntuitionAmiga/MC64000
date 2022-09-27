@@ -26,7 +26,7 @@ interface IMatches {
 
     // Direct opcode matches (one byte)
     const MATCHES = [
-        'halt'    => IControl::STOP,
+        'stop'    => IControl::STOP,
 
         // Flow control group
         'hcf'     => IControl::HOST,
