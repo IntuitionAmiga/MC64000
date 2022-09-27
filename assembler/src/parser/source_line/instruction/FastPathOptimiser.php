@@ -20,10 +20,13 @@ namespace ABadCafe\MC64K\Parser\SourceLine\Instruction;
 use ABadCafe\MC64K;
 use ABadCafe\MC64K\State;
 use ABadCafe\MC64K\Defs;
+use ABadCafe\MC64K\Defs\IBranchLimits;
+use ABadCafe\MC64K\Defs\IOpcodeLimits;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\Defs\Mnemonic\ILogical;
 use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\Defs\Mnemonic\ICondition;
 use ABadCafe\MC64K\Tokeniser;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Utils\Binary;
@@ -44,7 +47,7 @@ use function \strlen, \ord, \chr, \substr, \reset, \unpack, \pack;
 class FastPathOptimiser {
 
     const MONADIC_FAST_PATH = [
-        IControl::DBNZ     => IControl::DBNZ_R,
+        IControl::DBNZ     => IControl::R_DBNZ,
         IDataMove::CLR_L   => IDataMove::R2R_CLR_L,
         IDataMove::CLR_Q   => IDataMove::R2R_CLR_Q,
     ];
@@ -103,7 +106,66 @@ class FastPathOptimiser {
     ];
 
     const SPECIAL_CASES = [
-        //IControl::DBNZ => 'handleDBNZ',
+        IControl::BLO_B   => 'handleBDC',
+        IControl::BLO_W   => 'handleBDC',
+        IControl::BLO_L   => 'handleBDC',
+        IControl::BLO_Q   => 'handleBDC',
+        IControl::BLT_B   => 'handleBDC',
+        IControl::BLT_W   => 'handleBDC',
+        IControl::BLT_L   => 'handleBDC',
+        IControl::BLT_Q   => 'handleBDC',
+        IControl::FBLT_S  => 'handleBDC',
+        IControl::FBLT_D  => 'handleBDC',
+        IControl::BLS_B   => 'handleBDC',
+        IControl::BLS_W   => 'handleBDC',
+        IControl::BLS_L   => 'handleBDC',
+        IControl::BLS_Q   => 'handleBDC',
+        IControl::BLE_B   => 'handleBDC',
+        IControl::BLE_W   => 'handleBDC',
+        IControl::BLE_L   => 'handleBDC',
+        IControl::BLE_Q   => 'handleBDC',
+        IControl::FBLE_S  => 'handleBDC',
+        IControl::FBLE_D  => 'handleBDC',
+        IControl::BEQ_B   => 'handleBDC',
+        IControl::BEQ_W   => 'handleBDC',
+        IControl::BEQ_L   => 'handleBDC',
+        IControl::BEQ_Q   => 'handleBDC',
+        IControl::FBEQ_S  => 'handleBDC',
+        IControl::FBEQ_D  => 'handleBDC',
+        IControl::BHS_B   => 'handleBDC',
+        IControl::BHS_W   => 'handleBDC',
+        IControl::BHS_L   => 'handleBDC',
+        IControl::BHS_Q   => 'handleBDC',
+        IControl::BGE_B   => 'handleBDC',
+        IControl::BGE_W   => 'handleBDC',
+        IControl::BGE_L   => 'handleBDC',
+        IControl::BGE_Q   => 'handleBDC',
+        IControl::FBGE_S  => 'handleBDC',
+        IControl::FBGE_D  => 'handleBDC',
+        IControl::BHI_B   => 'handleBDC',
+        IControl::BHI_W   => 'handleBDC',
+        IControl::BHI_L   => 'handleBDC',
+        IControl::BHI_Q   => 'handleBDC',
+        IControl::BGT_B   => 'handleBDC',
+        IControl::BGT_W   => 'handleBDC',
+        IControl::BGT_L   => 'handleBDC',
+        IControl::BGT_Q   => 'handleBDC',
+        IControl::FBGT_S  => 'handleBDC',
+        IControl::FBGT_D  => 'handleBDC',
+        IControl::BNE_B   => 'handleBDC',
+        IControl::BNE_W   => 'handleBDC',
+        IControl::BNE_L   => 'handleBDC',
+        IControl::BNE_Q   => 'handleBDC',
+        IControl::FBNE_S  => 'handleBDC',
+        IControl::FBNE_D  => 'handleBDC',
+        IControl::BBS_B   => 'handleBDC',
+        IControl::BBS_W   => 'handleBDC',
+        IControl::BBS_L   => 'handleBDC',
+        IControl::BBS_Q   => 'handleBDC',
+        IControl::BBC_B   => 'handleBDC',
+        IControl::BBC_W   => 'handleBDC',
+        IControl::BBC_L   => 'handleBDC',
+        IControl::BBC_Q   => 'handleBDC',
     ];
 
     const OPERANDS = [
@@ -141,6 +203,8 @@ class FastPathOptimiser {
         IRegisterDirect::FP15_DIR => 1,
     ];
 
+    private const R2R_BMD_OPERAND_SIZE = IOpcodeLimits::SIZE_SUB + IBranchLimits::DISPLACEMENT_SIZE;
+
     /**
      * Attempt to find a fast path code fold option for the current opcode / encoded operand string. If a code fold is
      * found, a CodeFoldException for the complete statement is raised. Otherwise the vanilla bytecode is returned.
@@ -150,9 +214,7 @@ class FastPathOptimiser {
      * @return string
      */
     public function attempt(int $iOpcode, string $sOperandByteCode): string {
-
         $sOpcode = $this->encodeOpcode($iOpcode);
-
         if (State\Coordinator::get()->getOptions()->isEnabled(Defs\Project\IOptions::OPT_USE_FAST_PATH)) {
             if (
                 isset(self::MONADIC_FAST_PATH[$iOpcode]) &&
@@ -171,30 +233,16 @@ class FastPathOptimiser {
             }
             else if (
                 isset(self::DYADIC_FAST_PATH[$iOpcode]) &&
-                2 <= strlen($sOperandByteCode)
+                2 <= strlen($sOperandByteCode) &&
+                null !== ($sRegPair = $this->extractRegisterPair($sOperandByteCode))
             ) {
-                // Extract the operands to check if they are full on register to reister
-                $iDstOperand = ord($sOperandByteCode[0]);
-                $iSrcOperand = ord($sOperandByteCode[1]);
-                if ($iSrcOperand == IOther::SAME_AS_DEST) {
-                    $iSrcOperand = $iDstOperand;
-                }
-
-                if (
-                    isset(self::OPERANDS[$iDstOperand]) &&
-                    isset(self::OPERANDS[$iSrcOperand])
-                ) {
-                    // We could just return the code, but throwing as a code fold allows us to log it
-                    throw new FastPathFoldedException(
-                        "Register to register dyadic fast path",
-                        chr(self::DYADIC_FAST_PATH[$iOpcode]) .
-                        chr(
-                            ($iDstOperand & 0x0F) |
-                            (($iSrcOperand & 0x0F) << 4)
-                        ) .
-                        substr($sOperandByteCode, 2)
-                    );
-                }
+                // We could just return the code, but throwing as a code fold allows us to log it
+                throw new FastPathFoldedException(
+                    "Register to register dyadic fast path",
+                    chr(self::DYADIC_FAST_PATH[$iOpcode]) .
+                    $sRegPair .
+                    substr($sOperandByteCode, 2)
+                );
             } else if (isset(self::SPECIAL_CASES[$iOpcode])) {
                 $cHandler = [$this, self::SPECIAL_CASES[$iOpcode]];
                 $cHandler($iOpcode, $sOperandByteCode);
@@ -217,6 +265,64 @@ class FastPathOptimiser {
         return $sBytecode;
     }
 
+    /**
+     * BDC R2R fast path instruction size is one byte smaller. We need to account for that
+     * when optimising both backwards branches and the stored reference to unresolved forwards ones.
+     */
+    private function handleBDC(int $iOpcode, string $sOperandByteCode): void {
+        if (
+            self::R2R_BMD_OPERAND_SIZE == strlen($sOperandByteCode) &&
+            null !== ($sRegPair = $this->extractRegisterPair($sOperandByteCode))
+        ) {
+            // Parse the current displacement.
+            $aDisplacement = unpack(Defs\IIntLimits::LONG_BIN_FORMAT, substr($sOperandByteCode, 2));
+            if (false === $aDisplacement) {
+                throw new \Exception('Unexpected bytecode during branch expansion');
+            }
+            $iDisplacement = (int)reset($aDisplacement);
+            if ($iDisplacement < 0) {
+                // Backwards reference needs incrementing by one byte.
+                ++$iDisplacement;
+            } else if (0 == $iDisplacement) {
+                // An unresolved forwards displacement has already had it's position in the code referenced here.
+                // The fast path R2R operation reduces the instruction length by one byte. We need to account for
+                // that too.
+                $oState = State\Coordinator::get();
+                $oState
+                    ->getLabelLocation()
+                    ->adjustLastUnresolved(-1);
+            }
+
+            // Rewrite the opcode to the R2R version (keep the condition byte)
+            $iOpcode = ($iOpcode & 0xFF) | (IControl::R2R_BDC << 8);
+            throw new FastPathFoldedException(
+                "Register to register dyadic fast path",
+                $this->encodeOpcode($iOpcode) . $sRegPair .
+                pack(Defs\IIntLimits::LONG_BIN_FORMAT, $iDisplacement)
+            );
+        }
+    }
+
+    /**
+     * Attempts to extract the register pair from the operand bytecode.
+     * If the first byte encodes a register direct mode and the second encodes either another register direct
+     * or the special "same as source" bytecode, the function returns the packed register pair byte.
+     * Otherwise the function returns null.
+     */
+    private function extractRegisterPair(string $sOperandByteCode): ?string {
+        $iDstOperand = ord($sOperandByteCode[0]);
+        $iSrcOperand = ord($sOperandByteCode[1]);
+        if ($iSrcOperand == IOther::SAME_AS_DEST) {
+            $iSrcOperand = $iDstOperand;
+        }
+        if (
+            isset(self::OPERANDS[$iDstOperand]) &&
+            isset(self::OPERANDS[$iSrcOperand])
+        ) {
+            return chr(($iDstOperand & 0x0F) | (($iSrcOperand & 0x0F) << 4));
+        }
+        return null;
+    }
 
     private function encodeOpcode(int $iOpcode): string {
         $sOpcode = '';

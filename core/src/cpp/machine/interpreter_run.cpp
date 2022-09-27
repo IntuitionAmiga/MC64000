@@ -84,6 +84,52 @@ void __attribute__((noinline)) Interpreter::handleBMC() {
     }
 }
 
+/**
+ * Deal with monadic compare and branch
+ */
+void __attribute__((noinline)) Interpreter::handleRBMC() {
+    using namespace MC64K::ByteCode;
+    initDisplacement();
+
+    switch (*puProgramCounter++) {
+        // biz/fbiz
+        case Opcode::IEQ_B: unpackGPR(); readDisplacement(); bcc(!asByte(pDstEA)); return;
+        case Opcode::IEQ_W: unpackGPR(); readDisplacement(); bcc(!asWord(pDstEA)); return;
+        case Opcode::IEQ_L: unpackGPR(); readDisplacement(); bcc(!asLong(pDstEA)); return;
+        case Opcode::IEQ_Q: unpackGPR(); readDisplacement(); bcc(!asQuad(pDstEA)); return;
+        case Opcode::FEQ_S: unpackFPR(); readDisplacement(); bcc(!asSingle(pDstEA)); return;
+        case Opcode::FEQ_D: unpackFPR(); readDisplacement(); bcc(!asDouble(pDstEA)); return;
+
+        // bnz/fbnz
+        case Opcode::INE_B: unpackGPR(); readDisplacement(); bcc(asByte(pDstEA)); return;
+        case Opcode::INE_W: unpackGPR(); readDisplacement(); bcc(asWord(pDstEA)); return;
+        case Opcode::INE_L: unpackGPR(); readDisplacement(); bcc(asLong(pDstEA)); return;
+        case Opcode::INE_Q: unpackGPR(); readDisplacement(); bcc(asQuad(pDstEA)); return;
+        case Opcode::FNE_S: unpackFPR(); readDisplacement(); bcc(asSingle(pDstEA)); return;
+        case Opcode::FNE_D: unpackFPR(); readDisplacement(); bcc(asDouble(pDstEA)); return;
+
+        // bmi/fbmi
+        case Opcode::ILT_B: unpackGPR(); readDisplacement(); bcc(0 > asByte(pDstEA)); return;
+        case Opcode::ILT_W: unpackGPR(); readDisplacement(); bcc(0 > asWord(pDstEA)); return;
+        case Opcode::ILT_L: unpackGPR(); readDisplacement(); bcc(0 > asLong(pDstEA)); return;
+        case Opcode::ILT_Q: unpackGPR(); readDisplacement(); bcc(0 > asQuad(pDstEA)); return;
+        case Opcode::FLT_S: unpackFPR(); readDisplacement(); bcc(0 > asSingle(pDstEA)); return;
+        case Opcode::FLT_D: unpackFPR(); readDisplacement(); bcc(0 > asDouble(pDstEA)); return;
+
+        // bpl/fbpl
+        case Opcode::IGT_B: unpackGPR(); readDisplacement(); bcc(0 < asByte(pDstEA)); return;
+        case Opcode::IGT_W: unpackGPR(); readDisplacement(); bcc(0 < asWord(pDstEA)); return;
+        case Opcode::IGT_L: unpackGPR(); readDisplacement(); bcc(0 < asLong(pDstEA)); return;
+        case Opcode::IGT_Q: unpackGPR(); readDisplacement(); bcc(0 < asQuad(pDstEA)); return;
+        case Opcode::FGT_S: unpackFPR(); readDisplacement(); bcc(0 < asSingle(pDstEA)); return;
+        case Opcode::FGT_D: unpackFPR(); readDisplacement(); bcc(0 < asDouble(pDstEA)); return;
+
+        default:
+            todo(); // will trigger an unimplemented opcode
+            break;
+    }
+}
+
 void __attribute__((noinline)) Interpreter::handleBDC() {
     using namespace MC64K::ByteCode;
     initDisplacement();
@@ -170,6 +216,91 @@ void __attribute__((noinline)) Interpreter::handleBDC() {
     }
 }
 
+void __attribute__((noinline)) Interpreter::handleR2RBDC() {
+    using namespace MC64K::ByteCode;
+    initDisplacement();
+    switch (*puProgramCounter++) {
+        // beq/fbeq
+        case Opcode::IEQ_B: unpackGPRPair(); readDisplacement(); bcc(asByte(pSrcEA)   == asByte(pDstEA));   return;
+        case Opcode::IEQ_W: unpackGPRPair(); readDisplacement(); bcc(asWord(pSrcEA)   == asWord(pDstEA));   return;
+        case Opcode::IEQ_L: unpackGPRPair(); readDisplacement(); bcc(asLong(pSrcEA)   == asLong(pDstEA));   return;
+        case Opcode::IEQ_Q: unpackGPRPair(); readDisplacement(); bcc(asQuad(pSrcEA)   == asQuad(pDstEA));   return;
+        case Opcode::FEQ_S: unpackFPRPair(); readDisplacement(); bcc(asSingle(pSrcEA) == asSingle(pDstEA)); return;
+        case Opcode::FEQ_D: unpackFPRPair(); readDisplacement(); bcc(asDouble(pSrcEA) == asDouble(pDstEA)); return;
+
+        // bne/fbne
+        case Opcode::INE_B: unpackGPRPair(); readDisplacement(); bcc(asByte(pSrcEA)   != asByte(pDstEA));   return;
+        case Opcode::INE_W: unpackGPRPair(); readDisplacement(); bcc(asWord(pSrcEA)   != asWord(pDstEA));   return;
+        case Opcode::INE_L: unpackGPRPair(); readDisplacement(); bcc(asLong(pSrcEA)   != asLong(pDstEA));   return;
+        case Opcode::INE_Q: unpackGPRPair(); readDisplacement(); bcc(asQuad(pSrcEA)   != asQuad(pDstEA));   return;
+        case Opcode::FNE_S: unpackFPRPair(); readDisplacement(); bcc(asSingle(pSrcEA) != asSingle(pDstEA)); return;
+        case Opcode::FNE_D: unpackFPRPair(); readDisplacement(); bcc(asDouble(pSrcEA) != asDouble(pDstEA)); return;
+
+        // blo/blt/fblt
+        case Opcode::ILT_B: unpackGPRPair(); readDisplacement(); bcc(asByte(pSrcEA)   < asByte(pDstEA));    return;
+        case Opcode::ILT_W: unpackGPRPair(); readDisplacement(); bcc(asWord(pSrcEA)   < asWord(pDstEA));    return;
+        case Opcode::ILT_L: unpackGPRPair(); readDisplacement(); bcc(asLong(pSrcEA)   < asLong(pDstEA));    return;
+        case Opcode::ILT_Q: unpackGPRPair(); readDisplacement(); bcc(asQuad(pSrcEA)   < asQuad(pDstEA));    return;
+        case Opcode::ULT_B: unpackGPRPair(); readDisplacement(); bcc(asUByte(pSrcEA)  < asUByte(pDstEA));   return;
+        case Opcode::ULT_W: unpackGPRPair(); readDisplacement(); bcc(asUWord(pSrcEA)  < asUWord(pDstEA));   return;
+        case Opcode::ULT_L: unpackGPRPair(); readDisplacement(); bcc(asULong(pSrcEA)  < asULong(pDstEA));   return;
+        case Opcode::ULT_Q: unpackGPRPair(); readDisplacement(); bcc(asUQuad(pSrcEA)  < asUQuad(pDstEA));   return;
+        case Opcode::FLT_S: unpackFPRPair(); readDisplacement(); bcc(asSingle(pSrcEA) < asSingle(pDstEA));  return;
+        case Opcode::FLT_D: unpackFPRPair(); readDisplacement(); bcc(asDouble(pSrcEA) < asDouble(pDstEA));  return;
+
+        // bls/ble/fble
+        case Opcode::ILE_B: unpackGPRPair(); readDisplacement(); bcc(asByte(pSrcEA)   <= asByte(pDstEA));   return;
+        case Opcode::ILE_W: unpackGPRPair(); readDisplacement(); bcc(asWord(pSrcEA)   <= asWord(pDstEA));   return;
+        case Opcode::ILE_L: unpackGPRPair(); readDisplacement(); bcc(asLong(pSrcEA)   <= asLong(pDstEA));   return;
+        case Opcode::ILE_Q: unpackGPRPair(); readDisplacement(); bcc(asQuad(pSrcEA)   <= asQuad(pDstEA));   return;
+        case Opcode::ULE_B: unpackGPRPair(); readDisplacement(); bcc(asUByte(pSrcEA)  <= asUByte(pDstEA));  return;
+        case Opcode::ULE_W: unpackGPRPair(); readDisplacement(); bcc(asUWord(pSrcEA)  <= asUWord(pDstEA));  return;
+        case Opcode::ULE_L: unpackGPRPair(); readDisplacement(); bcc(asULong(pSrcEA)  <= asULong(pDstEA));  return;
+        case Opcode::ULE_Q: unpackGPRPair(); readDisplacement(); bcc(asUQuad(pSrcEA)  <= asUQuad(pDstEA));  return;
+        case Opcode::FLE_S: unpackFPRPair(); readDisplacement(); bcc(asSingle(pSrcEA) <= asSingle(pDstEA)); return;
+        case Opcode::FLE_D: unpackFPRPair(); readDisplacement(); bcc(asDouble(pSrcEA) <= asDouble(pDstEA)); return;
+
+        // bhs/bge/fbge
+        case Opcode::IGE_B: unpackGPRPair(); readDisplacement(); bcc(asByte(pSrcEA)   >= asByte(pDstEA));   return;
+        case Opcode::IGE_W: unpackGPRPair(); readDisplacement(); bcc(asWord(pSrcEA)   >= asWord(pDstEA));   return;
+        case Opcode::IGE_L: unpackGPRPair(); readDisplacement(); bcc(asLong(pSrcEA)   >= asLong(pDstEA));   return;
+        case Opcode::IGE_Q: unpackGPRPair(); readDisplacement(); bcc(asQuad(pSrcEA)   >= asQuad(pDstEA));   return;
+        case Opcode::UGE_B: unpackGPRPair(); readDisplacement(); bcc(asUByte(pSrcEA)  >= asUByte(pDstEA));  return;
+        case Opcode::UGE_W: unpackGPRPair(); readDisplacement(); bcc(asUWord(pSrcEA)  >= asUWord(pDstEA));  return;
+        case Opcode::UGE_L: unpackGPRPair(); readDisplacement(); bcc(asULong(pSrcEA)  >= asULong(pDstEA));  return;
+        case Opcode::UGE_Q: unpackGPRPair(); readDisplacement(); bcc(asUQuad(pSrcEA)  >= asUQuad(pDstEA));  return;
+        case Opcode::FGE_S: unpackFPRPair(); readDisplacement(); bcc(asSingle(pSrcEA) >= asSingle(pDstEA)); return;
+        case Opcode::FGE_D: unpackFPRPair(); readDisplacement(); bcc(asDouble(pSrcEA) >= asDouble(pDstEA)); return;
+
+        // bhi/bgt/fbgt
+        case Opcode::IGT_B: unpackGPRPair(); readDisplacement(); bcc(asByte(pSrcEA)   > asByte(pDstEA));    return;
+        case Opcode::IGT_W: unpackGPRPair(); readDisplacement(); bcc(asWord(pSrcEA)   > asWord(pDstEA));    return;
+        case Opcode::IGT_L: unpackGPRPair(); readDisplacement(); bcc(asLong(pSrcEA)   > asLong(pDstEA));    return;
+        case Opcode::IGT_Q: unpackGPRPair(); readDisplacement(); bcc(asQuad(pSrcEA)   > asQuad(pDstEA));    return;
+        case Opcode::UGT_B: unpackGPRPair(); readDisplacement(); bcc(asUByte(pSrcEA)  > asUByte(pDstEA));   return;
+        case Opcode::UGT_W: unpackGPRPair(); readDisplacement(); bcc(asUWord(pSrcEA)  > asUWord(pDstEA));   return;
+        case Opcode::UGT_L: unpackGPRPair(); readDisplacement(); bcc(asULong(pSrcEA)  > asULong(pDstEA));   return;
+        case Opcode::UGT_Q: unpackGPRPair(); readDisplacement(); bcc(asUQuad(pSrcEA)  > asUQuad(pDstEA));   return;
+        case Opcode::FGT_S: unpackFPRPair(); readDisplacement(); bcc(asSingle(pSrcEA) > asSingle(pDstEA));  return;
+        case Opcode::FGT_D: unpackFPRPair(); readDisplacement(); bcc(asDouble(pSrcEA) > asDouble(pDstEA));  return;
+
+        // Integer Bit position set
+        case Opcode::BPS_B: unpackGPRPair(); readDisplacement(); bcc(asUByte(pDstEA)   & asBitPos(pSrcEA, 7));  return;
+        case Opcode::BPS_W: unpackGPRPair(); readDisplacement(); bcc(asUWord(pDstEA)   & asBitPos(pSrcEA, 15)); return;
+        case Opcode::BPS_L: unpackGPRPair(); readDisplacement(); bcc(asULong(pDstEA)   & asBitPos(pSrcEA, 31)); return;
+        case Opcode::BPS_Q: unpackGPRPair(); readDisplacement(); bcc(asUQuad(pDstEA)   & asBitPos(pSrcEA, 63)); return;
+
+        // Integer Bit position clear
+        case Opcode::BPC_B: unpackGPRPair(); readDisplacement(); bcc(!(asUByte(pDstEA) & asBitPos(pSrcEA, 7)));  return;
+        case Opcode::BPC_W: unpackGPRPair(); readDisplacement(); bcc(!(asUWord(pDstEA) & asBitPos(pSrcEA, 15))); return;
+        case Opcode::BPC_L: unpackGPRPair(); readDisplacement(); bcc(!(asULong(pDstEA) & asBitPos(pSrcEA, 31))); return;
+        case Opcode::BPC_Q: unpackGPRPair(); readDisplacement(); bcc(!(asUQuad(pDstEA) & asBitPos(pSrcEA, 63))); return;
+
+        default:
+            todo(); // will trigger an unimplemented opcode
+            break;
+    }
+}
 
 /**
  * @inheritDoc
@@ -246,10 +377,17 @@ void Interpreter::run() {
             case Opcode::BMC: handleBMC(); break;
             case Opcode::BDC: handleBDC(); break;
 
-            // Decrement and branch if not zero
-            case Opcode::DBNZ:   monadic(SIZE_WORD);readDisplacement(); bcc(--asULong(pDstEA)); break;
+            case Opcode::DBNZ: {
+                monadic(SIZE_WORD);
+                readDisplacement();
+                bcc(--asULong(pDstEA));
+                break;
+            }
 
-            case Opcode::DBNZ_R: {
+            case Opcode::R_BMC:   handleRBMC();   goto skip_status_check;
+            case Opcode::R2R_BDC: handleR2RBDC(); goto skip_status_check;
+
+            case Opcode::R_DBNZ: {
                 unpackGPR();
                 readDisplacement();
                 bcc(--asULong(pDstEA));

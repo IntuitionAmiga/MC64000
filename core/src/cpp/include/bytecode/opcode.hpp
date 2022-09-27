@@ -30,7 +30,7 @@ namespace MC64K::ByteCode::Opcode {
  */
 enum Group {
     OFS_CONTROL    = 0,
-    OFS_DATA_MOVE  = 13,
+    OFS_DATA_MOVE  = 15,
     OFS_LOGICAL    = OFS_DATA_MOVE + 45,
     OFS_ARITHMETIC = OFS_LOGICAL + 54,
     OFS_OTHER      = OFS_ARITHMETIC + 110,
@@ -54,27 +54,21 @@ enum Prefix {
  * Enumerates control flow opcodes
  */
 enum Control {
-    STOP   = OFS_CONTROL + 0,
-    HOST   = OFS_CONTROL +  1,
-    BRA_B  = OFS_CONTROL +  2,
-    BRA    = OFS_CONTROL +  3,
-    BSR_B  = OFS_CONTROL +  4,
-    BSR    = OFS_CONTROL +  5,
-    JMP    = OFS_CONTROL +  6,
-    JSR    = OFS_CONTROL +  7,
-    RTS    = OFS_CONTROL +  8,
-
-    // Branch on condition: monadic. Compares <ea> to zero.
-    BMC	   = OFS_CONTROL +  9,
-
-    // Branch on condition: dyadic. Compares <ea:src> to <ea:dst>
-    BDC    = OFS_CONTROL + 10,
-
-    // Decrement and branch if not zero (64-bit register counter only)
-    DBNZ   = OFS_CONTROL + 11,
-
-    // Register only variant
-    DBNZ_R = OFS_CONTROL + 12
+    STOP     = OFS_CONTROL + 0,
+    HOST     = OFS_CONTROL +  1,
+    BRA_B    = OFS_CONTROL +  2,
+    BRA      = OFS_CONTROL +  3,
+    BSR_B    = OFS_CONTROL +  4,
+    BSR      = OFS_CONTROL +  5,
+    JMP      = OFS_CONTROL +  6,
+    JSR      = OFS_CONTROL +  7,
+    RTS      = OFS_CONTROL +  8,
+    BMC	     = OFS_CONTROL +  9,
+    BDC      = OFS_CONTROL + 10,
+    DBNZ     = OFS_CONTROL + 11,
+    R_BMC    = OFS_CONTROL + 12,
+    R2R_BDC  = OFS_CONTROL + 13,
+    R_DBNZ   = OFS_CONTROL + 14
 };
 
 enum Condition {
