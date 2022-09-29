@@ -21,6 +21,7 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\SourceLine\Instruction\UnhandledCodeFoldException;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\Defs\Mnemonic\ICondition;
 use ABadCafe\MC64K\Defs;
 
 use function \array_keys;
@@ -38,18 +39,18 @@ class FloatDyadicBranch extends DyadicBranch {
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IControl::FBLT_S => 'foldImmediateIsLessThan',
-        IControl::FBLT_D => 'foldImmediateIsLessThan',
-        IControl::FBLE_S => 'foldImmediateIsLessOrEqual',
-        IControl::FBLE_D => 'foldImmediateIsLessOrEqual',
-        IControl::FBEQ_S => 'foldImmediateIsEqual',
-        IControl::FBEQ_D => 'foldImmediateIsEqual',
-        IControl::FBGE_S => 'foldImmediateIsGreaterOrEqual',
-        IControl::FBGE_D => 'foldImmediateIsGreaterOrEqual',
-        IControl::FBGT_S => 'foldImmediateIsGreaterThan',
-        IControl::FBGT_D => 'foldImmediateIsGreaterThan',
-        IControl::FBNE_S => 'foldImmediateIsNotEqual',
-        IControl::FBNE_D => 'foldImmediateIsNotEqual',
+        IControl::BDC << 8 | ICondition::FLT_S => 'foldImmediateIsLessThan',
+        IControl::BDC << 8 | ICondition::FLT_D => 'foldImmediateIsLessThan',
+        IControl::BDC << 8 | ICondition::FLE_S => 'foldImmediateIsLessOrEqual',
+        IControl::BDC << 8 | ICondition::FLE_D => 'foldImmediateIsLessOrEqual',
+        IControl::BDC << 8 | ICondition::FEQ_S => 'foldImmediateIsEqual',
+        IControl::BDC << 8 | ICondition::FEQ_D => 'foldImmediateIsEqual',
+        IControl::BDC << 8 | ICondition::FGE_S => 'foldImmediateIsGreaterOrEqual',
+        IControl::BDC << 8 | ICondition::FGE_D => 'foldImmediateIsGreaterOrEqual',
+        IControl::BDC << 8 | ICondition::FGT_S => 'foldImmediateIsGreaterThan',
+        IControl::BDC << 8 | ICondition::FGT_D => 'foldImmediateIsGreaterThan',
+        IControl::BDC << 8 | ICondition::FNE_S => 'foldImmediateIsNotEqual',
+        IControl::BDC << 8 | ICondition::FNE_D => 'foldImmediateIsNotEqual',
     ];
 
     /**

@@ -45,9 +45,10 @@ abstract class MonadicBranch extends Monadic {
      * @inheritDoc
      */
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
+
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
         $oState = State\Coordinator::get()
-            ->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE);
+            ->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE_SUB);
         $iSrcIndex     = $this->getSourceOperandIndex();
         $sSrcBytecode  = $this->oSrcParser
             ->setOperationSize($aSizes[$iSrcIndex] ?? self::DEFAULT_SIZE)
@@ -60,7 +61,7 @@ abstract class MonadicBranch extends Monadic {
         }
 
         $oState->setCurrentStatementLength(
-            Defs\IOpcodeLimits::SIZE +
+            Defs\IOpcodeLimits::SIZE_SUB +
             Defs\IBranchLimits::DISPLACEMENT_SIZE +
             strlen($sSrcBytecode)
         );

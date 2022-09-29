@@ -10,7 +10,7 @@
         }
     },
     "options": {
-        "log_code_folds": false,
+        "log_code_folds": true,
         "log_label_add": false,
         "log_label_ref": false,
         "log_label_resolve": false

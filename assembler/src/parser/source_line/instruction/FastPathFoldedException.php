@@ -15,18 +15,11 @@
 
 declare(strict_types = 1);
 
-namespace ABadCafe\MC64K\Defs;
+namespace ABadCafe\MC64K\Parser\SourceLine\Instruction;
 
 /**
- * IOpcodeLimits
- *
- * Defines constants and limits for opcodes.
+ * FastPathFoldedException
  */
-interface IOpcodeLimits {
-    const
-        MIN      = 0,
-        MAX      = 255,
-        SIZE     = 1, // Opcode are usually 1 byte...
-        SIZE_SUB = 2  // ...unless they have a subopcode, e.g. bcc and friends.
-    ;
+class FastPathFoldedException extends CodeFoldException {
+
 }

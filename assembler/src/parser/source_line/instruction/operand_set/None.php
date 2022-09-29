@@ -33,7 +33,8 @@ class None implements Instruction\IOperandSetParser {
      */
     public function getOpcodes(): array {
         return [
-            IControl::RTS, // so far, this is it
+            IControl::STOP,
+            IControl::RTS,
         ];
     }
 

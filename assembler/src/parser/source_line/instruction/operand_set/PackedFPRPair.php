@@ -29,7 +29,7 @@ use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 class PackedFPRPair extends PackedRegisterPair {
 
     const OPCODES = [
-        IDataMove::FEXG,
+        IDataMove::R2R_FEXG,
     ];
 
     /**

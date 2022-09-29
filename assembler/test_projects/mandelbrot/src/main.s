@@ -17,7 +17,7 @@
     @equ IMAGE_SIZE_DIM 11      ; Edge size, as a power of 2, e.g. 1024
     @equ IMAGE_AREA_DIM 22      ; Area size for square output
     @equ MAX_ORDINATE   1.6     ; imaginary axis extents
-    @equ REAL_OFFSET    -0.75   ; adjustment along real axis for better centering
+    @equ REAL_OFFSET    -1.0    ; adjustment along real axis for better centering
     @equ MAX_ITERATION  128     ; maximum iterations per pixel
     @equ BAILOUT        4.0     ; bailout value, > 4 chosen for better bifurcations
 

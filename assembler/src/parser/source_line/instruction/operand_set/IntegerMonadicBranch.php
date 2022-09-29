@@ -21,6 +21,8 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\Operand;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
+use ABadCafe\MC64K\Defs\Mnemonic\ICondition;
+
 
 use function \array_keys;
 
@@ -35,22 +37,22 @@ class IntegerMonadicBranch extends MonadicBranch {
      * Map of opcode keys to test functions for resolving immediate branches taken or not.
      */
     const OPCODES = [
-        IControl::BIZ_B => 'foldIsZero',
-        IControl::BIZ_W => 'foldIsZero',
-        IControl::BIZ_L => 'foldIsZero',
-        IControl::BIZ_Q => 'foldIsZero',
-        IControl::BNZ_B => 'foldIsNotZero',
-        IControl::BNZ_W => 'foldIsNotZero',
-        IControl::BNZ_L => 'foldIsNotZero',
-        IControl::BNZ_Q => 'foldIsNotZero',
-        IControl::BMI_B => 'foldIsMinus',
-        IControl::BMI_W => 'foldIsMinus',
-        IControl::BMI_L => 'foldIsMinus',
-        IControl::BMI_Q => 'foldIsMinus',
-        IControl::BPL_B => 'foldIsPlus',
-        IControl::BPL_W => 'foldIsPlus',
-        IControl::BPL_L => 'foldIsPlus',
-        IControl::BPL_Q => 'foldIsPlus',
+        IControl::BMC << 8 | ICondition::IEQ_B => 'foldIsZero',
+        IControl::BMC << 8 | ICondition::IEQ_W => 'foldIsZero',
+        IControl::BMC << 8 | ICondition::IEQ_L => 'foldIsZero',
+        IControl::BMC << 8 | ICondition::IEQ_Q => 'foldIsZero',
+        IControl::BMC << 8 | ICondition::INE_B => 'foldIsNotZero',
+        IControl::BMC << 8 | ICondition::INE_W => 'foldIsNotZero',
+        IControl::BMC << 8 | ICondition::INE_L => 'foldIsNotZero',
+        IControl::BMC << 8 | ICondition::INE_Q => 'foldIsNotZero',
+        IControl::BMC << 8 | ICondition::ILT_B => 'foldIsMinus',
+        IControl::BMC << 8 | ICondition::ILT_W => 'foldIsMinus',
+        IControl::BMC << 8 | ICondition::ILT_L => 'foldIsMinus',
+        IControl::BMC << 8 | ICondition::ILT_Q => 'foldIsMinus',
+        IControl::BMC << 8 | ICondition::IGT_B => 'foldIsPlus',
+        IControl::BMC << 8 | ICondition::IGT_W => 'foldIsPlus',
+        IControl::BMC << 8 | ICondition::IGT_L => 'foldIsPlus',
+        IControl::BMC << 8 | ICondition::IGT_Q => 'foldIsPlus',
     ];
 
     /**
