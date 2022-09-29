@@ -18,6 +18,8 @@
  * Collection of horrible, gnarly macros. Bite me.
  */
 
+#define NOINLINE __attribute__((noinline))
+
 /**
  * Sets up a union of temporaries involved in handling displacement values in the opcode stream.
  */
