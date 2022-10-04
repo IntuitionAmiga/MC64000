@@ -47,6 +47,11 @@ abstract class DyadicBranch extends Dyadic {
 
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
 
+        $oState = State\Coordinator::get();
+        $oState->setCurrentStatementLength(
+            Defs\IOpcodeLimits::SIZE_SUB
+        );
+
         $iDstIndex     = $this->getDestinationOperandIndex();
         $sDstBytecode  = $this->oDstParser
             ->setOperationSize($aSizes[$iDstIndex] ?? self::DEFAULT_SIZE)
@@ -67,7 +72,6 @@ abstract class DyadicBranch extends Dyadic {
             );
         }
 
-        $oState = State\Coordinator::get();
         $oState->setCurrentStatementLength(
             Defs\IOpcodeLimits::SIZE_SUB +
             Defs\IBranchLimits::DISPLACEMENT_SIZE +

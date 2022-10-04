@@ -36,6 +36,7 @@ calculate:
     move.l      #MAX_ITERATION, d3  ;
     fadd.s      #REAL_OFFSET,   40(a5)  ; adjust the real coordinate to better centre the set
 
+
     ; 28(a5) fCurrImaginary
     ; d7   num pixels
     ; d6   edge size (width/height)

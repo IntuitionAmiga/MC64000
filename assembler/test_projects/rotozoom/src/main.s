@@ -119,7 +119,7 @@ on_key_down: ; a0 contains display context
     dc.w 320, 240, 0, 0
 
     ; flags
-    dc.w 1 << DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES | 1 << DISPLAY_BIT_FLIP_ALL_FRAMES
+    dc.w [1 << DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES | 1 << DISPLAY_BIT_FLIP_ALL_FRAMES]
     ; format, target refresh Hz
     dc.b PXL_ARGB, 60
 
@@ -127,13 +127,17 @@ on_key_down: ; a0 contains display context
     @incbin "../res/img.bin"
 
 .filth:
-    dc.w    0, 80                ; beam position 0, 80
+    dc.w    0, 80                 ; beam position 0, 80
     dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
     dc.w    0                     ; x offset value
     dc.b    DISPLAY_FC_WAIT       ; wait
-    dc.w    0, 160                ; beam position 0, 160
+    dc.w    0, 160                ; beam position
     dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
     dc.w    0                     ; x offset value
+    ;dc.b    DISPLAY_FC_ADD_WORD
+    ;dc.w    2, 1                  ; increment word at offset 2 (the uppser beam y offset value)
     dc.b    DISPLAY_FC_ADD_WORD
-    dc.w    5, 1                  ; increment word at offset 5 (the x offset value)
-    dc.b    DISPLAY_FC_END   ; end
+    dc.w    5, 2                  ; increment word at offset 5 (the x offset value)
+    ;dc.b    DISPLAY_FC_SUB_WORD
+    ;dc.w    10, 1                 ; increment word at offset 9 (the lower beam y offset value)
+    dc.b    DISPLAY_FC_END        ; end

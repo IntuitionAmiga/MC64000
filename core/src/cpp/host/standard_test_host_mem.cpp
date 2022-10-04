@@ -20,159 +20,9 @@
 
 using MC64K::Machine::Interpreter;
 
+using MC64K::Host::Memory::ElementBuffer;
+
 namespace MC64K::StandardTestHost::Mem {
-
-
-typedef uint8  u8x16 __attribute__ ((vector_size (16)));
-typedef uint16 u16x8 __attribute__ ((vector_size (16)));
-typedef uint32 u32x4 __attribute__ ((vector_size (16)));
-
-/**
- * Fill a word aligned block with words. If the base adddess is not aligned, filling starts from the next aligned
- * address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param void*  pBuffer
- * @param uint16 uValue
- * @param uint64 uSize
- */
-void fillWord(void* pBuffer, uint16 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 1) {
-        --uSize;
-        ++uRawAddress;
-    }
-    uint16 *p = (uint16*)uRawAddress;
-    while (uSize--) {
-        *p++ = uValue;
-    }
-}
-
-/**
- * Fill a long aligned block with longs. If the base adddess is not aligned, filling starts from the next aligned
- * address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param void*  pBuffer
- * @param uint32 uValue
- * @param uint64 uSize
- */
-void fillLong(void* pBuffer, uint32 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 3) {
-        --uSize;
-        uRawAddress = (uRawAddress + 3) & ~3ULL;
-    }
-    uint32 *p = (uint32*)uRawAddress;
-    while (uSize--) {
-        *p++ = uValue;
-    }
-}
-
-/**
- * Fill a word aligned block with words. If the base adddess is not aligned, filling starts from the next aligned
- * address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param void*  pBuffer
- * @param uint64 uValue
- * @param uint64 uSize
- */
-void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 7) {
-        --uSize;
-        uRawAddress = (uRawAddress + 7) & ~7ULL;
-    }
-    uint64 *p = (uint64*)uRawAddress;
-    while (uSize--) {
-        *p++ = uValue;
-    }
-}
-
-/**
- * Locate the first occurence of a 16 bit value in a memory block. If the base address is not aligned, search starts
- * from the next aligned address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param  void const*    pBuffer
- * @param  uint16         uValue
- * @param  uint64         uSize
- * @return uint16 const*  pFound
- */
-uint16 const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 1) {
-        --uSize;
-        ++uRawAddress;
-    }
-    uint16 const *p = (uint16 const*)uRawAddress;
-    while (uSize--) {
-        if (uValue == *p) {
-            return p;
-        }
-        ++p;
-    }
-    return 0;
-}
-
-/**
- * Locate the first occurence of a 32 bit value in a memory block. If the base address is not aligned, search starts
- * from the next aligned address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param  void const*    pBuffer
- * @param  uint32         uValue
- * @param  uint64         uSize
- * @return uint32 const*  pFound
- */
-uint32 const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 3) {
-        --uSize;
-        uRawAddress = (uRawAddress + 3) & ~3ULL;
-    }
-    uint32 const *p = (uint32 const*)uRawAddress;
-    while (uSize--) {
-        if (uValue == *p) {
-            return p;
-        }
-        ++p;
-    }
-    return 0;
-}
-
-/**
- * Locate the first occurence of a 64 bit value in a memory block. If the base address is not aligned, search starts
- * from the next aligned address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks
- *
- * @param  void const*   pBuffer
- * @param  uint64        uValue
- * @param  uint64        uSize
- * @return uint64 const* pFound
- */
-uint64 const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize) {
-    uint64 uRawAddress = (uint64)pBuffer;
-    if (uRawAddress & 7) {
-        --uSize;
-        uRawAddress = (uRawAddress + 7) & ~7ULL;
-    }
-    uint64 const *p = (uint64 const*)uRawAddress;
-    while (uSize--) {
-        if (uValue == *p) {
-            return p;
-        }
-        ++p;
-    }
-    return 0;
-}
 
 /**
  * Mem::hostVector(uint8 uFunctionID)
@@ -202,12 +52,78 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
             Interpreter::gpr<ABI::PTR_REG_0>().pAny = 0;
             break;
 
+        case ALLOC_BUFFER: {
+            uint32 uParams = Interpreter::gpr<ABI::INT_REG_0>().uLong;
+            ElementBuffer* pBuffer = ElementBuffer::allocateBuffer(
+                (uint16)(uParams >> 16),
+                (uint16)(uParams & 0xFFFF)
+            );
+            Interpreter::gpr<ABI::PTR_REG_0>().pAny  = pBuffer;
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = pBuffer ?
+                (uint64)ABI::ERR_NONE :
+                (uint64)ERR_NO_MEM;
+            break;
+        }
+
+        case FREE_BUFFER: {
+            ElementBuffer* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().address<ElementBuffer>();
+            if (pBuffer) {
+                if ( (ElementBuffer::SUCCESS == ElementBuffer::validate(pBuffer)) ) {
+                    ElementBuffer::freeBuffer(pBuffer);
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
+                } else {
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = ERR_MEM_INVALID_BUFFER;
+                }
+            } else {
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+            }
+            break;
+        }
+        case ALLOC_ELEMENT: {
+            ElementBuffer* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().address<ElementBuffer>();
+            if (pBuffer) {
+                if ( (ElementBuffer::SUCCESS == ElementBuffer::validate(pBuffer)) ) {
+                    void *pElement = pBuffer->alloc();
+                    Interpreter::gpr<ABI::PTR_REG_0>().pAny  = pElement;
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = pElement ?
+                        (uint64)ABI::ERR_NONE :
+                        (uint64)ERR_MEM_BUFFER_FULL;
+                } else {
+                    Interpreter::gpr<ABI::PTR_REG_0>().pAny  = nullptr;
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = ERR_MEM_INVALID_BUFFER;
+                }
+            } else {
+                Interpreter::gpr<ABI::PTR_REG_0>().pAny  = nullptr;
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+            }
+            break;
+        }
+
+        case FREE_ELEMENT: {
+            ElementBuffer* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().address<ElementBuffer>();
+            void *pElement = Interpreter::gpr<ABI::PTR_REG_1>().pAny;
+            if (pBuffer && pElement) {
+                if ( (ElementBuffer::SUCCESS == ElementBuffer::validate(pBuffer)) ) {
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = (ElementBuffer::SUCCESS == pBuffer->free(pElement)) ?
+                        (uint64)ABI::ERR_NONE :
+                        (uint64)ERR_MEM_INVALID_ELEMENT;
+                } else {
+                    Interpreter::gpr<ABI::PTR_REG_0>().pAny  = nullptr;
+                    Interpreter::gpr<ABI::INT_REG_0>().uQuad = ERR_MEM_INVALID_BUFFER;
+                }
+            } else {
+                Interpreter::gpr<ABI::PTR_REG_0>().pAny  = nullptr;
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+            }
+            break;
+        }
+
         case COPY:
             if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
                 void* pFrom = Interpreter::gpr<ABI::PTR_REG_0>().pAny;
                 void* pTo   = Interpreter::gpr<ABI::PTR_REG_1>().pAny;
                 if (pFrom && pTo) {
-                    std::memcpy(pTo, pFrom, uSize);
+                    Host::Memory::copy(pTo, pFrom, uSize);
                     Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
                 } else {
                     Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
@@ -215,6 +131,24 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
             } else {
                 Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
             }
+            break;
+
+        case BSWAP_WORD: byteswap<uint16>(); break;
+        case BSWAP_LONG: byteswap<uint32>(); break;
+        case BSWAP_QUAD: byteswap<uint64>(); break;
+
+        case AND_BYTE:
+        case AND_WORD:
+        case AND_LONG:
+        case AND_QUAD:
+        case OR_BYTE:
+        case OR_WORD:
+        case OR_LONG:
+        case OR_QUAD:
+        case EOR_BYTE:
+        case EOR_WORD:
+        case EOR_LONG:
+        case EOR_QUAD:
             break;
 
         case FILL_BYTE: fill<uint8>();  break;

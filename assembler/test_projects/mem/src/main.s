@@ -43,7 +43,7 @@ main:
     move.q  #1, d5
     clr.q   r12
 
-    lsr.q   #1, d2 ; setting words
+    ;lsr.q   #3, d2 ; setting quad
 
 .loop:
     move.q  a2, a0
@@ -51,7 +51,7 @@ main:
     move.b  d3, d0
     nanotime                  ; writes current nanotime to r14
     move.q  r14, r13          ; start
-    hcf     mem_fill_word
+    hcf     mem_fill_byte
     nanotime
     sub.q   r13,  r14         ; elapsed
     add.q   r14,  r12         ; total
@@ -100,8 +100,6 @@ main:
     lea     .txt_memory_2, a0
     hcf     io_print_string
     bra     exit
-
-
 
 exit:
     hcf mem_done

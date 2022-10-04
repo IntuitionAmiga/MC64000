@@ -35,7 +35,8 @@ class Processor implements IParser {
     /** @var IParser[] $aParsers */
     private array $aParsers = [];
 
-    private Utils\ConstIntExpression $oConstIntExpression;
+    private Utils\ConstIntExpression   $oConstIntExpression;
+    private Utils\ConstFloatExpression $oConstFloatExpression;
 
     public function __construct() {
         $this->aParsers = [
@@ -45,7 +46,8 @@ class Processor implements IParser {
             new Label\Local(),
             new Label\Exported()
         ];
-        $this->oConstIntExpression = new Utils\ConstIntExpression();
+        $this->oConstIntExpression   = new Utils\ConstIntExpression();
+        $this->oConstFloatExpression = new Utils\ConstFloatExpression();
     }
 
     /**
@@ -67,8 +69,7 @@ class Processor implements IParser {
         }
         foreach ($this->aParsers as $oParser) {
             if ($oParser->checkLine($sSourceLine)) {
-                $sResult = $oParser->parse($sSourceLine);
-                return $sResult;
+                return $oParser->parse($sSourceLine);
             }
         }
         return '';
@@ -95,6 +96,7 @@ class Processor implements IParser {
             ->applyTo($sIntermediate);
 
         // 4. Identify any evaluatable constant expressions and substitute.
+        $sIntermediate = $this->oConstFloatExpression->parse($sIntermediate);
         $sIntermediate = $this->oConstIntExpression->parse($sIntermediate);
 
         // 5. Reinstate protected strings and return.

@@ -115,7 +115,7 @@ class FloatDyadic extends Dyadic {
             $this->sourceOperandWasOptimised()
         ) {
             throw new CodeFoldException(
-                'Operation has no effect'
+                'Operation has no effect ' . bin2hex($sFullByteCode)
             );
         }
 

@@ -15,30 +15,51 @@
 
     @align 0, 8
 .f15:
-    dc.s #0.0
+    dc.s 0.0
+.f15x:
+    dc.s 0.0
 .f14:
-    dc.s #0.0
+    dc.s 0.0
+.f14x:
+    dc.s 0.0
 .f13:
-    dc.s #0.0
+    dc.s 0.0
+.f13x:
+    dc.s 0.0
 .f12:
-    dc.s #0.0
+    dc.s 0.0
+.f12x:
+    dc.s 0.0
 .f11:
-    dc.s #0.0
+    dc.s 0.0
+.f11x:
+    dc.s 0.0
 .f10:
-    dc.s #0.0
+    dc.s 0.0
+.f10x:
+    dc.s 0.0
 .f9:
-    dc.s #0.0
+    dc.s 0.0
+.f9x:
+    dc.s 0.0
 .f8:
-    dc.s #0.0
+    dc.s 0.0
+.f8x:
+    dc.s 0.0
 .f7:
-    dc.s #0.0
+    dc.s 0.0
+.f7x:
+    dc.s 0.0
 .f6:
-    dc.s #0.0
+    dc.s 0.0
+.f6x:
+    dc.s 0.0
 .f5:
-    dc.s #0.0
+    dc.s 0.0
+.f5x:
+    dc.s 0.0
 
 calculate:
-
 ; calculate ranges
     ; .f15 fMinReal | fMinImaginary
     ; .f14 fStep
@@ -63,6 +84,7 @@ calculate:
     ; d6   edge size (width/height)
     ; d5   height countdown
     ; d3   max iteration
+
 .yloop:
 
     ; .f11 fCurrReal
@@ -84,7 +106,6 @@ calculate:
 
     ; d2   iteration countdown
 .iteration:
-
     fmove.s     .f10,   .f8
     fmul.s      .f8,    .f8         ; fZImaginarySqared = fZImaginary*fZImaginary
     fmove.s     .f9,    .f7
@@ -103,6 +124,7 @@ calculate:
     fmove.s     .f5,   .f10         ; fZImaginary = 2 * fZReal * fZImaginay + fCurrImaginary
     fmove.s     .f6,    .f9         ; fZReal      = fNewZReal
     fbgt.s      .f8,    .f13, .bailout
+
     dbnz        d2,     .iteration
 
 .bailout:
@@ -111,11 +133,13 @@ calculate:
     ; Calculate the iteration count and square for better gradients
     neg.l       d2,     d2
     add.l       d3,     d2          ; iteration count = max iterations - iteration countdown
-    mulu.w      d2,     d2
+    mulu.l      d2,     d2
     move.b      d2,     (a0)+
 
     dbnz        d4,     .xloop      ; while --iX
     fsub.s      .f14,   .f12        ; fCurrImaginary -= fStep
+
     dbnz        d5,     .yloop      ; while --iY
 
     rts
+

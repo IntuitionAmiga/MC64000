@@ -25,23 +25,23 @@ use ABadCafe\MC64K\State;
 use function \array_keys, \array_values, \is_numeric, \preg_match, \preg_replace_callback, \strlen, \str_replace, \substr_count;
 
 /**
- * ConstIntExpression
+ * ConstFloatExpression
  *
  * Utility class for solving some simplistic expressions.
  *
- * For simplicity, we reserve square brackets for subexpressions. Otherwise we run into some challenges with our
+ * For simplicity, we reserve braces for expressions. Otherwise we run into some challenges with our
  * indirect addressing syntax that is more effort to fix than this is to live with.
  */
-class ConstIntExpression implements IParser {
+class ConstFloatExpression implements IParser {
 
-    // First character can be a digit, sign indicator, open parenthesis, or rvalue unary operator (only ~)
-    private const MATCH_FIRST   = '[0-9\+\-\~\[]';
+    // First character must be a an open brace
+    private const MATCH_FIRST   = '\{';
 
     // Further charcters can be digits, binary operators, open or closing parenthesis or space
-    private const MATCH_FURTHER = '[0-9xa-fA-F\+\-\*\\/\%\<\>\&\|\~\^\[\]\s]{0,}';
+    private const MATCH_FURTHER = '[0-9\.\+\-\*\\/\{\}\s]{0,}';
 
-    // Final character can be a digit, closing parenthesis or lvalue unary operator (none defined)
-    private const MATCH_LAST    = '[0-9a-fA-F\]]';
+    // Final character must be a close brace
+    private const MATCH_LAST    = '\}';
 
     // Final match expression
     private const MATCH_FULL    = '/(' . self::MATCH_FIRST . self::MATCH_FURTHER . self::MATCH_LAST . ')/';
@@ -65,7 +65,7 @@ class ConstIntExpression implements IParser {
         $sIntermediate = (string)preg_replace_callback(
             self::MATCH_FULL,
             function(array $aMatches) use (&$iPlaceholderKey, &$aPlaceholderMap): string {
-                $sKey = '{I:' . $iPlaceholderKey++ . '}';
+                $sKey = '<=<F:' . $iPlaceholderKey++ . '>=>';
                 $aPlaceholderMap[$sKey] = (string)$aMatches[0];
                 return $sKey;
             },
@@ -86,7 +86,7 @@ class ConstIntExpression implements IParser {
                     /** @var string|null */
                     $sResult = null;
                     $sPossibleExpression = str_replace(
-                        ['[', ']'],
+                        ['{', '}'],
                         ['(', ')'],
                         $sPossibleExpression
                     );
@@ -96,14 +96,14 @@ class ConstIntExpression implements IParser {
 
                     // If the evaluation worked, we replace the extracted expression with the integer result.
                     if (is_numeric($sResult)) {
-                        $iResult = intval($sResult);
-                        $aPlaceholderMap[$sKey] = $iResult;
+                        $fResult = floatval($sResult);
+                        $aPlaceholderMap[$sKey] = $fResult;
 
                         if ($bLogEval) {
                             Log::printf(
-                                'Evaluated constant expression \'%s\' to value \'%d\' in %s',
+                                'Evaluated constant expression \'%s\' to value \'%f\' in %s',
                                 $sPossibleExpression,
-                                $iResult,
+                                $fResult,
                                 $sSource
                             );
                         }
@@ -124,7 +124,7 @@ class ConstIntExpression implements IParser {
      */
     private function hasRequired(string $sPossibleExpression): bool {
         return preg_match('/\d/', $sPossibleExpression) &&
-               preg_match('/[\+\-\*\\/\%\<\>\&\|\~\^]/', $sPossibleExpression);
+               preg_match('/[\+\-\*\\/\<\>]/', $sPossibleExpression);
     }
 
     /**
@@ -132,15 +132,15 @@ class ConstIntExpression implements IParser {
      * count must be greater than, or equal to the close bracket count.
      */
     private function assertBalanced(string $sPossibleExpression): void {
-        if (preg_match("/\[\s*\]/", $sPossibleExpression)) {
+        if (preg_match("/\{\s*\}/", $sPossibleExpression)) {
             throw new \ParseError("Empty parenthesis in expression " . $sPossibleExpression);
         }
         $iOpenCount  = 0;
         $iCloseCount = 0;
         $iLength = strlen($sPossibleExpression);
         for ($i = 0; $i < $iLength; $i++) {
-            $iOpenCount  += (int)($sPossibleExpression[$i] === '[');
-            $iCloseCount += (int)($sPossibleExpression[$i] === ']');
+            $iOpenCount  += (int)($sPossibleExpression[$i] === '{');
+            $iCloseCount += (int)($sPossibleExpression[$i] === '}');
             if ($iCloseCount > $iOpenCount) {
                 throw new \ParseError("Unbalanced parenthesis in expression " . $sPossibleExpression);
             }

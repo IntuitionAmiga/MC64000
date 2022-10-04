@@ -14,31 +14,29 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include <cstdlib>
-#include <cstring>
 #include <machine/register.hpp>
 #include <host/standard_test_host.hpp>
 #include <host/standard_test_host_mem.hpp>
+#include <host/memory.hpp>
 
 namespace MC64K::StandardTestHost::Mem {
 
-void fillWord(void* pBuffer, uint16 uValue, uint64 uSize);
-void fillLong(void* pBuffer, uint32 uValue, uint64 uSize);
-void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize);
-
+/**
+ * Provides a simple compile time checked template for the memory fill group.
+ */
 template<typename T>
 inline void fill() {
     static_assert(std::is_integral<T>::value, "Invalid type for fill<T>()");
     if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
         if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
             if constexpr(8 == sizeof(T)) {
-                fillQuad(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uQuad, uSize);
+                Host::Memory::fillQuad(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uQuad, uSize);
             } else if constexpr(4 == sizeof(T)) {
-                fillLong(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uLong, uSize);
+                Host::Memory::fillLong (pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uLong, uSize);
             } else if constexpr(2 == sizeof(T)) {
-                fillWord(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uWord, uSize);
+                Host::Memory::fillWord(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uWord, uSize);
             } else if constexpr(1 == sizeof(T)) {
-                std::memset(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uByte, uSize);
+                Host::Memory::fillByte(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uByte, uSize);
             }
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
         } else {
@@ -49,37 +47,87 @@ inline void fill() {
     }
 }
 
-uint16 const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize);
-uint32 const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize);
-uint64 const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize);
+/**
+ * Provides a simple compile time checked template for the memory byteswap group.
+ */
+template<typename T>
+inline void byteswap() {
+    static_assert(std::is_integral<T>::value, "Invalid type for byteswap<T>()");
+    static_assert(1 < sizeof(T), "Invalid size for byteswap<T>()");
 
+    if constexpr(8 == sizeof(T)) {
+        if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
+            void* pFrom  = Interpreter::gpr<ABI::PTR_REG_0>().pAny;
+            void* pTo    = Interpreter::gpr<ABI::PTR_REG_1>().pAny;
+            if (pFrom && pTo) {
+                Host::Memory::byteswapQuad(pTo, pFrom, uSize);
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
+            } else {
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+            }
+        } else {
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
+        }
+    } else if constexpr(4 == sizeof(T)) {
+        if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
+            void* pFrom  = Interpreter::gpr<ABI::PTR_REG_0>().pAny;
+            void* pTo    = Interpreter::gpr<ABI::PTR_REG_1>().pAny;
+            if (pFrom && pTo) {
+                Host::Memory::byteswapLong(pTo, pFrom, uSize);
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
+            } else {
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+            }
+        } else {
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
+        }
+
+    } else if constexpr(2 == sizeof(T)) {
+        if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
+            void* pFrom  = Interpreter::gpr<ABI::PTR_REG_0>().pAny;
+            void* pTo    = Interpreter::gpr<ABI::PTR_REG_1>().pAny;
+            if (pFrom && pTo) {
+                Host::Memory::byteswapWord(pTo, pFrom, uSize);
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
+            } else {
+                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+            }
+        } else {
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
+        }
+    }
+}
+
+/**
+ * Provides a simple compile time checked template for the memory find group.
+ */
 template<typename T>
 inline void find() {
     static_assert(std::is_integral<T>::value, "Invalid type for find<T>()");
     if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
         if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
             if constexpr(8 == sizeof(T)) {
-                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)findQuad(
+                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)Host::Memory::findQuad(
                     pBuffer,
                     Interpreter::gpr<ABI::INT_REG_0>().uQuad,
                     uSize
                 );
             } else if constexpr(4 == sizeof(T)) {
-                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)findLong(
+                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)Host::Memory::findLong(
                     pBuffer,
                     Interpreter::gpr<ABI::INT_REG_0>().uLong,
                     uSize
                 );
             } else if constexpr(2 == sizeof(T)) {
-                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)findWord(
+                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)Host::Memory::findWord(
                     pBuffer,
                     Interpreter::gpr<ABI::INT_REG_0>().uWord,
                     uSize
                 );
             } else if constexpr(1 == sizeof(T)) {
-                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)std::memchr(
+                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)Host::Memory::findByte(
                     pBuffer,
-                    (int)Interpreter::gpr<ABI::INT_REG_0>().uByte,
+                    Interpreter::gpr<ABI::INT_REG_0>().uByte,
                     uSize
                 );
             }
