@@ -85,7 +85,8 @@ void NOINLINE Interpreter::handleBDC() {
         case Opcode::UGT_W: dyadic(SIZE_WORD); readDisplacement(); bcc(asUWord(pSrcEA)  > asUWord(pDstEA));   return;
         case Opcode::UGT_L: dyadic(SIZE_LONG); readDisplacement(); bcc(asULong(pSrcEA)  > asULong(pDstEA));   return;
         case Opcode::UGT_Q: dyadic(SIZE_QUAD); readDisplacement(); bcc(asUQuad(pSrcEA)  > asUQuad(pDstEA));   return;
-        case Opcode::FGT_S: dyadic(SIZE_LONG); readDisplacement(); bcc(asSingle(pSrcEA) > asSingle(pDstEA));  return;
+
+        case Opcode::FGT_S: dyadic(SIZE_LONG); readDisplacement(); bcc(asSingle(pSrcEA) > asSingle(pDstEA)); return;
         case Opcode::FGT_D: dyadic(SIZE_QUAD); readDisplacement(); bcc(asDouble(pSrcEA) > asDouble(pDstEA));  return;
 
         // Integer Bit position set

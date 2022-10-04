@@ -21,7 +21,7 @@
         "lib:standard_test_host/v1.0.0/mem.s",
         "lib:standard_test_host/v1.0.0/io.s",
         "src/main.s",
-        "src/sp_static.s"
+        "src/sp_stackonly.s"
     ],
     "defines": {
     }

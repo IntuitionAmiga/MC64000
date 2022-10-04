@@ -54,7 +54,7 @@ class FloatingPoint implements Defs\IFloatLimits {
         }
         $aMatches = self::match($sInput, $sPrefix);
         if (empty($aMatches)) {
-            throw new \InvalidArgumentException('Invalid literal format ' . $sInput);
+            throw new \InvalidArgumentException('Invalid float literal format ' . $sInput);
         }
 
         return self::parseMatch($aMatches, $iWordSize);

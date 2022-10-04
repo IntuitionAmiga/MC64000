@@ -45,6 +45,9 @@ abstract class Dyadic extends Monadic {
     protected ?string $sDstBytecode;
     protected ?string $sSrcBytecode;
 
+    // This should be a constant but requires evaluation of code.
+    protected string $sUnresolvedPC;
+
     /**
      * Base constructor
      */
@@ -55,6 +58,7 @@ abstract class Dyadic extends Monadic {
                 Defs\EffectiveAddress\ISameAsDestination::LEGAL
             );
         }
+        $this->sUnresolvedPC = chr(Defs\EffectiveAddress\IOther::PC_IND_DSP) . pack(Defs\IIntLimits::LONG_BIN_FORMAT, 0);
     }
 
     /**
@@ -117,7 +121,11 @@ abstract class Dyadic extends Monadic {
     protected function canOptimiseSourceOperand(string $sSrcBytecode, string $sDstBytecode): bool {
         // If the source operand bytecode is the same as the destination and the destination mode
         // is in the set defined by ISameAsDestination, we can use the special "same as destination" EA mode
-        return $sSrcBytecode === $sDstBytecode && isset(self::$aSameAsDestination[ord($sDstBytecode[0])]);
+
+        return
+            false === $this->isUnresolved($sDstBytecode) &&
+            $sSrcBytecode === $sDstBytecode &&
+            isset(self::$aSameAsDestination[ord($sDstBytecode[0])]);
     }
 
     /**
@@ -209,5 +217,9 @@ abstract class Dyadic extends Monadic {
      */
     protected function trapIllegal(string $sSrcBytecode, string $sDstBytecode): string {
         throw new \UnexpectedValueException('Immediate zero is an illegal source operand for this operation');
+    }
+
+    protected function isUnresolved(string $sBytecode): bool {
+        return $sBytecode === $this->sUnresolvedPC;
     }
 }
