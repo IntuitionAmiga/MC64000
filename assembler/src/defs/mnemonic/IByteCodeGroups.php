@@ -28,7 +28,7 @@ interface IByteCodeGroups {
         OFS_DATA_MOVE  = self::OFS_CONTROL    + 15,
         OFS_LOGICAL    = self::OFS_DATA_MOVE  + 45,
         OFS_ARITHMETIC = self::OFS_LOGICAL    + 54,
-        OFS_OTHER      = self::OFS_ARITHMETIC + 110,
+        OFS_OTHER      = self::OFS_ARITHMETIC + 115,
         OFS_MAX        = 255
     ;
 }
