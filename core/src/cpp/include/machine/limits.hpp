@@ -27,5 +27,15 @@ enum {
     MAX_STACK_SIZE  = 1 << 23
 };
 
+enum {
+    F_ZERO      =  0,
+    F_NONZERO   =  1,
+    F_NEGATIVE  =  2,
+    F_SUBNORMAL =  4,
+    F_INFINITE  =  8,
+    F_NAN       = 16,
+    F_UNKNOWN   = 32
+};
+
 } // namespace
 #endif

@@ -67,21 +67,37 @@ inline void rorQuad(uint64* puValue, uint8 uSize) {
     *puValue = (uint64)(val >> uSize | val << (64 - uSize));
 }
 
-inline uint8 mapFloatClassification(int iClass) {
+template<typename T>
+inline uint8 classifyFloat(T const & fValue) {
+    static_assert(
+        std::is_floating_point<T>::value,
+        "Invalid template type, must be float or double"
+    );
+
+    uint8 uResult = Limits::F_ZERO;
+    int iClass = std::fpclassify(fValue);
     switch (iClass) {
         case FP_ZERO:
-            return 0;
-        case FP_NORMAL:
-            return 1;
-        case FP_SUBNORMAL:
-            return 2;
-        case FP_INFINITE:
-            return 3;
+            return uResult;
         case FP_NAN:
+            return Limits::F_NAN;
+        case FP_SUBNORMAL:
+            uResult |= Limits::F_SUBNORMAL;
+            break;
+        case FP_INFINITE:
+            uResult |= Limits::F_INFINITE;
+            break;
+        case FP_NORMAL:
+            break;
         default:
-            return 4;
+            return Limits::F_UNKNOWN;
     }
+
+    uResult |= Limits::F_NONZERO;
+    uResult |= (uint8)((fValue < 0.0) ? Limits::F_NEGATIVE : 0);
+    return uResult;
 }
+
 
 } // namespace
 #endif

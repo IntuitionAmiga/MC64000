@@ -586,13 +586,13 @@ void Interpreter::run() {
 
             case Opcode::FINFO_S: {
                 dyadic2(SIZE_BYTE, SIZE_LONG);
-                asUByte(pDstEA) = mapFloatClassification(std::fpclassify(asSingle(pSrcEA)));
+                asUByte(pDstEA) = classifyFloat(asSingle(pSrcEA));
                 break;
             }
 
             case Opcode::FINFO_D: {
                 dyadic2(SIZE_BYTE, SIZE_QUAD);
-                asUByte(pDstEA) = mapFloatClassification(std::fpclassify(asDouble(pSrcEA)));
+                asUByte(pDstEA) = classifyFloat(asDouble(pSrcEA));
                 break;
             }
 
