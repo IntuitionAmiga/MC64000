@@ -76,7 +76,122 @@ interface IDataMove extends IByteCodeGroups {
         LEA          = self::OFS_DATA_MOVE + 41,
         PEA          = self::OFS_DATA_MOVE + 42,
         SCM          = self::OFS_DATA_MOVE + 43, // set conditional (monadic compare)
-        SCD          = self::OFS_DATA_MOVE + 44  // set conditional (dyadic compare)
+        SCD          = self::OFS_DATA_MOVE + 44,  // set conditional (dyadic compare)
+
+
+        // Set if <ea> == 0
+        SIZ_B   = self::SCM << 8 | ICondition::IEQ_B,
+        SIZ_W   = self::SCM << 8 | ICondition::IEQ_W,
+        SIZ_L   = self::SCM << 8 | ICondition::IEQ_L,
+        SIZ_Q   = self::SCM << 8 | ICondition::IEQ_Q,
+        FSIZ_S  = self::SCM << 8 | ICondition::FEQ_S,
+        FSIZ_D  = self::SCM << 8 | ICondition::FEQ_D,
+
+        // Set if <ea> != 0
+        SNZ_B   = self::SCM << 8 | ICondition::INE_B,
+        SNZ_W   = self::SCM << 8 | ICondition::INE_W,
+        SNZ_L   = self::SCM << 8 | ICondition::INE_L,
+        SNZ_Q   = self::SCM << 8 | ICondition::INE_Q,
+        FSNZ_S  = self::SCM << 8 | ICondition::FNE_S,
+        FSNZ_D  = self::SCM << 8 | ICondition::FNE_D,
+
+        // Set if <ea> < 0
+        SMI_B   = self::SCM << 8 | ICondition::ILT_B,
+        SMI_W   = self::SCM << 8 | ICondition::ILT_W,
+        SMI_L   = self::SCM << 8 | ICondition::ILT_L,
+        SMI_Q   = self::SCM << 8 | ICondition::ILT_Q,
+        FSMI_S  = self::SCM << 8 | ICondition::FLT_S,
+        FSMI_D  = self::SCM << 8 | ICondition::FLT_D,
+
+        // Set if <ea> > 0
+        SPL_B   = self::SCM << 8 | ICondition::IGT_B,
+        SPL_W   = self::SCM << 8 | ICondition::IGT_W,
+        SPL_L   = self::SCM << 8 | ICondition::IGT_L,
+        SPL_Q   = self::SCM << 8 | ICondition::IGT_Q,
+        FSPL_S  = self::SCM << 8 | ICondition::FGT_S,
+        FSPL_D  = self::SCM << 8 | ICondition::FGT_D,
+
+
+        // Set if <ea(s)> < <ea(d)>
+        SLO_B   = self::SCD << 8 | ICondition::ULT_B, // unsigned: Lower
+        SLO_W   = self::SCD << 8 | ICondition::ULT_W,
+        SLO_L   = self::SCD << 8 | ICondition::ULT_L,
+        SLO_Q   = self::SCD << 8 | ICondition::ULT_Q,
+
+        SLT_B   = self::SCD << 8 | ICondition::ILT_B, // signed: Less Than
+        SLT_W   = self::SCD << 8 | ICondition::ILT_W,
+        SLT_L   = self::SCD << 8 | ICondition::ILT_L,
+        SLT_Q   = self::SCD << 8 | ICondition::ILT_Q,
+        FSLT_S  = self::SCD << 8 | ICondition::FLT_S,
+        FSLT_D  = self::SCD << 8 | ICondition::FLT_D,
+
+        // Set if <ea(s)> <= <ea(d)>
+        SLS_B   = self::SCD << 8 | ICondition::ULE_B, // unsigned: Lower or Same
+        SLS_W   = self::SCD << 8 | ICondition::ULE_W,
+        SLS_L   = self::SCD << 8 | ICondition::ULE_L,
+        SLS_Q   = self::SCD << 8 | ICondition::ULE_Q,
+
+        SLE_B   = self::SCD << 8 | ICondition::ILE_B, // signed: Less or Equal
+        SLE_W   = self::SCD << 8 | ICondition::ILE_W,
+        SLE_L   = self::SCD << 8 | ICondition::ILE_L,
+        SLE_Q   = self::SCD << 8 | ICondition::ILE_Q,
+        FSLE_S  = self::SCD << 8 | ICondition::FLE_S,
+        FSLE_D  = self::SCD << 8 | ICondition::FLE_D,
+
+        // Set if <ea(s)> == <ea(d)>
+        SEQ_B   = self::SCD << 8 | ICondition::IEQ_B,
+        SEQ_W   = self::SCD << 8 | ICondition::IEQ_W,
+        SEQ_L   = self::SCD << 8 | ICondition::IEQ_L,
+        SEQ_Q   = self::SCD << 8 | ICondition::IEQ_Q,
+        FSEQ_S  = self::SCD << 8 | ICondition::FEQ_S,
+        FSEQ_D  = self::SCD << 8 | ICondition::FEQ_D,
+
+        // Set if <ea(s)> >= <ea(d)>
+        SHS_B   = self::SCD << 8 | ICondition::UGE_B, // unsigned: Higher or Same
+        SHS_W   = self::SCD << 8 | ICondition::UGE_W,
+        SHS_L   = self::SCD << 8 | ICondition::UGE_L,
+        SHS_Q   = self::SCD << 8 | ICondition::UGE_Q,
+
+        SGE_B   = self::SCD << 8 | ICondition::IGE_B, // signed: Greater or Equal
+        SGE_W   = self::SCD << 8 | ICondition::IGE_W,
+        SGE_L   = self::SCD << 8 | ICondition::IGE_L,
+        SGE_Q   = self::SCD << 8 | ICondition::IGE_Q,
+        FSGE_S  = self::SCD << 8 | ICondition::FGE_S,
+        FSGE_D  = self::SCD << 8 | ICondition::FGE_D,
+
+        // Set if <ea(s)> > <ea(d)>
+        SHI_B   = self::SCD << 8 | ICondition::UGT_B, // unsigned: Higher
+        SHI_W   = self::SCD << 8 | ICondition::UGT_W,
+        SHI_L   = self::SCD << 8 | ICondition::UGT_L,
+        SHI_Q   = self::SCD << 8 | ICondition::UGT_Q,
+
+        SGT_B   = self::SCD << 8 | ICondition::IGT_B, // signed: Greater Than
+        SGT_W   = self::SCD << 8 | ICondition::IGT_W,
+        SGT_L   = self::SCD << 8 | ICondition::IGT_L,
+        SGT_Q   = self::SCD << 8 | ICondition::IGT_Q,
+        FSGT_S  = self::SCD << 8 | ICondition::FGT_S,
+        FSGT_D  = self::SCD << 8 | ICondition::FGT_D,
+
+        // Set if <ea(s)> != <ea(d)>
+        SNE_B   = self::SCD << 8 | ICondition::INE_B,
+        SNE_W   = self::SCD << 8 | ICondition::INE_W,
+        SNE_L   = self::SCD << 8 | ICondition::INE_L,
+        SNE_Q   = self::SCD << 8 | ICondition::INE_Q,
+        FSNE_S  = self::SCD << 8 | ICondition::FNE_S,
+        FSNE_D  = self::SCD << 8 | ICondition::FNE_D,
+
+        // Set if bit set
+        SBS_B   = self::SCD << 8 | ICondition::BPS_B,
+        SBS_W   = self::SCD << 8 | ICondition::BPS_W,
+        SBS_L   = self::SCD << 8 | ICondition::BPS_L,
+        SBS_Q   = self::SCD << 8 | ICondition::BPS_Q,
+
+        // Set if bit clear
+        SBC_B   = self::SCD << 8 | ICondition::BPC_B,
+        SBC_W   = self::SCD << 8 | ICondition::BPC_W,
+        SBC_L   = self::SCD << 8 | ICondition::BPC_L,
+        SBC_Q   = self::SCD << 8 | ICondition::BPC_Q
+
     ;
 
 }
