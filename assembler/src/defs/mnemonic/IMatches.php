@@ -322,20 +322,6 @@ interface IMatches {
         'flog2.d'   => IArithmetic::FLOG2_D,
         'ftwotox.s' => IArithmetic::FTWOTOX_S,
         'ftwotox.d' => IArithmetic::FTWOTOX_D,
-/*
-        'reserved0',
-        'reserved1',
-        'reserved2',
-        'reserved3',
-        'reserved4',
-        'reserved5',
-        'reserved6',
-        'reserved7',
-        'reserved8',
-        'reserved9',
-        'reserved10',
-        'reserved11',
-*/
     ];
 
     // Subopcode matches (2 bytes)

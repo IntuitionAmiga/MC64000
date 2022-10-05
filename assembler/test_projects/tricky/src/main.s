@@ -25,7 +25,7 @@ main:
     ;fmove.s .float1, .float3
     ;fadd.s  .float2, .float3
     fbgt.s  .float3, .float1, .nerr
-
+    finfo.s .float1, d0
     rts
 
 
