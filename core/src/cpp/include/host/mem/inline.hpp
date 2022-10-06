@@ -21,6 +21,7 @@
 
 namespace MC64K::StandardTestHost::Mem {
 
+
 /**
  * Provides a simple compile time checked template for the memory fill group.
  */

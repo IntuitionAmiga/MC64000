@@ -16,11 +16,30 @@
 #include <cstring>
 #include <misc/scalar.hpp>
 #include <host/memory.hpp>
+
+
 namespace MC64K::Host::Memory {
 
-typedef uint8  u8x16 __attribute__ ((vector_size (16)));
-typedef uint16 u16x8 __attribute__ ((vector_size (16)));
-typedef uint32 u32x4 __attribute__ ((vector_size (16)));
+template<typename T>
+inline T* alignBlock(void* pAddress, uint64& uSize) {
+    uint64 uAddress = (uint64)pAddress;
+    if (uAddress & (sizeof(T) - 1)) {
+        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
+        --uSize;
+    }
+    return (T*)uAddress;
+}
+
+template<typename T>
+inline T const* alignBlock(void const* pAddress, uint64& uSize) {
+    uint64 uAddress = (uint64)pAddress;
+    if (uAddress & (sizeof(T) - 1)) {
+        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
+        --uSize;
+    }
+    return (T const*)uAddress;
+}
+
 
 /**
  * Returns a one-time initialised magic value
@@ -212,26 +231,9 @@ ElementBuffer::Result ElementBuffer::free(void* pElement) {
     return SUCCESS;
 }
 
-
-template<typename T>
-inline T* alignBlock(void* pAddress, uint64& uSize) {
-    uint64 uAddress = (uint64)pAddress;
-    if (uAddress & (sizeof(T) - 1)) {
-        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
-        --uSize;
-    }
-    return (T*)uAddress;
-}
-
-template<typename T>
-inline T const* alignBlock(void const* pAddress, uint64& uSize) {
-    uint64 uAddress = (uint64)pAddress;
-    if (uAddress & (sizeof(T) - 1)) {
-        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
-        --uSize;
-    }
-    return (T const*)uAddress;
-}
+#if defined(__AVX2__)
+#include <host/mem/avx2.hpp>
+#else
 
 /**
  * Fill a word aligned block with words. If the base addess is not aligned, filling starts from the next aligned
@@ -251,7 +253,7 @@ void fillWord(void* pBuffer, uint16 uValue, uint64 uSize) {
 }
 
 /**
- * Fill a long aligned block with longs. If the base adddess is not aligned, filling starts from the next aligned
+ * Fill a long aligned block with longs. If the base addess is not aligned, filling starts from the next aligned
  * address with one fewer element.
  *
  * @todo - explicit vectorisation of larger blocks.
@@ -283,6 +285,8 @@ void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
         *p++ = uValue;
     }
 }
+
+#endif
 
 /**
  * Locate the first occurence of a 16 bit value in a memory block. If the base address is not aligned, search starts

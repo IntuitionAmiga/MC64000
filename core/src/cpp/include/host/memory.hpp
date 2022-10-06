@@ -79,7 +79,7 @@ inline void copy(void* pDestination, void const* pSource, uint64 uSize) {
     std::memcpy(pDestination, pSource, uSize);
 }
 
-inline void fillByte(void* pBuffer, uint16 uValue, uint64 uSize) {
+inline void fillByte(void* pBuffer, uint8 uValue, uint64 uSize) {
     std::memset(pBuffer, uValue, uSize);
 }
 
