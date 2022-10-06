@@ -68,7 +68,7 @@ interface IMatches {
         'bpl.l'   => IControl::BPL_L,
         'bpl.q'   => IControl::BPL_Q,
         'fbpl.s'  => IControl::FBPL_S,
-        'fbpl.d'  => IControl::FBPL_Q,
+        'fbpl.d'  => IControl::FBPL_D,
 
         // Branch if <ea(s)> < <ea(d)>
         'blo.b'   => IControl::BLO_B, // unsigned: Lower
@@ -150,7 +150,6 @@ interface IMatches {
         'bbc.l'   => IControl::BBC_L,
         'bbc.q'   => IControl::BBC_Q,
 
-
         // Go on, why not?
         'dbnz'    => IControl::DBNZ,
 
@@ -193,6 +192,118 @@ interface IMatches {
 
         'finfo.s'  => IDataMove::FINFO_S,
         'finfo.d'  => IDataMove::FINFO_D,
+
+        // Set if <ea> == 0
+        'siz.b'   => IDataMove::SIZ_B,
+        'siz.w'   => IDataMove::SIZ_W,
+        'siz.l'   => IDataMove::SIZ_L,
+        'siz.q'   => IDataMove::SIZ_Q,
+        'fsiz.s'  => IDataMove::FSIZ_S,
+        'fsiz.d'  => IDataMove::FSIZ_D,
+
+        // Set if <ea> != 0
+        'snz.b'   => IDataMove::SNZ_B,
+        'snz.w'   => IDataMove::SNZ_W,
+        'snz.l'   => IDataMove::SNZ_L,
+        'snz.q'   => IDataMove::SNZ_Q,
+        'fsnz.s'  => IDataMove::FSNZ_S,
+        'fsnz.d'  => IDataMove::FSNZ_D,
+
+        // Set if <ea> < 0
+        'smi.b'   => IDataMove::SMI_B,
+        'smi.w'   => IDataMove::SMI_W,
+        'smi.l'   => IDataMove::SMI_L,
+        'smi.q'   => IDataMove::SMI_Q,
+        'fsmi.s'  => IDataMove::FSMI_S,
+        'fsmi.d'  => IDataMove::FSMI_D,
+
+        // Set if <ea> > 0
+        'spl.b'   => IDataMove::SPL_B,
+        'spl.w'   => IDataMove::SPL_W,
+        'spl.l'   => IDataMove::SPL_L,
+        'spl.q'   => IDataMove::SPL_Q,
+        'fspl.s'  => IDataMove::FSPL_S,
+        'fspl.d'  => IDataMove::FSPL_D,
+
+        // Set if <ea(s)> < <ea(d)>
+        'slo.b'   => IDataMove::SLO_B, // unsigned: Lower
+        'slo.w'   => IDataMove::SLO_W,
+        'slo.l'   => IDataMove::SLO_L,
+        'slo.q'   => IDataMove::SLO_Q,
+
+        'slt.b'   => IDataMove::SLT_B, // signed: Less Than
+        'slt.w'   => IDataMove::SLT_W,
+        'slt.l'   => IDataMove::SLT_L,
+        'slt.q'   => IDataMove::SLT_Q,
+        'fslt.s'  => IDataMove::FSLT_S,
+        'fslt.d'  => IDataMove::FSLT_D,
+
+        // Set if <ea(s)> <= <ea(d)>
+        'sls.b'   => IDataMove::SLS_B, // unsigned: Lower or Same
+        'sls.w'   => IDataMove::SLS_W,
+        'sls.l'   => IDataMove::SLS_L,
+        'sls.q'   => IDataMove::SLS_Q,
+
+        'sle.b'   => IDataMove::SLE_B, // signed: Less or Equal
+        'sle.w'   => IDataMove::SLE_W,
+        'sle.l'   => IDataMove::SLE_L,
+        'sle.q'   => IDataMove::SLE_Q,
+        'fsle.s'  => IDataMove::FSLE_S,
+        'fsle.d'  => IDataMove::FSLE_D,
+
+        // Set if <ea(s)> == <ea(d)>
+        'seq.b'   => IDataMove::SEQ_B,
+        'seq.w'   => IDataMove::SEQ_W,
+        'seq.l'   => IDataMove::SEQ_L,
+        'seq.q'   => IDataMove::SEQ_Q,
+        'fseq.s'  => IDataMove::FSEQ_S,
+        'fseq.d'  => IDataMove::FSEQ_D,
+
+        // Set if <ea(s)> >= <ea(d)>
+        'shs.b'   => IDataMove::SHS_B, // unsigned: Higher or Same
+        'shs.w'   => IDataMove::SHS_W,
+        'shs.l'   => IDataMove::SHS_L,
+        'shs.q'   => IDataMove::SHS_Q,
+
+        'sge.b'   => IDataMove::SGE_B, // signed: Greater or Equal
+        'sge.w'   => IDataMove::SGE_W,
+        'sge.l'   => IDataMove::SGE_L,
+        'sge.q'   => IDataMove::SGE_Q,
+        'fsge.s'  => IDataMove::FSGE_S,
+        'fsge.d'  => IDataMove::FSGE_D,
+
+        // Set if <ea(s)> > <ea(d)>
+        'shi.b'   => IDataMove::SHI_B, // unsigned: Higher
+        'shi.w'   => IDataMove::SHI_W,
+        'shi.l'   => IDataMove::SHI_L,
+        'shi.q'   => IDataMove::SHI_Q,
+
+        'sgt.b'   => IDataMove::SGT_B , // signed: Greater Than
+        'sgt.w'   => IDataMove::SGT_W ,
+        'sgt.l'   => IDataMove::SGT_L ,
+        'sgt.q'   => IDataMove::SGT_Q ,
+        'fsgt.s'  => IDataMove::FSGT_S,
+        'fsgt.d'  => IDataMove::FSGT_D,
+
+        // Set if <ea(s)> != <ea(d)>
+        'sne.b'   => IDataMove::SNE_B ,
+        'sne.w'   => IDataMove::SNE_W ,
+        'sne.l'   => IDataMove::SNE_L ,
+        'sne.q'   => IDataMove::SNE_Q ,
+        'fsne.s'  => IDataMove::FSNE_S,
+        'fsne.d'  => IDataMove::FSNE_D,
+
+        // Set if bit set
+        'sbs.b'   => IDataMove::SBS_B,
+        'sbs.w'   => IDataMove::SBS_W,
+        'sbs.l'   => IDataMove::SBS_L,
+        'sbs.q'   => IDataMove::SBS_Q,
+
+        // Set if bit clear
+        'sbc.b'   => IDataMove::SBC_B,
+        'sbc.w'   => IDataMove::SBC_W,
+        'sbc.l'   => IDataMove::SBC_L,
+        'sbc.q'   => IDataMove::SBC_Q,
 
         // Logical
         'and.b'    => ILogical::AND_B,

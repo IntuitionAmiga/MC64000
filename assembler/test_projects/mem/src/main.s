@@ -43,21 +43,19 @@ main:
     move.q  #1, d5
     clr.q   r12
 
-    ;lsr.q   #3, d2 ; setting quad
-
 .loop:
     move.q  a2, a0
     move.q  d2, d1
+    lsr.q   #3, d1 ; // quads
     move.b  d3, d0
     nanotime                  ; writes current nanotime to r14
     move.q  r14, r13          ; start
-    hcf     mem_fill_byte
+    hcf     mem_fill_quad
     nanotime
     sub.q   r13,  r14         ; elapsed
     add.q   r14,  r12         ; total
     add.q   d5, d3
     dbnz    d4, .loop
-
 
     lea     .txt_elapsed_1, a0
     hcf     io_print_string
