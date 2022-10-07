@@ -71,9 +71,9 @@ void eorWord(void* pBuffer, uint16 uValue, uint64 uSize) {
 
     // @todo: unroll me?
     for (; pviDestination < pAlignedTop; pviDestination++) {
-         __m256i vTemp = _mm256_stream_load_si256(pviDestination);
+        __m256i vTemp = _mm256_load_si256(pviDestination);
          __m256i vOut  = _mm256_xor_si256(vTemp, vValue);
-         _mm256_stream_si256(pviDestination, vOut);
+        _mm256_store_si256(pviDestination, vOut);
     }
 
     // do the misaligned tail
@@ -116,11 +116,9 @@ void eorLong(void* pBuffer, uint32 uValue, uint64 uSize) {
 
     // @todo: unroll me?
      for (; pviDestination < pAlignedTop; pviDestination++) {
-        //__m256i vTemp = _mm256_stream_load_si256(pviDestination);
         __m256i vTemp = _mm256_load_si256(pviDestination);
          __m256i vOut  = _mm256_xor_si256(vTemp, vValue);
-        _mm256_stream_si256(pviDestination, vOut);
-        //_mm256_store_si256(pviDestination, vOut);
+        _mm256_store_si256(pviDestination, vOut);
     }
 
     // do the misaligned tail
@@ -163,9 +161,9 @@ void eorQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
 
     // @todo: unroll me?
     for (; pviDestination < pAlignedTop; pviDestination++) {
-         __m256i vTemp = _mm256_stream_load_si256(pviDestination);
+        __m256i vTemp = _mm256_load_si256(pviDestination);
          __m256i vOut  = _mm256_xor_si256(vTemp, vValue);
-         _mm256_stream_si256(pviDestination, vOut);
+        _mm256_store_si256(pviDestination, vOut);
     }
 
     // do the misaligned tail
