@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_MEM_AVX2_HPP
-    #define MC64K_STANDARD_TEST_HOST_MEM_AVX2_HPP
+#ifndef MC64K_STANDARD_TEST_HOST_MEM_AVX2_FILL_HPP
+    #define MC64K_STANDARD_TEST_HOST_MEM_AVX2_FILL_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -19,6 +19,10 @@
 #endif
 
 #include <immintrin.h>
+#include <misc/scalar.hpp>
+#include <host/memory.hpp>
+
+namespace MC64K::Host::Memory {
 
 /**
  * Fill a word aligned block with words. If the base addess is not aligned, filling starts from the next aligned
@@ -32,7 +36,7 @@
  */
 void fillWord(void* pBuffer, uint16 uValue, uint64 uSize) {
     int16* piDestination = (int16*)__builtin_assume_aligned(
-        alignBlock<int16>(pBuffer, uSize),
+        alignBlockOf<int16>(pBuffer, uSize),
         sizeof(int16)
     );
 
@@ -54,12 +58,12 @@ void fillWord(void* pBuffer, uint16 uValue, uint64 uSize) {
     }
 
     // do the aligned middle bit
-    __m256i  v16iValue       = _mm256_set1_epi16(iValue);
+    __m256i  vValue         = _mm256_set1_epi16(iValue);
     __m256i* pviDestination = (__m256i*)piDestination;
 
     // @todo: unroll me?
     for (; pviDestination < pAlignedTop; pviDestination++) {
-        _mm256_stream_si256(pviDestination, v16iValue);
+        _mm256_stream_si256(pviDestination, vValue);
     }
 
     // do the misaligned tail
@@ -68,7 +72,6 @@ void fillWord(void* pBuffer, uint16 uValue, uint64 uSize) {
         *piDestination++ = iValue;
     }
 }
-
 
 /**
  * Fill a long aligned block with longs. If the base addess is not aligned, filling starts from the next aligned
@@ -82,7 +85,7 @@ void fillWord(void* pBuffer, uint16 uValue, uint64 uSize) {
  */
 void fillLong(void* pBuffer, uint32 uValue, uint64 uSize) {
     int32* piDestination = (int32*)__builtin_assume_aligned(
-        alignBlock<int32>(pBuffer, uSize),
+        alignBlockOf<int32>(pBuffer, uSize),
         sizeof(int32)
     );
     int32 iValue             = (int32)uValue;
@@ -103,12 +106,12 @@ void fillLong(void* pBuffer, uint32 uValue, uint64 uSize) {
     }
 
     // do the aligned middle bit
-    __m256i  v8iValue       = _mm256_set1_epi32(iValue);
+    __m256i  vValue       = _mm256_set1_epi32(iValue);
     __m256i* pviDestination = (__m256i*)piDestination;
 
     // @todo: unroll me?
     for (; pviDestination < pAlignedTop; pviDestination++) {
-        _mm256_stream_si256(pviDestination, v8iValue);
+        _mm256_stream_si256(pviDestination, vValue);
     }
 
     // do the misaligned tail
@@ -130,7 +133,7 @@ void fillLong(void* pBuffer, uint32 uValue, uint64 uSize) {
  */
 void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
     int64* piDestination = (int64*)__builtin_assume_aligned(
-        alignBlock<int64>(pBuffer, uSize),
+        alignBlockOf<int64>(pBuffer, uSize),
         sizeof(int64)
     );
     int64 iValue             = (int64)uValue;
@@ -151,12 +154,12 @@ void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
     }
 
     // do the aligned middle bit
-    __m256i  v8iValue       = _mm256_set1_epi64x(iValue);
+    __m256i  vValue       = _mm256_set1_epi64x(iValue);
     __m256i* pviDestination = (__m256i*)piDestination;
 
     // @todo: unroll me?
     for (; pviDestination < pAlignedTop; pviDestination++) {
-        _mm256_stream_si256(pviDestination, v8iValue);
+        _mm256_stream_si256(pviDestination, vValue);
     }
 
     // do the misaligned tail
@@ -166,4 +169,5 @@ void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
     }
 }
 
+} // namespace
 #endif

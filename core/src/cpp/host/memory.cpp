@@ -17,32 +17,29 @@
 #include <misc/scalar.hpp>
 #include <host/memory.hpp>
 
+#if defined(__AVX2__)
+    #include <host/mem/avx2/fill.hpp>
+    #include <host/mem/generic/and.hpp>
+    #include <host/mem/generic/or.hpp>
+    #include <host/mem/avx2/eor.hpp>
+    #include <host/mem/generic/swap.hpp>
+    #include <host/mem/generic/find.hpp>
+#else
+    #include <host/mem/generic/fill.hpp>
+    #include <host/mem/generic/and.hpp>
+    #include <host/mem/generic/or.hpp>
+    #include <host/mem/generic/eor.hpp>
+    #include <host/mem/generic/swap.hpp>
+    #include <host/mem/generic/find.hpp>
+#endif
 
 namespace MC64K::Host::Memory {
 
-template<typename T>
-inline T* alignBlock(void* pAddress, uint64& uSize) {
-    uint64 uAddress = (uint64)pAddress;
-    if (uAddress & (sizeof(T) - 1)) {
-        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
-        --uSize;
-    }
-    return (T*)uAddress;
-}
-
-template<typename T>
-inline T const* alignBlock(void const* pAddress, uint64& uSize) {
-    uint64 uAddress = (uint64)pAddress;
-    if (uAddress & (sizeof(T) - 1)) {
-        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
-        --uSize;
-    }
-    return (T const*)uAddress;
-}
-
-
 /**
  * Returns a one-time initialised magic value
+ *
+ * @param ElementBuffer const* pBuffer
+ * @return uint64
  */
 uint64 ElementBuffer::getMagic(ElementBuffer const* pBuffer) {
     static uint64 uElementBufferMagic = 0;
@@ -231,152 +228,6 @@ ElementBuffer::Result ElementBuffer::free(void* pElement) {
     return SUCCESS;
 }
 
-#if defined(__AVX2__)
-#include <host/mem/avx2.hpp>
-#else
-
-/**
- * Fill a word aligned block with words. If the base addess is not aligned, filling starts from the next aligned
- * address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param void*  pBuffer
- * @param uint16 uValue
- * @param uint64 uSize
- */
-void fillWord(void* pBuffer, uint16 uValue, uint64 uSize) {
-    uint16* p = (uint16*)__builtin_assume_aligned(alignBlock<uint16>(pBuffer, uSize), sizeof(uint16));
-    while (uSize--) {
-        *p++ = uValue;
-    }
-}
-
-/**
- * Fill a long aligned block with longs. If the base addess is not aligned, filling starts from the next aligned
- * address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param void*  pBuffer
- * @param uint32 uValue
- * @param uint64 uSize
- */
-void fillLong(void* pBuffer, uint32 uValue, uint64 uSize) {
-    uint32* p = (uint32*)__builtin_assume_aligned(alignBlock<uint32>(pBuffer, uSize), sizeof(uint32));
-    while (uSize--) {
-        *p++ = uValue;
-    }
-}
-
-/**
- * Fill a word aligned block with words. If the base adddess is not aligned, filling starts from the next aligned
- * address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param void*  pBuffer
- * @param uint64 uValue
- * @param uint64 uSize
- */
-void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
-    uint64* p = (uint64*)__builtin_assume_aligned(alignBlock<uint64>(pBuffer, uSize), sizeof(uint64));
-    while (uSize--) {
-        *p++ = uValue;
-    }
-}
-
-#endif
-
-/**
- * Locate the first occurence of a 16 bit value in a memory block. If the base address is not aligned, search starts
- * from the next aligned address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param  void const*    pBuffer
- * @param  uint16         uValue
- * @param  uint64         uSize
- * @return uint16 const*  pFound
- */
-uint16 const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize) {
-    uint16 const* p = (uint16 const*)__builtin_assume_aligned(alignBlock<uint16>(pBuffer, uSize), sizeof(uint16));
-    while (uSize--) {
-        if (uValue == *p) {
-            return p;
-        }
-        ++p;
-    }
-    return 0;
-}
-
-/**
- * Locate the first occurence of a 32 bit value in a memory block. If the base address is not aligned, search starts
- * from the next aligned address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param  void const*    pBuffer
- * @param  uint32         uValue
- * @param  uint64         uSize
- * @return uint32 const*  pFound
- */
-uint32 const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize) {
-    uint32 const* p = (uint32 const*)__builtin_assume_aligned(alignBlock<uint32>(pBuffer, uSize), sizeof(uint32));
-    while (uSize--) {
-        if (uValue == *p) {
-            return p;
-        }
-        ++p;
-    }
-    return 0;
-}
-
-/**
- * Locate the first occurence of a 64 bit value in a memory block. If the base address is not aligned, search starts
- * from the next aligned address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks
- *
- * @param  void const*   pBuffer
- * @param  uint64        uValue
- * @param  uint64        uSize
- * @return uint64 const* pFound
- */
-uint64 const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize) {
-    uint64 const* p = (uint64 const*)__builtin_assume_aligned(alignBlock<uint64>(pBuffer, uSize), sizeof(uint64));
-    while (uSize--) {
-        if (uValue == *p) {
-            return p;
-        }
-        ++p;
-    }
-    return 0;
-}
-
-void byteswapWord(void* pDestination, void const* pSource, uint64 uCount) {
-    uint16*       pDstWord = (uint16*)pDestination;
-    uint16 const* pSrcWord = (uint16 const*)pSource;
-    for (uint64 u=0; u < uCount; ++u) {
-        pDstWord[u] = __builtin_bswap16(pSrcWord[u]);
-    }
-}
-
-void byteswapLong(void* pDestination, void const* pSource, uint64 uCount) {
-    uint32*       pDstWord = (uint32*)pDestination;
-    uint32 const* pSrcWord = (uint32 const*)pSource;
-    for (uint64 u=0; u < uCount; ++u) {
-        pDstWord[u] = __builtin_bswap32(pSrcWord[u]);
-    }
-}
-
-void byteswapQuad(void* pDestination, void const* pSource, uint64 uCount) {
-    uint64*       pDstWord = (uint64*)pDestination;
-    uint64 const* pSrcWord = (uint64 const*)pSource;
-    for (uint64 u=0; u < uCount; ++u) {
-        pDstWord[u] = __builtin_bswap64(pSrcWord[u]);
-    }
-}
 
 } // namespace
 

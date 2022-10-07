@@ -98,6 +98,51 @@ uint16 const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize);
 uint32 const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize);
 uint64 const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize);
 
+void andByte(void* pBuffer, uint8  uValue, uint64 uSize);
+void andWord(void* pBuffer, uint16 uValue, uint64 uSize);
+void andLong(void* pBuffer, uint32 uValue, uint64 uSize);
+void andQuad(void* pBuffer, uint64 uValue, uint64 uSize);
+
+void orByte(void* pBuffer, uint8  uValue, uint64 uSize);
+void orWord(void* pBuffer, uint16 uValue, uint64 uSize);
+void orLong(void* pBuffer, uint32 uValue, uint64 uSize);
+void orQuad(void* pBuffer, uint64 uValue, uint64 uSize);
+
+void eorByte(void* pBuffer, uint8  uValue, uint64 uSize);
+void eorWord(void* pBuffer, uint16 uValue, uint64 uSize);
+void eorLong(void* pBuffer, uint32 uValue, uint64 uSize);
+void eorQuad(void* pBuffer, uint64 uValue, uint64 uSize);
+
+/**
+ * Align a non-const block of memory to some elemental scalar size by
+ * rounding up the start address and reducing the count when this happens.
+ * The count is passed by reference to permit adjustment.
+ */
+template<typename T>
+inline T* alignBlockOf(void* pAddress, uint64& uSize) {
+    uint64 uAddress = (uint64)pAddress;
+    if (uAddress & (sizeof(T) - 1)) {
+        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
+        --uSize;
+    }
+    return (T*)uAddress;
+}
+
+/**
+ * Align a const block of memory to some elemental scalar size by
+ * rounding up the start address and reducing the count when this happens.
+ * The count is passed by reference to permit adjustment.
+ */
+template<typename T>
+inline T const* alignBlockOf(void const* pAddress, uint64& uSize) {
+    uint64 uAddress = (uint64)pAddress;
+    if (uAddress & (sizeof(T) - 1)) {
+        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
+        --uSize;
+    }
+    return (T const*)uAddress;
+}
+
 } // namespace
 
 #endif
