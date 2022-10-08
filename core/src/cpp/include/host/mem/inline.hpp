@@ -33,15 +33,7 @@ inline void fillBlock() {
     static_assert(std::is_integral<T>::value, "Invalid type for fillBlock<T>()");
     if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
         if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
-            if constexpr(8 == sizeof(T)) {
-                Host::Memory::fillQuad(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uQuad, uSize);
-            } else if constexpr(4 == sizeof(T)) {
-                Host::Memory::fillLong (pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uLong, uSize);
-            } else if constexpr(2 == sizeof(T)) {
-                Host::Memory::fillWord(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uWord, uSize);
-            } else if constexpr(1 == sizeof(T)) {
-                Host::Memory::fillByte(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uByte, uSize);
-            }
+            Host::Memory::fill<T>(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().value<T>(), uSize);
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
         } else {
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
@@ -50,6 +42,52 @@ inline void fillBlock() {
         Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
     }
 }
+
+template<typename T>
+inline void andBlock() {
+    static_assert(std::is_integral<T>::value, "Invalid type for andBlock<T>()");
+    if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
+        if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
+            Host::Memory::bitwiseAnd<T>(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().value<T>(), uSize);
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
+        } else {
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+        }
+    } else {
+        Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
+    }
+}
+
+template<typename T>
+inline void orBlock() {
+    static_assert(std::is_integral<T>::value, "Invalid type for orBlock<T>()");
+    if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
+        if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
+            Host::Memory::bitwiseOr<T>(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().value<T>(), uSize);
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
+        } else {
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+        }
+    } else {
+        Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
+    }
+}
+
+template<typename T>
+inline void eorBlock() {
+    static_assert(std::is_integral<T>::value, "Invalid type for eorBlock<T>()");
+    if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
+        if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
+            Host::Memory::bitwiseXor<T>(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().value<T>(), uSize);
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
+        } else {
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+        }
+    } else {
+        Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
+    }
+}
+
 
 /**
  * Provides a simple compile time checked template for the memory byteswap group.
@@ -134,75 +172,6 @@ inline void findBlock() {
                     Interpreter::gpr<ABI::INT_REG_0>().uByte,
                     uSize
                 );
-            }
-            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
-        } else {
-            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
-        }
-    } else {
-        Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
-    }
-}
-
-template<typename T>
-inline void andBlock() {
-    static_assert(std::is_integral<T>::value, "Invalid type for andBlock<T>()");
-    if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
-        if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
-            if constexpr(8 == sizeof(T)) {
-                Host::Memory::andQuad(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uQuad, uSize);
-            } else if constexpr(4 == sizeof(T)) {
-                Host::Memory::andLong (pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uLong, uSize);
-            } else if constexpr(2 == sizeof(T)) {
-                Host::Memory::andWord(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uWord, uSize);
-            } else if constexpr(1 == sizeof(T)) {
-                Host::Memory::andByte(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uByte, uSize);
-            }
-            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
-        } else {
-            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
-        }
-    } else {
-        Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
-    }
-}
-
-template<typename T>
-inline void orBlock() {
-    static_assert(std::is_integral<T>::value, "Invalid type for orBlock<T>()");
-    if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
-        if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
-            if constexpr(8 == sizeof(T)) {
-                Host::Memory::orQuad(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uQuad, uSize);
-            } else if constexpr(4 == sizeof(T)) {
-                Host::Memory::orLong (pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uLong, uSize);
-            } else if constexpr(2 == sizeof(T)) {
-                Host::Memory::orWord(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uWord, uSize);
-            } else if constexpr(1 == sizeof(T)) {
-                Host::Memory::orByte(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uByte, uSize);
-            }
-            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
-        } else {
-            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
-        }
-    } else {
-        Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
-    }
-}
-
-template<typename T>
-inline void eorBlock() {
-    static_assert(std::is_integral<T>::value, "Invalid type for eorBlock<T>()");
-    if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
-        if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
-            if constexpr(8 == sizeof(T)) {
-                Host::Memory::eorQuad(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uQuad, uSize);
-            } else if constexpr(4 == sizeof(T)) {
-                Host::Memory::eorLong (pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uLong, uSize);
-            } else if constexpr(2 == sizeof(T)) {
-                Host::Memory::eorWord(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uWord, uSize);
-            } else if constexpr(1 == sizeof(T)) {
-                Host::Memory::eorByte(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uByte, uSize);
             }
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
         } else {

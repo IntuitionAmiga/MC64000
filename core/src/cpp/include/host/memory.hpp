@@ -79,13 +79,18 @@ inline void copy(void* pDestination, void const* pSource, uint64 uSize) {
     std::memcpy(pDestination, pSource, uSize);
 }
 
-inline void fillByte(void* pBuffer, uint8 uValue, uint64 uSize) {
-    std::memset(pBuffer, uValue, uSize);
-}
+template<typename T>
+void fill(void* pBuffer, T uValue, uint64 uSize);
 
-void fillWord(void* pBuffer, uint16 uValue, uint64 uSize);
-void fillLong(void* pBuffer, uint32 uValue, uint64 uSize);
-void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize);
+template<typename T>
+void bitwiseAnd(void* pBuffer, T uValue, uint64 uSize);
+
+template<typename T>
+void bitwiseOr(void* pBuffer, T uValue, uint64 uSize);
+
+template<typename T>
+void bitwiseXor(void* pBuffer, T uValue, uint64 uSize);
+
 void byteswapWord(void* pDestination, void const* pSource, uint64 uCount);
 void byteswapLong(void* pDestination, void const* pSource, uint64 uCount);
 void byteswapQuad(void* pDestination, void const* pSource, uint64 uCount);
@@ -97,21 +102,6 @@ inline uint8  const* findByte(void const* pBuffer, uint8  uValue, uint64 uSize) 
 uint16 const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize);
 uint32 const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize);
 uint64 const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize);
-
-void andByte(void* pBuffer, uint8  uValue, uint64 uSize);
-void andWord(void* pBuffer, uint16 uValue, uint64 uSize);
-void andLong(void* pBuffer, uint32 uValue, uint64 uSize);
-void andQuad(void* pBuffer, uint64 uValue, uint64 uSize);
-
-void orByte(void* pBuffer, uint8  uValue, uint64 uSize);
-void orWord(void* pBuffer, uint16 uValue, uint64 uSize);
-void orLong(void* pBuffer, uint32 uValue, uint64 uSize);
-void orQuad(void* pBuffer, uint64 uValue, uint64 uSize);
-
-void eorByte(void* pBuffer, uint8  uValue, uint64 uSize);
-void eorWord(void* pBuffer, uint16 uValue, uint64 uSize);
-void eorLong(void* pBuffer, uint32 uValue, uint64 uSize);
-void eorQuad(void* pBuffer, uint64 uValue, uint64 uSize);
 
 /**
  * Align a non-const block of memory to some elemental scalar size by

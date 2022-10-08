@@ -18,22 +18,34 @@
 #include <host/memory.hpp>
 
 #if defined(__AVX2__)
-    #include <host/mem/avx2/fill.hpp>
-    #include <host/mem/generic/and.hpp>
-    #include <host/mem/generic/or.hpp>
-    #include <host/mem/avx2/eor.hpp>
+    #include <host/mem/avx2/functions.hpp>
     #include <host/mem/generic/swap.hpp>
     #include <host/mem/generic/find.hpp>
 #else
-    #include <host/mem/generic/fill.hpp>
-    #include <host/mem/generic/and.hpp>
-    #include <host/mem/generic/or.hpp>
-    #include <host/mem/generic/eor.hpp>
+    #include <host/mem/generic/functions.hpp>
     #include <host/mem/generic/swap.hpp>
     #include <host/mem/generic/find.hpp>
 #endif
 
 namespace MC64K::Host::Memory {
+
+// Template instantiations
+template void fill<uint8>(void* pBuffer, uint8 uValue, uint64 uSize);
+template void fill<uint16>(void* pBuffer, uint16 uValue, uint64 uSize);
+template void fill<uint32>(void* pBuffer, uint32 uValue, uint64 uSize);
+template void fill<uint64>(void* pBuffer, uint64 uValue, uint64 uSize);
+template void bitwiseAnd<uint8>(void* pBuffer, uint8 uValue, uint64 uSize);
+template void bitwiseAnd<uint16>(void* pBuffer, uint16 uValue, uint64 uSize);
+template void bitwiseAnd<uint32>(void* pBuffer, uint32 uValue, uint64 uSize);
+template void bitwiseAnd<uint64>(void* pBuffer, uint64 uValue, uint64 uSize);
+template void bitwiseOr<uint8>(void* pBuffer, uint8 uValue, uint64 uSize);
+template void bitwiseOr<uint16>(void* pBuffer, uint16 uValue, uint64 uSize);
+template void bitwiseOr<uint32>(void* pBuffer, uint32 uValue, uint64 uSize);
+template void bitwiseOr<uint64>(void* pBuffer, uint64 uValue, uint64 uSize);
+template void bitwiseXor<uint8>(void* pBuffer, uint8 uValue, uint64 uSize);
+template void bitwiseXor<uint16>(void* pBuffer, uint16 uValue, uint64 uSize);
+template void bitwiseXor<uint32>(void* pBuffer, uint32 uValue, uint64 uSize);
+template void bitwiseXor<uint64>(void* pBuffer, uint64 uValue, uint64 uSize);
 
 /**
  * Returns a one-time initialised magic value

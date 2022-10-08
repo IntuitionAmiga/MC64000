@@ -19,153 +19,60 @@
 #endif
 
 #include <immintrin.h>
+#include <type_traits>
 #include <misc/scalar.hpp>
 #include <host/memory.hpp>
 
 namespace MC64K::Host::Memory {
 
-/**
- * Fill a word aligned block with words. If the base addess is not aligned, filling starts from the next aligned
- * address with one fewer element.
- *
- * AVX2 implementation
- *
- * @param void*  pBuffer
- * @param uint16 uValue
- * @param uint64 uSize
- */
-void fillWord(void* pBuffer, uint16 uValue, uint64 uSize) {
-    int16* piDestination = (int16*)__builtin_assume_aligned(
-        alignBlockOf<int16>(pBuffer, uSize),
-        sizeof(int16)
-    );
+template<typename T>
+void fill(void* pBuffer, T uValue, uint64 uSize) {
+    static_assert(std::is_integral<T>::value, "Invalid type for fill<T>()");
 
-    int16 iValue             = (int16)uValue;
-    int16 const* piFinal     = piDestination + uSize;
-    int16 const* pAlignedBot = (int16*)(
-        (((uint64)piDestination) + sizeof(__m256i) - 1) &
-        ~(sizeof(__m256i) - 1)
-    );
+    if constexpr(1 == sizeof(T)) {
+        std::memset(pBuffer, uValue, uSize);
+    } else {
+        T* piDestination = (T*)__builtin_assume_aligned(
+            alignBlockOf<T>(pBuffer, uSize),
+            sizeof(T)
+        );
+        T const* piFinal     = piDestination + uSize;
+        T const* pAlignedBot = (T*)(
+            (((uint64)piDestination) + sizeof(__m256i) - 1) &
+            ~(sizeof(__m256i) - 1)
+        );
 
-    __m256i const* pAlignedTop = (__m256i*)(
-        (((uint64)piFinal)) &
-        ~(sizeof(__m256i) - 1)
-    );
+        // do the misaligned lead in
+        while (piDestination < pAlignedBot && uSize-- > 0) {
+            *piDestination++ = uValue;
+        }
 
-    // do the misaligned lead in
-    while (piDestination < pAlignedBot && uSize-- > 0) {
-        *piDestination++ = iValue;
-    }
+        __m256i const* pAlignedTop = (__m256i*)(
+            (((uint64)piFinal)) &
+            ~(sizeof(__m256i) - 1)
+        );
 
-    // do the aligned middle bit
-    __m256i  vValue         = _mm256_set1_epi16(iValue);
-    __m256i* pviDestination = (__m256i*)piDestination;
+        __m256i vValue;
+        if constexpr(2 == sizeof(T)) {
+            vValue = _mm256_set1_epi16((int16)uValue);
+        } else if constexpr(4 == sizeof(T)) {
+            vValue = _mm256_set1_epi32((int32)uValue);
+        } else if constexpr(8 == sizeof(T)) {
+            vValue = _mm256_set1_epi64x((int64)uValue);
+        }
 
-    // @todo: unroll me?
-    for (; pviDestination < pAlignedTop; pviDestination++) {
-        _mm256_stream_si256(pviDestination, vValue);
-    }
+        __m256i* pviDestination = (__m256i*)piDestination;
 
-    // do the misaligned tail
-    piDestination = (int16*)pAlignedTop;
-    while (piDestination < piFinal) {
-        *piDestination++ = iValue;
-    }
-}
+        // @todo: unroll me?
+        for (; pviDestination < pAlignedTop; pviDestination++) {
+            _mm256_stream_si256(pviDestination, vValue);
+        }
 
-/**
- * Fill a long aligned block with longs. If the base addess is not aligned, filling starts from the next aligned
- * address with one fewer element.
- *
- * AVX2 implementation
- *
- * @param void*  pBuffer
- * @param uint32 uValue
- * @param uint64 uSize
- */
-void fillLong(void* pBuffer, uint32 uValue, uint64 uSize) {
-    int32* piDestination = (int32*)__builtin_assume_aligned(
-        alignBlockOf<int32>(pBuffer, uSize),
-        sizeof(int32)
-    );
-    int32 iValue             = (int32)uValue;
-    int32 const* piFinal     = piDestination + uSize;
-    int32 const* pAlignedBot = (int32*)(
-        (((uint64)piDestination) + sizeof(__m256i) - 1) &
-        ~(sizeof(__m256i) - 1)
-    );
-
-    __m256i const* pAlignedTop = (__m256i*)(
-        (((uint64)piFinal)) &
-        ~(sizeof(__m256i) - 1)
-    );
-
-    // do the misaligned lead in
-    while (piDestination < pAlignedBot && uSize-- > 0) {
-        *piDestination++ = iValue;
-    }
-
-    // do the aligned middle bit
-    __m256i  vValue       = _mm256_set1_epi32(iValue);
-    __m256i* pviDestination = (__m256i*)piDestination;
-
-    // @todo: unroll me?
-    for (; pviDestination < pAlignedTop; pviDestination++) {
-        _mm256_stream_si256(pviDestination, vValue);
-    }
-
-    // do the misaligned tail
-    piDestination = (int32*)pAlignedTop;
-    while (piDestination < piFinal) {
-        *piDestination++ = iValue;
-    }
-}
-
-/**
- * Fill a word aligned block with words. If the base adddess is not aligned, filling starts from the next aligned
- * address with one fewer element.
- *
- * AVX2 implementation
- *
- * @param void*  pBuffer
- * @param uint64 uValue
- * @param uint64 uSize
- */
-void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize) {
-    int64* piDestination = (int64*)__builtin_assume_aligned(
-        alignBlockOf<int64>(pBuffer, uSize),
-        sizeof(int64)
-    );
-    int64 iValue             = (int64)uValue;
-    int64 const* piFinal     = piDestination + uSize;
-    int64 const* pAlignedBot = (int64*)(
-        (((uint64)piDestination) + sizeof(__m256i) - 1) &
-        ~(sizeof(__m256i) - 1)
-    );
-
-    __m256i const* pAlignedTop = (__m256i*)(
-        (((uint64)piFinal)) &
-        ~(sizeof(__m256i) - 1)
-    );
-
-    // do the misaligned lead in
-    while (piDestination < pAlignedBot && uSize-- > 0) {
-        *piDestination++ = iValue;
-    }
-
-    // do the aligned middle bit
-    __m256i  vValue       = _mm256_set1_epi64x(iValue);
-    __m256i* pviDestination = (__m256i*)piDestination;
-
-    // @todo: unroll me?
-    for (; pviDestination < pAlignedTop; pviDestination++) {
-        _mm256_stream_si256(pviDestination, vValue);
-    }
-
-    // do the misaligned tail
-    piDestination = (int64*)pAlignedTop;
-    while (piDestination < piFinal) {
-        *piDestination++ = iValue;
+        // do the misaligned tail
+        piDestination = (T*)pAlignedTop;
+        while (piDestination < piFinal) {
+            *piDestination++ = uValue;
+        }
     }
 }
 
