@@ -133,32 +133,29 @@ Interpreter::Status hostVector(uint8 uFunctionID) {
             }
             break;
 
-        case BSWAP_WORD: byteswap<uint16>(); break;
-        case BSWAP_LONG: byteswap<uint32>(); break;
-        case BSWAP_QUAD: byteswap<uint64>(); break;
-
-        case AND_BYTE:
-        case AND_WORD:
-        case AND_LONG:
-        case AND_QUAD:
-        case OR_BYTE:
-        case OR_WORD:
-        case OR_LONG:
-        case OR_QUAD:
-        case EOR_BYTE:
-        case EOR_WORD:
-        case EOR_LONG:
-        case EOR_QUAD:
-            break;
-
-        case FILL_BYTE: fill<uint8>();  break;
-        case FILL_WORD: fill<uint16>(); break;
-        case FILL_LONG: fill<uint32>(); break;
-        case FILL_QUAD: fill<uint64>(); break;
-        case FIND_BYTE: find<uint8>();  break;
-        case FIND_WORD: find<uint16>(); break;
-        case FIND_LONG: find<uint32>(); break;
-        case FIND_QUAD: find<uint64>(); break;
+        case BSWAP_WORD: swapBlock<uint16>(); break;
+        case BSWAP_LONG: swapBlock<uint32>(); break;
+        case BSWAP_QUAD: swapBlock<uint64>(); break;
+        case AND_BYTE:   andBlock<uint8>();  break;
+        case AND_WORD:   andBlock<uint16>(); break;
+        case AND_LONG:   andBlock<uint32>(); break;
+        case AND_QUAD:   andBlock<uint64>(); break;
+        case OR_BYTE:    orBlock<uint8>();   break;
+        case OR_WORD:    orBlock<uint16>();  break;
+        case OR_LONG:    orBlock<uint32>();  break;
+        case OR_QUAD:    orBlock<uint64>();  break;
+        case EOR_BYTE:   eorBlock<uint8>();  break;
+        case EOR_WORD:   eorBlock<uint16>(); break;
+        case EOR_LONG:   eorBlock<uint32>(); break;
+        case EOR_QUAD:   eorBlock<uint64>(); break;
+        case FILL_BYTE:  fillBlock<uint8>();  break;
+        case FILL_WORD:  fillBlock<uint16>(); break;
+        case FILL_LONG:  fillBlock<uint32>(); break;
+        case FILL_QUAD:  fillBlock<uint64>(); break;
+        case FIND_BYTE:  findBlock<uint8>();  break;
+        case FIND_WORD:  findBlock<uint16>(); break;
+        case FIND_LONG:  findBlock<uint32>(); break;
+        case FIND_QUAD:  findBlock<uint64>(); break;
 
         case STR_LENGTH: {
             char const* sString = Interpreter::gpr<ABI::PTR_REG_0>().sString;

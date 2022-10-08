@@ -14,31 +14,26 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
+
 #include <machine/register.hpp>
 #include <host/standard_test_host.hpp>
 #include <host/standard_test_host_mem.hpp>
 #include <host/memory.hpp>
 
+/**
+ * Inline definitions for the host interface
+ */
 namespace MC64K::StandardTestHost::Mem {
-
 
 /**
  * Provides a simple compile time checked template for the memory fill group.
  */
 template<typename T>
-inline void fill() {
-    static_assert(std::is_integral<T>::value, "Invalid type for fill<T>()");
+inline void fillBlock() {
+    static_assert(std::is_integral<T>::value, "Invalid type for fillBlock<T>()");
     if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
         if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
-            if constexpr(8 == sizeof(T)) {
-                Host::Memory::fillQuad(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uQuad, uSize);
-            } else if constexpr(4 == sizeof(T)) {
-                Host::Memory::fillLong (pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uLong, uSize);
-            } else if constexpr(2 == sizeof(T)) {
-                Host::Memory::fillWord(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uWord, uSize);
-            } else if constexpr(1 == sizeof(T)) {
-                Host::Memory::fillByte(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().uByte, uSize);
-            }
+            Host::Memory::fill<T>(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().value<T>(), uSize);
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
         } else {
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
@@ -48,12 +43,58 @@ inline void fill() {
     }
 }
 
+template<typename T>
+inline void andBlock() {
+    static_assert(std::is_integral<T>::value, "Invalid type for andBlock<T>()");
+    if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
+        if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
+            Host::Memory::bitwiseAnd<T>(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().value<T>(), uSize);
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
+        } else {
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+        }
+    } else {
+        Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
+    }
+}
+
+template<typename T>
+inline void orBlock() {
+    static_assert(std::is_integral<T>::value, "Invalid type for orBlock<T>()");
+    if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
+        if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
+            Host::Memory::bitwiseOr<T>(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().value<T>(), uSize);
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
+        } else {
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+        }
+    } else {
+        Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
+    }
+}
+
+template<typename T>
+inline void eorBlock() {
+    static_assert(std::is_integral<T>::value, "Invalid type for eorBlock<T>()");
+    if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
+        if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
+            Host::Memory::bitwiseXor<T>(pBuffer, Interpreter::gpr<ABI::INT_REG_0>().value<T>(), uSize);
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
+        } else {
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
+        }
+    } else {
+        Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
+    }
+}
+
+
 /**
  * Provides a simple compile time checked template for the memory byteswap group.
  */
 template<typename T>
-inline void byteswap() {
-    static_assert(std::is_integral<T>::value, "Invalid type for byteswap<T>()");
+inline void swapBlock() {
+    static_assert(std::is_integral<T>::value, "Invalid type for swapBlock<T>()");
     static_assert(1 < sizeof(T), "Invalid size for byteswap<T>()");
 
     if constexpr(8 == sizeof(T)) {
@@ -103,8 +144,8 @@ inline void byteswap() {
  * Provides a simple compile time checked template for the memory find group.
  */
 template<typename T>
-inline void find() {
-    static_assert(std::is_integral<T>::value, "Invalid type for find<T>()");
+inline void findBlock() {
+    static_assert(std::is_integral<T>::value, "Invalid type for findBlock<T>()");
     if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
         if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
             if constexpr(8 == sizeof(T)) {
@@ -140,6 +181,7 @@ inline void find() {
         Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
     }
 }
+
 
 }
 

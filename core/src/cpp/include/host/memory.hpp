@@ -79,13 +79,18 @@ inline void copy(void* pDestination, void const* pSource, uint64 uSize) {
     std::memcpy(pDestination, pSource, uSize);
 }
 
-inline void fillByte(void* pBuffer, uint8 uValue, uint64 uSize) {
-    std::memset(pBuffer, uValue, uSize);
-}
+template<typename T>
+void fill(void* pBuffer, T uValue, uint64 uSize);
 
-void fillWord(void* pBuffer, uint16 uValue, uint64 uSize);
-void fillLong(void* pBuffer, uint32 uValue, uint64 uSize);
-void fillQuad(void* pBuffer, uint64 uValue, uint64 uSize);
+template<typename T>
+void bitwiseAnd(void* pBuffer, T uValue, uint64 uSize);
+
+template<typename T>
+void bitwiseOr(void* pBuffer, T uValue, uint64 uSize);
+
+template<typename T>
+void bitwiseXor(void* pBuffer, T uValue, uint64 uSize);
+
 void byteswapWord(void* pDestination, void const* pSource, uint64 uCount);
 void byteswapLong(void* pDestination, void const* pSource, uint64 uCount);
 void byteswapQuad(void* pDestination, void const* pSource, uint64 uCount);
@@ -97,6 +102,36 @@ inline uint8  const* findByte(void const* pBuffer, uint8  uValue, uint64 uSize) 
 uint16 const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize);
 uint32 const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize);
 uint64 const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize);
+
+/**
+ * Align a non-const block of memory to some elemental scalar size by
+ * rounding up the start address and reducing the count when this happens.
+ * The count is passed by reference to permit adjustment.
+ */
+template<typename T>
+inline T* alignBlockOf(void* pAddress, uint64& uSize) {
+    uint64 uAddress = (uint64)pAddress;
+    if (uAddress & (sizeof(T) - 1)) {
+        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
+        --uSize;
+    }
+    return (T*)uAddress;
+}
+
+/**
+ * Align a const block of memory to some elemental scalar size by
+ * rounding up the start address and reducing the count when this happens.
+ * The count is passed by reference to permit adjustment.
+ */
+template<typename T>
+inline T const* alignBlockOf(void const* pAddress, uint64& uSize) {
+    uint64 uAddress = (uint64)pAddress;
+    if (uAddress & (sizeof(T) - 1)) {
+        uAddress = (uAddress + sizeof(T) - 1) & ~(sizeof(T) - 1);
+        --uSize;
+    }
+    return (T const*)uAddress;
+}
 
 } // namespace
 
