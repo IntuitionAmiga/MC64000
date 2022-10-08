@@ -97,46 +97,17 @@ inline void swapBlock() {
     static_assert(std::is_integral<T>::value, "Invalid type for swapBlock<T>()");
     static_assert(1 < sizeof(T), "Invalid size for byteswap<T>()");
 
-    if constexpr(8 == sizeof(T)) {
-        if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
-            void* pFrom  = Interpreter::gpr<ABI::PTR_REG_0>().pAny;
-            void* pTo    = Interpreter::gpr<ABI::PTR_REG_1>().pAny;
-            if (pFrom && pTo) {
-                Host::Memory::byteswapQuad(pTo, pFrom, uSize);
-                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
-            } else {
-                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
-            }
+    if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
+        void* pFrom  = Interpreter::gpr<ABI::PTR_REG_0>().pAny;
+        void* pTo    = Interpreter::gpr<ABI::PTR_REG_1>().pAny;
+        if (pFrom && pTo) {
+            Host::Memory::byteswap<T>(pTo, pFrom, uSize);
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
         } else {
-            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
+            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
         }
-    } else if constexpr(4 == sizeof(T)) {
-        if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
-            void* pFrom  = Interpreter::gpr<ABI::PTR_REG_0>().pAny;
-            void* pTo    = Interpreter::gpr<ABI::PTR_REG_1>().pAny;
-            if (pFrom && pTo) {
-                Host::Memory::byteswapLong(pTo, pFrom, uSize);
-                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
-            } else {
-                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
-            }
-        } else {
-            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
-        }
-
-    } else if constexpr(2 == sizeof(T)) {
-        if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_0>().uQuad) {
-            void* pFrom  = Interpreter::gpr<ABI::PTR_REG_0>().pAny;
-            void* pTo    = Interpreter::gpr<ABI::PTR_REG_1>().pAny;
-            if (pFrom && pTo) {
-                Host::Memory::byteswapWord(pTo, pFrom, uSize);
-                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
-            } else {
-                Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
-            }
-        } else {
-            Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
-        }
+    } else {
+        Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
     }
 }
 
