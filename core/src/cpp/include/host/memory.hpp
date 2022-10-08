@@ -91,6 +91,9 @@ void bitwiseOr(void* pBuffer, T uValue, uint64 uSize);
 template<typename T>
 void bitwiseXor(void* pBuffer, T uValue, uint64 uSize);
 
+template<typename T>
+void byteswap(void* pDestination, void const* pSource, uint64 uCount);
+
 void byteswapWord(void* pDestination, void const* pSource, uint64 uCount);
 void byteswapLong(void* pDestination, void const* pSource, uint64 uCount);
 void byteswapQuad(void* pDestination, void const* pSource, uint64 uCount);

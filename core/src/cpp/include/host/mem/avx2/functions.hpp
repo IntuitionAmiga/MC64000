@@ -48,6 +48,11 @@ inline __m256i splatInt(T iValue) {
     return _mm256_set1_epi8((int8)iValue);
 }
 
+/**
+ * Block memory fill.
+ * Base address will be aligned and the count reduced by one if necessary.
+ * Caller bears responsibility for ensuring a non-zero size.
+ */
 template<typename T>
 void fill(void* pBuffer, T uValue, uint64 uSize) {
     static_assert(std::is_integral<T>::value, "Invalid type for fill<T>()");
@@ -92,7 +97,9 @@ void fill(void* pBuffer, T uValue, uint64 uSize) {
 }
 
 /**
- * Block memory bitwise AND generic (naive)
+ * Block memory bitwise AND generic
+ * Base address will be aligned and the count reduced by one if necessary.
+ * Caller bears responsibility for ensuring a non-zero size.
  */
 template<typename T>
 void bitwiseAnd(void* pBuffer, T uValue, uint64 uSize) {
@@ -136,7 +143,9 @@ void bitwiseAnd(void* pBuffer, T uValue, uint64 uSize) {
 }
 
 /**
- * Block memory bitwise OR generic (naive)
+ * Block memory bitwise OR generic
+ * Base address will be aligned and the count reduced by one if necessary.
+ * Caller bears responsibility for ensuring a non-zero size.
  */
 template<typename T>
 void bitwiseOr(void* pBuffer, T uValue, uint64 uSize) {
@@ -181,7 +190,9 @@ void bitwiseOr(void* pBuffer, T uValue, uint64 uSize) {
 }
 
 /**
- * Block memory bitwise XOR generic (naive)
+ * Block memory bitwise XOR generic.
+ * Base address will be aligned and the count reduced by one if necessary.
+ * Caller bears responsibility for ensuring a non-zero size.
  */
 template<typename T>
 void bitwiseXor(void* pBuffer, T uValue, uint64 uSize) {

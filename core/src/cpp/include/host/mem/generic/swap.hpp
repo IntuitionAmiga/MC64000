@@ -13,33 +13,45 @@
  *
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
-
+#include <type_traits>
 #include <misc/scalar.hpp>
 #include <host/memory.hpp>
 
 namespace MC64K::Host::Memory {
 
-void byteswapWord(void* pDestination, void const* pSource, uint64 uCount) {
-    uint16*       pDstWord = (uint16*)pDestination;
-    uint16 const* pSrcWord = (uint16 const*)pSource;
-    for (uint64 u=0; u < uCount; ++u) {
-        pDstWord[u] = __builtin_bswap16(pSrcWord[u]);
+template<typename T>
+inline T swapWord(T iValue) {
+    static_assert(std::is_integral<T>::value, "Invalid type for swapWord<T>()");
+    if constexpr(2 == sizeof(T)) {
+        return __builtin_bswap16(iValue);
+    } else if constexpr(4 == sizeof(T)) {
+        return __builtin_bswap32(iValue);
+    } else if constexpr(8 == sizeof(T)) {
+        return __builtin_bswap64(iValue);
     }
+    return iValue;
 }
 
-void byteswapLong(void* pDestination, void const* pSource, uint64 uCount) {
-    uint32*       pDstWord = (uint32*)pDestination;
-    uint32 const* pSrcWord = (uint32 const*)pSource;
-    for (uint64 u=0; u < uCount; ++u) {
-        pDstWord[u] = __builtin_bswap32(pSrcWord[u]);
+/**
+ * Addresses will be aligned and the count reduced by one or two if necessary.
+ * Caller bears responsibility for ensuring a non-zero size.
+ */
+template<typename T>
+void byteswap(void* pDestination, void const* pSource, uint64 uCount) {
+    static_assert(std::is_integral<T>::value, "Invalid type for byteswap<T>()");
+    T* pDstWord = (T*)__builtin_assume_aligned(
+        alignBlockOf<T>(pDestination, uCount),
+        sizeof(T)
+    );
+    if (!uCount) {
+        return;
     }
-}
-
-void byteswapQuad(void* pDestination, void const* pSource, uint64 uCount) {
-    uint64*       pDstWord = (uint64*)pDestination;
-    uint64 const* pSrcWord = (uint64 const*)pSource;
-    for (uint64 u=0; u < uCount; ++u) {
-        pDstWord[u] = __builtin_bswap64(pSrcWord[u]);
+    T const* pSrcWord = (T const*)__builtin_assume_aligned(
+        alignBlockOf<T>(pSource, uCount),
+        sizeof(T)
+    );
+    while (uCount--) {
+        *pDstWord++ = swapWord<T>(*pSrcWord++);
     }
 }
 
