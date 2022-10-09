@@ -94,17 +94,8 @@ void bitwiseXor(void* pBuffer, T uValue, uint64 uSize);
 template<typename T>
 void byteswap(void* pDestination, void const* pSource, uint64 uCount);
 
-void byteswapWord(void* pDestination, void const* pSource, uint64 uCount);
-void byteswapLong(void* pDestination, void const* pSource, uint64 uCount);
-void byteswapQuad(void* pDestination, void const* pSource, uint64 uCount);
-
-inline uint8  const* findByte(void const* pBuffer, uint8  uValue, uint64 uSize) {
-    return (uint8 const*)std::memchr(pBuffer, (int)uValue, uSize);
-}
-
-uint16 const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize);
-uint32 const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize);
-uint64 const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize);
+template<typename T>
+T const* find(void const* pBuffer, T uValue, uint64 uSize);
 
 /**
  * Align a non-const block of memory to some elemental scalar size by
