@@ -119,31 +119,12 @@ inline void findBlock() {
     static_assert(std::is_integral<T>::value, "Invalid type for findBlock<T>()");
     if (uint64 uSize = Interpreter::gpr<ABI::INT_REG_1>().uQuad) {
         if (void* pBuffer = Interpreter::gpr<ABI::PTR_REG_0>().pAny) {
-            if constexpr(8 == sizeof(T)) {
-                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)Host::Memory::findQuad(
-                    pBuffer,
-                    Interpreter::gpr<ABI::INT_REG_0>().uQuad,
-                    uSize
-                );
-            } else if constexpr(4 == sizeof(T)) {
-                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)Host::Memory::findLong(
-                    pBuffer,
-                    Interpreter::gpr<ABI::INT_REG_0>().uLong,
-                    uSize
-                );
-            } else if constexpr(2 == sizeof(T)) {
-                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)Host::Memory::findWord(
-                    pBuffer,
-                    Interpreter::gpr<ABI::INT_REG_0>().uWord,
-                    uSize
-                );
-            } else if constexpr(1 == sizeof(T)) {
-                Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)Host::Memory::findByte(
-                    pBuffer,
-                    Interpreter::gpr<ABI::INT_REG_0>().uByte,
-                    uSize
-                );
-            }
+            Interpreter::gpr<ABI::PTR_REG_0>().pAny = (void*)Host::Memory::find<T>(
+                pBuffer,
+                Interpreter::gpr<ABI::INT_REG_0>().value<T>(),
+                uSize
+            );
+
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
         } else {
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;

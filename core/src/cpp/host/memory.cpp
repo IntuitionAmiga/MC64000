@@ -49,6 +49,10 @@ template void bitwiseXor<uint64>(void* pBuffer, uint64 uValue, uint64 uSize);
 template void byteswap<uint16>(void* pDestination, void const* pSource, uint64 uCount);
 template void byteswap<uint32>(void* pDestination, void const* pSource, uint64 uCount);
 template void byteswap<uint64>(void* pDestination, void const* pSource, uint64 uCount);
+template uint8  const* find<uint8>(void const* pBuffer, uint8  uValue, uint64 uSize);
+template uint16 const* find<uint16>(void const* pBuffer, uint16 uValue, uint64 uSize);
+template uint32 const* find<uint32>(void const* pBuffer, uint32 uValue, uint64 uSize);
+template uint64 const* find<uint64>(void const* pBuffer, uint64 uValue, uint64 uSize);
 
 /**
  * Returns a one-time initialised magic value

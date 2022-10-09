@@ -14,76 +14,29 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
+#include <cstdlib>
 #include <misc/scalar.hpp>
 #include <host/memory.hpp>
 
 namespace MC64K::Host::Memory {
 
-/**
- * Locate the first occurence of a 16 bit value in a memory block. If the base address is not aligned, search starts
- * from the next aligned address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param  void const*    pBuffer
- * @param  uint16         uValue
- * @param  uint64         uSize
- * @return uint16 const*  pFound
- */
-uint16 const* findWord(void const* pBuffer, uint16 uValue, uint64 uSize) {
-    uint16 const* p = (uint16 const*)__builtin_assume_aligned(alignBlockOf<uint16>(pBuffer, uSize), sizeof(uint16));
-    while (uSize--) {
-        if (uValue == *p) {
-            return p;
+template<typename T>
+T const* find(void const* pBuffer, T uValue, uint64 uSize) {
+    static_assert(std::is_integral<T>::value, "Invalid type for find<T>()");
+    if constexpr(1 == sizeof(T)) {
+        return (T const*)std::memchr(pBuffer, (int)uValue, uSize);
+    } else {
+        T const* p = (T const*)__builtin_assume_aligned(alignBlockOf<T>(pBuffer, uSize), sizeof(T));
+        while (uSize--) {
+            if (uValue == *p) {
+                return p;
+            }
+            ++p;
         }
-        ++p;
+        return 0;
     }
-    return 0;
 }
 
-/**
- * Locate the first occurence of a 32 bit value in a memory block. If the base address is not aligned, search starts
- * from the next aligned address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks.
- *
- * @param  void const*    pBuffer
- * @param  uint32         uValue
- * @param  uint64         uSize
- * @return uint32 const*  pFound
- */
-uint32 const* findLong(void const* pBuffer, uint32 uValue, uint64 uSize) {
-    uint32 const* p = (uint32 const*)__builtin_assume_aligned(alignBlockOf<uint32>(pBuffer, uSize), sizeof(uint32));
-    while (uSize--) {
-        if (uValue == *p) {
-            return p;
-        }
-        ++p;
-    }
-    return 0;
-}
-
-/**
- * Locate the first occurence of a 64 bit value in a memory block. If the base address is not aligned, search starts
- * from the next aligned address with one fewer element.
- *
- * @todo - explicit vectorisation of larger blocks
- *
- * @param  void const*   pBuffer
- * @param  uint64        uValue
- * @param  uint64        uSize
- * @return uint64 const* pFound
- */
-uint64 const* findQuad(void const* pBuffer, uint64 uValue, uint64 uSize) {
-    uint64 const* p = (uint64 const*)__builtin_assume_aligned(alignBlockOf<uint64>(pBuffer, uSize), sizeof(uint64));
-    while (uSize--) {
-        if (uValue == *p) {
-            return p;
-        }
-        ++p;
-    }
-    return 0;
-}
 
 } // namespace
 #endif
