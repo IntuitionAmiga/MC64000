@@ -76,8 +76,9 @@ Until a JIT runtime exists, MC64K runs code _interpretively_. Long established r
 The general rules for optimisation can be summerised as:
 * Prefer fast path instructions where possible:
     - 32/64-bit Register to Register arithmetic/logic.
+    - Register to Register Fast Path operations are up to 3-4x faster than general EA to EA.
 * Optimise for fewer instructions.
-    - Instruction decode overhead dominates.
+    - Instruction/EA decode overhead dominates.
 * Where there is a choice between additional instructions or a more complex addressing mode, prefer the addressing mode.
     - An exception to this rule is where the same complex address would be evaluated repeatedly.
     - A single evaluation to a register temporary and reuse of the temporary is still faster.

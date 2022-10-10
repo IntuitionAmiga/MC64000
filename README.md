@@ -38,12 +38,7 @@ MC64K aims to implement a Virtual Machine and assembler syntax inspired by the l
 * Simplified branch programming model.
 * 680x0 inspired instruction set and syntax.
 * Effective Addresses for both source and destination operands.
-* Simple set of host provided read-only registers for configuration:
-    - RAM base address, size.
-    - Framebuffer address, format, meta.
-    - Initial PC start address.
-    - Microsecond walltime (since last reset).
-    - etc.
+* Simple host integration.
 
 ### Intentional Limitations
 
