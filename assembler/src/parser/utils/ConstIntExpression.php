@@ -120,10 +120,11 @@ class ConstIntExpression implements IParser {
     }
 
     /**
-     * Checks that the string contains both digits and operators, or there is little point in doing the effort.
+     * Checks that the string contains both digits and operators, or there is little point in doing the effort. Also excludes the red-herring caused by negative value declarations
      */
     private function hasRequired(string $sPossibleExpression): bool {
-        return preg_match('/\d/', $sPossibleExpression) &&
+        return false === preg_match('/^-\s*\d+$/', $sPossibleExpression) &&
+               preg_match('/\d/', $sPossibleExpression) &&
                preg_match('/[\+\-\*\\/\%\<\>\&\|\~\^]/', $sPossibleExpression);
     }
 
