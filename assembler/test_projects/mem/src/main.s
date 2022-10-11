@@ -46,11 +46,11 @@ main:
 .loop:
     move.q  a2, a0
     move.q  d2, d1
-    lsr.q   #2, d1 ; // longs
+    ;lsr.q   #2, d1 ; // longs
     move.b  d3, d0
     nanotime                  ; writes current nanotime to r14
     move.q  r14, r13          ; start
-    hcf     mem_eor_long
+    hcf     mem_fill_byte
     nanotime
     sub.q   r13,  r14         ; elapsed
     add.q   r14,  r12         ; total

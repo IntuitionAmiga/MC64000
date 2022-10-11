@@ -58,6 +58,7 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
     public function __construct() {
         $this->oTokeniser = new Tokeniser\Instruction();
         $this->oOptimiser = new FastPathOptimiser();
+
         $this->addOperandSetParser(new OperandSet\None());
         $this->addOperandSetParser(new OperandSet\BranchDisplacementOnly());
         $this->addOperandSetParser(new OperandSet\IntegerMonadicAddress());
@@ -66,12 +67,15 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
         $this->addOperandSetParser(new OperandSet\FloatMonadicBranch());
         $this->addOperandSetParser(new OperandSet\IntegerDyadic());
         $this->addOperandSetParser(new OperandSet\IntegerDyadicBranch());
+        $this->addOperandSetParser(new OperandSet\IntegerTriadic());
         $this->addOperandSetParser(new OperandSet\FloatDyadic());
+        $this->addOperandSetParser(new OperandSet\FloatDyadicToIntegerMonadic());
         $this->addOperandSetParser(new OperandSet\FloatDyadicBranch());
         $this->addOperandSetParser(new OperandSet\FloatToIntegerDyadic());
         $this->addOperandSetParser(new OperandSet\IntegerToFloatDyadic());
         $this->addOperandSetParser(new OperandSet\PackedGPRPair());
         $this->addOperandSetParser(new OperandSet\PackedFPRPair());
+
 
         // Now for the awkward gits...
         $this->addOperandSetParser(new OperandSet\CustomDyadic(
