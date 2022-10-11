@@ -78,7 +78,6 @@ interface IDataMove extends IByteCodeGroups {
         SCM          = self::OFS_DATA_MOVE + 43, // set conditional (monadic compare)
         SCD          = self::OFS_DATA_MOVE + 44,  // set conditional (dyadic compare)
 
-
         // Set if <ea> == 0
         SIZ_B   = self::SCM << 8 | ICondition::IEQ_B,
         SIZ_W   = self::SCM << 8 | ICondition::IEQ_W,
