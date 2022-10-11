@@ -1,0 +1,26 @@
+{
+    "target": {
+        "name": "BugOfTheWeek",
+        "version": "1.0.0",
+        "description": "General Bug Evaluation",
+        "output": "bin/botw.64x",
+        "host": {
+            "name": "Standard Test Host",
+            "version": "1.0.0"
+        }
+    },
+    "options": {
+        "log_code_folds": true,
+        "log_label_add": true,
+        "log_label_ref": true,
+        "log_label_resolve": true
+    },
+    "sources": [
+        "lib:standard_test_host/v1.0.0/host.s",
+        "lib:standard_test_host/v1.0.0/mem.s",
+        "lib:standard_test_host/v1.0.0/io.s",
+        "src/main.s"
+    ],
+    "defines": {
+    }
+}
