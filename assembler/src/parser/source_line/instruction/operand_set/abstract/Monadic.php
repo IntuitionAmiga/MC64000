@@ -42,8 +42,11 @@ abstract class Monadic implements Instruction\IOperandSetParser {
      */
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
+
+        $iInstructionSize = $this->getInitialInstructionSize($iOpcode);
+
         $oState = State\Coordinator::get()
-            ->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE);
+            ->setCurrentStatementLength($iInstructionSize);
         $iSrcIndex    = $this->getSourceOperandIndex();
         $sSrcBytecode = $this->oSrcParser
             ->setOperationSize($aSizes[$iSrcIndex] ?? self::DEFAULT_SIZE)
@@ -52,7 +55,8 @@ abstract class Monadic implements Instruction\IOperandSetParser {
             throw new \UnexpectedValueException(
                 $aOperands[$iSrcIndex] . ' not a valid operand');
         }
-        $oState->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE + strlen($sSrcBytecode));
+        $iInstructionSize += strlen($sSrcBytecode);
+        $oState->setCurrentStatementLength($iInstructionSize);
         return $sSrcBytecode;
     }
 
@@ -81,4 +85,13 @@ abstract class Monadic implements Instruction\IOperandSetParser {
             );
         }
     }
+
+    /**
+     * This method can be overridden to provide per-class or per opcode variations on the
+     * initial instruction length.
+     */
+    protected function getInitialInstructionSize(int $iOpcode): int {
+        return Defs\IOpcodeLimits::SIZE;
+    }
+
 }

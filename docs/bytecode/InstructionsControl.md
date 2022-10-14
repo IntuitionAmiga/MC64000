@@ -12,7 +12,7 @@ One byte is used for the Instruction Opcode:
     - Other data.
 
 * ### [HCF](./op/c_01.md)
-    - Halt and Call Function / Catch Fire.
+    - Halt and Call Function.
 * ### [BRA](./op/c_02.md)
     - Branch.
 * ### [BSR](./op/c_03.md)
@@ -23,25 +23,25 @@ One byte is used for the Instruction Opcode:
     - Jump to Subroutine.
 * ### [RTS](./op/c_06.md)
     - Return from Subroutine.
-* ### [BIZ](./op/c_07.md)
+* ### [BIZ/FBIZ](./op/c_07.md)
     - Branch if operand is zero.
-* ### [BNZ](./op/c_08.md)
+* ### [BNZ/FBNZ](./op/c_08.md)
     - Branch if operand is not zero.
-* ### [BMI](./op/c_09.md)
+* ### [BMI/FBMI](./op/c_09.md)
     - Branch if operand is minus.
-* ### [BPL](./op/c_10.md)
+* ### [BPL/FBPL](./op/c_10.md)
     - Branch if operand is plus.
-* ### [BLT](./op/c_11.md)
+* ### [BLT/BLO/FBLT](./op/c_11.md)
     - Branch if source operand is less than destination operand.
-* ### [BLE](./op/c_12.md)
+* ### [BLE/BLS/FBLE](./op/c_12.md)
     - Branch if source operand is less than or equal to destination operand.
-* ### [BEQ](./op/c_13.md)
+* ### [BEQ/FBEQ](./op/c_13.md)
     - Branch if source operand is equal to destination operand.
-* ### [BGE](./op/c_14.md)
+* ### [BGE/BHS/FBGE](./op/c_14.md)
     - Branch if source operand is equal to or greater than destination operand.
-* ### [BGT](./op/c_15.md)
+* ### [BGT/BHI/FBGT](./op/c_15.md)
     - Branch if source operand is greater than destination operand.
-* ### [BNE](./op/c_16.md)
+* ### [BNE/FBNE](./op/c_16.md)
     - Branch if source operand is not equal to destination operand.
 * ### [BBS](./op/c_17.md)
     - Branch if bit is set.

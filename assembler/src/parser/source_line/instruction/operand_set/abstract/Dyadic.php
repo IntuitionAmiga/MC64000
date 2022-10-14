@@ -67,8 +67,11 @@ abstract class Dyadic extends Monadic {
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
         $this->sSrcBytecode = null;
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
+
+        $iInstructionSize = $this->getInitialInstructionSize($iOpcode);
+
         $oState = State\Coordinator::get()
-            ->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE);
+            ->setCurrentStatementLength($iInstructionSize);
         $iDstIndex          = $this->getDestinationOperandIndex();
         $this->sDstBytecode = $this->oDstParser
             ->setOperationSize($aSizes[$iDstIndex] ?? self::DEFAULT_SIZE)
@@ -79,7 +82,9 @@ abstract class Dyadic extends Monadic {
             );
         }
 
-        $oState->setCurrentStatementLength(Defs\IOpcodeLimits::SIZE + strlen($this->sDstBytecode));
+        $iInstructionSize += strlen($this->sDstBytecode);
+
+        $oState->setCurrentStatementLength($iInstructionSize);
 
         $iSrcIndex    = $this->getSourceOperandIndex();
         $sSrcBytecode = $this->oSrcParser
@@ -93,11 +98,9 @@ abstract class Dyadic extends Monadic {
 
         $this->sSrcBytecode = $this->optimiseSourceOperandBytecode($sSrcBytecode, $this->sDstBytecode);
 
-        $oState->setCurrentStatementLength(
-            Defs\IOpcodeLimits::SIZE +
-            strlen($this->sDstBytecode) +
-            strlen($this->sSrcBytecode)
-        );
+        $iInstructionSize += strlen($this->sSrcBytecode);
+
+        $oState->setCurrentStatementLength($iInstructionSize);
 
         return $this->sDstBytecode . $this->sSrcBytecode;
     }

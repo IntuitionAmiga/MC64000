@@ -435,10 +435,4 @@ interface IMatches {
         'ftwotox.d' => IArithmetic::FTWOTOX_D,
     ];
 
-    // Subopcode matches (2 bytes)
-    const MATCHES_SUBOPCODE = [
-
-
-
-    ];
 }

@@ -23,7 +23,6 @@ use ABadCafe\MC64K\Parser;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Defs\Mnemonic\ICondition;
 
-
 use function \array_keys;
 
 /**

@@ -38,7 +38,7 @@ class ConstFloatExpression implements IParser {
     private const MATCH_FIRST   = '\{';
 
     // Further charcters can be digits, binary operators, open or closing parenthesis or space
-    private const MATCH_FURTHER = '[0-9\.\+\-\*\\/\{\}\s]{0,}';
+    private const MATCH_FURTHER = '[0-9eE\.\+\-\*\\/\{\}\\s]{0,}';
 
     // Final character must be a close brace
     private const MATCH_LAST    = '\}';

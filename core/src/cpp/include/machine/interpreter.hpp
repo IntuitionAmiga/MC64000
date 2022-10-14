@@ -203,6 +203,8 @@ class Interpreter {
         static void  handleHost();
         static void  handleBMC();
         static void  handleBDC();
+        static void  handleSMC();
+        static void  handleSDC();
         static void  handleRBMC();
         static void  handleR2RBDC();
 };

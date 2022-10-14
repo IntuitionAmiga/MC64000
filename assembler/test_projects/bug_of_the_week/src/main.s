@@ -21,12 +21,13 @@
 main:
     hcf io_init
 
-    fmove.s #FP_ZERO, fp0
-    fmove.s #FP_MINUS_HALF, fp1
-    fmove.s #FP_MINUS_ONE, fp2
-    fmove.s #-0.25, fp3
+    fbgt.d fp0, fp1, .blah
 
+    fsgt.d fp1, fp0, d2
 
 exit:
     hcf io_done
     rts
+
+.blah:
+    bra.s exit
