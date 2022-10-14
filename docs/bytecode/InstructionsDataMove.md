@@ -11,381 +11,65 @@ One byte is used for the Instruction Opcode:
     - Branch displacements.
     - Other data.
 
-___
-
-### MOVE
-
-Move data from source to destination.
-
-        <ea(s)> -> <ea(d)>
-
-General syntax:
-
-        move.<b|w|l|q> <ea(s)>, <ea(d)>
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `move.b <ea(s)>, <ea(d)>` | 0x4D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `move.w <ea(s)>, <ea(d)>` | 0x4E | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `move.l <ea(s)>, <ea(d)>` | 0x4F | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `move.q <ea(s)>, <ea(d)>` | 0x50 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### SAVEM
-
-Save multiple registers.
-
-        register list -> <ea>
-
-
-General syntax:
-
-        savem <#<R>|register list>, <ea>
-
-* Register list is 32-bit mask of saved registers.
-* Bits 0:15 refer to the General Purpose Register set.
-* Bits 16:31 refer to the Floating Point Register set.
-* For each bit position, if the bit is set, the corresponding register is saved.
-* Only register indirect pre/post inc/decrement Effective Address modes allowed.
-
-| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 |
-| - | - | - | - | - | - | - |
-| `savem #<R>, <ea>` | 0x51 | 0x*EA* | 0x*RR* | 0x*RR* | 0x*RR* | 0x*RR* |
-
-___
-
-### LOADM
-
-Load multiple registers.
-
-        <ea> -> register list
-
-General syntax:
-
-        loadm <ea>, <#<R>|register list>
-
-* Register list is 32-bit mask of saved registers.
-* Bits 0:15 refer to the General Purpose Register set.
-* Bits 16:31 refer to the Floating Point Register set.
-* For each bit position, if the bit is set, the corresponding register is loaded.
-* Only register indirect pre/post inc/decrement Effective Address modes allowed.
-
-| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 |
-| - | - | - | - | - | - | - |
-| `loadm <ea>, #<R>` | 0x52 | 0x*RR* | 0x*RR* | 0x*RR* | 0x*RR* | 0x*EA* |
-
-___
-
-### FMOVEB
-
-Convert signed byte to floating point.
-
-        <ea(s)> -> <ea(d)>
-
-General syntax:
-
-        fmoveb.<s|d> <ea(s)>, <ea(d)>
-
-* Operand size suffix refers to destination.
-* Source operand is interpreted and accessed as a signed 8-bit value and converted to floating point.
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `fmoveb.s <ea(s)>, <ea(d)>` | 0x53 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmoveb.d <ea(s)>, <ea(d)>` | 0x54 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### FMOVEW
-
-Convert signed word to floating point.
-
-        <ea(s)> -> <ea(d)>
-
-General syntax:
-
-        fmovew.<s|d> <ea(s)>, <ea(d)>
-
-* Operand size suffix refers to destination.
-* Source operand is interpreted and accessed as a signed 16-bit value and converted to floating point.
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `fmovew.s <ea(s)>, <ea(d)>` | 0x55 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmovew.d <ea(s)>, <ea(d)>` | 0x56 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### FMOVEL
-
-Convert signed long to floating point.
-
-        <ea(s)> -> <ea(d)>
-
-General syntax:
-
-        fmovel.<s|d> <ea(s)>, <ea(d)>
-
-* Operand size suffix refers to destination.
-* Source operand is interpreted and accessed as a signed 32-bit value and converted to floating point.
-* Loss of precision occurs when destination is 32-bit float.
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `fmovel.s <ea(s)>, <ea(d)>` | 0x57 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmovel.d <ea(s)>, <ea(d)>` | 0x58 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### FMOVEQ
-
-Convert signed quad to floating point.
-
-        <ea(s)> -> <ea(d)>
-
-General syntax:
-
-        fmoveq.<s|d> <ea(s)>, <ea(d)>
-
-* Operand size suffix refers to destination.
-* Source operand is interpreted and accessed as a signed 64-bit value and converted to floating point.
-* Loss of precision occurs.
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `fmoveq.s <ea(s)>, <ea(d)>` | 0x59 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmoveq.d <ea(s)>, <ea(d)>` | 0x5A | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### FMOVES
-
-Convert a single precision to other format.
-
-        <ea(s)> -> <ea(d)>
-
-General syntax:
-
-        fmoves.<l|q|d> <ea(s)>, <ea(d)>
-
-* Operand size suffix refers to destination.
-* Source operand is interpreted and accessed as a 32-bit floating point value and converted to target format.
-* Loss of precision occurs for long and quad target.
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `fmoves.l <ea(s)>, <ea(d)>` | 0x5B | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmoves.q <ea(s)>, <ea(d)>` | 0x5C | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmoves.d <ea(s)>, <ea(d)>` | 0x5D | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### FMOVED
-
-Convert a double precision to other format.
-
-        <ea(s)> -> <ea(d)>
-
-General syntax:
-
-        fmoved.<l|q|s> <ea(s)>, <ea(d)>
-
-* Operand size suffix refers to destination.
-* Source operand is interpreted and accessed as a 64-bit floating point value and converted to target format.
-* Loss of precision occurs.
-
-| Mnemonic | Bytecode | Ext 0 | ... | ... | ... |
-| - | - | - | - | - | - |
-| `fmoved.l <ea(s)>, <ea(d)>` | 0x5E | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmoved.q <ea(s)>, <ea(d)>` | 0x5F | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmoved.s <ea(s)>, <ea(d)>` | 0x60 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### FMOVE
-
-Floating point data move
-
-        <ea(s)> -> <ea(d)>
-
-General syntax:
-
-        fmove.<s|d> <ea(s)>, <ea(d)>
-
-* Performs a floating point data move.
-* Source operand is interpreted as single or double precision and moved to the destination as such.
-
-| Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
-| - | - | - | - | - | - |
-| `fmove.s <ea(s)>, <ea(d)>` | 0x61 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmove.d <ea(s)>, <ea(d)>` | 0x62 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### FINFO
-
-Floating point data information.
-
-        <ea(s)> -> <ea(d)>
-
-General syntax:
-
-        finfo.<s|d> <ea(s)>, <ea(d)>
-
-* Classifies the floating point operand as one of zero, normal, subnormal, infinite or not-a-number.
-* Destination operand is always accessed as a byte.
-
-| Mnemonic | Bytecode | Ext 0 | ... | Ext N | Ext N+1 |
-| - | - | - | - | - | - |
-| `fmove.s <ea(s)>, <ea(d)>` | 0x63 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-| `fmove.d <ea(s)>, <ea(d)>` | 0x64 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### CLR
-
-Clear a location.
-
-        0 -> <ea>
-
-General syntax:
-        clr.<b|w|l|q> <ea>
-
-* All bits are set to zero.
-
-| Mnemonic | Bytecode | Ext 0 | ... |
-| - | - | - | - |
-| `clr.b <ea>`| 0x65 | 0x*EA* | ... |
-| `clr.w <ea>`| 0x66 | 0x*EA* | ... |
-| `clr.l <ea>`| 0x67 | 0x*EA* | ... |
-| `clr.q <ea>`| 0x68 | 0x*EA* | ... |
-
-___
-
-### EXG
-
-Exchange GPR.
-
-        r<S> <-> r<D>
-
-General syntax:
-
-        exg r<S>, r<D>
-
-* General Purpose Register contents are exchanged.
-
-| Mnemonic | Bytecode | Ext 0 |
-| - | - | - |
-| `exg <S>, r<D>`| 0x69 | 0x*SD* |
-
-___
-
-### FEXG
-
-Exchange FPR.
-
-        fp<S> <-> fp<D>
-
-`fexg fp<S>, fp<D>`
-
-* Floating Point Register contents are exchanged.
-
-| Mnemonic | Bytecode | Ext 0 |
-| - | - | - |
-| `fexg fp<S>, fp<D>`| 0x6A | 0x*SD* |
-
-___
-
-### SWAP
-
-Swap register fragments.
-
-        r<N>[31:16] <-> r<N>[15:0]
-        r<N>[31:24, 23:16, 15:8, 7:0] <-> r<N>[7:0, 15:8, 23:16, 31:24]
-        r<N>[63:56, 55:48, ... 15:8, 7:0] <-> r<N>[7:0, 15:8, ... 55:48, 63:46]
-
-General syntax:
-
-        swap[.<l|q>] r<S>, r<D>
-
-* The unsized variant replicates the original 16-bit word swap of the 680x0, affecting the lower 32-bit half of the register.
-* The .l variant performs a 32-bit byteswap of the lower half of the register.
-* The .q variant performs a 64-bit byteswap of the entire register.
-
-| Mnemonic | Bytecode | Ext 0 |
-| - | - | - |
-| `swap r<N>`| 0x6B | 0x0*N* |
-| `swap.l r<N>` | 0x6C | 0x0*N* |
-| `swap.q r<N>` | 0x6D | 0x0*N* |
-
-___
-
-### LINK
-
-Link and Allocate.
-
-        sp - 8 -> sp; r<N> -> (sp)
-        sp -> r<N>; sp + d -> sp
-
-General syntax:
-
-        link r<N>, #<D>
-
-* Displacement size is 32 bits, allowing for very large allocations.
-* As per 680x0, displacement should be negative to allocate stack space.
-
-| Mnemonic | Bytecode | Ext 0 | Ext 1 | Ext 2 | Ext 3 | Ext 4 |
-| - | - | - | - | - | - | - |
-| `link r<N>, #<D>`| 0x6E | 0x*DD* | 0x*DD* | 0x*DD* | 0x*DD* | 0x0*N* |
-
-___
-
-### UNLK
-
-Unlink
-
-        r<N> -> sp; (sp) -> r<N>; sp + 8 -> sp
-
-General syntax:
-
-        unlk <rN>
-
-| Mnemonic | Bytecode | Ext 0 |
-| - | - | - |
-| `unlk r<N>`| 0x6F | 0x0*N* |
-
-___
-
-### LEA
-
-Load Effective Address.
-
-        '<ea(s)> -> <ea(d)>'
-
-General syntax:
-
-        lea <ea(s)>, <ea(d)>
-
-* Peforms a dereferencing operation, converting a complex address to a simple address.
-* The address indicated by the source EA is written to the location implied by the destination EA.
-
-| Mnemonic | Bytecode | Ext 0 | ... | Ext N | ... |
-| - | - | - | - | - | - |
-| `lea <ea>, <ea(d)>` | 0x70 | 0x*EA*(d) | ... | 0x*EA*(s) | ... |
-
-___
-
-### PEA
-
-Push Effective Address.
-
-        sp - 8 -> sp; <ea> -> (sp)
-
-General syntax:
-
-        pea <ea>
-
-| Mnemonic | Bytecode | Ext 0 | ... |
-| - | - | - | - |
-| `pea <ea>`| 0x71 | 0x*EA* | ...|
+* ### [MOVE](./op/d_01.md)
+    - Move Data.
+* ### [SAVEM](./op/d_02.md)
+    - Save Multiple Registers.
+* ### [LOADM](./op/d_03.md)
+    - Load Multiple Registers.
+* ### [FMOVEB](./op/d_04.md)
+    - Convert signed byte to floating point.
+* ### [FMOVEW](./op/d_05.md)
+    - Convert signed word to floating point.
+* ### [FMOVEL](./op/d_06.md)
+    - Convert signed long to floating point.
+* ### [FMOVEQ](./op/d_07.md)
+    - Convert signed long to floating point.
+* ### [FMOVES](./op/d_08.md)
+    - Convert from single precision floating point.
+* ### [FMOVEQ](./op/d_09.md)
+    - Convert from double precision floating point.
+* ### [MOVE](./op/d_10.md)
+    - Move Floating Point Data.
+* ### [FINFO](./op/d_11.md)
+    - Floating point data information.
+* ### [CLR](./op/d_12.md)
+    - Clear a location.
+* ### [EXG](./op/d_13.md)
+    - Exchange GPR.
+* ### [FEXG](./op/d_14.md)
+    - Exchange FPR.
+* ### [SWAP](./op/d_15.md)
+    - Swap GPR fragments.
+* ### [LINK](./op/d_16.md)
+    - Link and allocate.
+* ### [UNLK](./op/d_17.md)
+    - Unlink.
+* ### [LEA](./op/d_18.md)
+    - Load Effective Address.
+* ### [PEA](./op/d_19.md)
+    - Push Effective Address.
+* ### [SIZ/FSIZ](./op/d_20.md)
+    - Set if operand is zero.
+* ### [SNZ/FSNZ](./op/d_21.md)
+    - Set if operand is not zero.
+* ### [SMI/FSMI](./op/d_22.md)
+    - Set if operand is minus.
+* ### [SPL/FSPL](./op/d_23.md)
+    - Set if operand is plus.
+* ### [SLT/SLO/FSLT](./op/d_24.md)
+    - Set if source operand is less than destination operand.
+* ### [SLE/SLS/FSLT](./op/d_25.md)
+    - Set if source operand is less than or equal to destination operand.
+* ### [SEQ/FSEQ](./op/d_26.md)
+    - Set if source operand is equal to destination operand.
+* ### [SGE/SHS/FSGE](./op/d_27.md)
+    - Set if source operand is equal to or greater than destination operand.
+* ### [SGT/SHI/FSGT](./op/d_28.md)
+    - Set if source operand is greater than destination operand.
+* ### [SNE/FSNE](./op/d_29.md)
+    - Set if source operand is not equal to destination operand.
+* ### [SBS](./op/d_30.md)
+    - Set if bit is set.
+* ### [SBC](./op/d_31.md)
+    - Set if bit is clear.

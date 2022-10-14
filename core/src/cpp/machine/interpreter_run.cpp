@@ -618,6 +618,9 @@ void Interpreter::run() {
                 break;
             }
 
+            // Compare and set dyadic
+            case Opcode::SCD: handleSDC(); break;
+
             // Logical
             case Opcode::AND_B:  dyadic(SIZE_BYTE); asUByte(pDstEA) &=   asUByte(pSrcEA);       break;
             case Opcode::AND_W:  dyadic(SIZE_WORD); asUWord(pDstEA) &=   asUWord(pSrcEA);       break;

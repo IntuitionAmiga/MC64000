@@ -238,4 +238,6 @@ void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
 #include "interpreter_ea.cpp"
 #include "interpreter_bmc.cpp"
 #include "interpreter_bdc.cpp"
+#include "interpreter_smc.cpp"
+#include "interpreter_sdc.cpp"
 #include "interpreter_run.cpp"

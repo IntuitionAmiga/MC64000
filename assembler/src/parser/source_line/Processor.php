@@ -69,7 +69,11 @@ class Processor implements IParser {
         }
         foreach ($this->aParsers as $oParser) {
             if ($oParser->checkLine($sSourceLine)) {
-                return $oParser->parse($sSourceLine);
+                $sByteCode = $oParser->parse($sSourceLine);
+
+                printf("\n\t%24s [%2d]: %s\n\n", bin2hex($sByteCode), strlen($sByteCode), $sSourceLine);
+
+                return $sByteCode;
             }
         }
         return '';

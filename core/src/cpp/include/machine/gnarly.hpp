@@ -75,6 +75,14 @@
     pDstEA = decodeEffectiveAddress();
 
 /**
+ * Decodes a single effective address for a monadic operation, updating the destination EA address.
+ */
+#define monadic2(size) \
+    eOperationSize = (size); \
+    pSrcEA = decodeEffectiveAddress();
+
+
+/**
  * Decodes a pair of effective addresses for a dyadic operation, updating source and destination EA addresses.
  */
 #define dyadic(size) \

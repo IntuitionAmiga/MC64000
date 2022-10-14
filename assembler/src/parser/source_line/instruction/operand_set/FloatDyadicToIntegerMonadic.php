@@ -21,8 +21,10 @@ use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use ABadCafe\MC64K\Defs\Mnemonic\ILogical;
 use ABadCafe\MC64K\Defs\Mnemonic\IArithmetic;
+use ABadCafe\MC64K\State;
+use ABadCafe\MC64K\Defs;
 
-use function \array_keys;
+use function \array_keys, \strlen;
 
 /**
  * FloatDyadicToIntegerMonadic
@@ -82,44 +84,8 @@ class FloatDyadicToIntegerMonadic extends Triadic {
     /**
      * @inheritDoc
      */
-    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
-
-        $sFullByteCode = parent::parse($iOpcode, $aOperands, $aSizes);
-
-//         if (
-//             isset(self::SKIP_IF_OPERANDS_SAME[$iOpcode]) &&
-//             $this->sourceOperandWasOptimised()
-//         ) {
-//             throw new CodeFoldException(
-//                 'Operation has no effect'
-//             );
-//         }
-//
-//         $iImmediate = $this->getIntegerImmediate($this->oSrcParser);
-//         if (null !== $iImmediate) {
-//             if (isset(self::OPCODES[$iOpcode][$iImmediate])) {
-//                 $sFoldFunc = self::OPCODES[$iOpcode][$iImmediate];
-//
-//                 /** @var callable $cCallback */
-//                 $cCallback = [$this, $sFoldFunc];
-//                 $sAlternativeBytecode = $cCallback($this->sSrcBytecode, $this->sDstBytecode);
-//                 if (empty($sAlternativeBytecode)) {
-//                     // If we don't lose side any important effects, empty is fine
-//                     if (false === $this->oDstParser->hasSideEffects()) {
-//                         throw new CodeFoldException(
-//                             'SrcEA #' . $iImmediate . ' using ' . $sFoldFunc,
-//                             $sAlternativeBytecode
-//                         );
-//                     }
-//                 } else {
-//                     throw new CodeFoldException(
-//                         'SrcEA #' . $iImmediate . ' using ' . $sFoldFunc,
-//                         $sAlternativeBytecode
-//                     );
-//                 }
-//             }
-//         }
-        return $sFullByteCode;
+    protected function getInitialInstructionSize(): int {
+        return Defs\IOpcodeLimits::SIZE_SUB;
     }
 
 }
