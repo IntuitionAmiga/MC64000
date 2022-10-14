@@ -67,9 +67,11 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
         $this->addOperandSetParser(new OperandSet\FloatMonadicBranch());
         $this->addOperandSetParser(new OperandSet\IntegerDyadic());
         $this->addOperandSetParser(new OperandSet\IntegerDyadicBranch());
-        $this->addOperandSetParser(new OperandSet\CustomIntegerTriadic());
+        $this->addOperandSetParser(new OperandSet\IntegerSMCDyadic());
+        $this->addOperandSetParser(new OperandSet\IntegerSDCTriadic());
         $this->addOperandSetParser(new OperandSet\FloatDyadic());
-        $this->addOperandSetParser(new OperandSet\FloatDyadicToIntegerMonadic());
+        $this->addOperandSetParser(new OperandSet\FloatSMCDyadic());
+        $this->addOperandSetParser(new OperandSet\FloatSDCTriadic());
         $this->addOperandSetParser(new OperandSet\FloatDyadicBranch());
         $this->addOperandSetParser(new OperandSet\FloatToIntegerDyadic());
         $this->addOperandSetParser(new OperandSet\IntegerToFloatDyadic());

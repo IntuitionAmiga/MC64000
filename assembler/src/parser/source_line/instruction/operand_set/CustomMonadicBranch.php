@@ -68,7 +68,7 @@ class CustomMonadicBranch extends CustomMonadic {
 
         $oState = State\Coordinator::get()
             ->setCurrentStatementLength(
-                Defs\IOpcodeLimits::SIZE +
+                $this->getInitialInstructionSize($iOpcode) +
                 Defs\IBranchLimits::DISPLACEMENT_SIZE +
                 strlen($sSrcBytecode)
             );

@@ -27,11 +27,11 @@ use ABadCafe\MC64K\Defs;
 use function \array_keys, \strlen;
 
 /**
- * CustomIntegerTriadic
+ * IntegerSDCTriadic
  *
- * For all vanilla integer destination @ source -> destination operations.
+ * Used for implemeting the Integer Dyadic Compare and Set
  */
-class CustomIntegerTriadic extends Triadic {
+class IntegerSDCTriadic extends Triadic {
 
     //use EffectiveAddress\TPotentiallyFoldableImmediateAware;
 
@@ -141,7 +141,7 @@ class CustomIntegerTriadic extends Triadic {
     /**
      * @inheritDoc
      */
-    protected function getInitialInstructionSize(): int {
+    protected function getInitialInstructionSize(int $iOpcode): int {
         return Defs\IOpcodeLimits::SIZE_SUB;
     }
 }

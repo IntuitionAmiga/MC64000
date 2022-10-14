@@ -27,40 +27,39 @@ use ABadCafe\MC64K\Defs;
 use function \array_keys, \strlen;
 
 /**
- * FloatDyadicToIntegerMonadic
+ * IntegerSMCDyadic
  *
+ * Used for implemeting the Integer Monadic Compare and Set
  */
-class FloatDyadicToIntegerMonadic extends Triadic {
+class IntegerSMCDyadic extends Dyadic {
 
     //use EffectiveAddress\TPotentiallyFoldableImmediateAware;
-
-    const
-        NO_OP    = 0,
-        CLEAR_8  = 1,
-        CLEAR_16 = 2,
-        CLEAR_32 = 3,
-        CLEAR_64 = 4,
-        FOLD     = 5,
-        THROW    = 6
-    ;
 
     /**
      * The set of specific opcodes that this Operand Parser applies to, mapped to folding
      * cases for given immediate source operands
      */
     const OPCODES = [
-        IDataMove::FSLT_S  => [],
-        IDataMove::FSLT_D  => [],
-        IDataMove::FSLE_S  => [],
-        IDataMove::FSLE_D  => [],
-        IDataMove::FSEQ_S  => [],
-        IDataMove::FSEQ_D  => [],
-        IDataMove::FSGE_S  => [],
-        IDataMove::FSGE_D  => [],
-        IDataMove::FSGT_S  => [],
-        IDataMove::FSGT_D  => [],
-        IDataMove::FSNE_S  => [],
-        IDataMove::FSNE_D  => [],
+        IDataMove::SIZ_B   => [], // unsigned: Lower
+        IDataMove::SIZ_W   => [],
+        IDataMove::SIZ_L   => [],
+        IDataMove::SIZ_Q   => [],
+
+        IDataMove::SNZ_B   => [], // signed: Less Than
+        IDataMove::SNZ_W   => [],
+        IDataMove::SNZ_L   => [],
+        IDataMove::SNZ_Q   => [],
+
+        IDataMove::SMI_B   => [], // unsigned: Lower or Same
+        IDataMove::SMI_W   => [],
+        IDataMove::SMI_L   => [],
+        IDataMove::SMI_Q   => [],
+
+        IDataMove::SPL_B   => [], // signed: Less or Equal
+        IDataMove::SPL_W   => [],
+        IDataMove::SPL_L   => [],
+        IDataMove::SPL_Q   => [],
+
     ];
 
 
@@ -68,8 +67,7 @@ class FloatDyadicToIntegerMonadic extends Triadic {
      * Constructor
      */
     public function __construct() {
-        $this->oSrcParser  = new EffectiveAddress\AllFloatReadable();
-        $this->oSrc2Parser = new EffectiveAddress\AllFloatReadable();
+        $this->oSrcParser  = new EffectiveAddress\AllIntegerReadable();
         $this->oDstParser  = new EffectiveAddress\AllIntegerWriteable();
         parent::__construct();
     }
@@ -84,8 +82,7 @@ class FloatDyadicToIntegerMonadic extends Triadic {
     /**
      * @inheritDoc
      */
-    protected function getInitialInstructionSize(): int {
+    protected function getInitialInstructionSize(int $iOpcode): int {
         return Defs\IOpcodeLimits::SIZE_SUB;
     }
-
 }

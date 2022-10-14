@@ -36,36 +36,36 @@ void NOINLINE Interpreter::handleSMC() {
 
     switch (uCond) {
         // biz/fbiz
-        case Opcode::IEQ_B: monadic2(SIZE_BYTE); smc(!asByte(pDstEA)); return;
-        case Opcode::IEQ_W: monadic2(SIZE_WORD); smc(!asWord(pDstEA)); return;
-        case Opcode::IEQ_L: monadic2(SIZE_LONG); smc(!asLong(pDstEA)); return;
-        case Opcode::IEQ_Q: monadic2(SIZE_QUAD); smc(!asQuad(pDstEA)); return;
-        case Opcode::FEQ_S: monadic2(SIZE_LONG); smc(!asSingle(pDstEA)); return;
-        case Opcode::FEQ_D: monadic2(SIZE_QUAD); smc(!asDouble(pDstEA)); return;
+        case Opcode::IEQ_B: monadic2(SIZE_BYTE); smc(!asByte(pSrcEA)); return;
+        case Opcode::IEQ_W: monadic2(SIZE_WORD); smc(!asWord(pSrcEA)); return;
+        case Opcode::IEQ_L: monadic2(SIZE_LONG); smc(!asLong(pSrcEA)); return;
+        case Opcode::IEQ_Q: monadic2(SIZE_QUAD); smc(!asQuad(pSrcEA)); return;
+        case Opcode::FEQ_S: monadic2(SIZE_LONG); smc(!asSingle(pSrcEA)); return;
+        case Opcode::FEQ_D: monadic2(SIZE_QUAD); smc(!asDouble(pSrcEA)); return;
 
         // bnz/fbnz
-        case Opcode::INE_B: monadic2(SIZE_BYTE); smc(asByte(pDstEA)); return;
-        case Opcode::INE_W: monadic2(SIZE_WORD); smc(asWord(pDstEA)); return;
-        case Opcode::INE_L: monadic2(SIZE_LONG); smc(asLong(pDstEA)); return;
-        case Opcode::INE_Q: monadic2(SIZE_QUAD); smc(asQuad(pDstEA)); return;
-        case Opcode::FNE_S: monadic2(SIZE_LONG); smc(asSingle(pDstEA)); return;
-        case Opcode::FNE_D: monadic2(SIZE_QUAD); smc(asDouble(pDstEA)); return;
+        case Opcode::INE_B: monadic2(SIZE_BYTE); smc(asByte(pSrcEA)); return;
+        case Opcode::INE_W: monadic2(SIZE_WORD); smc(asWord(pSrcEA)); return;
+        case Opcode::INE_L: monadic2(SIZE_LONG); smc(asLong(pSrcEA)); return;
+        case Opcode::INE_Q: monadic2(SIZE_QUAD); smc(asQuad(pSrcEA)); return;
+        case Opcode::FNE_S: monadic2(SIZE_LONG); smc(asSingle(pSrcEA)); return;
+        case Opcode::FNE_D: monadic2(SIZE_QUAD); smc(asDouble(pSrcEA)); return;
 
         // bmi/fbmi
-        case Opcode::ILT_B: monadic2(SIZE_BYTE); smc(0 > asByte(pDstEA)); return;
-        case Opcode::ILT_W: monadic2(SIZE_WORD); smc(0 > asWord(pDstEA)); return;
-        case Opcode::ILT_L: monadic2(SIZE_LONG); smc(0 > asLong(pDstEA)); return;
-        case Opcode::ILT_Q: monadic2(SIZE_QUAD); smc(0 > asQuad(pDstEA)); return;
-        case Opcode::FLT_S: monadic2(SIZE_LONG); smc(0 > asSingle(pDstEA)); return;
-        case Opcode::FLT_D: monadic2(SIZE_QUAD); smc(0 > asDouble(pDstEA)); return;
+        case Opcode::ILT_B: monadic2(SIZE_BYTE); smc(0 > asByte(pSrcEA)); return;
+        case Opcode::ILT_W: monadic2(SIZE_WORD); smc(0 > asWord(pSrcEA)); return;
+        case Opcode::ILT_L: monadic2(SIZE_LONG); smc(0 > asLong(pSrcEA)); return;
+        case Opcode::ILT_Q: monadic2(SIZE_QUAD); smc(0 > asQuad(pSrcEA)); return;
+        case Opcode::FLT_S: monadic2(SIZE_LONG); smc(0 > asSingle(pSrcEA)); return;
+        case Opcode::FLT_D: monadic2(SIZE_QUAD); smc(0 > asDouble(pSrcEA)); return;
 
         // bpl/fbpl
-        case Opcode::IGT_B: monadic2(SIZE_BYTE); smc(0 < asByte(pDstEA)); return;
-        case Opcode::IGT_W: monadic2(SIZE_WORD); smc(0 < asWord(pDstEA)); return;
-        case Opcode::IGT_L: monadic2(SIZE_LONG); smc(0 < asLong(pDstEA)); return;
-        case Opcode::IGT_Q: monadic2(SIZE_QUAD); smc(0 < asQuad(pDstEA)); return;
-        case Opcode::FGT_S: monadic2(SIZE_LONG); smc(0 < asSingle(pDstEA)); return;
-        case Opcode::FGT_D: monadic2(SIZE_QUAD); smc(0 < asDouble(pDstEA)); return;
+        case Opcode::IGT_B: monadic2(SIZE_BYTE); smc(0 < asByte(pSrcEA)); return;
+        case Opcode::IGT_W: monadic2(SIZE_WORD); smc(0 < asWord(pSrcEA)); return;
+        case Opcode::IGT_L: monadic2(SIZE_LONG); smc(0 < asLong(pSrcEA)); return;
+        case Opcode::IGT_Q: monadic2(SIZE_QUAD); smc(0 < asQuad(pSrcEA)); return;
+        case Opcode::FGT_S: monadic2(SIZE_LONG); smc(0 < asSingle(pSrcEA)); return;
+        case Opcode::FGT_D: monadic2(SIZE_QUAD); smc(0 < asDouble(pSrcEA)); return;
 
         default:
             todo(); // will trigger an unimplemented opcode

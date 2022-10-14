@@ -619,6 +619,9 @@ void Interpreter::run() {
             }
 
             // Compare and set dyadic
+            case Opcode::SCM: handleSMC(); break;
+
+            // Compare and set dyadic
             case Opcode::SCD: handleSDC(); break;
 
             // Logical

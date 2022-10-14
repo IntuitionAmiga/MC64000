@@ -71,7 +71,7 @@ class Processor implements IParser {
             if ($oParser->checkLine($sSourceLine)) {
                 $sByteCode = $oParser->parse($sSourceLine);
 
-                printf("\n\t%24s [%2d]: %s\n\n", bin2hex($sByteCode), strlen($sByteCode), $sSourceLine);
+                //printf("\n\t%24s [%2d]: %s\n\n", bin2hex($sByteCode), strlen($sByteCode), $sSourceLine);
 
                 return $sByteCode;
             }

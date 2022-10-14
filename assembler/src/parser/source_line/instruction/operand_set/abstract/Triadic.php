@@ -52,10 +52,10 @@ abstract class Triadic extends Dyadic {
      * @inheritDoc
      */
     public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
-
-        $iInstructionSize = $this->getInitialInstructionSize();
-
         $this->assertMinimumOperandCount($aOperands, self::MIN_OPERAND_COUNT);
+
+        $iInstructionSize = $this->getInitialInstructionSize($iOpcode);
+
         $oState = State\Coordinator::get();
         $oState->setCurrentStatementLength($iInstructionSize);
 
@@ -67,6 +67,7 @@ abstract class Triadic extends Dyadic {
         $this->sDstBytecode  = $this->oDstParser
             ->setOperationSize($aSizes[$iDstIndex] ?? self::DEFAULT_SIZE)
             ->parse($aOperands[$iDstIndex]);
+
         if (null === $this->sDstBytecode) {
             throw new \UnexpectedValueException(
                 $aOperands[$iDstIndex] . ' not a valid destination operand'
@@ -80,6 +81,7 @@ abstract class Triadic extends Dyadic {
         $this->sSrcBytecode = $this->oSrcParser
             ->setOperationSize($aSizes[$iSrc1Index] ?? self::DEFAULT_SIZE)
             ->parse($aOperands[$iSrc1Index]);
+
         if (null === $this->sSrcBytecode) {
             throw new \UnexpectedValueException(
                 $aOperands[$iSrc1Index] . ' not a valid source 1 operand'
@@ -143,5 +145,4 @@ abstract class Triadic extends Dyadic {
         return self::DEF_OPERAND_DST;
     }
 
-    protected abstract function getInitialInstructionSize(): int;
 }
