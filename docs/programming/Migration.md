@@ -19,6 +19,29 @@ The branching model in MC64K is significantly different than in 680x0. The prima
    - MC64K compares a pair of operands directly or a single operand against zero.
    - Most 680x0 CCR tests are equivalent to a comparison against zero.
 
+### Conditional Set
+
+Related to the branching model changes, the absence of a condition code register means that the 68K SCC (conditional set) instructions are implemented differently. Normally, SCC takes a single effective address operand that is set as a byte to -1 when the condition is true, and 0 otherwise. For example:
+
+```asm
+    tst.l (a0) ; test the long value pointed to by a0
+    spl d0     ; d0.b is -1 if the value pointed to by a0 was positive or zero otherwise
+```
+
+In MC64K, the SCC instruction is sized and takes two or three operands. The two operand form is a direct replacement for the above sequence:
+
+```asm
+    spl.l (a0), d0 ; d0.b is -1 if the signed long value pointed to by a0 is positive
+                   ; or zero otherwise
+```
+
+The three operand form compares two source operands directly, then sets the destination accordingly:
+
+```asm
+    sgt.q (a0), d1, d0 ; d0.b is -1 if the signed quad value pointed to by a0 is greater
+                       ; than the one in d1 or zero otherwise
+```
+
 ### Floating Point
 
 The FPU in MC64K is somewhat simplified. In particular, integer operands are not supported for any operations.
