@@ -31,16 +31,27 @@ use function \preg_match, \chr, \pack;
 class GPRIndirectDisplacement implements IParser, EffectiveAddress\IRegisterIndirect {
 
     use TOperationSizeAware;
+    use TDisplacementSizeAware;
+
+    private const BASE_EA = [
+        self::OFS_GPR_IND_DSP8, // Base EA mode for displacements fitting into 8 bits
+        self::OFS_GPR_IND_DSP   // Base EA mode for displacements fitting into 32 bits
+    ];
+
+    private const BIN_FMT = [
+        IIntLimits::BYTE_BIN_FORMAT,
+        IIntLimits::LONG_BIN_FORMAT
+    ];
 
     /**
      * Required match
      */
     const MATCHES = [
-        // Register indirect with signed displacement d32(rN)
-        '/^' . self::D32 . '\(\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND_DSP,
+        // Register indirect with signed displacement d(rN)
+        '/^' . self::D32 . '\(\s*' . self::RA . '\s*\)$/',
 
-        // Register indirect with signed displacement (d32, rN)
-        '/^\(\s*' . self::D32 . '\s*,\s*' . self::RA . '\s*\)$/' => self::OFS_GPR_IND_DSP,
+        // Register indirect with signed displacement (d, rN)
+        '/^\(\s*' . self::D32 . '\s*,\s*' . self::RA . '\s*\)$/',
     ];
 
     const
@@ -59,13 +70,17 @@ class GPRIndirectDisplacement implements IParser, EffectiveAddress\IRegisterIndi
      * @inheritDoc
      */
     public function parse(string $sSource): ?string {
-        foreach (self::MATCHES as $sMatch => $iOffset) {
+        foreach (self::MATCHES as $sMatch) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
                 $iRegister     = Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_NAME]);
                 $iDisplacement = Parser\Utils\Integer::parseLiteral($aMatches[self::MATCHED_DISP], IIntLimits::LONG);
-                return chr($iOffset + $iRegister) . pack(IIntLimits::LONG_BIN_FORMAT, $iDisplacement);
+                $iOffset       = $this->fitsByte($iDisplacement) ? 0 : 1;
+                return
+                    chr(self::BASE_EA[$iOffset] + $iRegister) .
+                    pack(self::BIN_FMT[$iOffset], $iDisplacement);
             }
         }
         return null;
     }
+
 }

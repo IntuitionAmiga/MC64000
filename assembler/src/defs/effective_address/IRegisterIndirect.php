@@ -115,6 +115,24 @@ interface IRegisterIndirect extends IByteCodeGroups {
         R14_IND_PRE_DEC   = self::OFS_GPR_IND_PRE_DEC + 14,
         R15_IND_PRE_DEC   = self::OFS_GPR_IND_PRE_DEC + 15,
 
+        // Register Indirect with displacement <d8>(r<N>) / (<d8>, r<N>)
+        R0_IND_DSP8    = self::OFS_GPR_IND_DSP8 + 0,
+        R1_IND_DSP8    = self::OFS_GPR_IND_DSP8 + 1,
+        R2_IND_DSP8    = self::OFS_GPR_IND_DSP8 + 2,
+        R3_IND_DSP8    = self::OFS_GPR_IND_DSP8 + 3,
+        R4_IND_DSP8    = self::OFS_GPR_IND_DSP8 + 4,
+        R5_IND_DSP8    = self::OFS_GPR_IND_DSP8 + 5,
+        R6_IND_DSP8    = self::OFS_GPR_IND_DSP8 + 6,
+        R7_IND_DSP8    = self::OFS_GPR_IND_DSP8 + 7,
+        R8_IND_DSP8    = self::OFS_GPR_IND_DSP8 + 8,
+        R9_IND_DSP8    = self::OFS_GPR_IND_DSP8 + 9,
+        R10_IND_DSP8   = self::OFS_GPR_IND_DSP8 + 10,
+        R11_IND_DSP8   = self::OFS_GPR_IND_DSP8 + 11,
+        R12_IND_DSP8   = self::OFS_GPR_IND_DSP8 + 12,
+        R13_IND_DSP8   = self::OFS_GPR_IND_DSP8 + 13,
+        R14_IND_DSP8   = self::OFS_GPR_IND_DSP8 + 14,
+        R15_IND_DSP8   = self::OFS_GPR_IND_DSP8 + 15,
+
         // Register Indirect with displacement <d32>(r<N>) / (<d32>, r<N>)
         R0_IND_DSP    = self::OFS_GPR_IND_DSP + 0,
         R1_IND_DSP    = self::OFS_GPR_IND_DSP + 1,

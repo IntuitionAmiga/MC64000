@@ -75,6 +75,7 @@ const CLASS_MAP = [
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\FPRDirect' => '/parser/effective_address/FPRDirect.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\IParser' => '/parser/effective_address/IParser.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\ARDirect' => '/parser/effective_address/ARDirect.php',
+  'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\TDisplacementSizeAware' => '/parser/effective_address/TDisplacementSizeAware.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\TOperationSizeAware' => '/parser/effective_address/TOperationSizeAware.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\TPotentiallyFoldableImmediateAware' => '/parser/effective_address/TPotentiallyFoldableImmediateAware.php',
   'ABadCafe\\MC64K\\Parser\\EffectiveAddress\\AllControlAddressing' => '/parser/effective_address/AllControlAddressing.php',
