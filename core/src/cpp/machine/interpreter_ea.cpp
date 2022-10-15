@@ -81,6 +81,11 @@ void* Interpreter::decodeEffectiveAddress() {
             aoGPR[uEALower].piByte -= eOperationSize;
             return aoGPR[uEALower].pAny;
 
+        // Register Indirect with displacement <d8>(r<N>) / (<d8>, r<N>)
+        case EffectiveAddress::OFS_GPR_IND_DSP8:
+            readByteDisplacement();
+            return aoGPR[uEALower].piByte + iDisplacement;
+
         // Register Indirect with displacement <d32>(r<N>) / (<d32>, r<N>)
         case EffectiveAddress::OFS_GPR_IND_DSP:
             readDisplacement();
@@ -105,18 +110,38 @@ void* Interpreter::decodeEffectiveAddress() {
             break;
         }
 
-        // Register Indirect with scaled index and displacement
+        // Register Indirect with scaled index and 8-bit displacement
+        case EffectiveAddress::OFS_GPR_IDX_DSP8: {
+            uint8 uIndexReg = *puProgramCounter++;
+            uint8 uBaseReg  = uIndexReg >> 4;
+            uint8 uScale    = uEALower >> 2;
+            uIndexReg      &= 0xF;
+            readByteDisplacement();
+
+            int8* piResult = aoGPR[uBaseReg].piByte + iDisplacement;
+            switch (uEALower & 3) {
+                case 0: return piResult + (aoGPR[uIndexReg].iByte << uScale);
+                case 1: return piResult + (aoGPR[uIndexReg].iWord << uScale);
+                case 2: return piResult + (aoGPR[uIndexReg].iLong << uScale);
+                case 3: return piResult + (aoGPR[uIndexReg].iQuad << uScale);
+            }
+            break;
+        }
+
+        // Register Indirect with scaled index and 32-bit displacement
         case EffectiveAddress::OFS_GPR_IDX_DSP: {
             uint8 uIndexReg = *puProgramCounter++;
             uint8 uBaseReg  = uIndexReg >> 4;
             uint8 uScale    = uEALower >> 2;
             uIndexReg      &= 0xF;
             readDisplacement();
+
+            int8* piResult = aoGPR[uBaseReg].piByte + iDisplacement;
             switch (uEALower & 3) {
-                case 0: return aoGPR[uBaseReg].piByte + iDisplacement + (aoGPR[uIndexReg].iByte << uScale);
-                case 1: return aoGPR[uBaseReg].piByte + iDisplacement + (aoGPR[uIndexReg].iWord << uScale);
-                case 2: return aoGPR[uBaseReg].piByte + iDisplacement + (aoGPR[uIndexReg].iLong << uScale);
-                case 3: return aoGPR[uBaseReg].piByte + iDisplacement + (aoGPR[uIndexReg].iQuad << uScale);
+                case 0: return piResult + (aoGPR[uIndexReg].iByte << uScale);
+                case 1: return piResult + (aoGPR[uIndexReg].iWord << uScale);
+                case 2: return piResult + (aoGPR[uIndexReg].iLong << uScale);
+                case 3: return piResult + (aoGPR[uIndexReg].iQuad << uScale);
             }
             break;
         }

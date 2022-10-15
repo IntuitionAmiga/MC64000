@@ -30,21 +30,23 @@ namespace MC64K::ByteCode::EffectiveAddress {
  * Enumerates the base offsets for each Effective Address Type
  */
 enum Group {
-    OFS_GPR_DIR          = 0,   // GPR Direct r<N>
-    OFS_GPR_IND          = OFS_GPR_DIR          + 16,  // GPR Indirect (r<N>)
-    OFS_GPR_IND_POST_INC = OFS_GPR_IND          + 16,  // GPR Indirect, Post Increment (r<N>)+
-    OFS_GPR_IND_POST_DEC = OFS_GPR_IND_POST_INC + 16,  // GPR Indirect, Post Decrement (r<N>)-
-    OFS_GPR_IND_PRE_INC  = OFS_GPR_IND_POST_DEC + 16,  // GPR Indirect, Pre Increment +(r<N>)
-    OFS_GPR_IND_PRE_DEC  = OFS_GPR_IND_PRE_INC  + 16,  // GPR Indirect, Pre Decrement -(r<N>)
-    OFS_GPR_IND_DSP      = OFS_GPR_IND_PRE_DEC  + 16,  // GPR Indirect with Displacement <d32>(r<N>) / (<d32>, r<N>)
-    OFS_FPR_DIR          = OFS_GPR_IND_DSP      + 16, // FPR Direct fp<N>
-    OFS_GPR_IDX          = OFS_FPR_DIR          + 16, // GPR Indexed (r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
-    OFS_GPR_IDX_DSP      = OFS_GPR_IDX          + 16, // GPR Indexed with Displacement <d32>(r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
-    OFS_OTHER            = OFS_GPR_IDX_DSP      + 16,
-    OFS_OTHER_2          = OFS_OTHER            + 16,
+    OFS_GPR_DIR          = 0,                         // r<N>
+    OFS_GPR_IND          = OFS_GPR_DIR          + 16, // (r<N>)
+    OFS_GPR_IND_POST_INC = OFS_GPR_IND          + 16, // (r<N>)+
+    OFS_GPR_IND_POST_DEC = OFS_GPR_IND_POST_INC + 16, // (r<N>)-
+    OFS_GPR_IND_PRE_INC  = OFS_GPR_IND_POST_DEC + 16, // +(r<N>)
+    OFS_GPR_IND_PRE_DEC  = OFS_GPR_IND_PRE_INC  + 16, // -(r<N>)
+    OFS_GPR_IND_DSP8     = OFS_GPR_IND_PRE_DEC  + 16, // <d8>(r<N>) / (<d8>, r<N>)
+    OFS_GPR_IND_DSP      = OFS_GPR_IND_DSP8     + 16, // <d32>(r<N>) / (<d32>, r<N>)
+    OFS_FPR_DIR          = OFS_GPR_IND_DSP      + 16, // fp<N>
+    OFS_GPR_IDX          = OFS_FPR_DIR          + 16, // (r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
+    OFS_GPR_IDX_DSP8     = OFS_GPR_IDX          + 16, // <d8>(r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
+    OFS_GPR_IDX_DSP      = OFS_GPR_IDX_DSP8     + 16, // <d32>(r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
+    OFS_OTHER            = OFS_GPR_IDX_DSP      + 16, // Sundry 1
+    OFS_OTHER_2          = OFS_OTHER            + 16, // Sundry 2
 
-    OFS_PC_IND_IDX       = OFS_OTHER_2          + 16, // PC Indirect, indexed  (pc, r<N>.<b|w|l|q> [ * <2|4|8>])
-    OFS_PC_IND_IDX_DSP   = OFS_PC_IND_IDX       + 16, // PC Indirect, indeced with displacement  <d32>(pc, r<N>.<b|w|l|q> [ * <2|4|8>])
+    OFS_PC_IND_IDX       = OFS_OTHER_2          + 16, // (pc, r<N>.<b|w|l|q> [ * <2|4|8>])
+    OFS_PC_IND_IDX_DSP   = OFS_PC_IND_IDX       + 16, // <d32>(pc, r<N>.<b|w|l|q> [ * <2|4|8>])
 };
 
 /**
