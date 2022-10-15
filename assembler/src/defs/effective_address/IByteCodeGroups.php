@@ -28,20 +28,22 @@ namespace ABadCafe\MC64K\Defs\EffectiveAddress;
  */
 interface IByteCodeGroups {
     const
-        OFS_GPR_DIR          = 0,   // GPR Direct r<N>
-        OFS_GPR_IND          = 16,  // GPR Indirect (r<N>)
-        OFS_GPR_IND_POST_INC = 32,  // GPR Indirect, Post Increment (r<N>)+
-        OFS_GPR_IND_POST_DEC = 48,  // GPR Indirect, Post Decrement (r<N>)-
-        OFS_GPR_IND_PRE_INC  = 64,  // GPR Indirect, Pre Increment +(r<N>)
-        OFS_GPR_IND_PRE_DEC  = 80,  // GPR Indirect, Pre Decrement -(r<N>)
-        OFS_GPR_IND_DSP      = 96,  // GPR Indirect with Displacement <d32>(r<N>) / (<d32>, r<N>)
-        OFS_FPR_DIR          = 112, // FPR Direct fp<N>
-        OFS_GPR_IDX          = 128, // GPR Indexed (r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
-        OFS_GPR_IDX_DSP      = 144, // GPR Indexed with Displacement <d32>(r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
-        OFS_OTHER            = 160, // Sundry modes (space for 32 of them)
+        OFS_GPR_DIR          = 0,                                // r<N>
+        OFS_GPR_IND          = self::OFS_GPR_DIR          + 16,  // (r<N>)
+        OFS_GPR_IND_POST_INC = self::OFS_GPR_IND          + 16,  // (r<N>)+
+        OFS_GPR_IND_POST_DEC = self::OFS_GPR_IND_POST_INC + 16,  // (r<N>)-
+        OFS_GPR_IND_PRE_INC  = self::OFS_GPR_IND_POST_DEC + 16,  // +(r<N>)
+        OFS_GPR_IND_PRE_DEC  = self::OFS_GPR_IND_PRE_INC  + 16,  // -(r<N>)
+        OFS_GPR_IND_DSP8     = self::OFS_GPR_IND_PRE_DEC  + 16,  // <d8>(r<N>)
+        OFS_GPR_IND_DSP      = self::OFS_GPR_IND_DSP8     + 16,  // <d32>(r<N>)
+        OFS_FPR_DIR          = self::OFS_GPR_IND_DSP      + 16,  // fp<N>
+        OFS_GPR_IDX          = self::OFS_FPR_DIR          + 16,  // (r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
+        OFS_GPR_IDX_DSP8     = self::OFS_GPR_IDX          + 16,  // <d8>(r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
+        OFS_GPR_IDX_DSP      = self::OFS_GPR_IDX_DSP8     + 16,  // <d32>(r<N>, r<N>.<b|w|l|q> [ * <2|4|8>])
+        OFS_OTHER            = self::OFS_GPR_IDX_DSP      + 16,  // Sundry modes (space for 32 of them)
 
         // Re-enumerated these but we aren't supporting them for the time being.
-        OFS_PC_IND_IDX       = 192, // PC Indirect, indexed  (pc, r<N>.<b|w|l|q> [ * <2|4|8>])
-        OFS_PC_IND_IDX_DSP   = 208  // PC Indirect, indeced with displacement  <d32>(pc, r<N>.<b|w|l|q> [ * <2|4|8>])
+        OFS_PC_IND_IDX       = self::OFS_OTHER            + 16,  // (pc, r<N>.<b|w|l|q> [ * <2|4|8>])
+        OFS_PC_IND_IDX_DSP   = self::OFS_PC_IND_IDX       + 16   // <d32>(pc, r<N>.<b|w|l|q> [ * <2|4|8>])
     ;
 }

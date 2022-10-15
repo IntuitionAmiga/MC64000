@@ -49,25 +49,51 @@ interface IRegisterIndirectIndexed extends IByteCodeGroups {
         REG_IND_IDXL_8     = self::OFS_GPR_IDX + 14, // (r7, r0.l*8)
         REG_IND_IDXQ_8     = self::OFS_GPR_IDX + 15, // (r7, r0.q*8)
 
-        // Register Indirect with 8-bit scaled index and displacement
+
+        // Register Indirect with 8-bit scaled index and 8-bit displacement
+        REG_IND_IDXB_DSP8   = self::OFS_GPR_IDX_DSP8 +  0, // -2(r7, r0.b)    OR (-2, r7, r0.b)
+        REG_IND_IDXW_DSP8   = self::OFS_GPR_IDX_DSP8 +  1, // -2(r7, r0.w)    OR (-2, r7, r0.w)
+        REG_IND_IDXL_DSP8   = self::OFS_GPR_IDX_DSP8 +  2, // -2(r7, r0.l)    OR (-2, r7, r0.l)
+        REG_IND_IDXQ_DSP8   = self::OFS_GPR_IDX_DSP8 +  3, // -2(r7, r0.q)    OR (-2, r7, r0.q)
+
+        // Register Indirect with 16-bit scaled index and 8-bit displacement
+        REG_IND_IDXB_2_DSP8 = self::OFS_GPR_IDX_DSP8 +  4, // 8(r7, r0.b*2)   OR (8, r7, r0.b*2)
+        REG_IND_IDXW_2_DSP8 = self::OFS_GPR_IDX_DSP8 +  5, // 8(r7, r0.w*2)   OR (8, r7, r0.w*2)
+        REG_IND_IDXL_2_DSP8 = self::OFS_GPR_IDX_DSP8 +  6, // 8(r7, r0.l*2)   OR (8, r7, r0.l*2)
+        REG_IND_IDXQ_2_DSP8 = self::OFS_GPR_IDX_DSP8 +  7, // 8(r7, r0.q*2)   OR (8, r7, r0.q*2)
+
+        // Register Indirect with 32-bit scaled index and 8-bit displacement
+        REG_IND_IDXB_4_DSP8 = self::OFS_GPR_IDX_DSP8 +  8, // -6(r7, r0.b*4)  OR (-2, r7, r0.b*4)
+        REG_IND_IDXW_4_DSP8 = self::OFS_GPR_IDX_DSP8 +  9, // -6(r7, r0.w*4)  OR (-2, r7, r0.w*4)
+        REG_IND_IDXL_4_DSP8 = self::OFS_GPR_IDX_DSP8 + 10, // -6(r7, r0.l*4)  OR (-2, r7, r0.l*4)
+        REG_IND_IDXQ_4_DSP8 = self::OFS_GPR_IDX_DSP8 + 11, // -6(r7, r0.q*4)  OR (-2, r7, r0.q*4)
+
+        // Register Indirect with 64-bit scaled index and 8-bit displacement
+        REG_IND_IDXB_8_DSP8 = self::OFS_GPR_IDX_DSP8 + 12, // 2(r7, r0.b*8)   OR (2, r7, r0.b*8)
+        REG_IND_IDXW_8_DSP8 = self::OFS_GPR_IDX_DSP8 + 13, // 2(r7, r0.w*8)   OR (2, r7, r0.w*8)
+        REG_IND_IDXL_8_DSP8 = self::OFS_GPR_IDX_DSP8 + 14, // 2(r7, r0.l*8)   OR (2, r7, r0.l*8)
+        REG_IND_IDXQ_8_DSP8 = self::OFS_GPR_IDX_DSP8 + 15, // 2(r7, r0.q*8)   OR (2, r7, r0.q*8)
+
+
+        // Register Indirect with 8-bit scaled index and 32-bit displacement
         REG_IND_IDXB_DSP   = self::OFS_GPR_IDX_DSP +  0, // -2(r7, r0.b)    OR (-2, r7, r0.b)
         REG_IND_IDXW_DSP   = self::OFS_GPR_IDX_DSP +  1, // -2(r7, r0.w)    OR (-2, r7, r0.w)
         REG_IND_IDXL_DSP   = self::OFS_GPR_IDX_DSP +  2, // -2(r7, r0.l)    OR (-2, r7, r0.l)
         REG_IND_IDXQ_DSP   = self::OFS_GPR_IDX_DSP +  3, // -2(r7, r0.q)    OR (-2, r7, r0.q)
 
-        // Register Indirect with 16-bit scaled index and displacement
+        // Register Indirect with 16-bit scaled index and 32-bit displacement
         REG_IND_IDXB_2_DSP = self::OFS_GPR_IDX_DSP +  4, // 8(r7, r0.b*2)   OR (8, r7, r0.b*2)
         REG_IND_IDXW_2_DSP = self::OFS_GPR_IDX_DSP +  5, // 8(r7, r0.w*2)   OR (8, r7, r0.w*2)
         REG_IND_IDXL_2_DSP = self::OFS_GPR_IDX_DSP +  6, // 8(r7, r0.l*2)   OR (8, r7, r0.l*2)
         REG_IND_IDXQ_2_DSP = self::OFS_GPR_IDX_DSP +  7, // 8(r7, r0.q*2)   OR (8, r7, r0.q*2)
 
-        // Register Indirect with 32-bit scaled index and displacement
+        // Register Indirect with 32-bit scaled index and 32-bit displacement
         REG_IND_IDXB_4_DSP = self::OFS_GPR_IDX_DSP +  8, // -6(r7, r0.b*4)  OR (-2, r7, r0.b*4)
         REG_IND_IDXW_4_DSP = self::OFS_GPR_IDX_DSP +  9, // -6(r7, r0.w*4)  OR (-2, r7, r0.w*4)
         REG_IND_IDXL_4_DSP = self::OFS_GPR_IDX_DSP + 10, // -6(r7, r0.l*4)  OR (-2, r7, r0.l*4)
         REG_IND_IDXQ_4_DSP = self::OFS_GPR_IDX_DSP + 11, // -6(r7, r0.q*4)  OR (-2, r7, r0.q*4)
 
-        // Register Indirect with 64-bit scaled index and displacement
+        // Register Indirect with 64-bit scaled index and 32-bit displacement
         REG_IND_IDXB_8_DSP = self::OFS_GPR_IDX_DSP + 12, // 2(r7, r0.b*8)   OR (2, r7, r0.b*8)
         REG_IND_IDXW_8_DSP = self::OFS_GPR_IDX_DSP + 13, // 2(r7, r0.w*8)   OR (2, r7, r0.w*8)
         REG_IND_IDXL_8_DSP = self::OFS_GPR_IDX_DSP + 14, // 2(r7, r0.l*8)   OR (2, r7, r0.l*8)

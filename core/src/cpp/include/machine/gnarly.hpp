@@ -45,6 +45,8 @@
     auBytes[3] = *puProgramCounter++;
 #endif
 
+#define readByteDisplacement() iDisplacement = ((int8)*puProgramCounter++);
+
 /**
  * Alias of readDisplacment() for when the value represents a mask value and not a displacement.
  */

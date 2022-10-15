@@ -70,9 +70,14 @@ class Processor implements IParser {
         foreach ($this->aParsers as $oParser) {
             if ($oParser->checkLine($sSourceLine)) {
                 $sByteCode = $oParser->parse($sSourceLine);
-
-                //printf("\n\t%24s [%2d]: %s\n\n", bin2hex($sByteCode), strlen($sByteCode), $sSourceLine);
-
+                if ($oParser instanceof Instruction\Statement) {
+                    printf(
+                        "\t%24s [%2d]: %s\n",
+                        bin2hex($sByteCode),
+                        strlen($sByteCode),
+                        $sSourceLine
+                    );
+                }
                 return $sByteCode;
             }
         }

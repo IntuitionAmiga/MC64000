@@ -31,6 +31,17 @@ use function \preg_match, \chr, \pack;
 class GPRIndirectIndexedDisplacement implements IParser, EffectiveAddress\IRegisterIndirectIndexed {
 
     use TOperationSizeAware;
+    use TDisplacementSizeAware;
+
+    private const BASE_EA = [
+        self::OFS_GPR_IDX_DSP8 - self::OFS_GPR_IDX_DSP, // Base EA offset for displacements fitting into 8 bits
+        0                                               // Base EA offset for displacements fitting into 32 bits
+    ];
+
+    private const BIN_FMT = [
+        IIntLimits::BYTE_BIN_FORMAT,
+        IIntLimits::LONG_BIN_FORMAT
+    ];
 
     /**
      * Required match
@@ -150,12 +161,16 @@ class GPRIndirectIndexedDisplacement implements IParser, EffectiveAddress\IRegis
      * @inheritDoc
      */
     public function parse(string $sSource): ?string {
-        foreach (self::MATCHES as $sMatch => $iOffset) {
+        foreach (self::MATCHES as $sMatch => $iBaseEAMode) {
             if (preg_match($sMatch, $sSource, $aMatches)) {
                 $iRegisterPair = Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_BASE_NAME]) << 4
                                | Register\Enumerator::getGPRNumber($aMatches[self::MATCHED_INDEX_NAME]);
                 $iDisplacement = Parser\Utils\Integer::parseLiteral($aMatches[self::MATCHED_DISP], IIntLimits::LONG);
-                return chr($iOffset) . chr($iRegisterPair) . pack(IIntLimits::LONG_BIN_FORMAT, $iDisplacement);
+                $iOffset       = $this->fitsByte($iDisplacement) ? 0 : 1;
+                return
+                    chr($iBaseEAMode + self::BASE_EA[$iOffset]) .
+                    chr($iRegisterPair) .
+                    pack(self::BIN_FMT[$iOffset], $iDisplacement);
             }
         }
         return null;
