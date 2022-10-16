@@ -24,22 +24,21 @@ use ABadCafe\MC64K\Defs\Mnemonic\IDataMove;
 use function \array_combine, \strlen, \ord, \chr;
 
 /**
- * Triadic
+ * Tetradic
  *
  * Base for all vanilla destination @ source1, source2 -> destination operations.
  */
-abstract class Triadic extends Dyadic {
+abstract class Tetradic extends Triadic {
 
     const
-        DEF_OPERAND_SRC   = 0,
-        DEF_OPERAND_SRC_2 = 1,
-        DEF_OPERAND_DST   = 2,
-        MIN_OPERAND_COUNT = 3
+        DEF_OPERAND_SRC_3 = 2,
+        DEF_OPERAND_DST   = 3,
+        MIN_OPERAND_COUNT = 4
     ;
 
-    protected EffectiveAddress\IParser $oSrc2Parser;
+    protected EffectiveAddress\IParser $oSrc3Parser;
 
-    protected ?string $sSrc2Bytecode;
+    protected ?string $sSrc3Bytecode;
 
     /**
      * Base constructor
@@ -61,6 +60,7 @@ abstract class Triadic extends Dyadic {
 
         $this->sSrcBytecode  = null;
         $this->sSrc2Bytecode = null;
+        $this->sSrc3Bytecode = null;
 
         // Get the actual destination first
         $iDstIndex           = $this->getDestinationOperandIndex();
@@ -93,27 +93,36 @@ abstract class Triadic extends Dyadic {
         $oState->setCurrentStatementLength($iInstructionSize);
 
         $iSrc2Index    = $this->getSource2OperandIndex();
-        $sSrc2Bytecode = $this->oSrc2Parser
+        $this->sSrc2Bytecode = $this->oSrc2Parser
             ->setOperationSize($aSizes[$iSrc2Index] ?? self::DEFAULT_SIZE)
             ->parse($aOperands[$iSrc2Index]);
-        if (null === $sSrc2Bytecode) {
+        if (null === $this->sSrc2Bytecode) {
             throw new \UnexpectedValueException(
                 $aOperands[$iSrc2Index] . ' not a valid source 2 operand'
             );
         }
 
-        $this->sSrc2Bytecode = $this->optimiseSourceOperandBytecode(
-            $sSrc2Bytecode,
-            $this->sSrcBytecode
-        );
-
         $iInstructionSize += strlen($this->sSrc2Bytecode);
         $oState->setCurrentStatementLength($iInstructionSize);
 
-        // TODO - code fold optimisations to either set or clear the destination
-        // when the condition is compile time detectable
+        $iSrc3Index    = $this->getSource3OperandIndex();
+        $this->sSrc3Bytecode = $this->oSrc3Parser
+            ->setOperationSize($aSizes[$iSrc3Index] ?? self::DEFAULT_SIZE)
+            ->parse($aOperands[$iSrc3Index]);
+        if (null === $this->sSrc3Bytecode) {
+            throw new \UnexpectedValueException(
+                $aOperands[$iSrc3Index] . ' not a valid source 3 operand'
+            );
+        }
 
-        return $this->sDstBytecode . $this->sSrcBytecode . $this->sSrc2Bytecode;
+        $iInstructionSize += strlen($this->sSrc3Bytecode);
+        $oState->setCurrentStatementLength($iInstructionSize);
+
+        return
+            $this->sDstBytecode .
+            $this->sSrcBytecode .
+            $this->sSrc2Bytecode .
+            $this->sSrc3Bytecode;
     }
 
     /**
@@ -121,26 +130,8 @@ abstract class Triadic extends Dyadic {
      *
      * @return int
      */
-    protected function getSource1OperandIndex(): int {
-        return static::DEF_OPERAND_SRC;
-    }
-
-    /**
-     * Returns the expected index in the operands array for the destination operand
-     *
-     * @return int
-     */
-    protected function getSource2OperandIndex(): int {
-        return static::DEF_OPERAND_SRC_2;
-    }
-
-    /**
-     * Returns the expected index in the operands array for the destination operand
-     *
-     * @return int
-     */
-    protected function getDestinationOperandIndex(): int {
-        return static::DEF_OPERAND_DST;
+    protected function getSource3OperandIndex(): int {
+        return static::DEF_OPERAND_SRC_3;
     }
 
 }
