@@ -92,7 +92,9 @@ class RegisterEnumeratorTest extends TestCase {
     }
 
     private function testNativeGPRNames(): void {
-        echo "\ttesting: native gpr names\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: native gpr names\n";
+        }
         foreach (self::NATIVE_GPR_NAMES as $sName => $iEnumerated) {
             $this->assertSame($iEnumerated, Defs\Register\Enumerator::getGPRNumber($sName));
             $this->assertSame($iEnumerated, Defs\Register\Enumerator::getGPRNumber(strtoupper($sName)));
@@ -100,7 +102,9 @@ class RegisterEnumeratorTest extends TestCase {
     }
 
     private function testNativeFPRNames(): void {
-        echo "\ttesting: native fpr names\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: native fpr names\n";
+        }
         foreach (self::NATIVE_FPR_NAMES as $sName => $iEnumerated) {
             $this->assertSame($iEnumerated, Defs\Register\Enumerator::getFPRNumber($sName));
             $this->assertSame($iEnumerated, Defs\Register\Enumerator::getFPRNumber(strtoupper($sName)));
@@ -108,7 +112,9 @@ class RegisterEnumeratorTest extends TestCase {
     }
 
     private function testLegacyGPRNames(): void {
-        echo "\ttesting: legacy gpr names\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: legacy gpr names\n";
+        }
         foreach (self::LEGACY_GPR_NAMES as $sName => $iEnumerated) {
             $this->assertSame($iEnumerated, Defs\Register\Enumerator::getGPRNumber($sName));
             $this->assertSame($iEnumerated, Defs\Register\Enumerator::getGPRNumber(strtoupper($sName)));
@@ -116,7 +122,9 @@ class RegisterEnumeratorTest extends TestCase {
     }
 
     private function testIllegalGPRNames(): void {
-        echo "\ttesting: illegal gpr names\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: illegal gpr names\n";
+        }
         foreach (self::EXAMPLE_ILLEGAL_REG_NAMES as $sName) {
             try {
                 Defs\Register\Enumerator::getGPRNumber($sName);
@@ -127,7 +135,9 @@ class RegisterEnumeratorTest extends TestCase {
     }
 
     private function testIllegalFPRNames(): void {
-        echo "\ttesting: illegal gpr names\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: illegal gpr names\n";
+        }
         foreach (self::EXAMPLE_ILLEGAL_REG_NAMES as $sName) {
             try {
                 Defs\Register\Enumerator::getFPRNumber($sName);

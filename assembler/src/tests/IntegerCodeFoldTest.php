@@ -155,7 +155,9 @@ class IntegerCodeFoldTest extends TestCase {
     }
 
     private function testNonFolded(Parser\SourceLine\Instruction\Statement $oParser): void {
-        echo "\ttesting: non-folded\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: non-folded\n";
+        }
         foreach (self::NON_FOLDED_TEST_CASES as $sInput) {
             $sBytecode = (string)$oParser->parse($sInput);
             $this->assertTrue(strlen($sBytecode) > 0);
@@ -163,7 +165,9 @@ class IntegerCodeFoldTest extends TestCase {
     }
 
     private function testFoldToClear(Parser\SourceLine\Instruction\Statement $oParser): void {
-        echo "\ttesting: fold to clr.x\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: fold to clr.x\n";
+        }
         $aFoldBytecode = [
             self::CLEAR_B => chr(Defs\Mnemonic\IDataMove::CLR_B) . chr(0),
             self::CLEAR_W => chr(Defs\Mnemonic\IDataMove::CLR_W) . chr(0),
@@ -178,7 +182,9 @@ class IntegerCodeFoldTest extends TestCase {
     }
 
     private function testFoldToEmpty(Parser\SourceLine\Instruction\Statement $oParser): void {
-        echo "\ttesting: fold to empty\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: fold to empty\n";
+        }
         foreach (self::FOLD_TEST_CASES as $sInput) {
             $sBytecode = (string)$oParser->parse($sInput);
             $this->assertSame(0, strlen($sBytecode));
@@ -186,7 +192,9 @@ class IntegerCodeFoldTest extends TestCase {
     }
 
     private function testTrapIllegal(Parser\SourceLine\Instruction\Statement $oParser): void {
-        echo "\ttesting: trap illegal\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: trap illegal\n";
+        }
         foreach (self::TRAP_ILLEGAL_TEST_CASES as $sInput) {
             try {
                 $sBytecode = (string)$oParser->parse($sInput);

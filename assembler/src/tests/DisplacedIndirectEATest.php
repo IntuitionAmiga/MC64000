@@ -18,7 +18,8 @@ declare(strict_types = 1);
 namespace ABadCafe\MC64K\Tests;
 use ABadCafe\MC64K\Utils\TestCase;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
-use ABadCafe\MC64K\Defs\EffectiveAddress\IRegisterIndirect;
+use ABadCafe\MC64K\Defs\EffectiveAddress\IByteCodeGroups;
+//use ABadCafe\MC64K\Defs\EffectiveAddress\IRegisterIndirect;
 
 /**
  * DisplacedIndirectEATest
@@ -28,40 +29,54 @@ use ABadCafe\MC64K\Defs\EffectiveAddress\IRegisterIndirect;
  */
 class DisplacedIndirectEATest extends TestCase {
 
-    const DISPLACEMENTS = [
-        '16'           => "\x10",
-        '-1'           => "\xff",
+    /**
+     * Immediate value test cases grouped by the base effective addressing mode.
+     */
+    const DISPLACEMENT_TEST_CASE = [
+        // Displacements in the range -128 ... 127 should give an 8-bit displacement mode
+        IByteCodeGroups::OFS_GPR_IND_DSP8 => [
+            '-128' => "\x80",
+            '-1'   => "\xff",
+            '1'    => "\x01",
+            '127'  => "\x7f",
+        ],
+        // Displacements outside the range -128 ... 127 should give a 32-bit displacement mode
+        IByteCodeGroups::OFS_GPR_IND_DSP => [
+            '-129'       => "\x7f\xff\xff\xff",
+            '128'        => "\x80\x00\x00\x00",
+            '0x12345678' => "\x78\x56\x34\x12", // note little endian order
+        ],
     ];
 
     const NATIVE_TEST_CASE = [
-        '%s(%sr0)'  => IRegisterIndirect::R0_IND_DSP8,
-        '%s(%sr1)'  => IRegisterIndirect::R1_IND_DSP8,
-        '%s(%sr2)'  => IRegisterIndirect::R2_IND_DSP8,
-        '%s(%sr3)'  => IRegisterIndirect::R3_IND_DSP8,
-        '%s(%sr4)'  => IRegisterIndirect::R4_IND_DSP8,
-        '%s(%sr5)'  => IRegisterIndirect::R5_IND_DSP8,
-        '%s(%sr6)'  => IRegisterIndirect::R6_IND_DSP8,
-        '%s(%sr7)'  => IRegisterIndirect::R7_IND_DSP8,
-        '%s(%sr8)'  => IRegisterIndirect::R8_IND_DSP8,
-        '%s(%sr9)'  => IRegisterIndirect::R9_IND_DSP8,
-        '%s(%sr10)' => IRegisterIndirect::R10_IND_DSP8,
-        '%s(%sr11)' => IRegisterIndirect::R11_IND_DSP8,
-        '%s(%sr12)' => IRegisterIndirect::R12_IND_DSP8,
-        '%s(%sr13)' => IRegisterIndirect::R13_IND_DSP8,
-        '%s(%sr14)' => IRegisterIndirect::R14_IND_DSP8,
-        '%s(%sr15)' => IRegisterIndirect::R15_IND_DSP8,
+        '%s(%sr0)'  => 0,
+        '%s(%sr1)'  => 1,
+        '%s(%sr2)'  => 2,
+        '%s(%sr3)'  => 3,
+        '%s(%sr4)'  => 4,
+        '%s(%sr5)'  => 5,
+        '%s(%sr6)'  => 6,
+        '%s(%sr7)'  => 7,
+        '%s(%sr8)'  => 8,
+        '%s(%sr9)'  => 9,
+        '%s(%sr10)' => 10,
+        '%s(%sr11)' => 11,
+        '%s(%sr12)' => 12,
+        '%s(%sr13)' => 13,
+        '%s(%sr14)' => 14,
+        '%s(%sr15)' => 15,
     ];
 
     const LEGACY_TEST_CASE = [
-        '%s(%sa0)' => IRegisterIndirect::R8_IND_DSP8,
-        '%s(%sa1)' => IRegisterIndirect::R9_IND_DSP8,
-        '%s(%sa2)' => IRegisterIndirect::R10_IND_DSP8,
-        '%s(%sa3)' => IRegisterIndirect::R11_IND_DSP8,
-        '%s(%sa4)' => IRegisterIndirect::R12_IND_DSP8,
-        '%s(%sa5)' => IRegisterIndirect::R13_IND_DSP8,
-        '%s(%sa6)' => IRegisterIndirect::R14_IND_DSP8,
-        '%s(%sa7)' => IRegisterIndirect::R15_IND_DSP8,
-        '%s(%ssp)' => IRegisterIndirect::R15_IND_DSP8,
+        '%s(%sa0)' => 8,
+        '%s(%sa1)' => 9,
+        '%s(%sa2)' => 10,
+        '%s(%sa3)' => 11,
+        '%s(%sa4)' => 12,
+        '%s(%sa5)' => 13,
+        '%s(%sa6)' => 14,
+        '%s(%sa7)' => 15,
+        '%s(%ssp)' => 15,
     ];
 
     /**
@@ -69,20 +84,35 @@ class DisplacedIndirectEATest extends TestCase {
      */
     public function run(): void {
         $oParser = new EffectiveAddress\GPRIndirectDisplacement();
-        foreach (self::DISPLACEMENTS as $sDisplacement => $sImmediate) {
-            $this->testNativeIndirect($oParser, (string)$sDisplacement, $sImmediate);
-            $this->testLegacyIndirect($oParser, (string)$sDisplacement, $sImmediate);
+        foreach (self::DISPLACEMENT_TEST_CASE as $iBaseEAMode => $aImmediates) {
+            foreach ($aImmediates as $sDisplacement => $sImmediate) {
+                $this->testNativeIndirect(
+                    $oParser,
+                    (string)$sDisplacement,
+                    $sImmediate,
+                    $iBaseEAMode
+                );
+                $this->testLegacyIndirect(
+                    $oParser,
+                    (string)$sDisplacement,
+                    $sImmediate,
+                    $iBaseEAMode
+                );
+            }
         }
     }
 
     private function testNativeIndirect(
         EffectiveAddress\GPRIndirectDisplacement $oParser,
         string $sDisplacement,
-        string $sImmediate
+        string $sImmediate,
+        int    $iBaseEAMode
     ): void {
-        echo "\ttesting: native gpr indirect with ", $sDisplacement, " displacement\n";
-        foreach (self::NATIVE_TEST_CASE as $sTestCaseTemplate => $iOpcode) {
-            $sExpectCode = chr($iOpcode) . $sImmediate;
+        if ($this->isVerbose()) {
+            echo "\ttesting: native gpr indirect with ", $sDisplacement, " displacement\n";
+        }
+        foreach (self::NATIVE_TEST_CASE as $sTestCaseTemplate => $iRegNum) {
+            $sExpectCode = chr($iBaseEAMode|$iRegNum) . $sImmediate;
             $sPrefixCase = sprintf($sTestCaseTemplate, $sDisplacement, '');
             $this->assertSame($sExpectCode, $oParser->parse($sPrefixCase));
             $sInnerCase = sprintf($sTestCaseTemplate, '', $sDisplacement . ', ');
@@ -93,11 +123,14 @@ class DisplacedIndirectEATest extends TestCase {
     private function testLegacyIndirect(
         EffectiveAddress\GPRIndirectDisplacement $oParser,
         string $sDisplacement,
-        string $sImmediate
+        string $sImmediate,
+        int    $iBaseEAMode
     ): void {
-        echo "\ttesting: legacy gpr indirect with ", $sDisplacement, " displacement\n";
-        foreach (self::LEGACY_TEST_CASE as $sTestCaseTemplate => $iOpcode) {
-            $sExpectCode = chr($iOpcode) . $sImmediate;
+        if ($this->isVerbose()) {
+            echo "\ttesting: legacy gpr indirect with ", $sDisplacement, " displacement\n";
+        }
+        foreach (self::LEGACY_TEST_CASE as $sTestCaseTemplate => $iRegNum) {
+            $sExpectCode = chr($iBaseEAMode|$iRegNum) . $sImmediate;
             $sPrefixCase = sprintf($sTestCaseTemplate, $sDisplacement, '');
             $this->assertSame($sExpectCode, $oParser->parse($sPrefixCase));
             $sInnerCase = sprintf($sTestCaseTemplate, '', $sDisplacement . ', ');

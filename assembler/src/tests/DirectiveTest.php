@@ -84,7 +84,9 @@ class DirectiveTest extends TestCase {
      * directly assert what the output buffer should look like after each test.
      */
     private function testAlign(): void {
-        echo "\ttesting @align\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting @align\n";
+        }
         $oBuffer = State\Coordinator::get()->getOutput();
         $this->assertSame(0, $oBuffer->getCurrentOffset());
         $oBuffer->appendStatement("\x01");
@@ -102,7 +104,9 @@ class DirectiveTest extends TestCase {
      * set. We then enable them, assert they have been set, disable them and assert they are cleared.
      */
     private function testFlag(): void {
-        echo "\ttesting @en/@enable\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting @en/@enable\n";
+        }
         $oOptions = State\Coordinator::get()->getOptions();
         $this->assertFalse($oOptions->isEnabled('unit_test_flag'));
         $this->assertFalse($oOptions->isEnabled('unit_test_flag_short'));
@@ -113,8 +117,9 @@ class DirectiveTest extends TestCase {
 
         $this->assertTrue($oOptions->isEnabled('unit_test_flag'));
         $this->assertTrue($oOptions->isEnabled('unit_test_flag_short'));
-
-        echo "\ttesting @dis/@disable\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting @dis/@disable\n";
+        }
         $oProcessor->process(' @disable unit_test_flag');
         $oProcessor->process(' @dis unit_test_flag_short');
         $this->assertFalse($oOptions->isEnabled('unit_test_flag'));
@@ -128,7 +133,9 @@ class DirectiveTest extends TestCase {
      * them and assert that they are no longer defined.
      */
     private function testDefine(): void {
-        echo "\ttesting @def/@define\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting @def/@define\n";
+        }
         $oDefine = new Processor\Define();
 
         State\Coordinator::get()->setCurrentFile(new IO\SourceString('', __METHOD__));
@@ -150,7 +157,10 @@ class DirectiveTest extends TestCase {
         $this->assertSame('test_1_replacement', $aDefinitions['TEST1']);
         $this->assertSame('test_2_replacement', $aDefinitions['TEST2']);
 
-        echo "\ttesting @undef\@undefine\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting @undef\@undefine\n";
+        }
+
         $oUndefine = new Processor\Undefine();
         $oUndefine->process(' @undef    TEST1');
         $oUndefine->process(' @undefine TEST2');
@@ -164,7 +174,10 @@ class DirectiveTest extends TestCase {
      * Asserts that duplicating a define that is already active in the current file is an error.
      */
     private function testDuplicateDefineInFileThrows(): void {
-        echo "\ttesting duplicate define throws\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting duplicate define throws\n";
+        }
+
         $oDefine = new Processor\Define();
 
         State\Coordinator::get()->setCurrentFile(new IO\SourceString('', __METHOD__));
@@ -195,7 +208,10 @@ class DirectiveTest extends TestCase {
      * Asserts that duplicating a define in a different file is not an error since defines have file scope.
      */
     private function testDefineHasFileScope(): void {
-        echo "\ttesting define has file scope\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting define has file scope\n";
+        }
+
         $oDefine = new Processor\Define();
 
         // Change the file
@@ -226,7 +242,9 @@ class DirectiveTest extends TestCase {
      * Asserts that the equ directive sets a definition
      */
     private function testEqu(): void {
-        echo "\ttesting @equ\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting @equ\n";
+        }
         $oDefine = new Processor\Define();
 
         State\Coordinator::get()->setCurrentFile(new IO\SourceString('', __METHOD__));
@@ -251,7 +269,10 @@ class DirectiveTest extends TestCase {
      * Asserts that a set equ definition persists when file changes.
      */
     private function testEquHasGlobalScope(): void {
-        echo "\ttesting @equ has global scope\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting @equ has global scope\n";
+        }
+
         $oDefine = new Processor\Define();
 
         State\Coordinator::get()->setCurrentFile(new IO\SourceString('', __METHOD__. '1'));
@@ -287,7 +308,10 @@ class DirectiveTest extends TestCase {
      * we add it and confirm it has been added with the correct attributes.
      */
     private function testExport(): void {
-        echo "\ttesting ", self::EXPORT_DIRECTIVE, "\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting ", self::EXPORT_DIRECTIVE, "\n";
+        }
+
         $oExport = new Processor\Export();
 
         $oLabelLocation = State\Coordinator::get()
@@ -320,7 +344,10 @@ class DirectiveTest extends TestCase {
      * we add it and confirm it has been added with the correct attributes.
      */
     private function testImport(): void {
-        echo "\ttesting ", self::IMPORT_DIRECTIVE, "\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting ", self::IMPORT_DIRECTIVE, "\n";
+        }
+
         $oImport = new Processor\Import();
 
         $oLabelLocation = State\Coordinator::get()
@@ -351,7 +378,9 @@ class DirectiveTest extends TestCase {
      * than it was. Trying to shrink it will not raise an error but is ignored.
      */
     private function testStackSize(): void {
-        echo "\ttesting @stacksize\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting @stacksize\n";
+        }
         $oStackSize = new Processor\StackSize();
         $oOptions   = State\Coordinator::get()
             ->getGlobalOptions();

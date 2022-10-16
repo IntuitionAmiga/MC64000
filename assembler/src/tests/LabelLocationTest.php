@@ -68,7 +68,9 @@ class LabelLocationTest extends TestCase {
     }
 
     private function testLabelLengthValidation(): void {
-        echo "\ttesting: label length validation\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: label length validation\n";
+        }
         $oMockSource = new IO\SourceString('', __METHOD__);
         $oLabelLocation = new State\LabelLocation();
         try {
@@ -91,7 +93,9 @@ class LabelLocationTest extends TestCase {
     }
 
     private function testReservedWordThrows(): void {
-        echo "\ttesting: reserved word throws\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: reserved word throws\n";
+        }
         $oMockSource = new IO\SourceString('', __METHOD__);
         $oLabelLocation = new State\LabelLocation();
 
@@ -107,7 +111,9 @@ class LabelLocationTest extends TestCase {
     }
 
     private function testAddGlobal(): void {
-        echo "\ttesting: add global\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: add global\n";
+        }
         $oMockSource = new IO\SourceString('', __METHOD__);
         $oLabelLocation = new State\LabelLocation();
         foreach (self::ADD_GLOBAL_TESTS as $sLabel => $iPosition) {
@@ -117,7 +123,9 @@ class LabelLocationTest extends TestCase {
     }
 
     private function testAddLocal(): void {
-        echo "\ttesting: add local\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: add local\n";
+        }
         $oMockSource = new IO\SourceString('', __METHOD__);
         $oLabelLocation = new State\LabelLocation();
         foreach (self::ADD_LOCAL_TESTS as $sLabel => $iPosition) {
@@ -127,7 +135,9 @@ class LabelLocationTest extends TestCase {
     }
 
     private function testAddLocalDuplicateSameFileThrows(): void {
-        echo "\ttesting: add local duplicate in same file throws\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: add local duplicate in same file throws\n";
+        }
         $oMockSource = new IO\SourceString('', __METHOD__);
         $oLabelLocation = new State\LabelLocation();
         foreach (self::ADD_LOCAL_TESTS as $sLabel => $iPosition) {
@@ -144,7 +154,9 @@ class LabelLocationTest extends TestCase {
     }
 
     private function testAddLocalDuplicateDifferentFile(): void {
-        echo "\ttesting: add local duplicate in different file\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: add local duplicate in different file\n";
+        }
         $oMockSource1 = new IO\SourceString('', __METHOD__ . '_1');
         $oLabelLocation = new State\LabelLocation();
         foreach (self::ADD_LOCAL_TESTS as $sLabel => $iPosition) {
@@ -160,7 +172,9 @@ class LabelLocationTest extends TestCase {
     }
 
     private function testAddGlobalDuplicates(): void {
-        echo "\ttesting: add global duplicate throws\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: add global duplicate throws\n";
+        }
         $oMockSource1   = new IO\SourceString('', __METHOD__ . '_1');
         $oLabelLocation = new State\LabelLocation();
         foreach (self::ADD_GLOBAL_TESTS as $sLabel => $iPosition) {
