@@ -130,7 +130,9 @@ class RegisterDirectEATest extends TestCase {
     }
 
     private function testFPRNames(): void {
-        echo "\ttesting: native fpr names\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: native fpr names\n";
+        }
         $oParser = new Parser\EffectiveAddress\FPRDirect();
         foreach (self::FPR_NAMES as $sName => $iOpcode) {
             $sBytecode = $oParser->parse($sName);
@@ -139,7 +141,9 @@ class RegisterDirectEATest extends TestCase {
     }
 
     private function testIllegalFPRNames(): void {
-        echo "\ttesting: illegal fpr names\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: illegal fpr names\n";
+        }
         $oParser = new Parser\EffectiveAddress\FPRDirect();
         foreach (self::BAD_FPR_NAMES as $sName) {
             try {
@@ -155,7 +159,9 @@ class RegisterDirectEATest extends TestCase {
     }
 
     private function testNativeGPRNames(): void {
-        echo "\ttesting: native gpr names\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: native gpr names\n";
+        }
         $oParser = new Parser\EffectiveAddress\GPRDirect();
         foreach (self::NATIVE_GPR_NAMES as $sName => $iOpcode) {
             $sBytecode = $oParser->parse($sName);
@@ -164,7 +170,9 @@ class RegisterDirectEATest extends TestCase {
     }
 
     private function testLegacyGPRNames(): void {
-        echo "\ttesting: legacy gpr names\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: legacy gpr names\n";
+        }
         $oParser = new Parser\EffectiveAddress\GPRDirect();
         foreach (self::LEGACY_GPR_NAMES as $sName => $iOpcode) {
             $sBytecode = $oParser->parse($sName);
@@ -173,7 +181,9 @@ class RegisterDirectEATest extends TestCase {
     }
 
     private function testIllegalGPRNames(): void {
-        echo "\ttesting: illegal gpr names\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: illegal gpr names\n";
+        }
         $oParser = new Parser\EffectiveAddress\GPRDirect();
         foreach (self::BAD_GPR_NAMES as $sName) {
             try {

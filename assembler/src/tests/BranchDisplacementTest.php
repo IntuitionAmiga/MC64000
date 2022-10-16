@@ -86,7 +86,9 @@ class BranchDisplacementTest extends TestCase {
      * tested for.
      */
      private function testBranch(): void {
-        echo "\ttesting bra valid cases\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting bra valid cases\n";
+        }
         $oParser = new Parser\SourceLine\Instruction\Statement();
 
         // A zero branch is never emitted but would be folded out
@@ -98,7 +100,9 @@ class BranchDisplacementTest extends TestCase {
             $this->assertSame($sByteCode, $oParser->parse($sTestCase));
         }
 
-        echo "\ttesting bra invalid cases\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting bra invalid cases\n";
+        }
         foreach (self::BRANCH_FAIL_CASES as $sTestCase => $sErrorClass) {
             try {
                 $oParser->parse($sTestCase);
@@ -118,7 +122,9 @@ class BranchDisplacementTest extends TestCase {
      * tested for.
      */
     private function testShortBranch(): void {
-        echo "\ttesting bra.b valid cases\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting bra.b valid cases\n";
+        }
         $oParser = new Parser\SourceLine\Instruction\Statement();
 
         // A zero branch is never emitted but would be folded out
@@ -129,8 +135,9 @@ class BranchDisplacementTest extends TestCase {
             $sByteCode = $sOpcode . $sDisplacement;
             $this->assertSame($sByteCode, $oParser->parse($sTestCase));
         }
-
-        echo "\ttesting bra.b invalid cases\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting bra.b invalid cases\n";
+        }
         foreach (self::SHORT_BRANCH_FAIL_CASES as $sTestCase => $sErrorClass) {
             try {
                 $oParser->parse($sTestCase);

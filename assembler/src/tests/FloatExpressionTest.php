@@ -43,7 +43,9 @@ class FloatExpressionTest extends TestCase {
     public function run(): void {
         $oParser = new Utils\ConstFloatExpression();
         foreach(self::CASES as $sCase => $sExpect) {
-            //echo "\t", $sCase, " => ", $sExpect, "\n";
+            if ($this->isVerbose()) {
+                echo "\t", $sCase, " => ", $sExpect, "\n";
+            }
             $this->assertSame(
                 $sExpect,
                 $oParser->parse((string)$sCase)

@@ -291,7 +291,9 @@ class DeclareConstantTest extends TestCase {
      * asserted.
      */
     private function testCheckLine(Data\Declaration $oParser): void {
-        echo "\ttesting: match\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: match\n";
+        }
         foreach (self::CHECK_LINE_TEST_CASES as $sTestCase => $bExpect) {
             $this->assertSame($bExpect, $oParser->checkLine($sTestCase));
         }
@@ -302,7 +304,9 @@ class DeclareConstantTest extends TestCase {
      * Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareString(Data\Declaration $oParser): void {
-        echo "\ttesting: dc.b string\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: dc.b string\n";
+        }
         foreach (self::DECLARE_STRING_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -323,7 +327,9 @@ class DeclareConstantTest extends TestCase {
      * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareBytes(Data\Declaration $oParser): void {
-        echo "\ttesting: dc.b int, ...\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: dc.b int, ...\n";
+        }
         foreach (self::DECLARE_BYTE_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -344,7 +350,9 @@ class DeclareConstantTest extends TestCase {
      * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareWords(Data\Declaration $oParser): void {
-        echo "\ttesting: dc.w int, ...\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: dc.w int, ...\n";
+        }
         foreach (self::DECLARE_WORD_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -365,7 +373,9 @@ class DeclareConstantTest extends TestCase {
      * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareLongs(Data\Declaration $oParser): void {
-        echo "\ttesting: dc.l int, ...\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: dc.l int, ...\n";
+        }
         foreach (self::DECLARE_LONG_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -386,7 +396,9 @@ class DeclareConstantTest extends TestCase {
      * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareQuads(Data\Declaration $oParser): void {
-        echo "\ttesting: dc.q int, ...\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: dc.q int, ...\n";
+        }
         foreach (self::DECLARE_QUAD_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -407,7 +419,9 @@ class DeclareConstantTest extends TestCase {
      * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareSingles(Data\Declaration $oParser): void {
-        echo "\ttesting: dc.s float, ...\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: dc.s float, ...\n";
+        }
         foreach (self::DECLARE_SINGLE_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));
@@ -428,7 +442,9 @@ class DeclareConstantTest extends TestCase {
      * asserted. Illegal examples are then tested to assert they throw the advertised exceptions.
      */
     private function testDeclareDoubles(Data\Declaration $oParser): void {
-        echo "\ttesting: dc.d float, ...\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: dc.d float, ...\n";
+        }
         foreach (self::DECLARE_DOUBLE_PASS_CASES as $sTestCase => $sResult) {
             $oParser->checkLine($sTestCase);
             $this->assertSame($sResult, $oParser->parse($sTestCase));

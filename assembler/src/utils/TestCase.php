@@ -31,10 +31,16 @@ abstract class TestCase {
     private int $iAssertsPass = 0;
     private int $iIncrement   = 1;
 
+    private bool $bVerbose  = false;
+
     /**
      * Tests to override this.
      */
     public abstract function run(): void;
+
+    public function __construct(bool $bVerbose = false) {
+        $this->bVerbose = $bVerbose;
+    }
 
     /**
      * Report outcome on destruction. If a test case makes no assertions, that's a red flag.
@@ -137,5 +143,12 @@ abstract class TestCase {
             throw new TestAssertionFailure(__METHOD__ . '() input is not an instance of ' . $sType);
         }
         ++$this->iAssertsPass;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isVerbose(): bool {
+        return $this->bVerbose;
     }
 }

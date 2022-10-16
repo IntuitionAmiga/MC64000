@@ -122,7 +122,9 @@ class SimpleIndirectEATest extends TestCase {
      * @param string[] $aVariant
      */
     private function testNativeIndirect(EffectiveAddress\IParser $oParser, int $iOffset, array $aVariant): void {
-        echo "\ttesting: native gpr indirect", $aVariant[self::INFO], "\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: native gpr indirect", $aVariant[self::INFO], "\n";
+        }
         foreach (self::NATIVE_INDIRECT_TEST_CASE as $sTestCase => $iRegNum) {
             $sTestCase = $aVariant[self::PREFIX] . $sTestCase . $aVariant[self::POSTFIX];
             $this->assertSame(chr($iOffset + $iRegNum), $oParser->parse($sTestCase));
@@ -133,7 +135,9 @@ class SimpleIndirectEATest extends TestCase {
      * @param string[] $aVariant
      */
     private function testLegacyIndirect(EffectiveAddress\IParser $oParser, int $iOffset, array $aVariant): void {
-        echo "\ttesting: legacy gpr indirect", $aVariant[self::INFO], "\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: legacy gpr indirect", $aVariant[self::INFO], "\n";
+        }
         foreach (self::LEGACY_INDIRECT_TEST_CASE as $sTestCase => $iRegNum) {
             $sTestCase = $aVariant[self::PREFIX] . $sTestCase . $aVariant[self::POSTFIX];
             $this->assertSame(chr($iOffset + $iRegNum), $oParser->parse($sTestCase));
@@ -144,7 +148,9 @@ class SimpleIndirectEATest extends TestCase {
      * @param string[] $aVariant
      */
     private function testIllegalIndirect(EffectiveAddress\IParser $oParser, int $iOffset, array $aVariant): void {
-        echo "\ttesting: illegal gpr indirect", $aVariant[self::INFO], "\n";
+        if ($this->isVerbose()) {
+            echo "\ttesting: illegal gpr indirect", $aVariant[self::INFO], "\n";
+        }
         foreach (self::BAD_GPR_TEST_CASE as $sTestCase) {
             try {
                 $sTestCase = $aVariant[self::PREFIX] . $sTestCase . $aVariant[self::POSTFIX];

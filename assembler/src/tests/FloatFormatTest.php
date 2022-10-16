@@ -143,7 +143,9 @@ class FloatFormatTest extends TestCase {
     public function run(): void {
         foreach (self::SUFFIXES as $iWordSize => $aSuffixes) {
             foreach ($aSuffixes as $sSuffix) {
-                echo "\ttesting: <num>", $sSuffix, " (", $iWordSize, " byte)\n";
+                if ($this->isVerbose()) {
+                    echo "\ttesting: <num>", $sSuffix, " (", $iWordSize, " byte)\n";
+                }
                 foreach (self::TEST_CASES as $sExpression => $fExpect) {
                     $fResult = Parser\Utils\FloatingPoint::parseLiteral((string)$sExpression . $sSuffix, $iWordSize);
                     $this->assertSame($fExpect, $fResult);
