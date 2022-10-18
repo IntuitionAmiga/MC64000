@@ -643,8 +643,31 @@ void Interpreter::run() {
             case Opcode::CLR_L:    monadic(SIZE_LONG); asULong(pDstEA) = 0; break;
             case Opcode::CLR_Q:    monadic(SIZE_QUAD); asUQuad(pDstEA) = 0; break;
 
-            case Opcode::LINK:
-            case Opcode::UNLK:   todo();
+            case Opcode::LINK: {
+                // link r<N>, #d
+                readDisplacement();
+                readRegPair();
+                // sp - 8 -> sp
+                aoGPR[GPRegister::SP].puByte -= sizeof(uint64);
+                // r<N> -> (sp)
+                *(aoGPR[GPRegister::SP].puQuad) = dstGPRUQuad();
+                // sp -> r<N>
+                dstGPRUQuad() = aoGPR[GPRegister::SP].uQuad;
+                // sp + d -> sp
+                aoGPR[GPRegister::SP].puByte += iDisplacement;
+                goto skip_status_check;
+            }
+
+            case Opcode::UNLK: {
+                readRegPair();
+                // r<N> -> sp
+                aoGPR[GPRegister::SP].uQuad = dstGPRUQuad();
+                // (sp) -> r<N>
+                dstGPRUQuad() = *(aoGPR[GPRegister::SP].puQuad);
+                // sp + 8 -> sp
+                aoGPR[GPRegister::SP].puByte += sizeof(uint64);
+                goto skip_status_check;
+            }
 
             case Opcode::LEA: {
                 dyadic(SIZE_QUAD);
