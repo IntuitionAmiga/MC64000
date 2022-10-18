@@ -125,358 +125,399 @@ void Interpreter::run() {
             case Opcode::R2R_BDC: handleR2RBDC(); goto skip_status_check;
 
             case Opcode::R_DBNZ: {
-                unpackGPR();
+                readRegPair();
                 readDisplacement();
-                bcc(--asULong(pDstEA));
+                bcc(--dstGPRULong());
                 goto skip_status_check;
             }
 
             // DataMove - move
             // Fast Path
             case Opcode::R2R_MOVE_L: {
-                unpackGPRPair();
-                asULong(pDstEA) = asULong(pSrcEA);
+                readRegPair();
+                dstGPRULong() = srcGPRULong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_MOVE_Q: {
-                unpackGPRPair();
-                asUQuad(pDstEA) = asUQuad(pSrcEA);
+                readRegPair();
+                dstGPRUQuad() = srcGPRUQuad();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FMOVE_S: {
-                unpackFPRPair();
-                asULong(pDstEA) = asULong(pSrcEA);
+                readRegPair();
+                dstFPRULong() = srcFPRULong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FMOVE_D: {
-                unpackFPRPair();
-                asUQuad(pDstEA) = asUQuad(pSrcEA);
+                readRegPair();
+                dstFPRUQuad() = srcFPRUQuad();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_CLR_L: {
-                unpackGPR();
-                asULong(pDstEA) = 0;
+                readRegPair();
+                dstGPRULong() = 0;
                 goto skip_status_check;
             }
 
             case Opcode::R2R_CLR_Q: {
-                unpackGPR();
-                asUQuad(pDstEA) = 0;
+                readRegPair();
+                dstGPRUQuad() = 0;
                 goto skip_status_check;
             }
 
             case Opcode::R2R_EXG: {
-                unpackGPRPair();
-                uint64 uTemp    = asUQuad(pSrcEA);
-                asUQuad(pSrcEA) = asUQuad(pDstEA);
-                asUQuad(pDstEA) = uTemp;
+                readRegPair();
+                uint64 uTemp  = srcGPRUQuad();
+                srcGPRUQuad() = dstGPRUQuad();
+                dstGPRUQuad() = uTemp;
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FEXG: {
-                unpackFPRPair();
-                uint64 uTemp    = asUQuad(pSrcEA);
-                asUQuad(pSrcEA) = asUQuad(pDstEA);
-                asUQuad(pDstEA) = uTemp;
+                readRegPair();
+                uint64 uTemp  = srcFPRUQuad();
+                srcFPRUQuad() = dstFPRUQuad();
+                dstFPRUQuad() = uTemp;
                 goto skip_status_check;
             }
 
             case Opcode::R2R_SWAP: {
-                unpackGPRPair();
-                uint32 uTemp    = (uint32)asLong(pSrcEA);
-                asULong(pDstEA) = uTemp >> 16 | uTemp << 16;
+                readRegPair();
+                uint32 uTemp  = srcGPRULong();
+                dstGPRULong() = uTemp >> 16 | uTemp << 16;
                 goto skip_status_check;
             }
 
             case Opcode::R2R_SWAP_L: {
-                unpackGPRPair();
-                asULong(pDstEA) = __builtin_bswap32(asULong(pSrcEA));
+                readRegPair();
+                dstGPRULong() = __builtin_bswap32(srcGPRULong());
                 goto skip_status_check;
             }
 
             case Opcode::R2R_SWAP_Q: {
-                unpackGPRPair();
-                asUQuad(pDstEA) = __builtin_bswap64(asUQuad(pSrcEA));
+                readRegPair();
+                dstGPRUQuad() = __builtin_bswap64(srcGPRUQuad());
                 goto skip_status_check;
             }
 
 
             case Opcode::R2R_AND_L: {
-                unpackGPRPair();
-                asULong(pDstEA) &= asULong(pSrcEA);
+                readRegPair();
+                dstGPRULong() &= srcGPRULong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_AND_Q: {
-                unpackGPRPair();
-                asUQuad(pDstEA) &= asUQuad(pSrcEA);
+                readRegPair();
+                dstGPRUQuad() &= srcGPRUQuad();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_OR_L: {
-                unpackGPRPair();
-                asULong(pDstEA) |= asULong(pSrcEA);
+                readRegPair();
+                dstGPRULong() |= srcGPRULong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_OR_Q: {
-                unpackGPRPair();
-                asUQuad(pDstEA) |= asUQuad(pSrcEA);
+                readRegPair();
+                dstGPRUQuad() |= srcGPRUQuad();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_EOR_L: {
-                unpackGPRPair();
-                asULong(pDstEA) ^= asULong(pSrcEA);
+                readRegPair();
+                dstGPRULong() ^= srcGPRULong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_EOR_Q: {
-                unpackGPRPair();
-                asUQuad(pDstEA) ^= asUQuad(pSrcEA);
+                readRegPair();
+                dstGPRUQuad() ^= srcGPRUQuad();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_NOT_L: {
-                unpackGPRPair();
-                asULong(pDstEA) = ~asULong(pSrcEA);
+                readRegPair();
+                dstGPRULong() = ~srcGPRULong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_NOT_Q: {
-                unpackGPRPair();
-                asUQuad(pDstEA) = ~asUQuad(pSrcEA);
+                readRegPair();
+                dstGPRUQuad() = ~srcGPRUQuad();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_LSL_L: {
-                unpackGPRPair();
-                asULong(pDstEA) <<= (asUByte(pSrcEA) & 31);
+                readRegPair();
+                dstGPRULong() <<= (srcGPRULong() & 31);
                 goto skip_status_check;
             }
 
             case Opcode::R2R_LSL_Q: {
-                unpackGPRPair();
-                asUQuad(pDstEA) <<= (asUByte(pSrcEA) & 63);
+                readRegPair();
+                dstGPRUQuad() <<= (srcGPRUQuad() & 63);
                 goto skip_status_check;
             }
 
             case Opcode::R2R_LSR_L: {
-                unpackGPRPair();
-                asULong(pDstEA) >>= (asULong(pSrcEA) & 31);
+                readRegPair();
+                dstGPRULong() >>= (srcGPRULong() & 31);
                 goto skip_status_check;
             }
 
             case Opcode::R2R_LSR_Q: {
-                unpackGPRPair();
-                asUQuad(pDstEA) >>= (asUQuad(pSrcEA) & 63);
+                readRegPair();
+                dstGPRUQuad() >>= (srcGPRUQuad() & 63);
                 goto skip_status_check;
             }
 
 
             case Opcode::BFFFO: {
-                unpackGPRPair();
-                uint64 pTemp = asUQuad(pSrcEA);
-                asUQuad(pDstEA) = pTemp ? (63 - __builtin_clzll(pTemp)) : ~pTemp;
+                readRegPair();
+                uint64 pTemp  = srcGPRUQuad();
+                dstGPRUQuad() = pTemp ? (63 - __builtin_clzll(pTemp)) : ~pTemp;
                 break;
             }
 
             case Opcode::BFCNT: {
-                unpackGPRPair();
-                asUQuad(pDstEA) = __builtin_popcountll(asUQuad(pSrcEA));
+                readRegPair();
+                dstGPRUQuad() = __builtin_popcountll(srcGPRUQuad());
                 break;
             }
 
             // Arithmetic
 
             case Opcode::R2R_EXTB_L: {
-                unpackGPRPair();
-                asLong(pDstEA) = (int32)asByte(pSrcEA);
+                readRegPair();
+                dstGPRLong() = (int32)srcGPRByte();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_EXTB_Q: {
-                unpackGPRPair();
-                asQuad(pDstEA) = (int64)asByte(pSrcEA);
+                readRegPair();
+                dstGPRQuad() = (int64)srcGPRByte();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_EXTW_L: {
-                unpackGPRPair();
-                asLong(pDstEA) = (int32)asWord(pSrcEA);
+                readRegPair();
+                dstGPRLong() = (int32)srcGPRWord();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_EXTW_Q: {
-                unpackGPRPair();
-                asQuad(pDstEA) = (int64)asWord(pSrcEA);
+                readRegPair();
+                dstGPRQuad() = (int64)srcGPRWord();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_EXTL_Q: {
-                unpackGPRPair();
-                asQuad(pDstEA) = (int64)asLong(pSrcEA);
+                readRegPair();
+                dstGPRQuad() = (int64)srcGPRLong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_NEG_L: {
-                unpackGPRPair();
-                asLong(pDstEA) = -asLong(pSrcEA);
+                readRegPair();
+                dstGPRLong() = -srcGPRLong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_NEG_Q: {
-                unpackGPRPair();
-                asQuad(pDstEA) = -asQuad(pSrcEA);
+                readRegPair();
+                dstGPRQuad() = -srcGPRQuad();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FNEG_S: {
-                unpackFPRPair();
-                asSingle(pDstEA) = -asSingle(pSrcEA);
+                readRegPair();
+                dstFPRSingle() = -srcFPRSingle();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FNEG_D: {
-                unpackFPRPair();
-                asDouble(pDstEA) = -asDouble(pSrcEA);
+                readRegPair();
+                dstFPRDouble() = -srcFPRDouble();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FABS_S: {
-                unpackFPRPair();
-                asSingle(pDstEA) = std::fabs(asSingle(pSrcEA));
+                readRegPair();
+                dstFPRSingle() = std::fabs(srcFPRSingle());
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FABS_D: {
-                unpackFPRPair();
-                asDouble(pDstEA) = std::fabs(asDouble(pSrcEA));
+                readRegPair();
+                dstFPRDouble() = std::fabs(srcFPRDouble());
                 goto skip_status_check;
             }
 
             case Opcode::R2R_ADD_L: {
-                unpackGPRPair();
-                asLong(pDstEA) += asLong(pSrcEA);
+                readRegPair();
+                dstGPRLong() += srcGPRLong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_ADD_Q: {
-                unpackGPRPair();
-                asQuad(pDstEA) += asQuad(pSrcEA);
+                readRegPair();
+                dstGPRQuad() += srcGPRQuad();
                 goto skip_status_check;
             }
             case Opcode::R2R_FADD_S: {
-                unpackFPRPair();
-                asSingle(pDstEA) += asSingle(pSrcEA);
+                readRegPair();
+                dstFPRSingle() += srcFPRSingle();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FADD_D: {
-                unpackFPRPair();
-                asDouble(pDstEA) += asDouble(pSrcEA);
+                readRegPair();
+                dstFPRDouble() += srcFPRDouble();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_SUB_L: {
-                unpackGPRPair();
-                asLong(pDstEA) -= asLong(pSrcEA);
+                readRegPair();
+                dstGPRLong() -= srcGPRLong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_SUB_Q: {
-                unpackGPRPair();
-                asQuad(pDstEA) -= asQuad(pSrcEA);
+                readRegPair();
+                dstGPRQuad() -= srcGPRQuad();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FSUB_S: {
-                unpackFPRPair();
-                asSingle(pDstEA) -= asSingle(pSrcEA);
+                readRegPair();
+                dstFPRSingle() -= srcFPRSingle();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FSUB_D: {
-                unpackFPRPair();
-                asDouble(pDstEA) -= asDouble(pSrcEA);
+                readRegPair();
+                dstFPRDouble() -= srcFPRDouble();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_MULS_L: {
-                unpackGPRPair();
-                asLong(pDstEA) *= asLong(pSrcEA);
+                readRegPair();
+                dstGPRLong() *= srcGPRLong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_MULS_Q: {
-                unpackGPRPair();
-                asQuad(pDstEA) *= asQuad(pSrcEA);
+                readRegPair();
+                dstGPRQuad() *= srcGPRQuad();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_MULU_L: {
-                unpackGPRPair();
-                asULong(pDstEA) *= asULong(pSrcEA);
+                readRegPair();
+                dstGPRULong() *= srcGPRULong();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_MULU_Q: {
-                unpackGPRPair();
-                asUQuad(pDstEA) *= asUQuad(pSrcEA);
+                readRegPair();
+                dstGPRUQuad() *= srcGPRUQuad();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FMUL_S: {
-                unpackFPRPair();
-                asSingle(pDstEA) *= asSingle(pSrcEA);
+                readRegPair();
+                dstFPRSingle() *= srcFPRSingle();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FMUL_D: {
-                unpackFPRPair();
-                asDouble(pDstEA) *= asDouble(pSrcEA);
+                readRegPair();
+                dstFPRDouble() *= srcFPRDouble();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FDIV_S: {
-                unpackFPRPair();
-                asSingle(pDstEA) /= asSingle(pSrcEA);
+                readRegPair();
+                dstFPRSingle() /= srcFPRSingle();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FDIV_D: {
-                unpackFPRPair();
-                asDouble(pDstEA) /= asDouble(pSrcEA);
+                readRegPair();
+                dstFPRDouble() /= srcFPRDouble();
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FMOD_S: {
-                unpackFPRPair();
-                float32 f = asSingle(pDstEA);
-                asSingle(pDstEA) = std::fmod(f, asSingle(pSrcEA));
+                readRegPair();
+                dstFPRSingle() = std::fmod(dstFPRSingle(), srcFPRSingle());
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FMOD_D: {
-                unpackFPRPair();
-                float64 f = asDouble(pDstEA);
-                asDouble(pDstEA) = std::fmod(f, asDouble(pSrcEA));
+                readRegPair();
+                dstFPRDouble() = std::fmod(dstFPRDouble(), srcFPRDouble());
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FSQRT_S: {
-                unpackFPRPair();
-                asSingle(pDstEA) = std::sqrt(asSingle(pSrcEA));
+                readRegPair();
+                dstFPRSingle() = std::sqrt(srcFPRSingle());
                 goto skip_status_check;
             }
 
             case Opcode::R2R_FSQRT_D: {
-                unpackFPRPair();
-                asDouble(pDstEA) = std::sqrt(asDouble(pSrcEA));
+                readRegPair();
+                dstFPRDouble() = std::sqrt(srcFPRDouble());
+                goto skip_status_check;
+            }
+
+
+            case Opcode::R2R_FMACC_S: {
+                // dst += src1 * src2
+                uint16 uRegs = *(uint16 const*)puProgramCounter;
+                puProgramCounter += sizeof(uint16);
+                aoFPR[uRegs & 0x000F].fSingle +=
+                    aoFPR[(uRegs >> 4) & 0x000F].fSingle *
+                    aoFPR[(uRegs >> 8) & 0x000F].fSingle;
+                goto skip_status_check;
+            }
+
+            case Opcode::R2R_FMACC_D: {
+                // dst += src1 * src2
+                uint16 uRegs = *(uint16 const*)puProgramCounter;
+                puProgramCounter += sizeof(uint16);
+                aoFPR[uRegs & 0x000F].fDouble +=
+                    aoFPR[(uRegs >> 4) & 0x000F].fDouble *
+                    aoFPR[(uRegs >> 8) & 0x000F].fDouble;
+                goto skip_status_check;
+            }
+
+            case Opcode::R2R_FMADD_S: {
+                // dst = src1 * src2 + src3
+                uint16 uRegs = *(uint16 const*)puProgramCounter;
+                puProgramCounter += sizeof(uint16);
+                aoFPR[uRegs & 0x000F].fSingle =
+                    (aoFPR[(uRegs >> 4) & 0x000F].fSingle *
+                    aoFPR[(uRegs >> 8) & 0x000F].fSingle) +
+                    aoFPR[(uRegs >> 12) & 0x000F].fSingle;
+                goto skip_status_check;
+            }
+
+            case Opcode::R2R_FMADD_D: {
+                // dst = src1 * src2 + src3
+                uint16 uRegs = *(uint16 const*)puProgramCounter;
+                puProgramCounter += sizeof(uint16);
+                aoFPR[uRegs & 0x000F].fDouble =
+                    (aoFPR[(uRegs >> 4) & 0x000F].fDouble *
+                    aoFPR[(uRegs >> 8) & 0x000F].fDouble) +
+                    aoFPR[(uRegs >> 12) & 0x000F].fDouble;
                 goto skip_status_check;
             }
 

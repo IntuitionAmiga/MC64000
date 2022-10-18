@@ -438,5 +438,4 @@ interface IMatches {
         'ftwotox.s' => IArithmetic::FTWOTOX_S,
         'ftwotox.d' => IArithmetic::FTWOTOX_D,
     ];
-
 }

@@ -160,6 +160,7 @@ union FPRegister {
             MASK = 0xF
         };
         uint64  uBinary;
+        uint32  uBinary32;
         float64 fDouble;
         float32 fSingle;
         FPRegister() : fDouble(0.0) {}
