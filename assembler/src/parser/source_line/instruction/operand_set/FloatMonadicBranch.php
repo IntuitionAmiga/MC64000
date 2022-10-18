@@ -21,6 +21,7 @@ use ABadCafe\MC64K\Parser\SourceLine\Instruction\CodeFoldException;
 use ABadCafe\MC64K\Parser\EffectiveAddress;
 use ABadCafe\MC64K\Defs\Mnemonic\IControl;
 use ABadCafe\MC64K\Defs\Mnemonic\ICondition;
+use ABadCafe\MC64K\Defs\EffectiveAddress\IRegisterDirect;
 
 use function \array_keys;
 
@@ -35,14 +36,14 @@ class FloatMonadicBranch extends MonadicBranch {
      * The set of specific opcodes that this Operand Parser applies to
      */
     const OPCODES = [
-        IControl::BMC << 8 | ICondition::FEQ_S => 'foldIsZero',
-        IControl::BMC << 8 | ICondition::FEQ_D => 'foldIsZero',
-        IControl::BMC << 8 | ICondition::FEQ_S => 'foldIsNotZero',
-        IControl::BMC << 8 | ICondition::FEQ_D => 'foldIsNotZero',
-        IControl::BMC << 8 | ICondition::FNE_S => 'foldIsMinus',
-        IControl::BMC << 8 | ICondition::FNE_D => 'foldIsMinus',
-        IControl::BMC << 8 | ICondition::FNE_S => 'foldIsPlus',
-        IControl::BMC << 8 | ICondition::FNE_D => 'foldIsPlus',
+        IControl::FBIZ_S => 'foldIsZero',
+        IControl::FBIZ_D => 'foldIsZero',
+        IControl::FBNZ_S => 'foldIsNotZero',
+        IControl::FBNZ_D => 'foldIsNotZero',
+        IControl::FBMI_S => 'foldIsMinus',
+        IControl::FBMI_D => 'foldIsMinus',
+        IControl::FBPL_S => 'foldIsPlus',
+        IControl::FBPL_D => 'foldIsPlus',
     ];
 
     /**
@@ -51,6 +52,29 @@ class FloatMonadicBranch extends MonadicBranch {
     public function __construct() {
         $this->oSrcParser = new EffectiveAddress\AllFloatReadable();
         $this->oTgtParser = new Operand\BranchDisplacement();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function parse(int $iOpcode, array $aOperands, array $aSizes = []): string {
+        $sBytecode = parent::parse($iOpcode, $aOperands, $aSizes);
+        if (
+            !empty($sBytecode) &&
+            ord($sBytecode[0]) <= IRegisterDirect::FP15_DIR &&
+            ord($sBytecode[0]) >= IRegisterDirect::FP0_DIR
+        ) {
+            // Mask off the EA nybble so that only the register number
+            // remains encoded here.
+            $sBytecode[0] = chr(ord($sBytecode[0]) & 0xF);
+            throw new CodeFoldException(
+                "Float Register Fast Path",
+                chr(IControl::R_BMC) .
+                chr($iOpcode & 0xFF) .
+                $sBytecode
+            );
+        }
+        return $sBytecode;
     }
 
     /**
