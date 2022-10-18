@@ -265,6 +265,10 @@ class FastPathOptimiser {
         return $sBytecode;
     }
 
+    private function handleBMC(int $iOpcode, string $sOperandByteCode): void {
+
+    }
+
     /**
      * BDC R2R fast path instruction size is one byte smaller. We need to account for that
      * when optimising both backwards branches and the stored reference to unresolved forwards ones.

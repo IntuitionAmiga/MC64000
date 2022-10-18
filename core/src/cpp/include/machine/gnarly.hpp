@@ -36,7 +36,7 @@
  */
 #ifdef ALLOW_MISALIGNED_IMMEDIATE
 #define readDisplacement() \
-    iDisplacement = *((int32*)puProgramCounter); puProgramCounter += sizeof(int32);
+    iDisplacement = *((int32 const*)puProgramCounter); puProgramCounter += sizeof(int32);
 #else
 #define readDisplacement() \
     auBytes[0] = *puProgramCounter++; \
@@ -147,6 +147,12 @@
 #define dstGPRLong()   aoGPR[uRegPair & 0x0F].iLong
 #define srcGPRLong()   aoGPR[uRegPair >> 4].iLong
 
+#define dstGPRUByte()   aoGPR[uRegPair & 0x0F].uByte
+#define srcGPRUByte()   aoGPR[uRegPair & 0x0F].uByte
+
+#define dstGPRUWord()   aoGPR[uRegPair & 0x0F].uWord
+#define srcGPRUWord()   aoGPR[uRegPair >> 4].uWord
+
 #define dstGPRULong()  aoGPR[uRegPair & 0x0F].uLong
 #define srcGPRULong()  aoGPR[uRegPair >> 4].uLong
 
@@ -167,6 +173,8 @@
 
 #define dstFPRUQuad()  aoFPR[uRegPair & 0x0F].uBinary
 #define srcFPRUQuad()  aoFPR[uRegPair >> 4].uBinary
+
+#define srcBitPos(m) (1 << (aoGPR[uRegPair & 0x0F].uByte & (m)))
 
 /**
  * Unpack a byte as a dest/src FPR pair and set the EA pointers directly.

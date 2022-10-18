@@ -71,39 +71,41 @@ void NOINLINE Interpreter::handleBMC() {
 void NOINLINE Interpreter::handleRBMC() {
     using namespace MC64K::ByteCode;
     initDisplacement();
-
-    switch (*puProgramCounter++) {
+    uint8 uCase = *puProgramCounter++;
+    readRegPair();
+    readDisplacement();
+    switch (uCase) {
         // biz/fbiz
-        case Opcode::IEQ_B: unpackGPR(); readDisplacement(); bcc(!asByte(pDstEA)); return;
-        case Opcode::IEQ_W: unpackGPR(); readDisplacement(); bcc(!asWord(pDstEA)); return;
-        case Opcode::IEQ_L: unpackGPR(); readDisplacement(); bcc(!asLong(pDstEA)); return;
-        case Opcode::IEQ_Q: unpackGPR(); readDisplacement(); bcc(!asQuad(pDstEA)); return;
-        case Opcode::FEQ_S: unpackFPR(); readDisplacement(); bcc(!asSingle(pDstEA)); return;
-        case Opcode::FEQ_D: unpackFPR(); readDisplacement(); bcc(!asDouble(pDstEA)); return;
+        case Opcode::IEQ_B: bcc(!dstGPRByte());   return;
+        case Opcode::IEQ_W: bcc(!dstGPRWord());   return;
+        case Opcode::IEQ_L: bcc(!dstGPRLong());   return;
+        case Opcode::IEQ_Q: bcc(!dstGPRQuad());   return;
+        case Opcode::FEQ_S: bcc(!dstFPRSingle()); return;
+        case Opcode::FEQ_D: bcc(!dstFPRDouble()); return;
 
         // bnz/fbnz
-        case Opcode::INE_B: unpackGPR(); readDisplacement(); bcc(asByte(pDstEA)); return;
-        case Opcode::INE_W: unpackGPR(); readDisplacement(); bcc(asWord(pDstEA)); return;
-        case Opcode::INE_L: unpackGPR(); readDisplacement(); bcc(asLong(pDstEA)); return;
-        case Opcode::INE_Q: unpackGPR(); readDisplacement(); bcc(asQuad(pDstEA)); return;
-        case Opcode::FNE_S: unpackFPR(); readDisplacement(); bcc(asSingle(pDstEA)); return;
-        case Opcode::FNE_D: unpackFPR(); readDisplacement(); bcc(asDouble(pDstEA)); return;
+        case Opcode::INE_B: bcc(dstGPRByte());   return;
+        case Opcode::INE_W: bcc(dstGPRWord());   return;
+        case Opcode::INE_L: bcc(dstGPRLong());   return;
+        case Opcode::INE_Q: bcc(dstGPRQuad());   return;
+        case Opcode::FNE_S: bcc(dstFPRSingle()); return;
+        case Opcode::FNE_D: bcc(dstFPRDouble()); return;
 
         // bmi/fbmi
-        case Opcode::ILT_B: unpackGPR(); readDisplacement(); bcc(0 > asByte(pDstEA)); return;
-        case Opcode::ILT_W: unpackGPR(); readDisplacement(); bcc(0 > asWord(pDstEA)); return;
-        case Opcode::ILT_L: unpackGPR(); readDisplacement(); bcc(0 > asLong(pDstEA)); return;
-        case Opcode::ILT_Q: unpackGPR(); readDisplacement(); bcc(0 > asQuad(pDstEA)); return;
-        case Opcode::FLT_S: unpackFPR(); readDisplacement(); bcc(0 > asSingle(pDstEA)); return;
-        case Opcode::FLT_D: unpackFPR(); readDisplacement(); bcc(0 > asDouble(pDstEA)); return;
+        case Opcode::ILT_B: bcc(0 > dstGPRByte());   return;
+        case Opcode::ILT_W: bcc(0 > dstGPRWord());   return;
+        case Opcode::ILT_L: bcc(0 > dstGPRLong());   return;
+        case Opcode::ILT_Q: bcc(0 > dstGPRQuad());   return;
+        case Opcode::FLT_S: bcc(0 > dstFPRSingle()); return;
+        case Opcode::FLT_D: bcc(0 > dstFPRDouble()); return;
 
         // bpl/fbpl
-        case Opcode::IGT_B: unpackGPR(); readDisplacement(); bcc(0 < asByte(pDstEA)); return;
-        case Opcode::IGT_W: unpackGPR(); readDisplacement(); bcc(0 < asWord(pDstEA)); return;
-        case Opcode::IGT_L: unpackGPR(); readDisplacement(); bcc(0 < asLong(pDstEA)); return;
-        case Opcode::IGT_Q: unpackGPR(); readDisplacement(); bcc(0 < asQuad(pDstEA)); return;
-        case Opcode::FGT_S: unpackFPR(); readDisplacement(); bcc(0 < asSingle(pDstEA)); return;
-        case Opcode::FGT_D: unpackFPR(); readDisplacement(); bcc(0 < asDouble(pDstEA)); return;
+        case Opcode::IGT_B: bcc(0 < dstGPRByte());   return;
+        case Opcode::IGT_W: bcc(0 < dstGPRWord());   return;
+        case Opcode::IGT_L: bcc(0 < dstGPRLong());   return;
+        case Opcode::IGT_Q: bcc(0 < dstGPRQuad());   return;
+        case Opcode::FGT_S: bcc(0 < dstFPRSingle()); return;
+        case Opcode::FGT_D: bcc(0 < dstFPRDouble()); return;
 
         default:
             todo(); // will trigger an unimplemented opcode
