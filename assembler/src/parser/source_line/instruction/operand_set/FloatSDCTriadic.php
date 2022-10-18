@@ -35,14 +35,12 @@ class FloatSDCTriadic extends Triadic {
 
     //use EffectiveAddress\TPotentiallyFoldableImmediateAware;
 
+    // Operands are swapped for the conditional as src 2 behaves as the destination
     const
-        NO_OP    = 0,
-        CLEAR_8  = 1,
-        CLEAR_16 = 2,
-        CLEAR_32 = 3,
-        CLEAR_64 = 4,
-        FOLD     = 5,
-        THROW    = 6
+        DEF_OPERAND_SRC   = 1,
+        DEF_OPERAND_SRC_2 = 0,
+        DEF_OPERAND_DST   = 2,
+        MIN_OPERAND_COUNT = 3
     ;
 
     /**

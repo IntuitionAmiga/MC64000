@@ -152,7 +152,7 @@ class Interpreter {
     private:
         static GPRegister       aoGPR[GPRegister::MAX];
         static FPRegister       aoFPR[FPRegister::MAX];
-        static void*            pDstEA;
+        //static void*            pDstEA;
         static void*            pSrcEA;
         static void*            pTmpEA;
         static uint8*           puStackTop;

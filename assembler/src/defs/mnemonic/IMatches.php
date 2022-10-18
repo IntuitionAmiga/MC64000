@@ -411,6 +411,10 @@ interface IMatches {
         'fabs.d'    => IArithmetic::FABS_D,
         'fsqrt.s'   => IArithmetic::FSQRT_S,
         'fsqrt.d'   => IArithmetic::FSQRT_D,
+        'fmacc.s'   => IArithmetic::R2R_FMACC_S,
+        'fmacc.d'   => IArithmetic::R2R_FMACC_D,
+        'fmadd.s'   => IArithmetic::R2R_FMADD_S,
+        'fmadd.d'   => IArithmetic::R2R_FMADD_D,
         'facos.s'   => IArithmetic::FACOS_S,
         'facos.d'   => IArithmetic::FACOS_D,
         'fasin.s'   => IArithmetic::FASIN_S,
@@ -434,5 +438,4 @@ interface IMatches {
         'ftwotox.s' => IArithmetic::FTWOTOX_S,
         'ftwotox.d' => IArithmetic::FTWOTOX_D,
     ];
-
 }

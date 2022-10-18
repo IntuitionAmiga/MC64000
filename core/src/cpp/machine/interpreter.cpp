@@ -28,9 +28,14 @@ register uint8 const* puProgramCounter __asm__(USE_GLOBAL_PC);
 uint8 const* puProgramCounter;
 #endif
 
+#ifdef USE_GLOBAL_DEA
+register void* pDstEA __asm__(USE_GLOBAL_DEA);
+#else
+void* pDstEA;
+#endif
+
 GPRegister      Interpreter::aoGPR[GPRegister::MAX] = {};
 FPRegister      Interpreter::aoFPR[FPRegister::MAX] = {};
-void*           Interpreter::pDstEA                 = 0;
 void*           Interpreter::pSrcEA                 = 0;
 void*           Interpreter::pTmpEA                 = 0;
 uint8*          Interpreter::puStackTop             = 0;

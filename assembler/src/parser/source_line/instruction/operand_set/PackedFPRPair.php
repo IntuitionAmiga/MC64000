@@ -45,7 +45,7 @@ class PackedFPRPair extends PackedRegisterPair {
      * @inheritDoc
      */
     public function getOpcodes(): array {
-        return self::OPCODES;
+        return static::OPCODES;
     }
 
     /**

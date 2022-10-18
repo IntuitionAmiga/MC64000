@@ -28,7 +28,7 @@
         uint32 uMask; \
         uint32 uIndex; \
         int32  iDisplacement; \
-        uint8  auBytes[4]; \
+        uint8  auBytes[sizeof(uint32)]; \
     };
 
 /**
@@ -36,7 +36,7 @@
  */
 #ifdef ALLOW_MISALIGNED_IMMEDIATE
 #define readDisplacement() \
-    iDisplacement = *((int32*)puProgramCounter); puProgramCounter += 4;
+    iDisplacement = *((int32*)puProgramCounter); puProgramCounter += sizeof(int32);
 #else
 #define readDisplacement() \
     auBytes[0] = *puProgramCounter++; \
@@ -134,6 +134,39 @@
     pDstEA          = &aoGPR[uRegPair & 0xF]; \
     pSrcEA          = &aoGPR[uRegPair >> 4]; \
 }
+
+// Fast Path Variations
+#define readRegPair() uint8 uRegPair  = *puProgramCounter++;
+
+#define dstGPRByte()   aoGPR[uRegPair & 0x0F].iByte
+#define srcGPRByte()   aoGPR[uRegPair >> 4].iByte
+
+#define dstGPRWord()   aoGPR[uRegPair & 0x0F].iWord
+#define srcGPRWord()   aoGPR[uRegPair >> 4].iWord
+
+#define dstGPRLong()   aoGPR[uRegPair & 0x0F].iLong
+#define srcGPRLong()   aoGPR[uRegPair >> 4].iLong
+
+#define dstGPRULong()  aoGPR[uRegPair & 0x0F].uLong
+#define srcGPRULong()  aoGPR[uRegPair >> 4].uLong
+
+#define dstGPRQuad()   aoGPR[uRegPair & 0x0F].iQuad
+#define srcGPRQuad()   aoGPR[uRegPair >> 4].iQuad
+
+#define dstGPRUQuad()  aoGPR[uRegPair & 0x0F].uQuad
+#define srcGPRUQuad()  aoGPR[uRegPair >> 4].uQuad
+
+#define dstFPRSingle() aoFPR[uRegPair & 0x0F].fSingle
+#define srcFPRSingle() aoFPR[uRegPair >> 4].fSingle
+
+#define dstFPRDouble() aoFPR[uRegPair & 0x0F].fDouble
+#define srcFPRDouble() aoFPR[uRegPair >> 4].fDouble
+
+#define dstFPRULong()  aoFPR[uRegPair & 0x0F].uBinary32
+#define srcFPRULong()  aoFPR[uRegPair >> 4].uBinary32
+
+#define dstFPRUQuad()  aoFPR[uRegPair & 0x0F].uBinary
+#define srcFPRUQuad()  aoFPR[uRegPair >> 4].uBinary
 
 /**
  * Unpack a byte as a dest/src FPR pair and set the EA pointers directly.

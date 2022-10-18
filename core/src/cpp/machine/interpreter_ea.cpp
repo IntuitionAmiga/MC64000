@@ -47,56 +47,56 @@ void* Interpreter::decodeEffectiveAddress() {
     uint8 uEALower = uEffectiveAddress & 0x0F; // Lower nybble varies, usually a register.
 
     // Switch based on the mode
-    switch (uEffectiveAddress & 0xF0) {
+    switch (uEffectiveAddress >> 4) {
 
         // General Purpose Register Direct r<N>
-        case EffectiveAddress::OFS_GPR_DIR:
+        case EffectiveAddress::OFS_GPR_DIR >> 4:
             return &aoGPR[uEALower];
 
         // Register Indirect (r<N>)
-        case EffectiveAddress::OFS_GPR_IND:
+        case EffectiveAddress::OFS_GPR_IND >> 4:
             return aoGPR[uEALower].pAny;
 
         // Register Indirect, Post Increment (r<N>)+
-        case EffectiveAddress::OFS_GPR_IND_POST_INC: {
+        case EffectiveAddress::OFS_GPR_IND_POST_INC >> 4: {
             void* p = aoGPR[uEALower].pAny;
             aoGPR[uEALower].piByte += eOperationSize;
             return p;
         }
 
         // Register Indirect, Post Increment (r<N>)-
-        case EffectiveAddress::OFS_GPR_IND_POST_DEC: {
+        case EffectiveAddress::OFS_GPR_IND_POST_DEC >> 4: {
             void* p = aoGPR[uEALower].pAny;
             aoGPR[uEALower].piByte -= eOperationSize;
             return p;
         }
 
         // Register Indirect, Pre Increment +(r<N>)
-        case EffectiveAddress::OFS_GPR_IND_PRE_INC:
+        case EffectiveAddress::OFS_GPR_IND_PRE_INC >> 4:
             aoGPR[uEALower].piByte += eOperationSize;
             return aoGPR[uEALower].pAny;
 
         // Register Indirect, Post Decrement -(r<N>)
-        case EffectiveAddress::OFS_GPR_IND_PRE_DEC:
+        case EffectiveAddress::OFS_GPR_IND_PRE_DEC >> 4:
             aoGPR[uEALower].piByte -= eOperationSize;
             return aoGPR[uEALower].pAny;
 
         // Register Indirect with displacement <d8>(r<N>) / (<d8>, r<N>)
-        case EffectiveAddress::OFS_GPR_IND_DSP8:
+        case EffectiveAddress::OFS_GPR_IND_DSP8 >> 4:
             readByteDisplacement();
             return aoGPR[uEALower].piByte + iDisplacement;
 
         // Register Indirect with displacement <d32>(r<N>) / (<d32>, r<N>)
-        case EffectiveAddress::OFS_GPR_IND_DSP:
+        case EffectiveAddress::OFS_GPR_IND_DSP >> 4:
             readDisplacement();
             return aoGPR[uEALower].piByte + iDisplacement;
 
         // FPU Register Direct fp<N>
-        case EffectiveAddress::OFS_FPR_DIR:
+        case EffectiveAddress::OFS_FPR_DIR >> 4:
             return &aoFPR[uEALower];
 
         // Register Indirect with scaled index
-        case EffectiveAddress::OFS_GPR_IDX: {
+        case EffectiveAddress::OFS_GPR_IDX >> 4: {
             uint8 uIndexReg = *puProgramCounter++;
             uint8 uBaseReg  = uIndexReg >> 4;
             uint8 uScale    = uEALower >> 2;
@@ -111,7 +111,7 @@ void* Interpreter::decodeEffectiveAddress() {
         }
 
         // Register Indirect with scaled index and 8-bit displacement
-        case EffectiveAddress::OFS_GPR_IDX_DSP8: {
+        case EffectiveAddress::OFS_GPR_IDX_DSP8 >> 4: {
             uint8 uIndexReg = *puProgramCounter++;
             uint8 uBaseReg  = uIndexReg >> 4;
             uint8 uScale    = uEALower >> 2;
@@ -129,7 +129,7 @@ void* Interpreter::decodeEffectiveAddress() {
         }
 
         // Register Indirect with scaled index and 32-bit displacement
-        case EffectiveAddress::OFS_GPR_IDX_DSP: {
+        case EffectiveAddress::OFS_GPR_IDX_DSP >> 4: {
             uint8 uIndexReg = *puProgramCounter++;
             uint8 uBaseReg  = uIndexReg >> 4;
             uint8 uScale    = uEALower >> 2;
@@ -146,7 +146,7 @@ void* Interpreter::decodeEffectiveAddress() {
             break;
         }
 
-        case EffectiveAddress::OFS_OTHER: {
+        case EffectiveAddress::OFS_OTHER >> 4: {
             if (uEALower <= EffectiveAddress::Other::INT_SMALL_8) {
                 oImmediate.iQuad = uEALower;
                 return &oImmediate.iQuad;
@@ -209,7 +209,7 @@ void* Interpreter::decodeEffectiveAddress() {
             }
             break;
         }
-        case  EffectiveAddress::OFS_OTHER_2: {
+        case  EffectiveAddress::OFS_OTHER_2 >> 4: {
             switch (uEALower) {
                 case EffectiveAddress::SAME_AS_DEST:
                     return pDstEA;

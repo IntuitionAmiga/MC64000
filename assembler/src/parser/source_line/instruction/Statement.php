@@ -77,6 +77,8 @@ class Statement implements SourceLine\IParser, Defs\Mnemonic\IMatches {
         $this->addOperandSetParser(new OperandSet\IntegerToFloatDyadic());
         $this->addOperandSetParser(new OperandSet\PackedGPRPair());
         $this->addOperandSetParser(new OperandSet\PackedFPRPair());
+        $this->addOperandSetParser(new OperandSet\PackedFPRTriad());
+        $this->addOperandSetParser(new OperandSet\PackedFPRTetrad());
 
 
         // Now for the awkward gits...
