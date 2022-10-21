@@ -45,9 +45,9 @@ void* Interpreter::decodeEffectiveAddress() {
 
     uint8 uEffectiveAddress = *puProgramCounter++;
     uint8 uEALower = uEffectiveAddress & 0x0F; // Lower nybble varies, usually a register.
-
+    uEffectiveAddress >>= 4;
     // Switch based on the mode
-    switch (uEffectiveAddress >> 4) {
+    switch (uEffectiveAddress) {
 
         // General Purpose Register Direct r<N>
         case EffectiveAddress::OFS_GPR_DIR >> 4:
@@ -227,7 +227,6 @@ void* Interpreter::decodeEffectiveAddress() {
         default:
             break;
     }
-    std::fprintf(stderr, "\tCrashing with bad EA mode: %02X\n", uEffectiveAddress);
     eStatus = UNIMPLEMENTED_EAMODE;
     return 0;
 }

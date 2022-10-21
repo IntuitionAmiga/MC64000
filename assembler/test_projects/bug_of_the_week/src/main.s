@@ -14,20 +14,26 @@
 
     @def nanotime dc.b 0xF0 ; super undocumented opcodes ftw
 
-    @equ FP_ZERO 0.0
-    @equ FP_MINUS_HALF -0.5
-    @equ FP_MINUS_ONE -1.0
 
 main:
-    hcf io_init
 
-    fbgt.d fp0, fp1, .blah
+    link    a6, #-64
 
-    fsgt.d fp1, fp0, d2
+    move.q  a6, a5
+
+    fmove.s #1.0, fp0
+    fmove.s #2.0, fp1,
+    fmove.s #3.0, fp2
+    fmacc.s fp1, fp2, fp0 ; expect 7.0 in fp0
+
+    fmove.s #0.5, fp3
+    fmadd.s fp0, fp1, fp3, fp4
+
+    unlk a6
+
+    bpl.q d1, main
+    fbnz.s fp15, main
 
 exit:
-    hcf io_done
     rts
 
-.blah:
-    bra.s exit
