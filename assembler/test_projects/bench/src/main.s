@@ -43,7 +43,7 @@ main:
     bsr         bench_biz_int_not_taken
     bsr         bench_bsr_ret
     bsr         bench_hcf
-
+    bsr         bench_link_unlk
     bsr         bench_vec3f_func
     bsr         bench_vec3f_hcf
 

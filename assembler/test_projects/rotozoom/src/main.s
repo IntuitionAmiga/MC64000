@@ -31,7 +31,7 @@ main:
     ; Populate the callback handlers
     lea     on_frame,    DISPLAY_REG_CALL_FRAME(a0)
     lea     on_key_down, DISPLAY_REG_CALL_KEY_PRESS(a0)
-    lea     .filth,      DISPLAY_REG_FILTH(a0)
+    ;lea     .filth,      DISPLAY_REG_FILTH(a0)
 
     ; Set parameters
     lea     .texel_data,  a2
@@ -113,10 +113,10 @@ on_key_down: ; a0 contains display context
     @align  0, 8
 .display_properties:
     ; view width, height
-    dc.w 320, 240
+    dc.w 640, 480
 
     ; buffer width, height, offsets
-    dc.w 320, 240, 0, 0
+    dc.w 640, 480, 0, 0
 
     ; flags
     dc.w [1 << DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES | 1 << DISPLAY_BIT_FLIP_ALL_FRAMES]

@@ -30,6 +30,7 @@
         "src/bench_conditional.s",
         "src/bench_bsr_ret.s",
         "src/bench_hcf.s",
+        "src/bench_link_unlk.s",
         "src/bench_vec3f_func.s",
         "src/bench_vec3f_hcf.s"
     ],

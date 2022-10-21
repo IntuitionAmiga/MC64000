@@ -21,25 +21,6 @@
 namespace MC64K::Machine {
 
 /**
- * Deal with host call operations.
- */
-void NOINLINE Interpreter::handleHost() {
-    // Get the function ID and call it. The function is expected to return a valid
-    // status code we can set.
-    uint8 uNext = *puProgramCounter++;
-    if (uNext < uNumHCFVectors) {
-        uint8 const* volatile pNext = puProgramCounter + 1;
-        eStatus = pcHCFVectors[uNext](*puProgramCounter++);
-        if (eStatus == INITIALISED) {
-            puProgramCounter = pNext;
-            eStatus = RUNNING;
-        }
-    } else {
-        eStatus = UNKNOWN_HOST_CALL;
-    }
-}
-
-/**
  * @inheritDoc
  */
 void Interpreter::run() {

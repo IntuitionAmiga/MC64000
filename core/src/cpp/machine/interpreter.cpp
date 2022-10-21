@@ -238,6 +238,25 @@ void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
     }
 }
 
+/**
+ * Deal with host call operations.
+ */
+void Interpreter::handleHost() {
+    // Get the function ID and call it. The function is expected to return a valid
+    // status code we can set.
+    uint8 uNext = *puProgramCounter++;
+    if (uNext < uNumHCFVectors) {
+        uint8 const* volatile pNext = puProgramCounter + 1;
+        eStatus = pcHCFVectors[uNext](*puProgramCounter++);
+        if (eStatus == INITIALISED) {
+            puProgramCounter = pNext;
+            eStatus = RUNNING;
+        }
+    } else {
+        eStatus = UNKNOWN_HOST_CALL;
+    }
+}
+
 } // namespace
 
 #include "interpreter_ea.cpp"
@@ -245,4 +264,9 @@ void Interpreter::dumpState(std::FILE* poStream, unsigned const uFlags) {
 #include "interpreter_bdc.cpp"
 #include "interpreter_smc.cpp"
 #include "interpreter_sdc.cpp"
-#include "interpreter_run.cpp"
+
+#ifdef INTERPRETER_CUSTOM
+    #include "interpreter_run_custom.cpp"
+#else
+    #include "interpreter_run.cpp"
+#endif
