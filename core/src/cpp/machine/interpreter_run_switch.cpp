@@ -49,7 +49,12 @@ void Interpreter::run() {
             #define status()    break
             #define next()      goto skip_status_check
             #define defOp(NAME) case Opcode::NAME:
-            #include <machine/opcode_handlers.hpp>
+
+            #include <machine/opcode_handlers/control.hpp>
+            #include <machine/opcode_handlers/fast_path.hpp>
+            #include <machine/opcode_handlers/data_move.hpp>
+            #include <machine/opcode_handlers/logical.hpp>
+            #include <machine/opcode_handlers/arithmetic.hpp>
 
             // Super undocumented timing opcode ftw
             case 0xF0: {
