@@ -259,14 +259,17 @@ void Interpreter::handleHost() {
 
 } // namespace
 
+// We split out the guts into separately included files
+#define HAVE_PTR_DEPS 1
+
 #include "interpreter_ea.cpp"
 #include "interpreter_bmc.cpp"
 #include "interpreter_bdc.cpp"
 #include "interpreter_smc.cpp"
 #include "interpreter_sdc.cpp"
 
-#ifdef INTERPRETER_CUSTOM
-    #include "interpreter_run_custom.cpp"
+#ifdef INTERPRETER_JUMPTBL
+    #include "interpreter_run_jumptable.cpp"
 #else
-    #include "interpreter_run.cpp"
+    #include "interpreter_run_switch.cpp"
 #endif

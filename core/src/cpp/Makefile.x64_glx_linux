@@ -19,7 +19,7 @@ VM_DEA_RESERVE_REG = r13
 
 # Compiler settings
 CXXFLAGS = --std=c++17 -Wall -Wconversion -Werror -Ofast -march=native -mtune=native -mavx2 -fPIC -pipe -Iinclude -DALLOW_MISALIGNED_IMMEDIATE -DREPORT_MIPS
-GCC_CXXFLAGS = -fexpensive-optimizations -funroll-all-loops -DMESSAGE='"Compiled with GCC"' -DINTERPRETER_CUSTOM -DTHREADED_DISPATCH
+GCC_CXXFLAGS = -fexpensive-optimizations -funroll-all-loops -DMESSAGE='"Compiled with GCC"' -DINTERPRETER_JUMPTBL -DTHREADED_DISPATCH
 CLANG_CXXFLAGS = -v -funroll-loops -DMESSAGE='"Compiled with Clang"'
 UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'
 
