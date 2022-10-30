@@ -13,8 +13,6 @@
 
 #include <host/audio/alsa/device.hpp>
 
-using MC64K::Machine::Interpreter;
-
 namespace MC64K::StandardTestHost::Audio {
 
 namespace Alsa {

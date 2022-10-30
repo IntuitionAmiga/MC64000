@@ -16,8 +16,6 @@
 
 #include "raii.hpp"
 
-using MC64K::Machine::Interpreter;
-
 namespace MC64K::StandardTestHost::Audio::Alsa {
 
 /**

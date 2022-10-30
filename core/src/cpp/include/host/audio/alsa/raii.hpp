@@ -19,8 +19,6 @@
 #include <host/audio/config.hpp>
 #include <alsa/asoundlib.h>
 
-using MC64K::Machine::Interpreter;
-
 namespace MC64K::StandardTestHost::Audio::Alsa {
 
 /**
