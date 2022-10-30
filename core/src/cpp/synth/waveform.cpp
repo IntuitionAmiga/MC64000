@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <synth/signal.hpp>
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <synth/signal/waveform/sine.hpp>
 namespace MC64K::Synth::Audio::Signal::Waveform {
@@ -68,8 +69,8 @@ Packet::Ptr SineFast::map(Packet::ConstPtr pInput) {
 SineFast::~SineFast() {
     std::printf("Destroyed SineFast\n");
 }
-}
 
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -104,6 +105,7 @@ Packet::Ptr Triangle::map(Packet::ConstPtr pInput) {
 Triangle::~Triangle() {
     std::printf("Destroyed Triangle\n");
 }
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -332,7 +334,6 @@ FixedPWM    oPWM10(0.1f);
 FixedPWM    oPWM20(0.2f);
 FixedPWM    oPWM30(0.3f);
 FixedPWM    oPWM40(0.4f);
-
 
 // Custom waveforms based on transformations
 float32 const aPokey[16] = {

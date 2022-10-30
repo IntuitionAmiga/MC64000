@@ -21,6 +21,13 @@ uint64 Packet::uPacketsCreated   = 0;
 uint64 Packet::uPacketsDestroyed = 0;
 uint64 Packet::uPeakPacketsInUse = 0;
 
+/**
+ * Deleter hook for shared_ptr.
+ *
+ * Delegates packet destruction back to the Packet class as we intend to
+ * recycle them.
+ *
+ */
 class Packet::Deleter {
     public:
         void operator()(Packet* pPacket) const {
@@ -28,6 +35,9 @@ class Packet::Deleter {
         }
 };
 
+/**
+ * Create a new Packet instance and obtain a shared pointer.
+ */
 Packet::Ptr Packet::create() {
     Packet* pPacket = new Packet();
     uint64 uPacketsInUse = ++uPacketsCreated - uPacketsDestroyed;
@@ -37,6 +47,9 @@ Packet::Ptr Packet::create() {
     return Ptr(pPacket, Deleter());
 }
 
+/**
+ * Free a Packet instance
+ */
 void Packet::destroy(Packet* pPacket) {
     if (pPacket) {
         ++uPacketsDestroyed;
@@ -44,6 +57,9 @@ void Packet::destroy(Packet* pPacket) {
     }
 }
 
+/**
+ * Report statistics
+ */
 void Packet::dumpStats() {
     std::printf(
         "Packet statistics:\n"
