@@ -17,9 +17,60 @@
 
 namespace MC64K::Synth::Audio::Signal {
 
+size_t Packet::uNextIndex        = 0;
 uint64 Packet::uPacketsCreated   = 0;
 uint64 Packet::uPacketsDestroyed = 0;
 uint64 Packet::uPeakPacketsInUse = 0;
+
+Packet* Packet::fillWith(float32 fValue) {
+    for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+        aSamples[u] = fValue;
+    }
+    return this;
+}
+
+Packet* Packet::scaleBy(float32 fValue) {
+    for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+        aSamples[u] *= fValue;
+    }
+    return this;
+}
+
+Packet* Packet::biasBy(float32 fValue) {
+    for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+        aSamples[u] += fValue;
+    }
+    return this;
+}
+
+Packet* Packet::scaleAndBiasBy(float32 fScale, float32 fBias) {
+    for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+        aSamples[u] = aSamples[u] * fScale + fBias;
+    }
+    return this;
+}
+
+Packet* Packet::sumWith(Packet const* pPacket) {
+    for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+        aSamples[u] += pPacket->aSamples[u];
+    }
+    return this;
+}
+
+Packet* Packet::modulateWith(Packet const* pPacket) {
+    for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+        aSamples[u] *= pPacket->aSamples[u];
+    }
+    return this;
+}
+
+Packet* Packet::accumulate(Packet const* pPacket, float32 fValue) {
+    for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+        aSamples[u] += pPacket->aSamples[u] + fValue;
+    }
+    return this;
+}
+
 
 /**
  * Deleter hook for shared_ptr.
@@ -47,6 +98,16 @@ Packet::Ptr Packet::create() {
     return Ptr(pPacket, Deleter());
 }
 
+
+Packet::Ptr Packet::getSilence() {
+    static Packet::Ptr pSilence;
+    if (!pSilence.get()) {
+        pSilence = Packet::create();
+        pSilence->fillWith(0.0f);
+    }
+    return pSilence;
+}
+
 /**
  * Free a Packet instance
  */
@@ -70,6 +131,17 @@ void Packet::dumpStats() {
         uPacketsDestroyed,
         uPeakPacketsInUse
     );
+}
+
+bool TPacketIndexAware::useLast(size_t uIndex) {
+    if (!uIndex) {
+        uLastIndex = Packet::getNextIndex();
+        return false;
+    } else if (uLastIndex != uIndex) {
+        uLastIndex = uIndex;
+        return false;
+    }
+    return true;
 }
 
 }

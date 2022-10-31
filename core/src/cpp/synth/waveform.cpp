@@ -21,7 +21,7 @@
 namespace MC64K::Synth::Audio::Signal::Waveform {
 
 Packet::Ptr SineGold::map(Packet::ConstPtr pInput) {
-    auto pOutput = Packet::create();
+    auto pOutput        = Packet::create();
     float32* pDest      = pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
@@ -43,7 +43,7 @@ SineGold::~SineGold() {
  * Branchless techniques used here to improve throughput.
  */
 Packet::Ptr SineFast::map(Packet::ConstPtr pInput) {
-    auto pOutput = Packet::create();
+    auto pOutput        = Packet::create();
     float32* pDest      = pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
 
@@ -81,7 +81,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  * @inheritDoc
  */
 Packet::Ptr Triangle::map(Packet::ConstPtr pInput) {
-    auto pOutput = Packet::create();
+    auto pOutput        = Packet::create();
     float32* pDest      = pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
 
@@ -117,7 +117,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  * @inheritDoc
  */
 Packet::Ptr SawDown::map(Packet::ConstPtr pInput) {
-    auto pOutput = Packet::create();
+    auto pOutput        = Packet::create();
     float32* pDest      = pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
@@ -138,7 +138,7 @@ SawDown::~SawDown() {
  * @inheritDoc
  */
 Packet::Ptr SawUp::map(Packet::ConstPtr pInput) {
-    auto pOutput = Packet::create();
+    auto pOutput        = Packet::create();
     float32* pDest      = pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
@@ -213,58 +213,8 @@ FixedPWM::~FixedPWM() {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include <synth/signal/waveform/xform.hpp>
 namespace MC64K::Synth::Audio::Signal::Waveform {
-
-/**
- * Transformer
- */
-class XForm : public IWaveform {
-
-    private:
-        static constexpr float32 const PERIOD = 4.0f;
-
-        enum {
-            PHASE_MUL = 0,
-            PHASE_ADD = 1,
-            LEVEL_MUL = 2,
-            LEVEL_ADD = 3
-        };
-
-        float32 aTransform[16] __attribute__ ((aligned (16))) = {
-            // phase multiplier, phase displacement, scale multiplier, bias
-           1.0f, 0.0f, 1.0f, 0.0f,  // First  Quadrant
-           1.0f, 1.0f, 1.0f, 0.0f,  // Second Quadrant
-           1.0f, 2.0f, 1.0f, 0.0f,  // Third  Quadrant
-           1.0f, 3.0f, 1.0f, 0.0f,  // Fourth Quadrant
-
-        };
-
-        Ptr     pSourceWaveform;
-        float32 fPeriodAdjust;
-    public:
-        XForm(Ptr pSourceWaveform, float32 const* pTransform);
-        ~XForm();
-
-        /**
-         * @inheritDoc
-         */
-        float32 getPeriod() const {
-            return PERIOD;
-        }
-
-        /**
-         * @inheritDoc
-         */
-        Packet::Ptr map(Packet::ConstPtr pInput);
-
-        /**
-         * @inheritDoc
-         */
-        float32 value(float32 fTime) const {
-            return fTime; // todo
-        };
-
-};
 
 XForm::XForm(IWaveform::Ptr pSourceWaveform, float32 const* pCustomTransform) : pSourceWaveform(pSourceWaveform) {
     fPeriodAdjust = pSourceWaveform->getPeriod() / PERIOD;
@@ -322,6 +272,8 @@ class NoopDeleter {
 
 NoopDeleter oNoDelete;
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Fixed waveforms that can be allocated once
@@ -359,6 +311,10 @@ XForm oPokey(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aPokey);
 
 namespace MC64K::Synth::Audio::Signal {
 
+IWaveform::Ptr IWaveform::copy() {
+    return Ptr(this, Waveform::oNoDelete);
+}
+
 IWaveform::Ptr IWaveform::get(IWaveform::FixedShape eShape) {
 
     switch (eShape) {
@@ -366,27 +322,31 @@ IWaveform::Ptr IWaveform::get(IWaveform::FixedShape eShape) {
         case IWaveform::SINE:
             return IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete);
         case IWaveform::TRIANGLE:
-            return IWaveform::Ptr(&Waveform::oTriangle, Waveform::oNoDelete);
+            return IWaveform::Ptr(&Waveform::oTriangle,  Waveform::oNoDelete);
         case IWaveform::SAW_DOWN:
             return IWaveform::Ptr(&Waveform::oSawDown, Waveform::oNoDelete);
         case IWaveform::SAW_UP:
-            return IWaveform::Ptr(&Waveform::oSawUp, Waveform::oNoDelete);
+            return IWaveform::Ptr(&Waveform::oSawUp,  Waveform::oNoDelete);
         case IWaveform::SQUARE:
-            return IWaveform::Ptr(&Waveform::oSquare, Waveform::oNoDelete);
+            return IWaveform::Ptr(&Waveform::oSquare,  Waveform::oNoDelete);
         case IWaveform::PULSE_10:
-            return IWaveform::Ptr(&Waveform::oPWM10, Waveform::oNoDelete);
+            return IWaveform::Ptr(&Waveform::oPWM10,  Waveform::oNoDelete);
         case IWaveform::PULSE_20:
-            return IWaveform::Ptr(&Waveform::oPWM20, Waveform::oNoDelete);
+            return IWaveform::Ptr(&Waveform::oPWM20,  Waveform::oNoDelete);
         case IWaveform::PULSE_30:
-            return IWaveform::Ptr(&Waveform::oPWM30, Waveform::oNoDelete);
+            return IWaveform::Ptr(&Waveform::oPWM30,  Waveform::oNoDelete);
         case IWaveform::PULSE_40:
-            return IWaveform::Ptr(&Waveform::oPWM40, Waveform::oNoDelete);
+            return IWaveform::Ptr(&Waveform::oPWM40,  Waveform::oNoDelete);
         case IWaveform::POKEY:
-            return IWaveform::Ptr(&Waveform::oPokey, Waveform::oNoDelete);
+            return IWaveform::Ptr(&Waveform::oPokey,  Waveform::oNoDelete);
     }
 }
 
+IWaveform::Ptr IWaveform::createPWM(float32 fWidth) {
+    return IWaveform::Ptr(new Waveform::FixedPWM(fWidth));
 }
 
+
+}
 
 

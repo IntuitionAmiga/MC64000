@@ -15,27 +15,52 @@
  */
 
 #include "stream.hpp"
+#include "waveform.hpp"
 
 namespace MC64K::Synth::Audio::Signal {
 using namespace MC64K::StandardTestHost::Audio::IConfig;
 
 /**
- * Interface for oscillator types.
+ * Abstract Base Class for Oscillator types
  */
-class IOscillator : public IStream {
+class IOscillator : public TStreamCommon, private TPacketIndexAware {
+
+    protected:
+        IWaveform::Ptr pWaveform;
+        Packet::Ptr    pLastOutput;
+        float32 fFrequency;
+        float32 fCurrentFrequency;
+        float32 fPhaseOffset;
+        float32 fPhaseCorrection;
+        float32 fWaveformPeriod;
+        float32 fTimeStep;
+        float32 fScaleVal;
+        bool    bAperiodic;
+
+        virtual float32 clampFrequency(float32 fFrequency) {
+            return fFrequency;
+        };
+
+        virtual Packet::Ptr emitNew() = 0;
+
+
     public:
+        IOscillator(
+            IWaveform::Ptr pWaveform,
+            float32 fFrequency = 0.0f,
+            float32 fPhase     = 0.0f
+        );
+
         /**
          * Set the waveform to use. Passing null disables the oscillator (emits silence).
          *
          * Implementations may clone the waveform instance passed to them so do not rely on getWaveform() returning
          * the same instance.
          *
-         * @param  IWaveform|null oWaveform
+         * @param  IWaveform::Ptr pWaveform
          * @return this
          */
-        virtual IOscillator* setWaveform(IWaveform* oWaveform) = 0;
-
-        virtual IWaveform* getWaveform() = 0;
+        IOscillator* setWaveform(IWaveform::Ptr pWaveform);
 
         /**
          * Set the baseline frequency to emit.
@@ -43,7 +68,11 @@ class IOscillator : public IStream {
          * @param  float fFrequency
          * @return this
          */
-        virtual IOscillator* setFrequency(float32 fFrequency) = 0;
+        IOscillator* setFrequency(float32 fFrequency);
+
+        IOscillator* reset();
+
+        Packet::Ptr emit(size_t uIndex = 0);
 };
 
 }

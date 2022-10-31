@@ -62,15 +62,27 @@ class IWaveform /*: public Util::ISometimesShareable */ {
         };
 
         /**
-         * Shared pointer types for passing around
+         * Using shared_ptr based references allows some degree of fire and forget
+         * in the implementation of consumes. For fixed waveform shapes, the pointer
+         * returned, while still reference counted does not have deletion semantics
+         * since it's a reference to a single instance.
+         *
+         * Pointers returned from create methods return a deletable instance.
          */
         typedef std::shared_ptr<IWaveform> Ptr;
         typedef std::shared_ptr<IWaveform const> ConstPtr;
 
         /**
-         * Factory method to obtain
+         * Factory method to obtain common shapes
          */
         static Ptr get(FixedShape eShape);
+
+        /**
+         * Factory method to obtain a custom width PWM
+         */
+        static Ptr createPWM(float32 fWidth);
+        static Ptr createPWM(IStream::Ptr pWidthModulator);
+        static Ptr createXForm(Ptr pSource, float32 const* pMatrix);
 
         /**
          * Returns the period of this function, i.e. the numeric interval after which it's
@@ -93,6 +105,13 @@ class IWaveform /*: public Util::ISometimesShareable */ {
          * Calculate the output for a single input.
          */
         virtual float32 value(float32 fInput) const = 0;
+
+        /**
+         * Get a copy (maybe). For stateless implementations, this is just the
+         * a self reference. Stateful implementations should actually allocate
+         * and populate a proper copy.
+         */
+        virtual Ptr copy();
 
 };
 

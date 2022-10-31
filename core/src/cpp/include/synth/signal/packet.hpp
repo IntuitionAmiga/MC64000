@@ -41,13 +41,38 @@ class Packet {
         /**
          * Obtain a new instance
          *
-         * @return PacketPtr
+         * @return Ptr
          */
         static Ptr create();
+
+        static Ptr getSilence();
+
+        /**
+         * Get the next index for packet index aware operations
+         */
+        static size_t getNextIndex() {
+            return ++uNextIndex;
+        }
+
+        Packet* fillWith(float32 fValue);
+
+        Packet* scaleBy(float32 fValue);
+
+        Packet* biasBy(float32 fValue);
+
+        Packet* scaleAndBiasBy(float32 fScale, float32 fBias);
+
+        Packet* sumWith(Packet const* pPacket);
+
+        Packet* modulateWith(Packet const* pPacket);
+
+        Packet* accumulate(Packet const* pPacket, float32 fValue);
 
         static void dumpStats();
 
     private:
+        static size_t uNextIndex;
+
         /**
          * Allocator stats
          */
@@ -72,6 +97,18 @@ class Packet {
          * for proper handling.
          */
         class Deleter;
+};
+
+/**
+ * TPacketIndexAware
+ *
+ * Utility trait for Packet generators to determine whether or not they need to calculate a new Packet or not.
+ */
+class TPacketIndexAware {
+    protected:
+        size_t uLastIndex;
+        bool useLast(size_t uIndex);
+        TPacketIndexAware() : uLastIndex(0) {}
 };
 
 }

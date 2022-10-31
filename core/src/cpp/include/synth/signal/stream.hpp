@@ -27,6 +27,21 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
 class IStream {
     public:
         virtual ~IStream() = default;
+
+        /**
+         * Check if a stream is enabled.
+         *
+         * @return bool
+         */
+        virtual bool isEnabled() = 0;
+
+        /**
+         * Get the current stream position
+         *
+         * @return size_t
+         */
+        virtual size_t getPosition() = 0;
+
         /**
          * Enable a stream.
          *
@@ -42,20 +57,6 @@ class IStream {
         virtual IStream* disable() = 0;
 
         /**
-         * Check if a stream is enabled.
-         *
-         * @return bool
-         */
-        virtual bool isEnabled() = 0;
-
-        /**
-         * Get the current stream position
-         *
-         * @return int32
-         */
-        virtual int32 getPosition() = 0;
-
-        /**
          * Reset the stream
          *
          * @return IStream*
@@ -67,10 +68,44 @@ class IStream {
          * the last generated Packet of data and if so, return it. This becomes necessary in complex signal routing where
          * one IStream implementation's output is consumed by multiple inputs.
          *
-         * @param  int32 iIndex
-         * @return Packet
+         * @param  size_t iIndex
+         * @return Packet::Ptr
          */
-        virtual Packet* emit(int32 iIndex = 0) = 0;
+        virtual Packet::Ptr emit(size_t uIndex = 0) = 0;
+
+        typedef std::shared_ptr<IStream> Ptr;
+        typedef std::shared_ptr<IStream const> ConstPtr;
+};
+
+/**
+ * Common, optional implementation for stream components
+ */
+class TStreamCommon : public IStream {
+
+    protected:
+        size_t uSamplePosition;
+        bool   bEnabled;
+
+        TStreamCommon(): uSamplePosition(0), bEnabled(false) {}
+
+    public:
+        size_t getPosition() {
+            return uSamplePosition;
+        }
+
+        bool isEnabled() {
+            return bEnabled;
+        }
+
+        IStream* enable() {
+            bEnabled = true;
+            return this;
+        };
+
+        IStream* disable() {
+            bEnabled = false;
+            return this;
+        }
 
 };
 

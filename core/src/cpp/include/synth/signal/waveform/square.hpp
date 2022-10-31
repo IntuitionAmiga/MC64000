@@ -103,10 +103,19 @@ class FixedPWM : public IWaveform {
             return fResult;
         };
 
+        /**
+         * Constructor
+         */
         FixedPWM(float32 fWidth) {
             setWidth(fWidth);
         }
 
+        /**
+         * @inheritDoc
+         */
+        Ptr copy() {
+            return Ptr(new FixedPWM(fWidth));
+        }
 };
 
 }
