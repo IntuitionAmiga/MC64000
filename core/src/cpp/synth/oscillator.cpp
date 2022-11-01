@@ -32,7 +32,6 @@ IOscillator::IOscillator(
     fPhaseCorrection(fInitialPhase),
     fWaveformPeriod(1.0f),
     fTimeStep(SAMPLE_PERIOD)
-
 {
     pLastOutput = Packet::create();
     setFrequency(fInitialFrequency);
@@ -116,7 +115,8 @@ float32 LFO::clampFrequency(float32 fNewFrequency) {
  * @inheritDoc
  */
 Packet::Ptr LFO::emitNew() {
-    Packet::Ptr pInput = Packet::create();
+    // Recycle our last output packet if we have one
+    Packet::Ptr pInput = pLastOutput.get() ? pLastOutput : Packet::create();
     float32* pSamples  = pInput->aSamples;
     for (unsigned u=0; u < PACKET_SIZE; ++u) {
         pSamples[u] = fScaleVal * (float32)(uSamplePosition++);

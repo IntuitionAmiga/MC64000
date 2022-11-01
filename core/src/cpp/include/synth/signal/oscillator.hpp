@@ -70,6 +70,9 @@ class IOscillator : public TStreamCommon, private TPacketIndexAware {
          */
         IOscillator* setFrequency(float32 fFrequency);
 
+        /**
+         * @inheritDoc
+         */
         IOscillator* reset();
 
         Packet::Ptr emit(size_t uIndex = 0);
