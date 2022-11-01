@@ -23,26 +23,38 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
 /**
  * Abstract Base Class for Oscillator types
  */
-class IOscillator : public TStreamCommon, private TPacketIndexAware {
+class IOscillator : public TStreamCommon, protected TPacketIndexAware {
 
     protected:
         IWaveform::Ptr pWaveform;
-        Packet::Ptr    pLastOutput;
-        float32 fFrequency;
-        float32 fCurrentFrequency;
-        float32 fPhaseOffset;
-        float32 fPhaseCorrection;
-        float32 fWaveformPeriod;
-        float32 fTimeStep;
-        float32 fScaleVal;
-        bool    bAperiodic;
+        Packet::Ptr    pLastPacket;
+        float64        fTimeStep;
+        float64        fScaleVal;
+        float32        fFrequency;
+        float32        fCurrentFrequency;
+        float32        fPhaseOffset;
+        float32        fPhaseCorrection;
+        float32        fWaveformPeriod;
+        bool           bAperiodic;
 
+        /**
+         * Limit the frequency. This is intended to be overridden
+         * by the implementaiton to clamp the frequency into a viable range.
+         *
+         * @param float32
+         * @return float32
+         */
         virtual float32 clampFrequency(float32 fFrequency) {
             return fFrequency;
         };
 
-        virtual Packet::Ptr emitNew() = 0;
-
+        /**
+         * Generate a new packet. This is called by emit() when it is determined that
+         * the packet we are being asked for is not the one we last calculated.
+         *
+         * @return Packet::ConstPtr
+         */
+        virtual Packet::ConstPtr emitNew() = 0;
 
     public:
         IOscillator(
@@ -75,7 +87,10 @@ class IOscillator : public TStreamCommon, private TPacketIndexAware {
          */
         IOscillator* reset();
 
-        Packet::Ptr emit(size_t uIndex = 0);
+        /**
+         * @inheritDoc
+         */
+        Packet::ConstPtr emit(size_t uIndex = 0);
 };
 
 }

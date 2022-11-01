@@ -24,6 +24,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
 class SineGold : public IWaveform {
 
     public:
+        SineGold();
         ~SineGold();
 
         /**
@@ -36,7 +37,7 @@ class SineGold : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet::ConstPtr pInput);
+        Packet::Ptr map(Packet const* pInput);
 
         /**
          * @inheritDoc
@@ -78,6 +79,7 @@ class SineFast : public IWaveform {
         }
 
     public:
+        SineFast();
         ~SineFast();
 
         /**
@@ -90,7 +92,7 @@ class SineFast : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet::ConstPtr pInput);
+        Packet::Ptr map(Packet const* pInput);
 
         /**
          * @inheritDoc

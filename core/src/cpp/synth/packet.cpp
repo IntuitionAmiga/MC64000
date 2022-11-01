@@ -66,7 +66,7 @@ Packet* Packet::modulateWith(Packet const* pPacket) {
 
 Packet* Packet::accumulate(Packet const* pPacket, float32 fValue) {
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        aSamples[u] += pPacket->aSamples[u] + fValue;
+        aSamples[u] += pPacket->aSamples[u] * fValue;
     }
     return this;
 }

@@ -4,6 +4,7 @@
 #include <machine/timing.hpp>
 #include <synth/signal.hpp>
 #include <synth/signal/oscillator/LFO.hpp>
+#include <synth/signal/oscillator/sound.hpp>
 
 
 using namespace MC64K::Machine;
@@ -97,20 +98,32 @@ void testWaveforms() {
 
 int main(int const iArgCount, char const** aiArgVal) {
 
-    Signal::Oscillator::LFO oOsc(
-        Signal::IWaveform::get(Signal::IWaveform::SINE),
-        440.0f,
-        1.0f
+    Signal::Oscillator::Sound oOsc(
+        Signal::IWaveform::get(Signal::IWaveform::SAW_DOWN),
+        220.0f,
+        0.0f
     );
+    Signal::IStream::Ptr pModulator(
+        new Signal::Oscillator::Sound(
+            Signal::IWaveform::get(Signal::IWaveform::SINE),
+            220.0f,
+            0.0f
+        )
+    );
+    pModulator->enable();
+    oOsc.setPhaseModulator(pModulator);
+    oOsc.setPhaseModulationIndex(0.25f);
     oOsc.enable();
+
+    //oOsc.setPhaseFeedbackIndex(0.25f);
+
     int16 aSamples[256];
     std::FILE* pRawFile = std::fopen("osc_test.raw", "wb");
     if (pRawFile) {
         for (unsigned uIndex = 1; uIndex < 1000; ++uIndex) {
             auto pOutput = oOsc.emit(uIndex);
 
-            std::printf("Index %u: Position %lu\n", uIndex, oOsc.getPosition());
-
+            //std::printf("Index %u: Position %lu\n", uIndex, oOsc.getPosition());
 
             for (unsigned i=0; i < 256; ++i) {
                 aSamples[i] = (int16)(32000 * pOutput->aSamples[i]);

@@ -23,6 +23,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  */
 class Square : public IWaveform {
     public:
+        Square();
         ~Square();
 
         /**
@@ -35,7 +36,7 @@ class Square : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet::ConstPtr pInput);
+        Packet::Ptr map(Packet const* pInput);
 
         /**
          * @inheritDoc
@@ -88,7 +89,7 @@ class FixedPWM : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet::ConstPtr pInput);
+        Packet::Ptr map(Packet const* pInput);
 
         /**
          * @inheritDoc
@@ -106,9 +107,7 @@ class FixedPWM : public IWaveform {
         /**
          * Constructor
          */
-        FixedPWM(float32 fWidth) {
-            setWidth(fWidth);
-        }
+        FixedPWM(float32 fWidth);
 
         /**
          * @inheritDoc

@@ -25,6 +25,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  */
 class Triangle : public IWaveform {
     public:
+        Triangle();
         ~Triangle();
 
         /**
@@ -37,7 +38,7 @@ class Triangle : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet::ConstPtr pInput);
+        Packet::Ptr map(Packet const* pInput);
 
         /**
          * @inheritDoc

@@ -23,6 +23,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  */
 class SawDown : public IWaveform {
     public:
+        SawDown();
         ~SawDown();
 
         /**
@@ -35,7 +36,7 @@ class SawDown : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet::ConstPtr pInput);
+        Packet::Ptr map(Packet const* pInput);
 
         /**
          * @inheritDoc
@@ -52,6 +53,7 @@ class SawDown : public IWaveform {
  */
 class SawUp : public IWaveform {
     public:
+        SawUp();
         ~SawUp();
 
         /**
@@ -64,7 +66,7 @@ class SawUp : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet::ConstPtr pInput);
+        Packet::Ptr map(Packet const* pInput);
 
         /**
          * @inheritDoc

@@ -20,9 +20,19 @@
 #include <synth/signal/waveform/sine.hpp>
 namespace MC64K::Synth::Audio::Signal::Waveform {
 
-Packet::Ptr SineGold::map(Packet::ConstPtr pInput) {
-    auto pOutput        = Packet::create();
-    float32* pDest      = pOutput->aSamples;
+/**
+ * @inheritDoc
+ */
+SineGold::SineGold() {
+    std::fprintf(stderr, "Created SineGold at %p\n", this);
+}
+
+/**
+ * @inheritDoc
+ */
+Packet::Ptr SineGold::map(Packet const* pInput) {
+    Packet::Ptr    pOutput    = Packet::create();
+    float32*       pDest      = pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
         pDest[i] = std::sin(pSrc[i]);
@@ -34,7 +44,14 @@ Packet::Ptr SineGold::map(Packet::ConstPtr pInput) {
  * @inheritDoc
  */
 SineGold::~SineGold() {
-    std::printf("Destroyed SineGold\n");
+    std::fprintf(stderr, "Destroyed SineGold at %p\n", this);
+}
+
+/**
+ * @inheritDoc
+ */
+SineFast::SineFast() {
+    std::fprintf(stderr, "Created SineFast at %p\n", this);
 }
 
 /**
@@ -42,7 +59,7 @@ SineGold::~SineGold() {
  *
  * Branchless techniques used here to improve throughput.
  */
-Packet::Ptr SineFast::map(Packet::ConstPtr pInput) {
+Packet::Ptr SineFast::map(Packet const* pInput) {
     auto pOutput        = Packet::create();
     float32* pDest      = pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
@@ -67,7 +84,7 @@ Packet::Ptr SineFast::map(Packet::ConstPtr pInput) {
  * @inheritDoc
  */
 SineFast::~SineFast() {
-    std::printf("Destroyed SineFast\n");
+    std::fprintf(stderr, "Destroyed SineFast at %p\n", this);
 }
 
 }
@@ -80,7 +97,14 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
 /**
  * @inheritDoc
  */
-Packet::Ptr Triangle::map(Packet::ConstPtr pInput) {
+Triangle::Triangle() {
+    std::fprintf(stderr, "Created Triangle at %p\n", this);
+}
+
+/**
+ * @inheritDoc
+ */
+Packet::Ptr Triangle::map(Packet const* pInput) {
     auto pOutput        = Packet::create();
     float32* pDest      = pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
@@ -103,7 +127,7 @@ Packet::Ptr Triangle::map(Packet::ConstPtr pInput) {
  * @inheritDoc
  */
 Triangle::~Triangle() {
-    std::printf("Destroyed Triangle\n");
+    std::fprintf(stderr, "Destroyed Triangle at %p\n", this);
 }
 
 }
@@ -116,7 +140,14 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
 /**
  * @inheritDoc
  */
-Packet::Ptr SawDown::map(Packet::ConstPtr pInput) {
+SawDown::SawDown() {
+    std::fprintf(stderr, "Created SawDown at %p\n", this);
+}
+
+/**
+ * @inheritDoc
+ */
+Packet::Ptr SawDown::map(Packet const* pInput) {
     auto pOutput        = Packet::create();
     float32* pDest      = pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
@@ -131,13 +162,20 @@ Packet::Ptr SawDown::map(Packet::ConstPtr pInput) {
  * @inheritDoc
  */
 SawDown::~SawDown() {
-    std::printf("Destroyed SawDown\n");
+    std::fprintf(stderr, "Destroyed SawDown at %p\n", this);
 }
 
 /**
  * @inheritDoc
  */
-Packet::Ptr SawUp::map(Packet::ConstPtr pInput) {
+SawUp::SawUp() {
+    std::fprintf(stderr, "Created SawUp at %p\n", this);
+}
+
+/**
+ * @inheritDoc
+ */
+Packet::Ptr SawUp::map(Packet const* pInput) {
     auto pOutput        = Packet::create();
     float32* pDest      = pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
@@ -152,7 +190,7 @@ Packet::Ptr SawUp::map(Packet::ConstPtr pInput) {
  * @inheritDoc
  */
 SawUp::~SawUp() {
-    std::printf("Destroyed SawUp\n");
+    std::fprintf(stderr, "Destroyed SawUp at %p\n", this);
 }
 
 }
@@ -164,10 +202,17 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
 
 /**
  * @inheritDoc
+ */
+Square::Square() {
+    std::fprintf(stderr, "Created Square at %p\n", this);
+}
+
+/**
+ * @inheritDoc
  *
  * Branchless techniques used here to improve throughput.
  */
-Packet::Ptr Square::map(Packet::ConstPtr pInput) {
+Packet::Ptr Square::map(Packet const* pInput) {
     auto pOutput = Packet::create();
     int32* pDest = (int32*)pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
@@ -181,13 +226,20 @@ Packet::Ptr Square::map(Packet::ConstPtr pInput) {
  * @inheritDoc
  */
 Square::~Square() {
-   std::printf("Destroyed Square\n");
+   std::fprintf(stderr, "Destroyed Square at %p\n", this);
 }
 
 /**
  * @inheritDoc
  */
-Packet::Ptr FixedPWM::map(Packet::ConstPtr pInput) {
+FixedPWM::FixedPWM(float32 fWidth) {
+    setWidth(fWidth);
+    std::fprintf(stderr, "Created FixedPWM at %p with width %.3f\n", this, this->fWidth);
+}
+/**
+ * @inheritDoc
+ */
+Packet::Ptr FixedPWM::map(Packet const* pInput) {
     auto pOutput = Packet::create();
     int32* pDest = (int32*)pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
@@ -206,7 +258,7 @@ Packet::Ptr FixedPWM::map(Packet::ConstPtr pInput) {
  * @inheritDoc
  */
 FixedPWM::~FixedPWM() {
-   std::printf("Destroyed FixedPWM\n");
+   std::fprintf(stderr, "Destroyed FixedPWM at %p\n", this);
 }
 
 }
@@ -216,23 +268,44 @@ FixedPWM::~FixedPWM() {
 #include <synth/signal/waveform/xform.hpp>
 namespace MC64K::Synth::Audio::Signal::Waveform {
 
-XForm::XForm(IWaveform::Ptr pSourceWaveform, float32 const* pCustomTransform) : pSourceWaveform(pSourceWaveform) {
+/**
+ * @inheritDoc
+ */
+XForm::XForm(
+    IWaveform::Ptr pSourceWaveform,
+    float32 const* pCustomTransform
+) :
+    pSourceWaveform(pSourceWaveform)
+{
     fPeriodAdjust = pSourceWaveform->getPeriod() / PERIOD;
     if (pCustomTransform) {
         for (unsigned i = 0; i < 16; ++i) {
             aTransform[i] = pCustomTransform[i];
         }
     }
-}
-
-XForm::~XForm() {
-    std::printf("Destroyed XForm\n");
+    std::fprintf(stderr, "Created XForm at %p with matrix \n", this);
+    for (unsigned i = 0; i < 16; i += 4) {
+        std::fprintf(
+            stderr, "\t| %8.3f %8.3f %8.3f %8.3f |\n",
+            aTransform[i],
+            aTransform[i + 1],
+            aTransform[i + 2],
+            aTransform[i + 3]
+        );
+    }
 }
 
 /**
  * @inheritDoc
  */
-Packet::Ptr XForm::map(Packet::ConstPtr pInput) {
+XForm::~XForm() {
+    std::fprintf(stderr, "Destroyed XForm at %p\n", this);
+}
+
+/**
+ * @inheritDoc
+ */
+Packet::Ptr XForm::map(Packet const* pInput) {
     auto pReshaped = Packet::create();
     float32* pDest      = pReshaped->aSamples;
     float32 const* pSrc = pInput->aSamples;
@@ -266,13 +339,11 @@ Packet::Ptr XForm::map(Packet::ConstPtr pInput) {
 class NoopDeleter {
     public:
         void operator()(IWaveform* pWaveform) const {
-            std::printf("Not deleting global waveform at %p\n", pWaveform);
+            std::fprintf(stderr, "Not deleting global waveform at %p\n", pWaveform);
         }
 };
 
 NoopDeleter oNoDelete;
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

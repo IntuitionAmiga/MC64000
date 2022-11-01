@@ -14,6 +14,7 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
+#include <cstring>
 #include <memory>
 #include <misc/scalar.hpp>
 #include <host/audio/config.hpp>
@@ -47,6 +48,12 @@ class Packet {
 
         static Ptr getSilence();
 
+        Ptr clone() const {
+            Ptr pCopy = create();
+            std::memcpy(pCopy->aSamples, aSamples, sizeof(aSamples));
+            return pCopy;
+        }
+
         /**
          * Get the next index for packet index aware operations
          */
@@ -64,9 +71,29 @@ class Packet {
 
         Packet* sumWith(Packet const* pPacket);
 
+//         Packet* sumWith(Ptr pPacket) {
+//             return sumWith(pPacket.get());
+//         }
+
+        Packet* sumWith(ConstPtr pPacket) {
+            return sumWith(pPacket.get());
+        }
+
         Packet* modulateWith(Packet const* pPacket);
 
+//         Packet* modulateWith(Ptr pPacket) {
+//             return modulateWith(pPacket.get());
+//         }
+
+        Packet* modulateWith(ConstPtr pPacket) {
+            return modulateWith(pPacket.get());
+        }
+
         Packet* accumulate(Packet const* pPacket, float32 fValue);
+
+        Packet* accumulate(ConstPtr pPacket, float32 fValue) {
+            return accumulate(pPacket.get(), fValue);
+        }
 
         static void dumpStats();
 

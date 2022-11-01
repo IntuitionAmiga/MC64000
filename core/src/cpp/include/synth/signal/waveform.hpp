@@ -99,7 +99,12 @@ class IWaveform /*: public Util::ISometimesShareable */ {
          * @return Packet::Ptr
          *
          */
-        virtual Packet::Ptr map(Packet::ConstPtr oInput) = 0;
+        virtual Packet::Ptr map(Packet const* pInput) = 0;
+
+        Packet::Ptr map(Packet::ConstPtr pInput) {
+            return map(pInput.get());
+        }
+
 
         /**
          * Calculate the output for a single input.

@@ -68,10 +68,12 @@ class IStream {
          * the last generated Packet of data and if so, return it. This becomes necessary in complex signal routing where
          * one IStream implementation's output is consumed by multiple inputs.
          *
+         * The returned packet is read only.
+         *
          * @param  size_t iIndex
-         * @return Packet::Ptr
+         * @return Packet::ConstPtr
          */
-        virtual Packet::Ptr emit(size_t uIndex = 0) = 0;
+        virtual Packet::ConstPtr emit(size_t uIndex = 0) = 0;
 
         typedef std::shared_ptr<IStream> Ptr;
         typedef std::shared_ptr<IStream const> ConstPtr;

@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_OSC_BASE_HPP
-    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_OSC_BASE_HPP
+#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_OSC_LFO_HPP
+    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_OSC_LFO_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -18,40 +18,59 @@
 
 namespace MC64K::Synth::Audio::Signal::Oscillator {
 
+/**
+ * Basic LFO producing a signal in the range -depth to +depth (depending on the waveform)
+ */
 class LFO : public IOscillator {
+    public:
+        static constexpr float32 const MIN_FREQUENCY = 1.0f/60.0f;
+        static constexpr float32 const DEF_FREQUENCY = 2.0f;
+        static constexpr float32 const MAX_FREQUENCY = 64.0f;
 
     protected:
         float32 fDepth;
         float32 fBias;
         bool    bRetrigger;
 
+        /**
+         * @inheritDoc
+         */
         float32 clampFrequency(float32 fFrequency);
-        Packet::Ptr emitNew();
+
+        /**
+         * @inheritDoc
+         */
+        Packet::ConstPtr emitNew();
 
     public:
-        static constexpr float32 const MIN_FREQUENCY = 1.0f/60.0f;
-        static constexpr float32 const DEF_FREQUENCY = 2.0f;
-        static constexpr float32 const MAX_FREQUENCY = 64.0f;
-
         LFO(
             IWaveform::Ptr pWaveform,
             float32 fFrequency = 0.0f,
             float32 fDepth     = 0.5f,
             bool    bRetrigger = false
-        ) : IOscillator(pWaveform, fFrequency, 0.0f), fDepth(fDepth), fBias(0.0f), bRetrigger(bRetrigger) {}
+        );
 
         ~LFO();
 
+        /**
+         * Oscillator resets on retrigger
+         */
         LFO* enableRetrigger() {
             bRetrigger = true;
             return this;
         }
 
+        /**
+         * Oscillator does not reset on retrigger
+         */
         LFO* disableRetrigger() {
             bRetrigger = true;
             return this;
         }
 
+        /**
+         * @inheritDoc
+         */
         LFO* reset() {
             if (bRetrigger) {
                 IOscillator::reset();
@@ -60,6 +79,51 @@ class LFO : public IOscillator {
         }
 
 };
+
+/**
+ * Basic LFO producing a signal in the range 0.0 to depth (depending on the waveform)
+ */
+class LFOOneToZero : public LFO {
+
+    protected:
+        /**
+         * @inheritDoc
+         */
+        Packet::ConstPtr emitNew();
+
+    public:
+        LFOOneToZero(
+            IWaveform::Ptr pWaveform,
+            float32 fFrequency = 0.0f,
+            float32 fDepth     = 0.5f,
+            bool    bRetrigger = false
+        ) : LFO(pWaveform, fFrequency, fDepth, bRetrigger) {
+
+        }
+};
+
+/**
+ * Basic LFO producing a signal in the range 1.0 to 1.0 - depth (depending on the waveform)
+ */
+class LFOZeroToOne : public LFO {
+
+    protected:
+        /**
+         * @inheritDoc
+         */
+        Packet::ConstPtr emitNew();
+
+    public:
+        LFOZeroToOne(
+            IWaveform::Ptr pWaveform,
+            float32 fFrequency = 0.0f,
+            float32 fDepth     = 0.5f,
+            bool    bRetrigger = false
+        ) : LFO(pWaveform, fFrequency, fDepth, bRetrigger) {
+
+    }
+};
+
 
 }
 

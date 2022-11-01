@@ -59,7 +59,7 @@ class XForm : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet::ConstPtr pInput);
+        Packet::Ptr map(Packet const* pInput);
 
         /**
          * @inheritDoc
