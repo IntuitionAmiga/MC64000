@@ -248,12 +248,13 @@ void Sound::populatePitchShiftedPacket(Packet const* pPitchShifts) {
 
     // Use higher definition calculation for time
     float64        fInstantFrequency = fCurrentFrequency;
+    uint32         uCounter          = getCyclicSampleCounter();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         // Calculate frequency of next sample after applying the semitone delta.
         float64 fNextFrequency = fFrequency * std::pow(2.0, (pPitchSamples[u] * INV_TWELVETH));
 
         // Evaluate the point in time
-        float64 fTime          = fTimeStep * (float64)uSamplePosition++;
+        float64 fTime          = fTimeStep * uCounter++;
 
         // Apply the phase adjustetment
         pInputSamples[u]       = (float32)(fInstantFrequency * fTime) + fPhaseCorrection;
@@ -263,6 +264,9 @@ void Sound::populatePitchShiftedPacket(Packet const* pPitchShifts) {
         fInstantFrequency      = fNextFrequency;
     }
     fCurrentFrequency = (float32)fInstantFrequency;
+    uSamplePosition += PACKET_SIZE;
+    handleCyclicSampleCounterReset(pInputSamples[PACKET_SIZE - 1]);
+
 }
 
 /**
@@ -280,12 +284,13 @@ void Sound::populatePitchAndPhaseShiftedPacket(
     // Use higher definition calculation for time
     float64        fInstantFrequency = fCurrentFrequency;
     float32        fPeriod           = fPhaseModulationIndex * fWaveformPeriod;
+    uint32         uCounter          = getCyclicSampleCounter();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         // Calculate frequency of next sample after applying the semitone delta.
         float64 fNextFrequency = fFrequency * std::pow(2.0, (pPitchSamples[u] * INV_TWELVETH));
 
         // Evaluate the point in time
-        float64 fTime          = fTimeStep * (float64)uSamplePosition++;
+        float64 fTime          = fTimeStep * uCounter++;
 
         // Apply the phase adjustetment
         pInputSamples[u]       = (float32)(fInstantFrequency * fTime) + (fPeriod * pPhaseSamples[u]) + fPhaseCorrection;
@@ -295,6 +300,8 @@ void Sound::populatePitchAndPhaseShiftedPacket(
         fInstantFrequency      = fNextFrequency;
     }
     fCurrentFrequency = (float32)fInstantFrequency;
+    uSamplePosition += PACKET_SIZE;
+    handleCyclicSampleCounterReset(pInputSamples[PACKET_SIZE - 1]);
 }
 
 /**
@@ -331,10 +338,14 @@ void Sound::populateOutputPacketWithFeedback(Packet const* pLevelPacket) {
  * Optimised input packet generator for the case where there is no pitch/phase modulation
  */
 void Sound::inputDirect(Sound* pOscillator) {
-    float32* pSamples = pOscillator->pLastPacket->aSamples;
+    float32* pSamples   = pOscillator->pLastPacket->aSamples;
+    float32  fCorrection = pOscillator->fPhaseCorrection;
+    uint32   uCounter    = pOscillator->getCyclicSampleCounter();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        pSamples[u] = (float32)(pOscillator->fScaleVal * (float64)pOscillator->uSamplePosition++);
+        pSamples[u] = (float32)(pOscillator->fScaleVal * uCounter++) + fCorrection;
     }
+    pOscillator->uSamplePosition += PACKET_SIZE;
+    pOscillator->handleCyclicSampleCounterReset(pSamples[PACKET_SIZE - 1]);
 }
 
 /**
@@ -391,12 +402,18 @@ void Sound::inputPhaseMod(Sound* pOscillator) {
         ->pPhaseModulator
         ->emit(pOscillator->uLastIndex)
         ->aSamples;
-    float32* pSamples = pOscillator->pLastPacket->aSamples;
-    float32  fPeriod  = pOscillator->fPhaseModulationIndex * pOscillator->fWaveformPeriod;
+    float32* pSamples    = pOscillator->pLastPacket->aSamples;
+    float32  fPeriod     = pOscillator->fPhaseModulationIndex * pOscillator->fWaveformPeriod;
+    float32  fCorrection = pOscillator->fPhaseCorrection;
+    uint32   uCounter    = pOscillator->getCyclicSampleCounter();
+
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        pSamples[u] = (float32)(pOscillator->fScaleVal * (float64)pOscillator->uSamplePosition++) +
-                      fPeriod * pPhaseShifts[u];
+        pSamples[u] = (float32)(pOscillator->fScaleVal * uCounter++) +
+                      fPeriod * pPhaseShifts[u] + fCorrection;
     }
+    pOscillator->uSamplePosition += PACKET_SIZE;
+    pOscillator->handleCyclicSampleCounterReset(pSamples[PACKET_SIZE - 1]);
+
 }
 
 /**

@@ -14,6 +14,7 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
+#include <cmath>
 #include "stream.hpp"
 #include "waveform.hpp"
 
@@ -26,6 +27,8 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
 class IOscillator : public TStreamCommon, protected TPacketIndexAware {
 
     protected:
+        static constexpr uint64 const SAMPLE_COUNTER_MASK = 0xFFF;
+
         IWaveform::Ptr pWaveform;
         Packet::Ptr    pLastPacket;
         float64        fTimeStep;
@@ -55,6 +58,23 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          * @return Packet::ConstPtr
          */
         virtual Packet::ConstPtr emitNew() = 0;
+
+        uint32 getCyclicSampleCounter() {
+            return (uint32)(uSamplePosition & SAMPLE_COUNTER_MASK);
+        }
+
+        void handleCyclicSampleCounterReset(float32 fLastSample) {
+            if (!(uSamplePosition & SAMPLE_COUNTER_MASK)) {
+                fPhaseCorrection = (float32)(
+                    std::fmod(
+                        fLastSample,
+                        fWaveformPeriod
+                    ) + fScaleVal
+                );
+            }
+        }
+
+
 
     public:
         IOscillator(
