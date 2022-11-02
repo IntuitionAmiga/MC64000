@@ -41,15 +41,36 @@ class Triangle : public IWaveform {
         Packet::Ptr map(Packet const* pInput);
 
         /**
-         * @inheritDoc
+         * Static version of the value function that can be called and inlined explicitly from
+         * anywhere that has checked getShape()
          */
-        float32 value(float32 fTime) const {
+        static inline float32 valueAt(float32 fTime) {
             fTime          -= HALF;
             float32 fFloor = std::floor(fTime);
             float32 fScale = ((int)fFloor) & 1 ? TWO : -TWO;
             return fScale * (fTime - fFloor - HALF);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        float32 value(float32 fTime) const {
+            return valueAt(fTime);
+        }
+
+        /**
+         * Returns the enumerated shape identifier for the waveform.
+         */
+        FixedShape getShape() const {
+            return IWaveform::TRIANGLE;
         };
 
+        /**
+         * Returns whether or not the wave contains sharp discontinuities.
+         */
+        bool isDiscontinuous() const {
+            return false;
+        }
 };
 
 }

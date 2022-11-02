@@ -13,7 +13,13 @@
 
 #include <cmath>
 #include <cstdio>
+#include <synth/note.hpp>
 #include <synth/signal/waveform/constants.hpp>
+#include <synth/signal/waveform/sine.hpp>
+#include <synth/signal/waveform/triangle.hpp>
+#include <synth/signal/waveform/saw.hpp>
+#include <synth/signal/waveform/square.hpp>
+
 #include <synth/signal/oscillator.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +100,7 @@ Packet::ConstPtr IOscillator::emit(size_t uIndex) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 #include <synth/signal/oscillator/LFO.hpp>
 namespace MC64K::Synth::Audio::Signal::Oscillator {
 
@@ -129,17 +136,25 @@ float32 LFO::clampFrequency(float32 fNewFrequency) {
     );
 }
 
+Packet const* LFO::generateCommon() {
+    // Recycle our last output packet if we have one
+    Packet::Ptr pInput   = pLastPacket.get() ? pLastPacket : Packet::create();
+    float32* pSamples    = pInput->aSamples;
+    float32  fCorrection = fPhaseCorrection;
+    uint32   uCounter    = getCyclicSampleCounter();
+    for (unsigned u=0; u < PACKET_SIZE; ++u) {
+        pSamples[u] = (float32)(fScaleVal * uCounter++) + fCorrection;
+    }
+    uSamplePosition += PACKET_SIZE;
+    handleCyclicSampleCounterReset(pSamples[PACKET_SIZE - 1]);
+    return pInput.get();
+}
+
 /**
  * @inheritDoc
  */
 Packet::ConstPtr LFO::emitNew() {
-    // Recycle our last output packet if we have one
-    Packet::Ptr pInput = pLastPacket.get() ? pLastPacket : Packet::create();
-    float32* pSamples  = pInput->aSamples;
-    for (unsigned u=0; u < PACKET_SIZE; ++u) {
-        pSamples[u] = (float32)(fScaleVal * (float64)(uSamplePosition++));
-    }
-    pLastPacket = pWaveform->map(pInput);
+    pLastPacket = pWaveform->map(generateCommon());
     pLastPacket->scaleBy(fDepth);
     return pLastPacket;
 }
@@ -149,13 +164,7 @@ Packet::ConstPtr LFO::emitNew() {
  * @inheritDoc
  */
 Packet::ConstPtr LFOZeroToOne::emitNew() {
-    // Recycle our last output packet if we have one
-    Packet::Ptr pInput = pLastPacket.get() ? pLastPacket : Packet::create();
-    float32* pSamples  = pInput->aSamples;
-    for (unsigned u=0; u < PACKET_SIZE; ++u) {
-        pSamples[u] = (float32)(fScaleVal * (float64)(uSamplePosition++));
-    }
-    pLastPacket = pWaveform->map(pInput);
+    pLastPacket = pWaveform->map(generateCommon());
     pLastPacket->scaleAndBiasBy(Waveform::HALF * fDepth, Waveform::HALF * fDepth);
     return pLastPacket;
 }
@@ -164,13 +173,7 @@ Packet::ConstPtr LFOZeroToOne::emitNew() {
  * @inheritDoc
  */
 Packet::ConstPtr LFOOneToZero::emitNew() {
-    // Recycle our last output packet if we have one
-    Packet::Ptr pInput = pLastPacket.get() ? pLastPacket : Packet::create();
-    float32* pSamples  = pInput->aSamples;
-    for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        pSamples[u] = (float32)(fScaleVal * (float64)(uSamplePosition++));
-    }
-    pLastPacket = pWaveform->map(pInput);
+    pLastPacket = pWaveform->map(generateCommon());
     pLastPacket->scaleAndBiasBy(
         Waveform::HALF * fDepth,
         Waveform::ONE - Waveform::HALF * fDepth
@@ -195,6 +198,7 @@ Sound::Sound(
     setFrequency(fFrequency);
     configureInputStage();
     configureOutputStage();
+    configureAntialias();
     std::fprintf(stderr, "Created Oscillator::Sound at %p\n", this);
 }
 
@@ -251,7 +255,7 @@ void Sound::populatePitchShiftedPacket(Packet const* pPitchShifts) {
     uint32         uCounter          = getCyclicSampleCounter();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         // Calculate frequency of next sample after applying the semitone delta.
-        float64 fNextFrequency = fFrequency * std::pow(2.0, (pPitchSamples[u] * INV_TWELVETH));
+        float64 fNextFrequency = fFrequency * Note::semisToMultiplier(pPitchSamples[u]);
 
         // Evaluate the point in time
         float64 fTime          = fTimeStep * uCounter++;
@@ -285,23 +289,32 @@ void Sound::populatePitchAndPhaseShiftedPacket(
     float64        fInstantFrequency = fCurrentFrequency;
     float32        fPeriod           = fPhaseModulationIndex * fWaveformPeriod;
     uint32         uCounter          = getCyclicSampleCounter();
+    float32        fCorrection       = fPhaseCorrection;
+    float32        fBasePhase        = 0.0f;
+    float32        fPhaseShift       = 0.0f;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         // Calculate frequency of next sample after applying the semitone delta.
-        float64 fNextFrequency = fFrequency * std::pow(2.0, (pPitchSamples[u] * INV_TWELVETH));
+        float64 fNextFrequency = fFrequency * Note::semisToMultiplier(pPitchSamples[u]);
 
         // Evaluate the point in time
-        float64 fTime          = fTimeStep * uCounter++;
+        float64 fTime = fTimeStep * uCounter++;
 
-        // Apply the phase adjustetment
-        pInputSamples[u]       = (float32)(fInstantFrequency * fTime) + (fPeriod * pPhaseSamples[u]) + fPhaseCorrection;
+        // Calculate the changing base phase without any contribution from modulation
+        fBasePhase = (float32)(fInstantFrequency * fTime) + fCorrection;
+
+        // Store the sample
+        pInputSamples[u] = fBasePhase + (fPeriod * pPhaseSamples[u]) + fPhaseShift;
 
         // Update the phase adjustment and frequency
-        fPhaseCorrection      += (float32)(fTime * (fInstantFrequency - fNextFrequency));
+        fPhaseShift           += (float32)(fTime * (fInstantFrequency - fNextFrequency));
         fInstantFrequency      = fNextFrequency;
     }
+    fPhaseCorrection += fPhaseShift;
     fCurrentFrequency = (float32)fInstantFrequency;
     uSamplePosition += PACKET_SIZE;
-    handleCyclicSampleCounterReset(pInputSamples[PACKET_SIZE - 1]);
+
+    // Only the base phase and shift contributions need to be applied when we reset the counter
+    handleCyclicSampleCounterReset(fBasePhase + fPhaseShift);
 }
 
 /**
@@ -315,22 +328,22 @@ void Sound::populateOutputPacketWithFeedback(Packet const* pLevelPacket) {
     float32 const* pLevelSamples = pLevelPacket->aSamples;
     IWaveform*     pWave         = pWaveform.get();
 
-    // TODO
-    // If this turns out to be too expensive, we can add a property to the waveform that
-    // indicates if it's a fixed type, and if so, which. Then a set of custom loops can
-    // be created using inline functions for value.
+    float32 fFb1 = fFeedback1;
+    float32 fFb2 = fFeedback2;
+
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         float32 fOutput = pWave->value(
             pSamples[u] +
-            fIndex * (fFeedback1 + fFeedback2)
+            fIndex * (fFb1 + fFb2)
         ) * pLevelSamples[u];
         pSamples[u] = fOutput;
-        fFeedback2  = fFeedback1;
-        fFeedback1  = fOutput;
+        fFb2  = fFb1;
+        fFb1  = fOutput;
     }
+
+    fFeedback1 = fFb1;
+    fFeedback2 = fFb2;
 }
-
-
 
 /**
  * @inheritDoc
@@ -338,7 +351,7 @@ void Sound::populateOutputPacketWithFeedback(Packet const* pLevelPacket) {
  * Optimised input packet generator for the case where there is no pitch/phase modulation
  */
 void Sound::inputDirect(Sound* pOscillator) {
-    float32* pSamples   = pOscillator->pLastPacket->aSamples;
+    float32* pSamples    = pOscillator->pLastPacket->aSamples;
     float32  fCorrection = pOscillator->fPhaseCorrection;
     uint32   uCounter    = pOscillator->getCyclicSampleCounter();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -406,14 +419,13 @@ void Sound::inputPhaseMod(Sound* pOscillator) {
     float32  fPeriod     = pOscillator->fPhaseModulationIndex * pOscillator->fWaveformPeriod;
     float32  fCorrection = pOscillator->fPhaseCorrection;
     uint32   uCounter    = pOscillator->getCyclicSampleCounter();
-
+    float32  fBasePhase;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        pSamples[u] = (float32)(pOscillator->fScaleVal * uCounter++) +
-                      fPeriod * pPhaseShifts[u] + fCorrection;
+        fBasePhase = (float32)(pOscillator->fScaleVal * uCounter++) + fCorrection;
+        pSamples[u] = fBasePhase + fPeriod * pPhaseShifts[u];
     }
     pOscillator->uSamplePosition += PACKET_SIZE;
-    pOscillator->handleCyclicSampleCounterReset(pSamples[PACKET_SIZE - 1]);
-
+    pOscillator->handleCyclicSampleCounterReset(fBasePhase);
 }
 
 /**
@@ -586,19 +598,21 @@ void Sound::outputFeedback(Sound* pOscillator) {
     float32*   pSamples = pOscillator->pLastPacket->aSamples;
     IWaveform* pWave    = pOscillator->pWaveform.get();
 
-    // TODO
-    // If this turns out to be too expensive, we can add a property to the waveform that
-    // indicates if it's a fixed type, and if so, which. Then a set of custom loops can
-    // be created using inline functions for value.
+    float32 fFeedback1 = pOscillator->fFeedback1;
+    float32 fFeedback2 = pOscillator->fFeedback2;
+
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         float32 fOutput = pWave->value(
             pSamples[u] +
-            fIndex * (pOscillator->fFeedback1 + pOscillator->fFeedback2)
+            fIndex * (fFeedback1 + fFeedback2)
         );
         pSamples[u] = fOutput;
-        pOscillator->fFeedback2  = pOscillator->fFeedback1;
-        pOscillator->fFeedback1  = fOutput;
+        fFeedback2  = fFeedback1;
+        fFeedback1  = fOutput;
     }
+
+    pOscillator->fFeedback1 = fFeedback1;
+    pOscillator->fFeedback2 = fFeedback2;
 }
 
 /**
@@ -683,6 +697,28 @@ void Sound::configureOutputStage() {
     );
 }
 
+void Sound::configureAntialias() {
+    switch (eAAMode) {
+        case AA_OFF:
+            bAntialias = false;
+            break;
+        case AA_ON:
+            bAntialias = true;
+            break;
+        case AA_AUTO:
+            bAntialias = (pWaveform.get() && pWaveform->isDiscontinuous());
+            break;
+        default:
+            break;
+    }
+    std::fprintf(
+        stderr,
+            "Oscillator::Sound::configureAntialias(): %d [%s]\n",
+            eAAMode,
+            (bAntialias ? "enabled" : "disabled")
+    );
+}
+
 /**
  * @inheritDoc
  */
@@ -692,7 +728,42 @@ Packet::ConstPtr Sound::emitNew() {
     }
     cInput(this);
     cOutput(this);
+
+    if (bAntialias) {
+        /**
+         * Apply a 5 sample travelling hamming window over the output
+         */
+        float32 fPrev1  = fAAPrev1;
+        float32 fPrev2  = fAAPrev2;
+        float32 fPrev3  = fAAPrev3;
+        float32 fPrev4  = fAAPrev4;
+        Packet::Ptr pOutputPacket = Packet::create();
+
+        float32* aUnfiltered = pLastPacket->aSamples;
+        float32* aFiltered   = pOutputPacket->aSamples;
+
+        for (unsigned u=0; u < PACKET_SIZE; ++u) {
+            float32 fSample = aUnfiltered[u];
+            aFiltered[u] = 0.0625f * (
+                fSample + fPrev4 +
+                3.0f * (fPrev1 + fPrev3)
+                + 8.0f * fPrev2
+            );
+            fPrev4 = fPrev3;
+            fPrev3 = fPrev2;
+            fPrev2 = fPrev1;
+            fPrev1 = fSample;
+        }
+        fAAPrev1 = fPrev1;
+        fAAPrev2 = fPrev2;
+        fAAPrev3 = fPrev3;
+        fAAPrev4 = fPrev4;
+        pLastPacket = pOutputPacket;
+    }
+
+
     return pLastPacket;
 }
+
 
 } // namespace

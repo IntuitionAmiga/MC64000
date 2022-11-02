@@ -23,35 +23,8 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
 /**
  * @inheritDoc
  */
-SineGold::SineGold() {
-    std::fprintf(stderr, "Created SineGold at %p\n", this);
-}
-
-/**
- * @inheritDoc
- */
-Packet::Ptr SineGold::map(Packet const* pInput) {
-    Packet::Ptr    pOutput    = Packet::create();
-    float32*       pDest      = pOutput->aSamples;
-    float32 const* pSrc = pInput->aSamples;
-    for (unsigned i = 0; i < PACKET_SIZE; ++i) {
-        pDest[i] = std::sin(pSrc[i]);
-    }
-    return pOutput;
-}
-
-/**
- * @inheritDoc
- */
-SineGold::~SineGold() {
-    std::fprintf(stderr, "Destroyed SineGold at %p\n", this);
-}
-
-/**
- * @inheritDoc
- */
-SineFast::SineFast() {
-    std::fprintf(stderr, "Created SineFast at %p\n", this);
+Sine::Sine() {
+    std::fprintf(stderr, "Created Sine at %p\n", this);
 }
 
 /**
@@ -59,7 +32,7 @@ SineFast::SineFast() {
  *
  * Branchless techniques used here to improve throughput.
  */
-Packet::Ptr SineFast::map(Packet const* pInput) {
+Packet::Ptr Sine::map(Packet const* pInput) {
     auto pOutput        = Packet::create();
     float32* pDest      = pOutput->aSamples;
     float32 const* pSrc = pInput->aSamples;
@@ -83,7 +56,7 @@ Packet::Ptr SineFast::map(Packet const* pInput) {
 /**
  * @inheritDoc
  */
-SineFast::~SineFast() {
+Sine::~Sine() {
     std::fprintf(stderr, "Destroyed SineFast at %p\n", this);
 }
 
@@ -348,7 +321,7 @@ NoopDeleter oNoDelete;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Fixed waveforms that can be allocated once
-SineFast    oSine;
+Sine        oSine;
 Triangle    oTriangle;
 SawDown     oSawDown;
 SawUp       oSawUp;

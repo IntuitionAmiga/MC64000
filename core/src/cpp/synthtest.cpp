@@ -99,30 +99,60 @@ void testWaveforms() {
 int main(int const iArgCount, char const** aiArgVal) {
 
     Signal::Oscillator::Sound oOsc(
-        Signal::IWaveform::get(Signal::IWaveform::SAW_DOWN),
-        220.0f,
+        Signal::IWaveform::get(Signal::IWaveform::POKEY),
+        440.0f,
         0.0f
     );
+    oOsc.enable();
+    //oOsc.setPhaseFeedbackIndex(0.25);
+
     Signal::IStream::Ptr pModulator(
-        new Signal::Oscillator::Sound(
+        new Signal::Oscillator::LFOZeroToOne(
             Signal::IWaveform::get(Signal::IWaveform::SINE),
-            220.0f,
-            0.0f
+            0.25f,
+            12.0f
         )
     );
     pModulator->enable();
-    oOsc.setPhaseModulator(pModulator);
-    oOsc.setPhaseModulationIndex(0.25f);
-    oOsc.enable();
+//
+//     Signal::IStream::Ptr pPhaseModulator(
+//         new Signal::Oscillator::Sound(
+//             Signal::IWaveform::get(Signal::IWaveform::SINE),
+//             55.0f,
+//             0.0f
+//         )
+//     );
+//     pPhaseModulator->enable();
+//     std::static_pointer_cast<Signal::Oscillator::Sound>(pPhaseModulator)
+//         ->setPitchModulator(pModulator);
+//
+//     oOsc.setPhaseModulator(pPhaseModulator);
+//     //oOsc.setLevelModulator(pModulator);
+//    oOsc.setPitchModulator(pModulator);
 
-    //oOsc.setPhaseFeedbackIndex(0.25f);
+//     unsigned const NUM_PACKETS = 10000000;
+//     std::printf("Benchmarking %u packets...\n", NUM_PACKETS);
+//     Nanoseconds::Value uMark = Nanoseconds::mark();
+//     for (unsigned u=0; u < NUM_PACKETS; ++u) {
+//         auto pOutput = oOsc.emit();
+//     }
+//     uMark = Nanoseconds::mark() - uMark;
+//     float64 fSeconds = 1.0e-9 * (float64)uMark;
+//     float64 fPacketsPerSecond = (float64)NUM_PACKETS / fSeconds;
+//     float64 fTimeGenerated = (float64)NUM_PACKETS * MC64K::StandardTestHost::Audio::IConfig::PACKET_PERIOD;
+//     std::printf(
+//         "\nTotal time %.3f [%.3f Packets/s] for %.2f seconds generated [%.2f x realtime]\n",
+//         fSeconds,
+//         fPacketsPerSecond,
+//         fTimeGenerated,
+//         fTimeGenerated / fSeconds
+//     );
 
     int16 aSamples[256];
     std::FILE* pRawFile = std::fopen("osc_test.raw", "wb");
     if (pRawFile) {
-        for (unsigned uIndex = 1; uIndex < 1000; ++uIndex) {
-            auto pOutput = oOsc.emit(uIndex);
-
+        for (unsigned uIndex = 0; uIndex < 1000; ++uIndex) {
+            auto pOutput = oOsc.emit();
             //std::printf("Index %u: Position %lu\n", uIndex, oOsc.getPosition());
 
             for (unsigned i=0; i < 256; ++i) {
@@ -132,6 +162,7 @@ int main(int const iArgCount, char const** aiArgVal) {
         }
         std::fclose(pRawFile);
     }
+
     Signal::Packet::dumpStats();
 
     return EXIT_SUCCESS;

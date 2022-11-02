@@ -21,10 +21,10 @@
  */
 namespace MC64K::StandardTestHost::Audio::IConfig {
 
-    int32   const PROCESS_RATE  = 48000;
-    size_t  const PACKET_SIZE   = 256;
-    float64 const SAMPLE_PERIOD = 1.0f / (float64)PROCESS_RATE;
-    float64 const PACKET_PERIOD = (float64)PACKET_SIZE / (float64)PROCESS_RATE;
+    constexpr int32   const PROCESS_RATE  = 48000;
+    constexpr size_t  const PACKET_SIZE   = 256;
+    constexpr float64 const SAMPLE_PERIOD = 1.0f / (float64)PROCESS_RATE;
+    constexpr float64 const PACKET_PERIOD = (float64)PACKET_SIZE / (float64)PROCESS_RATE;
 };
 
 #endif

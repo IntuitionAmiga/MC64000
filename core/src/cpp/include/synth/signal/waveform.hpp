@@ -43,13 +43,14 @@ class IWaveform /*: public Util::ISometimesShareable */ {
             SAW_DOWN       = 2,
             SAW_UP         = 3,
             SQUARE         = 4,
-            PULSE_10       = 5, // PWM, 10% duty
-            PULSE_20       = 6,
-            PULSE_30       = 7,
-            PULSE_40       = 8,
+            PULSE          = 5, // PWM (any)
+            PULSE_10       = 6, // Presets for PWM
+            PULSE_20       = 7,
+            PULSE_30       = 8,
+            PULSE_40       = 9,
             PULSE_50       = SQUARE, // 50% duty is basically a square wave
-            POKEY          = 9,
-            NOISE          = 10,
+            POKEY          = 10,
+            NOISE          = 12,
 
             // Additional shapes for FM
 //             SINE_HALF_RECT     = 6,
@@ -59,6 +60,8 @@ class IWaveform /*: public Util::ISometimesShareable */ {
 //             SINE_PINCH         = 10,
 //             SINE_CUT           = 11,
 //             TRIANGLE_HALF_RECT = 12
+            XFORM,
+            CUSTOM
         };
 
         /**
@@ -110,6 +113,16 @@ class IWaveform /*: public Util::ISometimesShareable */ {
          * Calculate the output for a single input.
          */
         virtual float32 value(float32 fInput) const = 0;
+
+        /**
+         * Returns the enumerated shape identifier for the waveform.
+         */
+        virtual FixedShape getShape() const = 0;
+
+        /**
+         * Returns whether or not the wave contains sharp discontinuities.
+         */
+        virtual bool isDiscontinuous() const = 0;
 
         /**
          * Get a copy (maybe). For stateless implementations, this is just the

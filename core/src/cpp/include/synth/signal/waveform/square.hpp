@@ -39,9 +39,10 @@ class Square : public IWaveform {
         Packet::Ptr map(Packet const* pInput);
 
         /**
-         * @inheritDoc
+         * Static version of the value function that can be called and inlined explicitly from
+         * anywhere that has checked getShape()
          */
-        float32 value(float32 fTime) const {
+        static inline float32 valueAt(float32 fTime) {
             union {
                 int32   iResult;
                 float32 fResult;
@@ -50,6 +51,26 @@ class Square : public IWaveform {
             return fResult;
         };
 
+        /**
+         * @inheritDoc
+         */
+        float32 value(float32 fTime) const {
+            return valueAt(fTime);
+        };
+
+        /**
+         * Returns the enumerated shape identifier for the waveform.
+         */
+        FixedShape getShape() const {
+            return IWaveform::SQUARE;
+        };
+
+        /**
+         * Returns whether or not the wave contains sharp discontinuities.
+         */
+        bool isDiscontinuous() const {
+            return true;
+        }
 };
 
 /**
@@ -80,7 +101,7 @@ class FixedPWM : public IWaveform {
         }
 
         /**
-         * Sets the new PWN duty cycle
+         * Sets the new PWM duty cycle
          */
         void setWidth(float32 fNewWidth) {
             fWidth = fNewWidth < MIN_WIDTH ? MIN_WIDTH : (fNewWidth > MAX_WIDTH ? MAX_WIDTH : fNewWidth);
@@ -92,9 +113,10 @@ class FixedPWM : public IWaveform {
         Packet::Ptr map(Packet const* pInput);
 
         /**
-         * @inheritDoc
+         * Static version of the value function that can be called and inlined explicitly from
+         * anywhere that has checked getShape()
          */
-        float32 value(float32 fTime) const {
+        static inline float32 valueAt(float32 fTime, float32 fWidth) {
             union {
                 int32   iResult;
                 float32 fResult;
@@ -103,6 +125,29 @@ class FixedPWM : public IWaveform {
             iResult = ONE_IEEE_32 | (iResult & 0x80000000);
             return fResult;
         };
+
+        /**
+         * @inheritDoc
+         */
+        float32 value(float32 fTime) const {
+            return valueAt(fTime, fWidth);
+        };
+
+        /**
+         * Returns the enumerated shape identifier for the waveform.
+         *
+         * Note that preset PULSE_10, etc will return PULSE
+         */
+        FixedShape getShape() const {
+            return IWaveform::PULSE;
+        };
+
+        /**
+         * Returns whether or not the wave contains sharp discontinuities.
+         */
+        bool isDiscontinuous() const {
+            return true;
+        }
 
         /**
          * Constructor

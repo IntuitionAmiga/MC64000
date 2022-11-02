@@ -42,6 +42,11 @@ class LFO : public IOscillator {
          */
         Packet::ConstPtr emitNew();
 
+        /**
+         * Common waveform input packet generation
+         */
+        Packet const* generateCommon();
+
     public:
         LFO(
             IWaveform::Ptr pWaveform,

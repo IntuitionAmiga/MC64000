@@ -31,6 +31,18 @@ class Note {
             float32 fScalePerOctave  = 1.0f,
             float32 fCentreValue     = CENTRE_FREQUENCY
         );
+
+        /**
+         * Converts fractional semitones to frequency multiplier
+         */
+
+#ifdef AUDIO_PITCH_APPROX
+        static float32 semisToMultiplier(float32 fSemitones);
+#else
+        static inline float32 semisToMultiplier(float32 fSemitones) {
+            return std::exp2(fSemitones * FACTOR_PER_SEMI);
+        }
+#endif
 };
 
 }

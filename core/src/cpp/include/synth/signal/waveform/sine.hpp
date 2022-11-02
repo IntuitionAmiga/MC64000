@@ -19,43 +19,13 @@
 namespace MC64K::Synth::Audio::Signal::Waveform {
 
 /**
- * Gold Standard Sine Generator (slow)
- */
-class SineGold : public IWaveform {
-
-    public:
-        SineGold();
-        ~SineGold();
-
-        /**
-         * @inheritDoc
-         */
-        float32 getPeriod() const {
-            return TWO_PI;
-        }
-
-        /**
-         * @inheritDoc
-         */
-        Packet::Ptr map(Packet const* pInput);
-
-        /**
-         * @inheritDoc
-         */
-        float32 value(float32 fTime) const {
-            return std::sin(fTime);
-        };
-
-};
-
-/**
- * Quick(er) sine generator.
+ * Sine
  *
  * Uses a Taylor approximation for input values between -pi and pi. The stated waveform period is
  * 2.0 as we transform the linear input period steps values to a triangle wave that ramps between
  * -pi and pi, to be fed to the approximation.
  */
-class SineFast : public IWaveform {
+class Sine : public IWaveform {
     private:
         // Taylor approximation terms
         static constexpr float32 const INV_3_FAC = (float32)(1.0/6.0);
@@ -70,7 +40,7 @@ class SineFast : public IWaveform {
          * @param float32 fX
          * @return float
          */
-        float32 sinApprox(float32 fX) const {
+        static inline float32 sinApprox(float32 fX) {
             float32 fX2      = fX * fX;
             float32 fTerm    = fX * fX2;               // fTerm = x^3
             float32 fResult  = fX - fTerm * INV_3_FAC; // x - x^3/3!
@@ -79,8 +49,8 @@ class SineFast : public IWaveform {
         }
 
     public:
-        SineFast();
-        ~SineFast();
+        Sine();
+        ~Sine();
 
         /**
          * @inheritDoc
@@ -95,9 +65,10 @@ class SineFast : public IWaveform {
         Packet::Ptr map(Packet const* pInput);
 
         /**
-         * @inheritDoc
+         * Static version of the value function that can be called and inlined explicitly from
+         * anywhere that has checked getShape()
          */
-        float32 value(float32 fTime) const {
+        static inline float32 valueAt(float32 fTime) {
             fTime  -= HALF;
             float32 fFloor = std::floor(fTime);
             union {
@@ -107,8 +78,28 @@ class SineFast : public IWaveform {
             // Branchless selection of pi/-pi
             iPi = PI_IEEE_32|(((int32)fFloor) & 1) << 31; // set sign bit when odd
             return OUTPUT_ADJUST * sinApprox(fPi * (fTime - fFloor - HALF));
+        }
+
+        /**
+         * @inheritDoc
+         */
+        float32 value(float32 fTime) const {
+            return valueAt(fTime);
+        }
+
+        /**
+         * Returns the enumerated shape identifier for the waveform.
+         */
+        FixedShape getShape() const {
+            return IWaveform::SINE;
         };
 
+        /**
+         * Returns whether or not the wave contains sharp discontinuities.
+         */
+        bool isDiscontinuous() const {
+            return false;
+        }
 };
 
 }
