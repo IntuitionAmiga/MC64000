@@ -14,6 +14,8 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
+#include <cmath>
+#include <cstdio>
 #include <misc/scalar.hpp>
 
 namespace MC64K::Synth::Audio {
@@ -36,11 +38,32 @@ class Note {
          * Converts fractional semitones to frequency multiplier
          */
 
-#ifdef AUDIO_PITCH_APPROX
-        static float32 semisToMultiplier(float32 fSemitones);
-#else
+#ifdef AUDIO_PITCH_EXACT
         static inline float32 semisToMultiplier(float32 fSemitones) {
             return std::exp2(fSemitones * FACTOR_PER_SEMI);
+        }
+#else
+        static float32 semisToMultiplier(float32 fSemitones) {
+            union {
+                uint32  uResult;
+                float32 fResult;
+            };
+
+            float32 fOctave = fSemitones * FACTOR_PER_SEMI;
+            // Calculate the exponent of our result. This is based on the integer part of the
+            // input.
+            float32 fFloor = std::floor(fOctave);
+            fOctave = std::fabs(fOctave - fFloor); // can get negative results due to low precision
+
+            // IEEE-754 float32 uses a biased 8-bit exponent (add 127) in bits 23:30
+            uint32 uExp = ((127 + (int)fFloor) & 0xFF) << 23;  // exponent
+
+            constexpr float32 const fCoeffienct = 0.34365f;
+            constexpr float32 const fOne = 1.0f;
+            fResult     = (fCoeffienct * fOctave * fOctave + (fOne - fCoeffienct) * fOctave + fOne);
+
+            uResult     = (uResult & 0x007FFFFF) | uExp;
+            return fResult;
         }
 #endif
 };
