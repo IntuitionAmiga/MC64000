@@ -56,20 +56,21 @@ class IWaveform /*: public Util::ISometimesShareable */ {
             SINE_HALF_RECT = 13,
             SINE_FULL_RECT = 14,
             SINE_SAW       = 15,
-            SINE_SAW_HARD      = 16,
-            SINE_PINCH         = 17,
-            SINE_CUT           = 18,
+            SINE_SAW_HARD  = 16, // todo
+            SINE_PINCH     = 17,
+            SINE_CUT       = 18, // todo
+            TX81Z_1        = SINE,
+            TX81Z_2        = SINE_PINCH,
+            TX81Z_3        = SINE_HALF_RECT,
+            TX81Z_4        = 19,
+            TX81Z_5        = 20,
+            // TX81Z_6 - need a different xform tool
+            TX81Z_7        = 21,
+            // TX81Z_8 - need a different xform tool
 
-            TX81Z_1 = SINE,
-            TX81Z_2 = SINE_PINCH,
-            TX81Z_3 = SINE_HALF_RECT,
-            TX81Z_4 = 19,
-            TX81Z_5 = 20,
-            TX81Z_7 = 21,
-
-            TRIANGLE_HALF_RECT,
-            XFORM,
-            CUSTOM
+            TRIANGLE_HALF_RECT = 22,
+            XFORM              = 23,
+            CUSTOM             = 24
         };
 
         /**
