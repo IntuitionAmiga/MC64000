@@ -307,6 +307,18 @@ Packet::Ptr XForm::map(Packet const* pInput) {
     return pReshaped;
 }
 
+float32 XForm::value(float32 fTime) const {
+    float32 fFloor = std::floor(fTime);
+    int32   iPhase = (int32)fFloor;
+    float32 const* aQuadrant = aTransform + ((iPhase & 3) << 2);
+
+    float32 fInput = fPeriodAdjust * (
+        aQuadrant[PHASE_MUL] * (fTime - fFloor) + aQuadrant[PHASE_ADD]
+    );
+
+    return (pSourceWaveform->value(fInput) * aQuadrant[LEVEL_MUL]) + aQuadrant[LEVEL_ADD];
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 class NoopDeleter {
@@ -340,15 +352,80 @@ float32 const aPokey[16] = {
 };
 XForm oPokey(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aPokey);
 
-// float32 const aCut[16] = {
-//     1.0f, 0.0f, -1.0f, 0.0f,  // First  Quadrant
-//     1.0f, 1.0f, -1.0,  0.0f,  // Second Quadrant
-//     1.0f, 2.0f, 1.0f,  0.0f,  // Third  Quadrant
-//     1.0f, 3.0f, 1.0f,  0.0f,  // Fourth Quadrant
-// };
-// XForm oSineCut(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aCut);
+float32 const aHalfRect[16] = {
+    1.0f, 0.0f, 1.33f, -0.33f,  // First  Quadrant
+    1.0f, 1.0f, 1.33f,  -0.33f,  // Second Quadrant
+    1.0f, 2.0f, 0.0f, -0.33f,  // Third  Quadrant
+    1.0f, 3.0f, 0.0f, -0.33f,  // Fourth Quadrant
+};
+XForm oSineHalfRect(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aHalfRect);
+XForm oTriangleHalfRect(IWaveform::Ptr(&Waveform::oTriangle, Waveform::oNoDelete), aHalfRect);
 
-}
+float32 const aFullRect[16] = {
+    1.0f, 0.0f, 1.5f, -0.5f,  // First  Quadrant
+    1.0f, 1.0f, 1.5f, -0.5f,  // Second Quadrant
+    1.0f, 0.0f, 1.5f, -0.5f,  // Third  Quadrant
+    1.0f, 1.0f, 1.5f, -0.5f,  // Fourth Quadrant
+};
+XForm oSineFullRect(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aFullRect);
+
+// float32 const aSharks[16] = {
+//     // phase multiplier, phase displacement, scale multiplier, bias
+//     1.0f, 0.0f, 1.0f, 0.0f,  // First  Quadrant
+//     1.0f, 2.0f, 1.0f, 1.0f,  // Second Quadrant
+//     1.0f, 2.0f, 1.0f, 0.0f,  // Third  Quadrant
+//     1.0f, 0.0f, 1.0f, -1.0f,  // Fourth Quadrant
+// };
+
+
+float32 const aSineSaw[16] = {
+    // phase multiplier, phase displacement, scale multiplier, bias
+    1.0f,  0.0f,  2.0f, -1.0f,  // First  Quadrant
+    0.33f, 2.0f,  2.0f, 1.0f,  // Second Quadrant
+    0.33f, 2.33f, 2.0f, 1.0f,  // Third  Quadrant
+    0.33f, 2.66f, 2.0f, 1.0f,  // Fourth Quadrant
+};
+XForm oSineSaw(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aSineSaw);
+
+float32 const aSinePinch[16] = {
+    // phase multiplier, phase displacement, scale multiplier, bias
+    1.0f, 3.0f, 1.0f, 1.0f,  // First  Quadrant
+    1.0f, 2.0f, 1.0f, 1.0f,  // Second Quadrant
+    1.0f, 1.0f, 1.0f, -1.0f,  // Third  Quadrant
+    1.0f, 0.0f, 1.0f, -1.0f,  // Fourth Quadrant
+
+};
+XForm oSinePinch(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aSinePinch);
+
+float32 const aTX81Z_4[16] = {
+    // phase multiplier, phase displacement, scale multiplier, bias
+    1.0f, 3.0f, 1.33f, 1.0f,  // First  Quadrant
+    1.0f, 2.0f, 1.33f, 1.0f,  // Second Quadrant
+    1.0f, 2.0f, 0.0f, -0.33f,  // Third  Quadrant
+    1.0f, 3.0f, 0.0f, -0.33f,  // Fourth Quadrant
+
+};
+XForm oTX81Z_4(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_4);
+
+float aTX81Z_5[16] = {
+    2.0f, 0.0f, 1.0f, 0.0f,  // First  Quadrant
+    2.0f, 2.0f, 1.0f, 0.0f,  // Second Quadrant
+    1.0f, 2.0f, 0.0f, 0.0f,  // Third  Quadrant
+    1.0f, 3.0f, 0.0f, 0.0f,  // Fourth Quadrant
+};
+
+XForm oTX81Z_5(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_5);
+
+float aTX81Z_7[16] = {
+    2.0f, 0.0f, 1.33f, -0.33f,  // First  Quadrant
+    2.0f, 0.0f, 1.33f, -0.33f,  // Second Quadrant
+    1.0f, 2.0f, 0.0f, -0.33f,  // Third  Quadrant
+    1.0f, 3.0f, 0.0f, -0.33f,  // Fourth Quadrant
+};
+
+XForm oTX81Z_7(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_7);
+
+} // namespace
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -366,11 +443,11 @@ IWaveform::Ptr IWaveform::get(IWaveform::FixedShape eShape) {
         case IWaveform::SINE:
             return IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete);
         case IWaveform::TRIANGLE:
-            return IWaveform::Ptr(&Waveform::oTriangle,  Waveform::oNoDelete);
+            return IWaveform::Ptr(&Waveform::oTriangle, Waveform::oNoDelete);
         case IWaveform::SAW_DOWN:
             return IWaveform::Ptr(&Waveform::oSawDown, Waveform::oNoDelete);
         case IWaveform::SAW_UP:
-            return IWaveform::Ptr(&Waveform::oSawUp,  Waveform::oNoDelete);
+            return IWaveform::Ptr(&Waveform::oSawUp, Waveform::oNoDelete);
         case IWaveform::SQUARE:
             return IWaveform::Ptr(&Waveform::oSquare,  Waveform::oNoDelete);
         case IWaveform::PULSE_10:
@@ -383,6 +460,23 @@ IWaveform::Ptr IWaveform::get(IWaveform::FixedShape eShape) {
             return IWaveform::Ptr(&Waveform::oPWM40,  Waveform::oNoDelete);
         case IWaveform::POKEY:
             return IWaveform::Ptr(&Waveform::oPokey,  Waveform::oNoDelete);
+        case IWaveform::SINE_HALF_RECT:
+            return IWaveform::Ptr(&Waveform::oSineHalfRect, Waveform::oNoDelete);
+        case IWaveform::SINE_FULL_RECT:
+            return IWaveform::Ptr(&Waveform::oSineFullRect, Waveform::oNoDelete);
+        case IWaveform::SINE_SAW:
+            return IWaveform::Ptr(&Waveform::oSineSaw, Waveform::oNoDelete);
+        case IWaveform::SINE_PINCH:
+            return IWaveform::Ptr(&Waveform::oSinePinch, Waveform::oNoDelete);
+        case IWaveform::TX81Z_4:
+            return IWaveform::Ptr(&Waveform::oTX81Z_4, Waveform::oNoDelete);
+        case IWaveform::TX81Z_5:
+            return IWaveform::Ptr(&Waveform::oTX81Z_5, Waveform::oNoDelete);
+        case IWaveform::TX81Z_7:
+            return IWaveform::Ptr(&Waveform::oTX81Z_7, Waveform::oNoDelete);
+
+        case IWaveform::TRIANGLE_HALF_RECT:
+            return IWaveform::Ptr(&Waveform::oTriangleHalfRect, Waveform::oNoDelete);
     }
 }
 

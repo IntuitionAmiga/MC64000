@@ -64,9 +64,7 @@ class XForm : public IWaveform {
         /**
          * @inheritDoc
          */
-        float32 value(float32 fTime) const {
-            return fTime; // todo
-        };
+        float32 value(float32 fTime) const;
 
         /**
          * Returns the enumerated shape identifier for the waveform.

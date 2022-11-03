@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <mc64k.hpp>
 #include <machine/timing.hpp>
+#include <synth/note.hpp>
 #include <synth/signal.hpp>
 #include <synth/signal/oscillator/LFO.hpp>
 #include <synth/signal/oscillator/sound.hpp>
@@ -9,7 +10,29 @@
 
 using namespace MC64K::Machine;
 using namespace MC64K::Synth::Audio;
+using namespace MC64K::StandardTestHost::Audio::IConfig;
 
+/**
+ * Outputs a stream to a 16-bit raw file for a number of packets.
+ */
+void writeRawFile(Signal::IStream* pStream, char const* sName, size_t uPackets) {
+    int16 aSamples[PACKET_SIZE];
+    std::FILE* pRawFile = std::fopen(sName, "wb");
+    if (pRawFile) {
+        for (size_t uIndex = 0; uIndex < uPackets; ++uIndex) {
+            auto pOutput = pStream->emit();
+            for (unsigned i = 0; i < PACKET_SIZE; ++i) {
+                aSamples[i] = (int16)(32000 * pOutput->aSamples[i]);
+            }
+            std::fwrite(aSamples, sizeof(int16), PACKET_SIZE, pRawFile);
+        }
+        std::fclose(pRawFile);
+    }
+}
+
+/**
+ * Tests the standard waveforms
+ */
 void testWaveforms() {
     Signal::IWaveform::FixedShape aWaveShapes[] = {
         Signal::IWaveform::SINE,
@@ -26,10 +49,9 @@ void testWaveforms() {
     char aFileName[32] = "\0";
 
     for (auto eShape : aWaveShapes) {
-        auto pInput = Signal::Packet::create();
+        auto pInput    = Signal::Packet::create();
         auto pWaveform = Signal::IWaveform::get(eShape);
-
-        auto pCopy = pWaveform->copy();
+        auto pCopy     = pWaveform->copy();
         if (pCopy.get() == pWaveform.get()) {
             std::printf("Waveform %d copy() returns original\n", (int)eShape);
         } else {
@@ -40,24 +62,13 @@ void testWaveforms() {
         float32 fStart = -fScale;
         fScale /= 128.0f;
 
-        for (unsigned u=0; u < 256; ++u) {
+        for (unsigned u=0; u < PACKET_SIZE; ++u) {
             pInput->aSamples[u] = fStart + (float32)u * fScale;
         }
 
         auto pOutput = pWaveform->map(pInput);
 
-        int16 aSamples[256];
-
-//         for (unsigned u=0; u < 256; ++u) {
-//             std::printf(
-//                 "%3u : %.10f => %.10f\n",
-//                 u,
-//                 pInput->aSamples[u],
-//                 pOutput->aSamples[u]
-//             );
-//             aSamples[u] = (int16)(32000 * pOutput->aSamples[u]);
-//         }
-
+        int16 aSamples[PACKET_SIZE];
         std::snprintf(
             aFileName,
             sizeof(aFileName) - 1,
@@ -66,25 +77,20 @@ void testWaveforms() {
         );
         std::FILE* pRawFile = std::fopen(aFileName, "wb");
         if (pRawFile) {
-            for (int i=0; i<100; ++i) {
-                std::fwrite(aSamples, sizeof(int16), 256, pRawFile);
+            for (unsigned i = 0; i < 1000; ++i) {
+                std::fwrite(aSamples, sizeof(int16), PACKET_SIZE, pRawFile);
             }
             std::fclose(pRawFile);
             std::printf("Wrote 16-bit binary %s\n", aFileName);
         }
 
-        std::puts("Benchmarking map()...");
-
+        std::puts("Benchmarking map() performance...");
         Nanoseconds::Value uMark = Nanoseconds::mark();
-
-        for (unsigned u=0; u < 10000000; ++u) {
+        for (unsigned u = 0; u < 10000000; ++u) {
             auto pOutput = pWaveform->map(pInput);
         }
-
         uMark = Nanoseconds::mark() - uMark;
-
         float64 fMegaPacketsPerSecond = 1.e9 / (float64)uMark;
-
         std::printf(
             "\nShape %d : Total time %lu ns [%.2f Mpackets / s]\n",
             (int)eShape,
@@ -92,76 +98,71 @@ void testWaveforms() {
             fMegaPacketsPerSecond
         );
     }
-
-
 }
 
+/**
+ * Outputs the frequency table versus the ideal values (for when approximations are in use)
+ */
+void freqTable() {
+    for (int i = 0; i < 128; ++i) {
+        float64 fIdeal = 440.0 * std::exp2((float32)(i-69) * 1.0f/12.0);
+        float64 fValue = Note::getFrequency(i);
+        std::printf(
+            "Note %3d : %.3fHz [Ideal: %.3fHz, Diff: %.3fHz]\n",
+            i,
+            fValue,
+            fIdeal,
+            fValue - fIdeal
+        );
+    }
+}
+
+/**
+ * Benchmarks a stream by timing the generation of 10M packets
+ */
+void benchmark(Signal::IStream* pStream) {
+    unsigned const NUM_PACKETS = 10000000;
+    std::printf("Benchmarking %u packets...\n", NUM_PACKETS);
+    Nanoseconds::Value uMark = Nanoseconds::mark();
+    for (unsigned u=0; u < NUM_PACKETS; ++u) {
+        auto pOutput = pStream->emit();
+    }
+    uMark = Nanoseconds::mark() - uMark;
+    float64 fSeconds = 1.0e-9 * (float64)uMark;
+    float64 fPacketsPerSecond = (float64)NUM_PACKETS / fSeconds;
+    float64 fTimeGenerated = (float64)NUM_PACKETS * MC64K::StandardTestHost::Audio::IConfig::PACKET_PERIOD;
+    std::printf(
+        "\nTotal time %.3f [%.3f Packets/s] for %.2f seconds generated [%.2f x realtime]\n",
+        fSeconds,
+        fPacketsPerSecond,
+        fTimeGenerated,
+        fTimeGenerated / fSeconds
+    );
+}
+
+/**
+ * Main program
+ */
 int main(int const iArgCount, char const** aiArgVal) {
 
     Signal::Oscillator::Sound oOsc(
-        Signal::IWaveform::get(Signal::IWaveform::POKEY),
-        440.0f,
+        Signal::IWaveform::get(Signal::IWaveform::TX81Z_7),
+        220.0f,
         0.0f
     );
     oOsc.enable();
-    //oOsc.setPhaseFeedbackIndex(0.25);
 
-    Signal::IStream::Ptr pModulator(
-        new Signal::Oscillator::LFOZeroToOne(
-            Signal::IWaveform::get(Signal::IWaveform::SINE),
-            0.25f,
-            12.0f
-        )
-    );
-    pModulator->enable();
-//
-//     Signal::IStream::Ptr pPhaseModulator(
-//         new Signal::Oscillator::Sound(
-//             Signal::IWaveform::get(Signal::IWaveform::SINE),
-//             55.0f,
-//             0.0f
+//     Signal::IStream::Ptr pModulator(
+//         new Signal::Oscillator::LFOZeroToOne(
+//             Signal::IWaveform::get(Signal::IWaveform::SAW_UP),
+//             0.5f,
+//             48.0f
 //         )
 //     );
-//     pPhaseModulator->enable();
-//     std::static_pointer_cast<Signal::Oscillator::Sound>(pPhaseModulator)
-//         ->setPitchModulator(pModulator);
-//
-//     oOsc.setPhaseModulator(pPhaseModulator);
-//     //oOsc.setLevelModulator(pModulator);
-//    oOsc.setPitchModulator(pModulator);
+//     pModulator->enable();
+//     oOsc.setPitchModulator(pModulator);
 
-//     unsigned const NUM_PACKETS = 10000000;
-//     std::printf("Benchmarking %u packets...\n", NUM_PACKETS);
-//     Nanoseconds::Value uMark = Nanoseconds::mark();
-//     for (unsigned u=0; u < NUM_PACKETS; ++u) {
-//         auto pOutput = oOsc.emit();
-//     }
-//     uMark = Nanoseconds::mark() - uMark;
-//     float64 fSeconds = 1.0e-9 * (float64)uMark;
-//     float64 fPacketsPerSecond = (float64)NUM_PACKETS / fSeconds;
-//     float64 fTimeGenerated = (float64)NUM_PACKETS * MC64K::StandardTestHost::Audio::IConfig::PACKET_PERIOD;
-//     std::printf(
-//         "\nTotal time %.3f [%.3f Packets/s] for %.2f seconds generated [%.2f x realtime]\n",
-//         fSeconds,
-//         fPacketsPerSecond,
-//         fTimeGenerated,
-//         fTimeGenerated / fSeconds
-//     );
-
-    int16 aSamples[256];
-    std::FILE* pRawFile = std::fopen("osc_test.raw", "wb");
-    if (pRawFile) {
-        for (unsigned uIndex = 0; uIndex < 1000; ++uIndex) {
-            auto pOutput = oOsc.emit();
-            //std::printf("Index %u: Position %lu\n", uIndex, oOsc.getPosition());
-
-            for (unsigned i=0; i < 256; ++i) {
-                aSamples[i] = (int16)(32000 * pOutput->aSamples[i]);
-            }
-            std::fwrite(aSamples, sizeof(int16), 256, pRawFile);
-        }
-        std::fclose(pRawFile);
-    }
+    writeRawFile(&oOsc, "osc_test.raw", 5000);
 
     Signal::Packet::dumpStats();
 
