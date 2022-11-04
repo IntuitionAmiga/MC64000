@@ -146,11 +146,13 @@ void benchmark(Signal::IStream* pStream) {
 int main(int const iArgCount, char const** aiArgVal) {
 
     Signal::Oscillator::Sound oOsc(
-        Signal::IWaveform::get(Signal::IWaveform::TX81Z_7),
+        Signal::IWaveform::get(Signal::IWaveform::NOISE),
         220.0f,
         0.0f
     );
     oOsc.enable();
+
+    benchmark(&oOsc);
 
 //     Signal::IStream::Ptr pModulator(
 //         new Signal::Oscillator::LFOZeroToOne(
@@ -162,7 +164,7 @@ int main(int const iArgCount, char const** aiArgVal) {
 //     pModulator->enable();
 //     oOsc.setPitchModulator(pModulator);
 
-    writeRawFile(&oOsc, "osc_test.raw", 5000);
+    writeRawFile(&oOsc, "osc_test.raw", 10);
 
     Signal::Packet::dumpStats();
 

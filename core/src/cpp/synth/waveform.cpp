@@ -319,6 +319,57 @@ float32 XForm::value(float32 fTime) const {
     return (pSourceWaveform->value(fInput) * aQuadrant[LEVEL_MUL]) + aQuadrant[LEVEL_ADD];
 }
 
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include <random>
+#include <synth/signal/waveform/noise.hpp>
+namespace MC64K::Synth::Audio::Signal::Waveform {
+
+std::mt19937 mt_rand;
+
+WhiteNoise::WhiteNoise() {
+    fNormalise = 4.0f / (float64) mt_rand.max();
+    for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+        aRandom[u] = (uint32)mt_rand();
+    }
+
+}
+
+WhiteNoise::~WhiteNoise() {
+    std::fprintf(stderr, "Destroyed WhiteNoise at %p\n", this);
+}
+
+/**
+ * @inheritDoc
+ */
+Packet::Ptr WhiteNoise::map(Packet const* pInput) {
+
+    constexpr float64 const RAND_SCALE = 1.0f/65536.0f;
+    constexpr uint32  const WORD_MASK  = 0x7FFFFFFF;
+    Packet::Ptr pOutput = Packet::create();
+    float32* aSamples   = pOutput->aSamples;
+    float64  fRandom    = RAND_SCALE * (float64)mt_rand();
+
+    //std::printf("fRandom %f\n", fRandom);
+
+    for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+        // Update the random buffer and output buffer as we go
+        volatile uint32 uNextRandom = (uint32)(aRandom[u] * fRandom) & WORD_MASK;
+        aRandom[u]  = uNextRandom;
+        aSamples[u] = (float32)(uNextRandom * fNormalise) - 1.0f;
+        //std::printf("\tNextRandom: %u %f\n", uNextRandom,  aSamples[u]);
+    }
+
+    return pOutput;
+}
+
+
+
+float32 WhiteNoise::valueAt(float32 fTime) {
+    return 0.0f;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 class NoopDeleter {
@@ -342,6 +393,7 @@ FixedPWM    oPWM10(0.1f);
 FixedPWM    oPWM20(0.2f);
 FixedPWM    oPWM30(0.3f);
 FixedPWM    oPWM40(0.4f);
+WhiteNoise  oNoise;
 
 // Custom waveforms based on transformations
 float32 const aPokey[16] = {
@@ -460,6 +512,8 @@ IWaveform::Ptr IWaveform::get(IWaveform::FixedShape eShape) {
             return IWaveform::Ptr(&Waveform::oPWM40,  Waveform::oNoDelete);
         case IWaveform::POKEY:
             return IWaveform::Ptr(&Waveform::oPokey,  Waveform::oNoDelete);
+        case IWaveform::NOISE:
+            return IWaveform::Ptr(&Waveform::oNoise,  Waveform::oNoDelete);
         case IWaveform::SINE_HALF_RECT:
             return IWaveform::Ptr(&Waveform::oSineHalfRect, Waveform::oNoDelete);
         case IWaveform::SINE_FULL_RECT:
