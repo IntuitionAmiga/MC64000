@@ -15,6 +15,7 @@
  */
 
 #include "constants.hpp"
+#include <initializer_list>
 
 namespace MC64K::Synth::Audio::Signal::Waveform {
 
@@ -25,7 +26,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  * properties shifted and scaled. This can be used to produce many variants from simpler waveforms
  * with interesting harmonic modifications.
  */
-template<size_t N>
+template<size_t N, bool bMutable>
 class XForm : public IWaveform {
 
     private:
@@ -66,6 +67,14 @@ class XForm : public IWaveform {
                     aTransform[i + 3]
                 );
             }
+        }
+
+        /**
+         * Constructor for initialiser list
+         */
+        XForm(Ptr pSourceWaveform, std::initializer_list<float32> const& roCustomTransform):
+            XForm(pSourceWaveform, roCustomTransform.begin())
+        {
         }
 
         ~XForm() {
@@ -140,18 +149,18 @@ class XForm : public IWaveform {
          * @inheritDoc
          */
         Ptr copy() {
-            return Ptr(
-                new XForm<N>(
-                    pWaveform->copy(),
-                    aTransform
-                )
-            );
+            if constexpr (bMutable) {
+                return Ptr(
+                    new XForm<N, true>(
+                        pWaveform->copy(),
+                        aTransform
+                    )
+                );
+            } else {
+                return IWaveform::copy();
+            }
         }
 };
-
-typedef XForm<0> XForm2;
-typedef XForm<1> XForm4;
-typedef XForm<2> XForm8;
 
 }
 

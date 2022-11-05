@@ -59,6 +59,12 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          */
         virtual Packet::ConstPtr emitNew() = 0;
 
+        /**
+         * Retuns the sample position, modulo the counter size. This value is guaranteed
+         * to remain representable in IEEE-754 32-bit floating point.
+         *
+         * @return uint32
+         */
         uint32 getCyclicSampleCounter() {
             return (uint32)(uSamplePosition & SAMPLE_COUNTER_MASK);
         }
@@ -74,9 +80,12 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
             }
         }
 
-
-
     public:
+        /**
+         * @param IWaveform::Ptr pWaveform
+         * @param float32        fFrequency
+         * @param float32        fPhase
+         */
         IOscillator(
             IWaveform::Ptr pWaveform,
             float32 fFrequency = 0.0f,

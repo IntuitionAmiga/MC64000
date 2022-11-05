@@ -98,7 +98,9 @@ Packet::Ptr Packet::create() {
     return Ptr(pPacket, Deleter());
 }
 
-
+/**
+ * @inheritDoc
+ */
 Packet::Ptr Packet::getSilence() {
     static Packet::Ptr pSilence;
     if (!pSilence.get()) {

@@ -44,10 +44,18 @@ class LFO : public IOscillator {
 
         /**
          * Common waveform input packet generation
+         *
+         * @return Packet const*
          */
         Packet const* generateCommon();
 
     public:
+        /**
+         * @param IWaveform::Ptr pWaveform
+         * @param float32        fFrequency
+         * @param float32        fDepth
+         * @param bool           bRetrigger
+         */
         LFO(
             IWaveform::Ptr pWaveform,
             float32 fFrequency = 0.0f,
@@ -59,6 +67,8 @@ class LFO : public IOscillator {
 
         /**
          * Oscillator resets on retrigger
+         *
+         * @return this
          */
         LFO* enableRetrigger() {
             bRetrigger = true;
@@ -67,6 +77,8 @@ class LFO : public IOscillator {
 
         /**
          * Oscillator does not reset on retrigger
+         *
+         * @return this
          */
         LFO* disableRetrigger() {
             bRetrigger = true;
@@ -97,6 +109,10 @@ class LFOOneToZero : public LFO {
         Packet::ConstPtr emitNew();
 
     public:
+
+        /**
+         * @inheritDoc
+         */
         LFOOneToZero(
             IWaveform::Ptr pWaveform,
             float32 fFrequency = 0.0f,
@@ -119,6 +135,9 @@ class LFOZeroToOne : public LFO {
         Packet::ConstPtr emitNew();
 
     public:
+        /**
+         * @inheritDoc
+         */
         LFOZeroToOne(
             IWaveform::Ptr pWaveform,
             float32 fFrequency = 0.0f,
@@ -126,7 +145,7 @@ class LFOZeroToOne : public LFO {
             bool    bRetrigger = false
         ) : LFO(pWaveform, fFrequency, fDepth, bRetrigger) {
 
-    }
+        }
 };
 
 

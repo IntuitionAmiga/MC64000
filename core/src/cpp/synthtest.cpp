@@ -106,11 +106,12 @@ void testWaveforms() {
         std::printf(
             "Testing Waveform Shape %d (%s)\n"
             "\tPeriod %f\n"
-            "\tcopy() returns %s\n",
+            "\tcopy() returns %s instance at %p\n",
             (int)eShape,
             aWaveNames[(int)eShape],
             pWaveform->getPeriod(),
-            (pCopy.get() == pWaveform.get() ? "original" : "new")
+            (pCopy.get() == pWaveform.get() ? "original" : "new"),
+            pWaveform.get()
         );
 
         float32 fScale = pWaveform->getPeriod();
@@ -144,22 +145,21 @@ void testWaveforms() {
                 std::fwrite(aSamples, sizeof(int16), PACKET_SIZE, pRawFile);
             }
             std::fclose(pRawFile);
-            std::printf("Wrote 16-bit binary %s\n", sFilename);
+            std::printf("\tWrote 16-bit binary %s\n", sFilename);
         }
 
-//         std::puts("\tBenchmarking map() performance...");
-//         Nanoseconds::Value uMark = Nanoseconds::mark();
-//         for (unsigned u = 0; u < 10000000; ++u) {
-//             auto pOutput = pWaveform->map(pInput);
-//         }
-//         uMark = Nanoseconds::mark() - uMark;
-//         float64 fMegaPacketsPerSecond = 1.e9 / (float64)uMark;
-//         std::printf(
-//             "\nShape %d : Total time %lu ns [%.2f Mpackets / s]\n",
-//             (int)eShape,
-//             uMark,
-//             fMegaPacketsPerSecond
-//         );
+        std::printf("\tBenchmarking map() for 1M packets: ");
+        Nanoseconds::Value uMark = Nanoseconds::mark();
+        for (unsigned u = 0; u < 1000000; ++u) {
+            auto pOutput = pWaveform->map(pInput);
+        }
+        uMark = Nanoseconds::mark() - uMark;
+        float64 fSeconds = 1.e-9 * (float64)uMark;
+        std::printf(
+            "Took %lu ns [%.2f Mpackets / s]\n\n",
+            uMark,
+            1.0 / fSeconds
+        );
     }
 }
 

@@ -64,9 +64,9 @@ class IWaveform /*: public Util::ISometimesShareable */ {
             TX81Z_3            = 21, // sine half rect
             TX81Z_4            = 22,
             TX81Z_5            = 23,
-            TX81Z_6            = 24, // todo - need to change xform tool
+            TX81Z_6            = 24,
             TX81Z_7            = 25,
-            TX81Z_8            = 26, // todo - need to change xform tool
+            TX81Z_8            = 26,
 
             TRIANGLE_HALF_RECT = 27,
             XFORM              = 28,

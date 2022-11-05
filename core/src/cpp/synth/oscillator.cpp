@@ -70,7 +70,6 @@ IOscillator* IOscillator::setWaveform(IWaveform::Ptr pNewWaveform) {
         fTimeStep       = fWaveformPeriod * SAMPLE_PERIOD;
         bAperiodic      = false;
     }
-
     return this;
 }
 
@@ -270,7 +269,6 @@ void Sound::populatePitchShiftedPacket(Packet const* pPitchShifts) {
     fCurrentFrequency = (float32)fInstantFrequency;
     uSamplePosition += PACKET_SIZE;
     handleCyclicSampleCounterReset(pInputSamples[PACKET_SIZE - 1]);
-
 }
 
 /**
@@ -524,7 +522,6 @@ void Sound::configureInputStage() {
         uUseStage,
         aInputStageNames[uUseStage]
     );
-
 }
 
 /**
@@ -760,8 +757,6 @@ Packet::ConstPtr Sound::emitNew() {
         fAAPrev4 = fPrev4;
         pLastPacket = pOutputPacket;
     }
-
-
     return pLastPacket;
 }
 
