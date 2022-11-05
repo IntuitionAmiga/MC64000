@@ -48,8 +48,8 @@ class IWaveform /*: public Util::ISometimesShareable */ {
             PULSE_20           = 7,
             PULSE_30           = 8,
             PULSE_40           = 9,
-            PULSE_50           = SQUARE, // 50% duty is basically a square wave
-            POKEY              = 10,
+            PULSE_50           = 10, // 50% duty is basically a square wave
+            POKEY              = 11,
             NOISE              = 12,
 
             // Additional shapes for FM
@@ -59,18 +59,18 @@ class IWaveform /*: public Util::ISometimesShareable */ {
             SINE_SAW_HARD      = 16, // todo
             SINE_PINCH         = 17,
             SINE_CUT           = 18, // todo
-            TX81Z_1            = SINE,
-            TX81Z_2            = SINE_PINCH,
-            TX81Z_3            = SINE_HALF_RECT,
-            TX81Z_4            = 19,
-            TX81Z_5            = 20,
-            TX81Z_6            = 21, // todo - need to change xform tool
-            TX81Z_7            = 22,
-            TX81Z_8            = 23, // todo - need to change xform tool
+            TX81Z_1            = 19, // sine
+            TX81Z_2            = 20, // sine pinch
+            TX81Z_3            = 21, // sine half rect
+            TX81Z_4            = 22,
+            TX81Z_5            = 23,
+            TX81Z_6            = 24, // todo - need to change xform tool
+            TX81Z_7            = 25,
+            TX81Z_8            = 26, // todo - need to change xform tool
 
-            TRIANGLE_HALF_RECT = 24,
-            XFORM              = 25,
-            CUSTOM             = 26
+            TRIANGLE_HALF_RECT = 27,
+            XFORM              = 28,
+            CUSTOM             = 29
         };
 
         /**

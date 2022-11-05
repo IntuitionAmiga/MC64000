@@ -37,66 +37,129 @@ void testWaveforms() {
     Signal::IWaveform::FixedShape aWaveShapes[] = {
         Signal::IWaveform::SINE,
         Signal::IWaveform::TRIANGLE,
-        Signal::IWaveform::SAW_UP,
         Signal::IWaveform::SAW_DOWN,
+        Signal::IWaveform::SAW_UP,
         Signal::IWaveform::SQUARE,
+        Signal::IWaveform::PULSE,
         Signal::IWaveform::PULSE_10,
         Signal::IWaveform::PULSE_20,
         Signal::IWaveform::PULSE_30,
         Signal::IWaveform::PULSE_40,
+        Signal::IWaveform::PULSE_50,
+        Signal::IWaveform::POKEY,
+        Signal::IWaveform::NOISE,
+        Signal::IWaveform::SINE_HALF_RECT,
+        Signal::IWaveform::SINE_FULL_RECT,
+        Signal::IWaveform::SINE_SAW,
+        Signal::IWaveform::SINE_SAW_HARD, // todo
+        Signal::IWaveform::SINE_PINCH,
+        Signal::IWaveform::SINE_CUT, // todo
+        Signal::IWaveform::TX81Z_1,
+        Signal::IWaveform::TX81Z_2,
+        Signal::IWaveform::TX81Z_3,
+        Signal::IWaveform::TX81Z_4,
+        Signal::IWaveform::TX81Z_5,
+        Signal::IWaveform::TX81Z_6, // todo - need to change xform tool
+        Signal::IWaveform::TX81Z_7,
+        Signal::IWaveform::TX81Z_8, // todo - need to change xform tool
+        Signal::IWaveform::TRIANGLE_HALF_RECT,
     };
 
-    char aFileName[32] = "\0";
+    char const* aWaveNames[] = {
+        "sine",
+        "triangle",
+        "saw_down",
+        "saw_up",
+        "square",
+        "pulse",
+        "pulse_10",
+        "pulse_20",
+        "pulse_30",
+        "pulse_40",
+        "pulse_50",
+        "pokey",
+        "noise",
+        "sine_half_rect",
+        "sine_full_rect",
+        "sine_saw",
+        "sine_saw_hard",
+        "sine_pinch",
+        "sine_cut",
+        "tx81z_1",
+        "tx81z_2",
+        "tx81z_3",
+        "tx81z_4",
+        "tx81z_5",
+        "tx81z_6",
+        "tx81z_7",
+        "tx81z_8",
+        "triangle_half_rect"
+    };
+
+    char sFilename[80] = "\0";
 
     for (auto eShape : aWaveShapes) {
         auto pInput    = Signal::Packet::create();
         auto pWaveform = Signal::IWaveform::get(eShape);
         auto pCopy     = pWaveform->copy();
-        if (pCopy.get() == pWaveform.get()) {
-            std::printf("Waveform %d copy() returns original\n", (int)eShape);
-        } else {
-            std::printf("Waveform %d copy() returns clone\n", (int)eShape);
-        }
+
+        std::printf(
+            "Testing Waveform Shape %d (%s)\n"
+            "\tPeriod %f\n"
+            "\tcopy() returns %s\n",
+            (int)eShape,
+            aWaveNames[(int)eShape],
+            pWaveform->getPeriod(),
+            (pCopy.get() == pWaveform.get() ? "original" : "new")
+        );
 
         float32 fScale = pWaveform->getPeriod();
         float32 fStart = -fScale;
         fScale /= 128.0f;
 
-        for (unsigned u=0; u < PACKET_SIZE; ++u) {
+        for (unsigned u = 0; u < PACKET_SIZE; ++u) {
             pInput->aSamples[u] = fStart + (float32)u * fScale;
         }
 
         auto pOutput = pWaveform->map(pInput);
 
         int16 aSamples[PACKET_SIZE];
+
+        for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+            aSamples[u] = (int16)(32000.0 * pOutput->aSamples[u]);
+        }
+
+
         std::snprintf(
-            aFileName,
-            sizeof(aFileName) - 1,
-            "wave_%d.raw",
-            (int32)eShape
+            sFilename,
+            sizeof(sFilename) - 1,
+            "junk/wave_%d_%s.raw",
+            (int32)eShape,
+            aWaveNames[(int32)eShape]
         );
-        std::FILE* pRawFile = std::fopen(aFileName, "wb");
+        std::FILE* pRawFile = std::fopen(sFilename, "wb");
         if (pRawFile) {
+            std::printf("\tWriting %s...\n", sFilename);
             for (unsigned i = 0; i < 1000; ++i) {
                 std::fwrite(aSamples, sizeof(int16), PACKET_SIZE, pRawFile);
             }
             std::fclose(pRawFile);
-            std::printf("Wrote 16-bit binary %s\n", aFileName);
+            std::printf("Wrote 16-bit binary %s\n", sFilename);
         }
 
-        std::puts("Benchmarking map() performance...");
-        Nanoseconds::Value uMark = Nanoseconds::mark();
-        for (unsigned u = 0; u < 10000000; ++u) {
-            auto pOutput = pWaveform->map(pInput);
-        }
-        uMark = Nanoseconds::mark() - uMark;
-        float64 fMegaPacketsPerSecond = 1.e9 / (float64)uMark;
-        std::printf(
-            "\nShape %d : Total time %lu ns [%.2f Mpackets / s]\n",
-            (int)eShape,
-            uMark,
-            fMegaPacketsPerSecond
-        );
+//         std::puts("\tBenchmarking map() performance...");
+//         Nanoseconds::Value uMark = Nanoseconds::mark();
+//         for (unsigned u = 0; u < 10000000; ++u) {
+//             auto pOutput = pWaveform->map(pInput);
+//         }
+//         uMark = Nanoseconds::mark() - uMark;
+//         float64 fMegaPacketsPerSecond = 1.e9 / (float64)uMark;
+//         std::printf(
+//             "\nShape %d : Total time %lu ns [%.2f Mpackets / s]\n",
+//             (int)eShape,
+//             uMark,
+//             fMegaPacketsPerSecond
+//         );
     }
 }
 
@@ -145,15 +208,15 @@ void benchmark(Signal::IStream* pStream) {
  */
 int main(int const iArgCount, char const** aiArgVal) {
 
-    Signal::Oscillator::Sound oOsc(
-        Signal::IWaveform::get(Signal::IWaveform::TX81Z_5),
-        220.0f,
-        0.0f
-    );
-    oOsc.enable();
+    testWaveforms();
 
+//     Signal::Oscillator::Sound oOsc(
+//         Signal::IWaveform::get(Signal::IWaveform::TX81Z_6),
+//         220.0f,
+//         0.0f
+//     );
+//     oOsc.enable();
     //benchmark(&oOsc);
-
 //     Signal::IStream::Ptr pModulator(
 //         new Signal::Oscillator::LFOZeroToOne(
 //             Signal::IWaveform::get(Signal::IWaveform::SAW_UP),
@@ -163,8 +226,9 @@ int main(int const iArgCount, char const** aiArgVal) {
 //     );
 //     pModulator->enable();
 //     oOsc.setPitchModulator(pModulator);
+//    writeRawFile(&oOsc, "osc_test.raw", 5000);
 
-    writeRawFile(&oOsc, "osc_test.raw", 5000);
+
 
     Signal::Packet::dumpStats();
 

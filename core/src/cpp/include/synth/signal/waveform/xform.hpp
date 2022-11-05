@@ -149,7 +149,9 @@ class XForm : public IWaveform {
         }
 };
 
-
+typedef XForm<0> XForm2;
+typedef XForm<1> XForm4;
+typedef XForm<2> XForm8;
 
 }
 

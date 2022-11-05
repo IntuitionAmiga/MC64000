@@ -322,29 +322,28 @@ WhiteNoise  oNoise;
 
 // Custom waveforms based on transformations
 float32 const aPokey[16] = {
-    1.0f, 2.0f, 0.25f, 1.0f,  // First  Quadrant
-    1.0f, 1.0f, 0.05f, 0.7f,  // Second Quadrant
+    // phase multiplier, phase displacement, scale multiplier, bias
+    1.0f, 2.0f, 0.25f, 1.0f,    // First  Quadrant
+    1.0f, 1.0f, 0.05f, 0.7f,    // Second Quadrant
     1.0f, 2.0f, -0.25f, -1.0f,  // Third  Quadrant
     1.0f, 1.0f, -0.05f, -0.7f,  // Fourth Quadrant
 };
-XForm<1> oPokey(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aPokey);
+XForm4 oPokey(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aPokey);
 
-float32 const aHalfRect[16] = {
-    1.0f, 0.0f, 1.33f, -0.33f,  // First  Quadrant
-    1.0f, 1.0f, 1.33f,  -0.33f,  // Second Quadrant
-    1.0f, 2.0f, 0.0f, -0.33f,  // Third  Quadrant
-    1.0f, 3.0f, 0.0f, -0.33f,  // Fourth Quadrant
+float32 const aHalfRect[8] = {
+    // phase multiplier, phase displacement, scale multiplier, bias
+    1.0f, 0.0f, 1.33f, -0.33f,  // First  Half
+    1.0f, 0.0f, 0.0f, -0.33f,   // Second  Half
 };
-XForm<1> oSineHalfRect(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aHalfRect);
-XForm<1> oTriangleHalfRect(IWaveform::Ptr(&Waveform::oTriangle, Waveform::oNoDelete), aHalfRect);
+XForm2 oSineHalfRect(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aHalfRect);
+XForm2 oTriangleHalfRect(IWaveform::Ptr(&Waveform::oTriangle, Waveform::oNoDelete), aHalfRect);
 
-float32 const aFullRect[16] = {
+float32 const aFullRect[8] = {
+    // phase multiplier, phase displacement, scale multiplier, bias
     1.0f, 0.0f, 1.5f, -0.5f,  // First  Quadrant
-    1.0f, 1.0f, 1.5f, -0.5f,  // Second Quadrant
-    1.0f, 0.0f, 1.5f, -0.5f,  // Third  Quadrant
-    1.0f, 1.0f, 1.5f, -0.5f,  // Fourth Quadrant
+    1.0f, 0.0f, 1.5f, -0.5f,  // Fourth Quadrant
 };
-XForm<1> oSineFullRect(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aFullRect);
+XForm2 oSineFullRect(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aFullRect);
 
 // float32 const aSharks[16] = {
 //     // phase multiplier, phase displacement, scale multiplier, bias
@@ -362,7 +361,7 @@ float32 const aSineSaw[16] = {
     0.33f, 2.33f, 2.0f, 1.0f,  // Third  Quadrant
     0.33f, 2.66f, 2.0f, 1.0f,  // Fourth Quadrant
 };
-XForm<1> oSineSaw(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aSineSaw);
+XForm4 oSineSaw(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aSineSaw);
 
 float32 const aSinePinch[16] = {
     // phase multiplier, phase displacement, scale multiplier, bias
@@ -372,7 +371,7 @@ float32 const aSinePinch[16] = {
     1.0f, 0.0f, 1.0f, -1.0f,  // Fourth Quadrant
 
 };
-XForm<1> oSinePinch(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aSinePinch);
+XForm4 oSinePinch(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aSinePinch);
 
 float32 const aTX81Z_4[16] = {
     // phase multiplier, phase displacement, scale multiplier, bias
@@ -382,25 +381,50 @@ float32 const aTX81Z_4[16] = {
     1.0f, 3.0f, 0.0f, -0.33f,  // Fourth Quadrant
 
 };
-XForm<1> oTX81Z_4(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_4);
+XForm4 oTX81Z_4(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_4);
 
-float aTX81Z_5[16] = {
+float32 aTX81Z_5[16] = {
+    // phase multiplier, phase displacement, scale multiplier, bias
     2.0f, 0.0f, 1.0f, 0.0f,  // First  Quadrant
     2.0f, 2.0f, 1.0f, 0.0f,  // Second Quadrant
     1.0f, 2.0f, 0.0f, 0.0f,  // Third  Quadrant
     1.0f, 3.0f, 0.0f, 0.0f,  // Fourth Quadrant
 };
+XForm4 oTX81Z_5(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_5);
 
-XForm<1> oTX81Z_5(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_5);
+float32 aTX81Z_6[32] = {
+    // phase multiplier, phase displacement, scale multiplier, bias
+    2.0f, 6.0f, 1.0f, 1.0f,
+    2.0f, 4.0f, 1.0f, 1.0f,
+    2.0f, 2.0f, 1.0f, -1.0f,
+    2.0f, 0.0f, 1.0f, -1.0f,
+    1.0f, 0.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f, 0.0f,
+};
+XForm8 oTX81Z_6(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_6);
 
-float aTX81Z_7[16] = {
+float32 aTX81Z_7[16] = {
     2.0f, 0.0f, 1.33f, -0.33f,  // First  Quadrant
     2.0f, 0.0f, 1.33f, -0.33f,  // Second Quadrant
     1.0f, 2.0f, 0.0f, -0.33f,  // Third  Quadrant
     1.0f, 3.0f, 0.0f, -0.33f,  // Fourth Quadrant
 };
+XForm4 oTX81Z_7(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_7);
 
-XForm<1> oTX81Z_7(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_7);
+float32 aTX81Z_8[32] = {
+    // phase multiplier, phase displacement, scale multiplier, bias
+    2.0f, 6.0f, 1.0f, 1.0f,
+    2.0f, 4.0f, 1.0f, 1.0f,
+    2.0f, 6.0f, 1.0f, 1.0f,
+    2.0f, 4.0f, 1.0f, 1.0f,
+    1.0f, 0.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f, 0.0f,
+    1.0f, 0.0f, 0.0f, 0.0f,
+};
+XForm8 oTX81Z_8(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_8);
 
 
 } // namespace
@@ -419,41 +443,69 @@ IWaveform::Ptr IWaveform::get(IWaveform::FixedShape eShape) {
     switch (eShape) {
         default:
         case IWaveform::SINE:
+        case IWaveform::TX81Z_1:
             return IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete);
+
         case IWaveform::TRIANGLE:
             return IWaveform::Ptr(&Waveform::oTriangle, Waveform::oNoDelete);
+
         case IWaveform::SAW_DOWN:
             return IWaveform::Ptr(&Waveform::oSawDown, Waveform::oNoDelete);
+
         case IWaveform::SAW_UP:
             return IWaveform::Ptr(&Waveform::oSawUp, Waveform::oNoDelete);
+
         case IWaveform::SQUARE:
+        case IWaveform::PULSE_50:
             return IWaveform::Ptr(&Waveform::oSquare,  Waveform::oNoDelete);
+
         case IWaveform::PULSE_10:
             return IWaveform::Ptr(&Waveform::oPWM10,  Waveform::oNoDelete);
+
         case IWaveform::PULSE_20:
             return IWaveform::Ptr(&Waveform::oPWM20,  Waveform::oNoDelete);
+
         case IWaveform::PULSE_30:
             return IWaveform::Ptr(&Waveform::oPWM30,  Waveform::oNoDelete);
+
         case IWaveform::PULSE_40:
             return IWaveform::Ptr(&Waveform::oPWM40,  Waveform::oNoDelete);
+
         case IWaveform::POKEY:
             return IWaveform::Ptr(&Waveform::oPokey,  Waveform::oNoDelete);
+
         case IWaveform::NOISE:
             return IWaveform::Ptr(&Waveform::oNoise,  Waveform::oNoDelete);
+
         case IWaveform::SINE_HALF_RECT:
+        case IWaveform::TX81Z_3:
             return IWaveform::Ptr(&Waveform::oSineHalfRect, Waveform::oNoDelete);
+
         case IWaveform::SINE_FULL_RECT:
             return IWaveform::Ptr(&Waveform::oSineFullRect, Waveform::oNoDelete);
+
         case IWaveform::SINE_SAW:
             return IWaveform::Ptr(&Waveform::oSineSaw, Waveform::oNoDelete);
+
         case IWaveform::SINE_PINCH:
+        case IWaveform::TX81Z_2:
             return IWaveform::Ptr(&Waveform::oSinePinch, Waveform::oNoDelete);
+
         case IWaveform::TX81Z_4:
             return IWaveform::Ptr(&Waveform::oTX81Z_4, Waveform::oNoDelete);
+
         case IWaveform::TX81Z_5:
             return IWaveform::Ptr(&Waveform::oTX81Z_5, Waveform::oNoDelete);
+
+        case IWaveform::TX81Z_6:
+            return IWaveform::Ptr(&Waveform::oTX81Z_6, Waveform::oNoDelete);
+
         case IWaveform::TX81Z_7:
             return IWaveform::Ptr(&Waveform::oTX81Z_7, Waveform::oNoDelete);
+
+        case IWaveform::TX81Z_8:
+            return IWaveform::Ptr(&Waveform::oTX81Z_8, Waveform::oNoDelete);
+
 
         case IWaveform::TRIANGLE_HALF_RECT:
             return IWaveform::Ptr(&Waveform::oTriangleHalfRect, Waveform::oNoDelete);
