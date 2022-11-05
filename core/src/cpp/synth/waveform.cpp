@@ -241,83 +241,7 @@ FixedPWM::~FixedPWM() {
 #include <synth/signal/waveform/xform.hpp>
 namespace MC64K::Synth::Audio::Signal::Waveform {
 
-/**
- * @inheritDoc
- */
-XForm::XForm(
-    IWaveform::Ptr pSourceWaveform,
-    float32 const* pCustomTransform
-) :
-    pSourceWaveform(pSourceWaveform)
-{
-    fPeriodAdjust = pSourceWaveform->getPeriod() / PERIOD;
-    if (pCustomTransform) {
-        for (unsigned i = 0; i < 16; ++i) {
-            aTransform[i] = pCustomTransform[i];
-        }
-    }
-    std::fprintf(stderr, "Created XForm at %p with matrix \n", this);
-    for (unsigned i = 0; i < 16; i += 4) {
-        std::fprintf(
-            stderr, "\t| %8.3f %8.3f %8.3f %8.3f |\n",
-            aTransform[i],
-            aTransform[i + 1],
-            aTransform[i + 2],
-            aTransform[i + 3]
-        );
-    }
-}
 
-/**
- * @inheritDoc
- */
-XForm::~XForm() {
-    std::fprintf(stderr, "Destroyed XForm at %p\n", this);
-}
-
-/**
- * @inheritDoc
- */
-Packet::Ptr XForm::map(Packet const* pInput) {
-    auto pReshaped = Packet::create();
-    float32* pDest      = pReshaped->aSamples;
-    float32 const* pSrc = pInput->aSamples;
-
-    // Apply input phase modification
-    for (unsigned i = 0; i < PACKET_SIZE; ++i) {
-        float32 fVal   = pSrc[i];
-        float32 fFloor = std::floor(fVal);
-        int32   iPhase = (int32)fFloor;
-        float32 const* aQuadrant = aTransform + ((iPhase & 3) << 2);
-
-        pDest[i] = fPeriodAdjust * (
-            aQuadrant[PHASE_MUL] * (fVal-fFloor) + aQuadrant[PHASE_ADD]
-        );
-    }
-
-    pReshaped = pSourceWaveform->map(pReshaped);
-
-    // Apply the output amplitude modification
-    pDest = pReshaped->aSamples;
-    for (unsigned i = 0; i < PACKET_SIZE; ++i) {
-        float32 const* aQuadrant = aTransform + ((((int32)std::floor(pSrc[i])) & 3) << 2);
-        pDest[i] = (pDest[i] * aQuadrant[LEVEL_MUL]) + aQuadrant[LEVEL_ADD];
-    }
-
-    return pReshaped;
-}
-
-float32 XForm::value(float32 fTime) const {
-    float32 fFloor = std::floor(fTime);
-    int32   iPhase = (int32)fFloor;
-    float32 const* aQuadrant = aTransform + ((iPhase & 3) << 2);
-
-    float32 fInput = fPeriodAdjust * (
-        aQuadrant[PHASE_MUL] * (fTime - fFloor) + aQuadrant[PHASE_ADD]
-    );
-
-    return (pSourceWaveform->value(fInput) * aQuadrant[LEVEL_MUL]) + aQuadrant[LEVEL_ADD];
-}
 
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,6 +250,9 @@ float32 XForm::value(float32 fTime) const {
 #include <synth/signal/waveform/noise.hpp>
 namespace MC64K::Synth::Audio::Signal::Waveform {
 
+/**
+ * 32-bit mersenne
+ */
 std::mt19937 mt_rand;
 
 WhiteNoise::WhiteNoise() {
@@ -333,7 +260,6 @@ WhiteNoise::WhiteNoise() {
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         aRandom[u] = (uint32)mt_rand();
     }
-
 }
 
 WhiteNoise::~WhiteNoise() {
@@ -342,6 +268,9 @@ WhiteNoise::~WhiteNoise() {
 
 /**
  * @inheritDoc
+ *
+ * We get one new random value, scale it to floating point then multiply our existing random
+ * table by this value. This results in the low order bit preservation after overflow.
  */
 Packet::Ptr WhiteNoise::map(Packet const* pInput) {
 
@@ -350,15 +279,11 @@ Packet::Ptr WhiteNoise::map(Packet const* pInput) {
     Packet::Ptr pOutput = Packet::create();
     float32* aSamples   = pOutput->aSamples;
     float64  fRandom    = RAND_SCALE * (float64)mt_rand();
-
-    //std::printf("fRandom %f\n", fRandom);
-
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         // Update the random buffer and output buffer as we go
         volatile uint32 uNextRandom = (uint32)(aRandom[u] * fRandom) & WORD_MASK;
         aRandom[u]  = uNextRandom;
         aSamples[u] = (float32)(uNextRandom * fNormalise) - 1.0f;
-        //std::printf("\tNextRandom: %u %f\n", uNextRandom,  aSamples[u]);
     }
 
     return pOutput;
@@ -402,7 +327,7 @@ float32 const aPokey[16] = {
     1.0f, 2.0f, -0.25f, -1.0f,  // Third  Quadrant
     1.0f, 1.0f, -0.05f, -0.7f,  // Fourth Quadrant
 };
-XForm oPokey(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aPokey);
+XForm<1> oPokey(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aPokey);
 
 float32 const aHalfRect[16] = {
     1.0f, 0.0f, 1.33f, -0.33f,  // First  Quadrant
@@ -410,8 +335,8 @@ float32 const aHalfRect[16] = {
     1.0f, 2.0f, 0.0f, -0.33f,  // Third  Quadrant
     1.0f, 3.0f, 0.0f, -0.33f,  // Fourth Quadrant
 };
-XForm oSineHalfRect(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aHalfRect);
-XForm oTriangleHalfRect(IWaveform::Ptr(&Waveform::oTriangle, Waveform::oNoDelete), aHalfRect);
+XForm<1> oSineHalfRect(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aHalfRect);
+XForm<1> oTriangleHalfRect(IWaveform::Ptr(&Waveform::oTriangle, Waveform::oNoDelete), aHalfRect);
 
 float32 const aFullRect[16] = {
     1.0f, 0.0f, 1.5f, -0.5f,  // First  Quadrant
@@ -419,7 +344,7 @@ float32 const aFullRect[16] = {
     1.0f, 0.0f, 1.5f, -0.5f,  // Third  Quadrant
     1.0f, 1.0f, 1.5f, -0.5f,  // Fourth Quadrant
 };
-XForm oSineFullRect(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aFullRect);
+XForm<1> oSineFullRect(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aFullRect);
 
 // float32 const aSharks[16] = {
 //     // phase multiplier, phase displacement, scale multiplier, bias
@@ -437,7 +362,7 @@ float32 const aSineSaw[16] = {
     0.33f, 2.33f, 2.0f, 1.0f,  // Third  Quadrant
     0.33f, 2.66f, 2.0f, 1.0f,  // Fourth Quadrant
 };
-XForm oSineSaw(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aSineSaw);
+XForm<1> oSineSaw(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aSineSaw);
 
 float32 const aSinePinch[16] = {
     // phase multiplier, phase displacement, scale multiplier, bias
@@ -447,7 +372,7 @@ float32 const aSinePinch[16] = {
     1.0f, 0.0f, 1.0f, -1.0f,  // Fourth Quadrant
 
 };
-XForm oSinePinch(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aSinePinch);
+XForm<1> oSinePinch(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aSinePinch);
 
 float32 const aTX81Z_4[16] = {
     // phase multiplier, phase displacement, scale multiplier, bias
@@ -457,7 +382,7 @@ float32 const aTX81Z_4[16] = {
     1.0f, 3.0f, 0.0f, -0.33f,  // Fourth Quadrant
 
 };
-XForm oTX81Z_4(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_4);
+XForm<1> oTX81Z_4(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_4);
 
 float aTX81Z_5[16] = {
     2.0f, 0.0f, 1.0f, 0.0f,  // First  Quadrant
@@ -466,7 +391,7 @@ float aTX81Z_5[16] = {
     1.0f, 3.0f, 0.0f, 0.0f,  // Fourth Quadrant
 };
 
-XForm oTX81Z_5(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_5);
+XForm<1> oTX81Z_5(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_5);
 
 float aTX81Z_7[16] = {
     2.0f, 0.0f, 1.33f, -0.33f,  // First  Quadrant
@@ -475,7 +400,8 @@ float aTX81Z_7[16] = {
     1.0f, 3.0f, 0.0f, -0.33f,  // Fourth Quadrant
 };
 
-XForm oTX81Z_7(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_7);
+XForm<1> oTX81Z_7(IWaveform::Ptr(&Waveform::oSine, Waveform::oNoDelete), aTX81Z_7);
+
 
 } // namespace
 

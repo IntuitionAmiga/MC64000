@@ -20,12 +20,18 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
 
 /**
  * Transformer
+ *
+ * Divides an existing wave into 2<<N sequential slices that can have their phase and level
+ * properties shifted and scaled. This can be used to produce many variants from simpler waveforms
+ * with interesting harmonic modifications.
  */
+template<size_t N>
 class XForm : public IWaveform {
 
     private:
-        static constexpr float32 const PERIOD = 4.0f;
-
+        static constexpr uint32  const SIZE   = 2 << N;
+        static constexpr uint32  const T_SIZE = 4 * SIZE;
+        static constexpr float32 const PERIOD = (float32)(SIZE);
         enum {
             PHASE_MUL = 0,
             PHASE_ADD = 1,
@@ -33,21 +39,38 @@ class XForm : public IWaveform {
             LEVEL_ADD = 3
         };
 
-        float32 aTransform[16] __attribute__ ((aligned (16))) = {
-            // phase multiplier, phase displacement, scale multiplier, bias
-           1.0f, 0.0f, 1.0f, 0.0f,  // First  Quadrant
-           1.0f, 1.0f, 1.0f, 0.0f,  // Second Quadrant
-           1.0f, 2.0f, 1.0f, 0.0f,  // Third  Quadrant
-           1.0f, 3.0f, 1.0f, 0.0f,  // Fourth Quadrant
+        // 2 << N * { phase multiplier, phase displacement, scale multiplier, bias }
 
-        };
-
-        Ptr     pSourceWaveform;
+        float32 aTransform[4 * SIZE] __attribute__ ((aligned (16))) = { };
+        Ptr     pWaveform;
         float32 fPeriodAdjust;
 
     public:
-        XForm(Ptr pSourceWaveform, float32 const* pTransform);
-        ~XForm();
+        XForm(Ptr pSourceWaveform, float32 const* pCustomTransform):
+            pWaveform(pSourceWaveform)
+        {
+            static_assert(N < 4, "Invalid size exponent for XForm");
+            fPeriodAdjust = pWaveform->getPeriod() / PERIOD;
+            if (pCustomTransform) {
+                for (unsigned i = 0; i < T_SIZE; ++i) {
+                    aTransform[i] = pCustomTransform[i];
+                }
+            }
+            std::fprintf(stderr, "Created XForm<%u> at %p with matrix:\n", (uint32)N, this);
+            for (unsigned i = 0; i < T_SIZE; i += 4) {
+                std::fprintf(
+                    stderr, "\t| %8.3f %8.3f %8.3f %8.3f |\n",
+                    aTransform[i],
+                    aTransform[i + 1],
+                    aTransform[i + 2],
+                    aTransform[i + 3]
+                );
+            }
+        }
+
+        ~XForm() {
+            std::fprintf(stderr, "Destroyed XForm<%u> at %p\n", (uint32)N, this);
+        }
 
         /**
          * @inheritDoc
@@ -59,12 +82,45 @@ class XForm : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* pInput);
+        Packet::Ptr map(Packet const* pInput) {
+            Packet::Ptr    pReshaped = Packet::create();
+            float32*       pDest     = pReshaped->aSamples;
+            float32 const* pSrc      = pInput->aSamples;
+
+            // Apply input phase modification
+            for (unsigned i = 0; i < PACKET_SIZE; ++i) {
+                float32 fVal          = pSrc[i];
+                float32 fFloor        = std::floor(fVal);
+                int32   iPhase        = (int32)fFloor;
+                float32 const* aSlice = aTransform + ((iPhase & (SIZE - 1)) << 2);
+                pDest[i] = fPeriodAdjust * (
+                    aSlice[PHASE_MUL] * (fVal - fFloor) + aSlice[PHASE_ADD]
+                );
+            }
+
+            pReshaped = pWaveform->map(pReshaped);
+
+            // Apply the output amplitude modification
+            pDest = pReshaped->aSamples;
+            for (unsigned i = 0; i < PACKET_SIZE; ++i) {
+                float32 const* aSlice = aTransform + ((((int32)std::floor(pSrc[i])) & (SIZE - 1)) << 2);
+                pDest[i] = (pDest[i] * aSlice[LEVEL_MUL]) + aSlice[LEVEL_ADD];
+            }
+            return pReshaped;
+        }
 
         /**
          * @inheritDoc
          */
-        float32 value(float32 fTime) const;
+        float32 value(float32 fTime) const {
+            float32 fFloor        = std::floor(fTime);
+            int32   iPhase        = (int32)fFloor;
+            float32 const* aSlice = aTransform + ((iPhase & (SIZE - 1)) << 2);
+            float32 fInput        = fPeriodAdjust * (
+                aSlice[PHASE_MUL] * (fTime - fFloor) + aSlice[PHASE_ADD]
+            );
+            return (pWaveform->value(fInput) * aSlice[LEVEL_MUL]) + aSlice[LEVEL_ADD];
+        }
 
         /**
          * Returns the enumerated shape identifier for the waveform.
@@ -85,13 +141,15 @@ class XForm : public IWaveform {
          */
         Ptr copy() {
             return Ptr(
-                new XForm(
-                    pSourceWaveform->copy(),
+                new XForm<N>(
+                    pWaveform->copy(),
                     aTransform
                 )
             );
         }
 };
+
+
 
 }
 
