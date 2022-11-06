@@ -5,6 +5,7 @@
 #include <synth/note.hpp>
 #include <synth/signal.hpp>
 #include <synth/signal/operator/mixer.hpp>
+#include <synth/signal/operator/automute.hpp>
 #include <synth/signal/oscillator/LFO.hpp>
 #include <synth/signal/oscillator/sound.hpp>
 
@@ -238,7 +239,7 @@ int main(int const iArgCount, char const** aiArgVal) {
     );
     pStream3->enable();
 
-    Signal::Operator::FixedMixer oMix(1.0f);
+    Signal::Operator::SimpleMixer oMix(1.0f);
 
     oMix.addInputStream(
         0xdeadbeef,
@@ -262,7 +263,11 @@ int main(int const iArgCount, char const** aiArgVal) {
 
     writeRawFile(&oMix, "mix_test.raw", 1000);
 
-    benchmark(&oMix);
+    auto oAutoMute = Signal::Operator::AutoMuteSilence(
+        pStream1
+    );
+
+    benchmark(&oAutoMute);
 
 //    benchmark(&oOsc);
 //     Signal::IStream::Ptr pModulator(

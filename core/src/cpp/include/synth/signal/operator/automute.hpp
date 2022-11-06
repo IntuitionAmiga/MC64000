@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_MIXER_HPP
-    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_MIXER_HPP
+#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_AUTOMUTE_HPP
+    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_AUTOMUTE_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -32,10 +32,13 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
         float64 fLastTotalSquared;
         uint32  uSilentPacketLimit;
         uint32  uSilentPacketCount;
+        bool    bEnabled;
+
+        static constexpr float64 const RMS_SCALE = 1.0 / PACKET_SIZE;
 
     public:
-        constexpr float32 const DEF_THRESHOLD = 1.0f/256.0f;
-        constexpr float32 const DEF_DURATION  = 0.05f;
+        static constexpr float32 const DEF_THRESHOLD = 1.0f/256.0f;
+        static constexpr float32 const DEF_DURATION  = 0.05f;
 
         AutoMuteSilence(
             IStream::Ptr pInput,
@@ -48,7 +51,7 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
         /**
          * @inheritDoc
          */
-        size_t getPosition().
+        size_t getPosition();
 
         /**
          * @inheritDoc
@@ -78,7 +81,7 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
         /**
          * Set the duration the input stream must be silent for before disabling.
          */
-        AutoMuteSilence* setDisableAfter(float32 fSeconds);
+        AutoMuteSilence* setDuration(float32 fSeconds);
 
         /**
          * Set the RMS signal level the input stream must be silent for before
@@ -91,6 +94,9 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
          */
         AutoMuteSilence* setStream(IStream::Ptr pInput);
 
+        /**
+         * Get the enclosed stream
+         */
         IStream::Ptr getStream() const {
             return pSource;
         }

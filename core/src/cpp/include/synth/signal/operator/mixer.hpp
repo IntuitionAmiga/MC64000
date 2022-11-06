@@ -24,7 +24,7 @@ namespace MC64K::Synth::Audio::Signal::Operator {
  * Simple mixer class. Mixes one or more channels into a single output
  * using assignable but non-automated volume controls.
  */
-class FixedMixer : public TStreamCommon, protected TPacketIndexAware {
+class SimpleMixer : public TStreamCommon, protected TPacketIndexAware {
 
     public:
         // Each attached stream is given an ID so that the level for
@@ -48,13 +48,13 @@ class FixedMixer : public TStreamCommon, protected TPacketIndexAware {
         float32 fOutputLevel;
 
     public:
-        FixedMixer(float32 fOutputLevel = 1.0f);
-        ~FixedMixer();
+        SimpleMixer(float32 fOutputLevel = 1.0f);
+        ~SimpleMixer();
 
         /**
          * @inheritDoc
          */
-        FixedMixer* reset();
+        SimpleMixer* reset();
 
         /**
          * @inheritDoc
@@ -85,7 +85,7 @@ class FixedMixer : public TStreamCommon, protected TPacketIndexAware {
          * @param  float32 fLevel
          * @return this
          */
-        FixedMixer* setOutputLevel(float32 fLevel);
+        SimpleMixer* setOutputLevel(float32 fLevel);
 
         /**
          * Attach (or replace) an input stream. If the stream pointer is empty
@@ -96,12 +96,12 @@ class FixedMixer : public TStreamCommon, protected TPacketIndexAware {
          * @param  float32 fLevel
          * @return this
          */
-        FixedMixer* addInputStream(ChannelID uID, IStream::Ptr pSource, float32 fLevel);
+        SimpleMixer* addInputStream(ChannelID uID, IStream::Ptr pSource, float32 fLevel);
 
         /**
          *  Removes an input stream, if it is attached.
          */
-        FixedMixer* removeIputStream(ChannelID uID);
+        SimpleMixer* removeIputStream(ChannelID uID);
 
         /**
          * Get the level for an input. Returns zero for any unrecognised input ID.
@@ -118,7 +118,7 @@ class FixedMixer : public TStreamCommon, protected TPacketIndexAware {
          * @param  ChannelID uChannelID
          * @return float32
          */
-        FixedMixer* setInputLevel(ChannelID uID, float32 fLevel);
+        SimpleMixer* setInputLevel(ChannelID uID, float32 fLevel);
 
     protected:
         /**
