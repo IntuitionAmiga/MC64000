@@ -54,6 +54,11 @@ class Packet {
             return pCopy;
         }
 
+        Packet* clear() {
+            std::memset(aSamples, 0, sizeof(aSamples));
+            return this;
+        }
+
         /**
          * Get the next index for packet index aware operations
          */

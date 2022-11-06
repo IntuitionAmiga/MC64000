@@ -4,6 +4,7 @@
 #include <machine/timing.hpp>
 #include <synth/note.hpp>
 #include <synth/signal.hpp>
+#include <synth/signal/operator/mixer.hpp>
 #include <synth/signal/oscillator/LFO.hpp>
 #include <synth/signal/oscillator/sound.hpp>
 
@@ -208,15 +209,61 @@ void benchmark(Signal::IStream* pStream) {
  */
 int main(int const iArgCount, char const** aiArgVal) {
 
-    testWaveforms();
+    //testWaveforms();
 
-    Signal::Oscillator::Sound oOsc(
-        Signal::IWaveform::get(Signal::IWaveform::NOISE),
-        220.0f,
-        0.0f
+    Signal::IStream::Ptr pStream1 (
+        new Signal::Oscillator::Sound(
+            Signal::IWaveform::get(Signal::IWaveform::SINE),
+            220.0f,
+            0.0f
+        )
     );
-    oOsc.enable();
-    benchmark(&oOsc);
+    pStream1->enable();
+
+
+    Signal::IStream::Ptr pStream2 (
+        new Signal::Oscillator::Sound(
+            Signal::IWaveform::get(Signal::IWaveform::SINE),
+            660.0f,
+            0.0f
+        )
+    );
+    pStream2->enable();
+
+    Signal::IStream::Ptr pStream3 (
+        new Signal::Oscillator::Sound(
+            Signal::IWaveform::get(Signal::IWaveform::SINE),
+            440.0f,
+            0.0f
+        )
+    );
+    pStream3->enable();
+
+    Signal::Operator::FixedMixer oMix(1.0f);
+
+    oMix.addInputStream(
+        0xdeadbeef,
+        pStream1,
+        0.8f
+    );
+
+    oMix.addInputStream(
+        0xabadafe,
+        pStream2,
+        0.1f
+    );
+
+    oMix.addInputStream(
+        0x69696969,
+        pStream3,
+        0.1f
+    );
+
+    oMix.enable();
+
+    writeRawFile(&oMix, "mix_test.raw", 1000);
+
+//    benchmark(&oOsc);
 //     Signal::IStream::Ptr pModulator(
 //         new Signal::Oscillator::LFOZeroToOne(
 //             Signal::IWaveform::get(Signal::IWaveform::SAW_UP),
