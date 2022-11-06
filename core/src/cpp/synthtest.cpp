@@ -220,7 +220,6 @@ int main(int const iArgCount, char const** aiArgVal) {
     );
     pStream1->enable();
 
-
     Signal::IStream::Ptr pStream2 (
         new Signal::Oscillator::Sound(
             Signal::IWaveform::get(Signal::IWaveform::SINE),
@@ -262,6 +261,8 @@ int main(int const iArgCount, char const** aiArgVal) {
     oMix.enable();
 
     writeRawFile(&oMix, "mix_test.raw", 1000);
+
+    benchmark(&oMix);
 
 //    benchmark(&oOsc);
 //     Signal::IStream::Ptr pModulator(

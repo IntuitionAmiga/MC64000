@@ -18,7 +18,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+#include <synth/signal/operator/mixer.hpp>
 namespace MC64K::Synth::Audio::Signal::Operator {
 
 FixedMixer::FixedMixer(float32 fOutputLevel): fOutputLevel(fOutputLevel) {
@@ -153,6 +153,12 @@ FixedMixer* FixedMixer::setInputLevel(FixedMixer::ChannelID uID, float32 fLevel)
     return this;
 }
 
+} // namespace
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include <synth/signal/operator/automute.hpp>
+namespace MC64K::Synth::Audio::Signal::Operator {
 
 
 }
