@@ -59,17 +59,24 @@ class Square : public IWaveform {
         };
 
         /**
-         * Returns the enumerated shape identifier for the waveform.
+         * @inheritDoc
          */
         FixedShape getShape() const {
             return IWaveform::SQUARE;
         };
 
         /**
-         * Returns whether or not the wave contains sharp discontinuities.
+         * @inheritDoc
          */
         bool isDiscontinuous() const {
             return true;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        bool isAperiodic() const {
+            return false;
         }
 };
 
@@ -94,7 +101,7 @@ class FixedPWM : public IWaveform {
         }
 
         /**
-         * Returns the current PWM duty cycle.
+         * @inheritDoc
          */
         float32 getWidth() const {
             return fWidth;
@@ -102,6 +109,8 @@ class FixedPWM : public IWaveform {
 
         /**
          * Sets the new PWM duty cycle
+         *
+         * @param float32 fNewWidth
          */
         void setWidth(float32 fNewWidth) {
             fWidth = fNewWidth < MIN_WIDTH ? MIN_WIDTH : (fNewWidth > MAX_WIDTH ? MAX_WIDTH : fNewWidth);
@@ -134,19 +143,26 @@ class FixedPWM : public IWaveform {
         };
 
         /**
-         * Returns the enumerated shape identifier for the waveform.
+         * @inheritDoc
          *
-         * Note that preset PULSE_10, etc will return PULSE
+         * Note that fixed variants, e.g. PULSE_10 will still return PULSE
          */
         FixedShape getShape() const {
             return IWaveform::PULSE;
         };
 
         /**
-         * Returns whether or not the wave contains sharp discontinuities.
+         * @inheritDoc
          */
         bool isDiscontinuous() const {
             return true;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        bool isAperiodic() const {
+            return false;
         }
 
         /**

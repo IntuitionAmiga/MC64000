@@ -348,6 +348,16 @@ void Sound::populateOutputPacketWithFeedback(Packet const* pLevelPacket) {
  *
  * Optimised input packet generator for the case where there is no pitch/phase modulation
  */
+void Sound::inputAperiodic(Sound* pOscillator) {
+    pOscillator->uSamplePosition += PACKET_SIZE;
+}
+
+
+/**
+ * @inheritDoc
+ *
+ * Optimised input packet generator for the case where there is no pitch/phase modulation
+ */
 void Sound::inputDirect(Sound* pOscillator) {
     float32* pSamples    = pOscillator->pLastPacket->aSamples;
     float32  fCorrection = pOscillator->fPhaseCorrection;
@@ -511,17 +521,27 @@ char const* aInputStageNames[8] = {
  * @inheritDoc
  */
 void Sound::configureInputStage() {
-    unsigned uUseStage =
-        (pPitchModulator.get() ? 1 : 0) |
-        (pPitchEnvelope.get()  ? 2 : 0) |
-        ((pPhaseModulator.get() && MIN_PHASE_MOD_INDEX < fPhaseModulationIndex) ? 4 : 0);
-    cInput = aInputStages[uUseStage];
-    std::fprintf(
-        stderr,
-        "Oscillator::Sound::configureInputStage(): %u [%s]\n",
-        uUseStage,
-        aInputStageNames[uUseStage]
-    );
+    if (pWaveform.get() && pWaveform->isAperiodic()) {
+        cInput = &inputAperiodic;
+        std::fprintf(
+            stderr,
+            "Oscillator::Sound::configureInputStage(): Waveform %d is aperiodic\n",
+            pWaveform->getShape()
+        );
+
+    } else {
+        unsigned uUseStage =
+            (pPitchModulator.get() ? 1 : 0) |
+            (pPitchEnvelope.get()  ? 2 : 0) |
+            ((pPhaseModulator.get() && MIN_PHASE_MOD_INDEX < fPhaseModulationIndex) ? 4 : 0);
+        cInput = aInputStages[uUseStage];
+        std::fprintf(
+            stderr,
+            "Oscillator::Sound::configureInputStage(): %u [%s]\n",
+            uUseStage,
+            aInputStageNames[uUseStage]
+        );
+    }
 }
 
 /**

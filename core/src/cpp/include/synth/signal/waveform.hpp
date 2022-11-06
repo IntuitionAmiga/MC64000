@@ -31,8 +31,6 @@ class IWaveform /*: public Util::ISometimesShareable */ {
     public:
         virtual ~IWaveform() = default;
 
-        //IWaveform* share() = 0;
-
         /**
          * Fixed waveform shapes. These use fixed mappings.
          */
@@ -109,14 +107,12 @@ class IWaveform /*: public Util::ISometimesShareable */ {
          *
          * @param  Packet::ConstPtr oInput
          * @return Packet::Ptr
-         *
          */
         virtual Packet::Ptr map(Packet const* pInput) = 0;
 
         Packet::Ptr map(Packet::ConstPtr pInput) {
             return map(pInput.get());
         }
-
 
         /**
          * Calculate the output for a single input.
@@ -132,6 +128,12 @@ class IWaveform /*: public Util::ISometimesShareable */ {
          * Returns whether or not the wave contains sharp discontinuities.
          */
         virtual bool isDiscontinuous() const = 0;
+
+        /**
+         * Returns whether or not the waveform is aperiodic, i.e. does not
+         * depend on input time, e.g. noise sources.
+         */
+        virtual bool isAperiodic() const = 0;
 
         /**
          * Get a copy (maybe). For stateless implementations, this is just the

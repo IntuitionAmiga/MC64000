@@ -183,6 +183,7 @@ class Sound : public IOscillator {
         void populateOutputPacketWithFeedback(Packet const* pLevelPacket);
 
         // Configuration optimised Input stages
+        static void inputAperiodic(Sound* pOscillator);
         static void inputDirect(Sound* pOscillator);
         static void inputPitchMod(Sound* pOscillator);
         static void inputPitchEnv(Sound* pOscillator);

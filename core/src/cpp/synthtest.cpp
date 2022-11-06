@@ -210,13 +210,13 @@ int main(int const iArgCount, char const** aiArgVal) {
 
     testWaveforms();
 
-//     Signal::Oscillator::Sound oOsc(
-//         Signal::IWaveform::get(Signal::IWaveform::TX81Z_6),
-//         220.0f,
-//         0.0f
-//     );
-//     oOsc.enable();
-    //benchmark(&oOsc);
+    Signal::Oscillator::Sound oOsc(
+        Signal::IWaveform::get(Signal::IWaveform::NOISE),
+        220.0f,
+        0.0f
+    );
+    oOsc.enable();
+    benchmark(&oOsc);
 //     Signal::IStream::Ptr pModulator(
 //         new Signal::Oscillator::LFOZeroToOne(
 //             Signal::IWaveform::get(Signal::IWaveform::SAW_UP),

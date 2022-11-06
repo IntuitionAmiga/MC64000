@@ -132,17 +132,24 @@ class XForm : public IWaveform {
         }
 
         /**
-         * Returns the enumerated shape identifier for the waveform.
+         * @inheritDoc
          */
         FixedShape getShape() const {
             return IWaveform::XFORM;
         };
 
         /**
-         * Returns whether or not the wave contains sharp discontinuities.
+         * @inheritDoc
          */
         bool isDiscontinuous() const {
             return true;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        bool isAperiodic() const {
+            return false;
         }
 
         /**

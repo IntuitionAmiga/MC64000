@@ -88,16 +88,23 @@ class Sine : public IWaveform {
         }
 
         /**
-         * Returns the enumerated shape identifier for the waveform.
+         * @inheritDoc
          */
         FixedShape getShape() const {
             return IWaveform::SINE;
         };
 
         /**
-         * Returns whether or not the wave contains sharp discontinuities.
+         * @inheritDoc
          */
         bool isDiscontinuous() const {
+            return false;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        bool isAperiodic() const {
             return false;
         }
 };
