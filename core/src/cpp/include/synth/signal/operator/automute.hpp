@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_AUTOMUTE_HPP
-    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_AUTOMUTE_HPP
+#ifndef MC64K_SYNTH_SIGNAL_AUTOMUTE_HPP
+    #define MC64K_SYNTH_SIGNAL_AUTOMUTE_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -92,7 +92,7 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
         /**
          * Set a new input stream. If the pointer is empty, the unit is disabled.
          */
-        AutoMuteSilence* setStream(IStream::Ptr pInput);
+        AutoMuteSilence* setStream(IStream::Ptr const& pInput);
 
         /**
          * Get the enclosed stream

@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_STREAM_HPP
-    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_STREAM_HPP
+#ifndef MC64K_SYNTH_SIGNAL_STREAM_HPP
+    #define MC64K_SYNTH_SIGNAL_STREAM_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -85,30 +85,39 @@ class IStream {
 class TStreamCommon : public IStream {
 
     protected:
-        size_t uSamplePosition;
-        bool   bEnabled;
-
-        TStreamCommon(): uSamplePosition(0), bEnabled(false) {}
+        size_t uSamplePosition = 0;
+        bool   bEnabled        = false;
 
     public:
+        /**
+         * @inheritDoc
+         */
         size_t getPosition() {
             return uSamplePosition;
         }
 
+        /**
+         * @inheritDoc
+         */
         bool isEnabled() {
             return bEnabled;
         }
 
+        /**
+         * @inheritDoc
+         */
         IStream* enable() {
             bEnabled = true;
             return this;
         };
 
+        /**
+         * @inheritDoc
+         */
         IStream* disable() {
             bEnabled = false;
             return this;
         }
-
 };
 
 }

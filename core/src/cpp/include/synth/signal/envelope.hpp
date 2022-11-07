@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_ENVELOPE_HPP
-    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_ENVELOPE_HPP
+#ifndef MC64K_SYNTH_SIGNAL_ENVELOPE_HPP
+    #define MC64K_SYNTH_SIGNAL_ENVELOPE_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -19,15 +19,23 @@
 namespace MC64K::Synth::Audio::Signal {
 using namespace MC64K::StandardTestHost::Audio::IConfig;
 
-class IEnvelope : public IStream /*, Util::ISometimesShareable */ {
+class IEnvelope : public TStreamCommon, protected TPacketIndexAware {
+
+    protected:
+        float32 fTimeScale        = 1.0f;
+        float32 fLevelScale       = 1.0f;
+        bool    bParameterChanged = false;
+
+        static constexpr float32 const MIN_TIME_SCALE_DIFF  = 1.e-5f;
+        static constexpr float32 const MIN_LEVEL_SCALE_DIFF = 1.e-5f;
 
     public:
         static constexpr float32 const MIN_TIME_SCALE = 0.01f;
 
         /**
-         * Covariant implementation of ISometimesShareable
+         * @inheritDoc
          */
-        virtual IEnvelope* share() = 0;
+        IEnvelope* reset();
 
         /**
          * Set a scaling factor for envelope timing. A smaller value results in a faster envelope. Use to simlulate the
@@ -36,7 +44,7 @@ class IEnvelope : public IStream /*, Util::ISometimesShareable */ {
          * @param  float32 fTimeScale
          * @return this
          */
-        virtual IEnvelope* setTimeScale(float32 fTimeScale) = 0;
+        IEnvelope* setTimeScale(float32 fTimeScale);
 
         /**
          * Set a scaling factor for envelope levels. A smaller value results in a quieter envelope. Use to simlulate  the
@@ -46,7 +54,11 @@ class IEnvelope : public IStream /*, Util::ISometimesShareable */ {
          * @param  float32 fLevelScale
          * @return this
          */
-        virtual IEnvelope* setLevelScale(float32 fLevelScale) = 0;
+        IEnvelope* setLevelScale(float32 fLevelScale);
+
+        typedef std::shared_ptr<IEnvelope> Ptr;
+        typedef std::shared_ptr<IEnvelope const> ConstPtr;
+
 };
 
 }

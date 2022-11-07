@@ -101,7 +101,7 @@ Packet::Ptr Packet::create() {
 /**
  * @inheritDoc
  */
-Packet::Ptr Packet::getSilence() {
+Packet::ConstPtr Packet::getSilence() {
     static Packet::Ptr pSilence;
     if (!pSilence.get()) {
         pSilence = Packet::create();

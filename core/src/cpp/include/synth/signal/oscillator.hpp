@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_OSCILLATOR_HPP
-    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_OSCILLATOR_HPP
+#ifndef MC64K_SYNTH_SIGNAL_OSCILLATOR_HPP
+    #define MC64K_SYNTH_SIGNAL_OSCILLATOR_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -22,6 +22,8 @@ namespace MC64K::Synth::Audio::Signal {
 using namespace MC64K::StandardTestHost::Audio::IConfig;
 
 /**
+ * IOscillator
+ *
  * Abstract Base Class for Oscillator types
  */
 class IOscillator : public TStreamCommon, protected TPacketIndexAware {
@@ -87,7 +89,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          * @param float32        fPhase
          */
         IOscillator(
-            IWaveform::Ptr pWaveform,
+            IWaveform::Ptr const& pWaveform,
             float32 fFrequency = 0.0f,
             float32 fPhase     = 0.0f
         );
@@ -101,7 +103,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          * @param  IWaveform::Ptr pWaveform
          * @return this
          */
-        IOscillator* setWaveform(IWaveform::Ptr pWaveform);
+        IOscillator* setWaveform(IWaveform::Ptr const& pWaveform);
 
         /**
          * Set the baseline frequency to emit.
@@ -120,6 +122,9 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          * @inheritDoc
          */
         Packet::ConstPtr emit(size_t uIndex = 0);
+
+        typedef std::shared_ptr<IOscillator> Ptr;
+        typedef std::shared_ptr<IOscillator const> ConstPtr;
 };
 
 }

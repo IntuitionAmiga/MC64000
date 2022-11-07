@@ -8,7 +8,7 @@
 #include <synth/signal/operator/automute.hpp>
 #include <synth/signal/oscillator/LFO.hpp>
 #include <synth/signal/oscillator/sound.hpp>
-
+#include <synth/signal/envelope/decaypulse.hpp>
 
 using namespace MC64K::Machine;
 using namespace MC64K::Synth::Audio;
@@ -239,6 +239,17 @@ int main(int const iArgCount, char const** aiArgVal) {
     );
     pStream3->enable();
 
+    std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream1)->setPhaseModulator(pStream3);
+
+    Signal::IEnvelope::Ptr pEnv (
+        new Signal::Envelope::DecayPulse(
+            1.0f,
+            0.5f
+        )
+    );
+
+    std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream3)->setLevelEnvelope(pEnv);
+
     Signal::Operator::SimpleMixer oMix(1.0f);
 
     oMix.addInputStream(
@@ -262,12 +273,12 @@ int main(int const iArgCount, char const** aiArgVal) {
     oMix.enable();
 
     writeRawFile(&oMix, "mix_test.raw", 1000);
-
-    auto oAutoMute = Signal::Operator::AutoMuteSilence(
-        pStream1
-    );
-
-    benchmark(&oAutoMute);
+//
+//     auto oAutoMute = Signal::Operator::AutoMuteSilence(
+//         pStream1
+//     );
+//
+//     benchmark(&oAutoMute);
 
 //    benchmark(&oOsc);
 //     Signal::IStream::Ptr pModulator(

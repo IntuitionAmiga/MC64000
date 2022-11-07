@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_PACKET_HPP
-    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_PACKET_HPP
+#ifndef MC64K_SYNTH_SIGNAL_PACKET_HPP
+    #define MC64K_SYNTH_SIGNAL_PACKET_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -46,14 +46,29 @@ class Packet {
          */
         static Ptr create();
 
-        static Ptr getSilence();
+        /**
+         * Obtain a common reference to silence.
+         *
+         * @return ConstPtr
+         */
+        static ConstPtr getSilence();
 
+        /**
+         * Clone a packet and it's data
+         *
+         * @return Ptr
+         */
         Ptr clone() const {
             Ptr pCopy = create();
             std::memcpy(pCopy->aSamples, aSamples, sizeof(aSamples));
             return pCopy;
         }
 
+        /**
+         * Clear the packet (special case of fill)
+         *
+         * @return Ptr
+         */
         Packet* clear() {
             std::memset(aSamples, 0, sizeof(aSamples));
             return this;
@@ -61,43 +76,100 @@ class Packet {
 
         /**
          * Get the next index for packet index aware operations
+         *
+         * @return size_t
          */
         static size_t getNextIndex() {
             return ++uNextIndex;
         }
 
+        /**
+         * Fill a packet with the given value.
+         *
+         * @param  float32 fValue
+         * @return this
+         */
         Packet* fillWith(float32 fValue);
 
+        /**
+         * Scale a packet by the given value.
+         *
+         * @param  float32 fValue
+         * @return this
+         */
         Packet* scaleBy(float32 fValue);
 
+        /**
+         * Bias a packet with the given value.
+         *
+         * @param  float32 fValue
+         * @return this
+         */
         Packet* biasBy(float32 fValue);
 
+        /**
+         * Fill a packet with the given value.
+         *
+         * @param  float32 fScale
+         * @param  float32 fBias
+         * @return this
+         */
         Packet* scaleAndBiasBy(float32 fScale, float32 fBias);
 
+        /**
+         * Sum with the values of another packet
+         *
+         * @param  Packet const* pPacket
+         * @return this
+         */
         Packet* sumWith(Packet const* pPacket);
 
-//         Packet* sumWith(Ptr pPacket) {
-//             return sumWith(pPacket.get());
-//         }
-
-        Packet* sumWith(ConstPtr pPacket) {
+        /**
+         * Sum with the values of another packet
+         *
+         * @param  ConstPtr pPacket
+         * @return this
+         */
+        Packet* sumWith(ConstPtr const& pPacket) {
             return sumWith(pPacket.get());
         }
 
+        /**
+         * Multiply with the values of another packet
+         *
+         * @param  Packet const* pPacket
+         * @return this
+         */
         Packet* modulateWith(Packet const* pPacket);
 
-//         Packet* modulateWith(Ptr pPacket) {
-//             return modulateWith(pPacket.get());
-//         }
-
-        Packet* modulateWith(ConstPtr pPacket) {
+        /**
+         * Multiply with the values of another packet
+         *
+         * @param  ConstPtr pPacket
+         * @return this
+         */
+        Packet* modulateWith(ConstPtr const& pPacket) {
             return modulateWith(pPacket.get());
         }
 
-        Packet* accumulate(Packet const* pPacket, float32 fValue);
+        /**
+         * Accumulate with the scaled values of another packet
+         *
+         * @param  Packet const* pPacket
+         * @param  float32 fScale
+         * @return this
+         */
+        Packet* accumulate(Packet const* pPacket, float32 fScale);
 
-        Packet* accumulate(ConstPtr pPacket, float32 fValue) {
-            return accumulate(pPacket.get(), fValue);
+        /**
+         * Accumulate with the scaled values of another packet
+         *
+         * @param  ConstPtr pPacket
+         * @param  float32 fScale
+         * @return this
+         */
+        Packet* accumulate(ConstPtr const& pPacket, float32 fScale) {
+            return accumulate(pPacket.get(), fScale);
         }
 
         static void dumpStats();

@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_MIXER_HPP
-    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_MIXER_HPP
+#ifndef MC64K_SYNTH_SIGNAL_MIXER_HPP
+    #define MC64K_SYNTH_SIGNAL_MIXER_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -96,7 +96,7 @@ class SimpleMixer : public TStreamCommon, protected TPacketIndexAware {
          * @param  float32 fLevel
          * @return this
          */
-        SimpleMixer* addInputStream(ChannelID uID, IStream::Ptr pSource, float32 fLevel);
+        SimpleMixer* addInputStream(ChannelID uID, IStream::Ptr const& pSource, float32 fLevel);
 
         /**
          *  Removes an input stream, if it is attached.

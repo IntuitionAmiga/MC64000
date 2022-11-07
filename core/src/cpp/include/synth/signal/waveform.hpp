@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_WAVEFORM_HPP
-    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_WAVEFORM_HPP
+#ifndef MC64K_SYNTH_SIGNAL_WAVEFORM_HPP
+    #define MC64K_SYNTH_SIGNAL_WAVEFORM_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -105,12 +105,18 @@ class IWaveform /*: public Util::ISometimesShareable */ {
         /**
          * Calculate a Packets worth of output values for a Packets worth of input values
          *
-         * @param  Packet::ConstPtr oInput
+         * @param  Packet const* pInput
          * @return Packet::Ptr
          */
         virtual Packet::Ptr map(Packet const* pInput) = 0;
 
-        Packet::Ptr map(Packet::ConstPtr pInput) {
+        /**
+         * Calculate a Packets worth of output values for a Packets worth of input values
+         *
+         * @param  Packet::ConstPtr oInput
+         * @return Packet::Ptr
+         */
+        Packet::Ptr map(Packet::ConstPtr const& pInput) {
             return map(pInput.get());
         }
 

@@ -31,7 +31,7 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
  * @inheritDoc
  */
 IOscillator::IOscillator(
-    IWaveform::Ptr pWaveform,
+    IWaveform::Ptr const& pWaveform,
     float32 fInitialFrequency,
     float32 fInitialPhase
 ):
@@ -57,7 +57,7 @@ IOscillator* IOscillator::reset() {
 /**
  * @inheritDoc
  */
-IOscillator* IOscillator::setWaveform(IWaveform::Ptr pNewWaveform) {
+IOscillator* IOscillator::setWaveform(IWaveform::Ptr const& pNewWaveform) {
     if (pNewWaveform.get()) {
         pWaveform       = pNewWaveform->copy();
         fWaveformPeriod = pWaveform->getPeriod();
@@ -104,7 +104,7 @@ Packet::ConstPtr IOscillator::emit(size_t uIndex) {
 namespace MC64K::Synth::Audio::Signal::Oscillator {
 
 LFO::LFO(
-    IWaveform::Ptr pWaveform,
+    IWaveform::Ptr const& pWaveform,
     float32 fFrequency,
     float32 fDepth,
     bool    bRetrigger
@@ -188,7 +188,7 @@ Packet::ConstPtr LFOOneToZero::emitNew() {
 namespace MC64K::Synth::Audio::Signal::Oscillator {
 
 Sound::Sound(
-    IWaveform::Ptr pWaveform,
+    IWaveform::Ptr const& pWaveform,
     float32 fFrequency,
     float32 fPhase
 ) :
@@ -579,7 +579,7 @@ void Sound::outputLevelEnv(Sound* pOscillator) {
     );
     pOscillator->pLastPacket->modulateWith(
         pOscillator
-            ->pLevelModulator
+            ->pLevelEnvelope
             ->emit(pOscillator->uLastIndex).get()
     );
 }

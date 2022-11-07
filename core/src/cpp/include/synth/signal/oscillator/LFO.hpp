@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_OSC_LFO_HPP
-    #define MC64K_STANDARD_TEST_HOST_SYNTH_SIGNAL_OSC_LFO_HPP
+#ifndef MC64K_SYNTH_SIGNAL_OSC_LFO_HPP
+    #define MC64K_SYNTH_SIGNAL_OSC_LFO_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -57,7 +57,7 @@ class LFO : public IOscillator {
          * @param bool           bRetrigger
          */
         LFO(
-            IWaveform::Ptr pWaveform,
+            IWaveform::Ptr const& pWaveform,
             float32 fFrequency = 0.0f,
             float32 fDepth     = 0.5f,
             bool    bRetrigger = false
@@ -114,7 +114,7 @@ class LFOOneToZero : public LFO {
          * @inheritDoc
          */
         LFOOneToZero(
-            IWaveform::Ptr pWaveform,
+            IWaveform::Ptr const& pWaveform,
             float32 fFrequency = 0.0f,
             float32 fDepth     = 0.5f,
             bool    bRetrigger = false
@@ -139,7 +139,7 @@ class LFOZeroToOne : public LFO {
          * @inheritDoc
          */
         LFOZeroToOne(
-            IWaveform::Ptr pWaveform,
+            IWaveform::Ptr const& pWaveform,
             float32 fFrequency = 0.0f,
             float32 fDepth     = 0.5f,
             bool    bRetrigger = false

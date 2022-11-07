@@ -104,8 +104,9 @@ SimpleMixer* SimpleMixer::setOutputLevel(float32 fLevel) {
  * @param  float32 fLevel
  * @return this
  */
-SimpleMixer* SimpleMixer::addInputStream(SimpleMixer::ChannelID uID, IStream::Ptr pSource, float32 fLevel) {
+SimpleMixer* SimpleMixer::addInputStream(SimpleMixer::ChannelID uID, IStream::Ptr const& pSource, float32 fLevel) {
     if (pSource.get()) {
+
         std::fprintf(stderr, "SimpleMixer %p addInputStream() setting %p [ID:%lu]\n", this, pSource.get(), uID);
         Channel& roChannel = oChannels[uID];
         roChannel.pSource  = pSource;
@@ -297,7 +298,7 @@ AutoMuteSilence* AutoMuteSilence::setThreshold(float32 fRMSLevel) {
 /**
  * @inheritDoc
  */
-AutoMuteSilence* AutoMuteSilence::setStream(IStream::Ptr pInput) {
+AutoMuteSilence* AutoMuteSilence::setStream(IStream::Ptr const& pInput) {
     pSource = pInput;
     if (!pSource.get()) {
         disable();
