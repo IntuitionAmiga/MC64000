@@ -26,9 +26,19 @@ class Shape : public IEnvelope {
         static constexpr float32 const MIN_TIME = 0.001f;
         static constexpr float32 const MAX_TIME = 100.0f;
 
-        typedef struct { float32 fLevel, fTime; } Point;
+        /**
+         * Basic envelope point structure. A level that is reached after a length of time.
+         */
+        struct Point {
+            float32 fLevel;
+            float32 fTime;
+        };
 
         Shape(float32 fInitial, Point const* pPoints, size_t uNumPoints);
+
+        /**
+         * Convenience constructor that allows brace initialised input
+         */
         Shape(float32 fInitial, std::initializer_list<Point> const& roPoints):
             Shape(fInitial, roPoints.begin(), roPoints.size()) {}
         ~Shape();
@@ -39,7 +49,14 @@ class Shape : public IEnvelope {
         Packet::ConstPtr emit(size_t uIndex);
 
     private:
-        typedef struct { size_t uSamplePosition; float64 fLevel; } ProcessPoint;
+        /**
+         * Internal representation of envelope point, expressed in terms of output sample position
+         * and higher precision level (after taking into account both time and level scale properties.
+         */
+        struct ProcessPoint {
+            size_t  uSamplePosition;
+            float64 fLevel;
+        };
 
         Packet::Ptr   pOutputPacket;
         Packet::Ptr   pFinalPacket;

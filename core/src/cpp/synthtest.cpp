@@ -276,11 +276,12 @@ void mixtest() {
 int main(int const iArgCount, char const** aiArgVal) {
 
     Signal::Envelope::Shape oShape(
-        0.0f,
+        0.0f, // start at zero
         {
-            {1.0f, 0.5f},
-            {0.0f, 2.0f}
-        }
+            {1.0f, 0.5f}, // increase to 1.0 after +0.5s
+            {0.5f, 0.5f}, // decrease to 0.5 after +0.5s
+            {0.0f, 2.0f}, // decrease to 0.0 after +2.0s
+        } // total duration 3.0s
     );
 
 
