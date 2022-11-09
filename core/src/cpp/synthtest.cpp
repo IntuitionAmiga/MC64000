@@ -9,6 +9,7 @@
 #include <synth/signal/oscillator/LFO.hpp>
 #include <synth/signal/oscillator/sound.hpp>
 #include <synth/signal/envelope/decaypulse.hpp>
+#include <synth/signal/envelope/shape.hpp>
 
 using namespace MC64K::Machine;
 using namespace MC64K::Synth::Audio;
@@ -205,13 +206,7 @@ void benchmark(Signal::IStream* pStream) {
     );
 }
 
-/**
- * Main program
- */
-int main(int const iArgCount, char const** aiArgVal) {
-
-    //testWaveforms();
-
+void mixtest() {
     Signal::IStream::Ptr pStream1 (
         new Signal::Oscillator::Sound(
             Signal::IWaveform::get(Signal::IWaveform::SINE),
@@ -273,25 +268,20 @@ int main(int const iArgCount, char const** aiArgVal) {
     oMix.enable();
 
     writeRawFile(&oMix, "mix_test.raw", 1000);
-//
-//     auto oAutoMute = Signal::Operator::AutoMuteSilence(
-//         pStream1
-//     );
-//
-//     benchmark(&oAutoMute);
+}
 
-//    benchmark(&oOsc);
-//     Signal::IStream::Ptr pModulator(
-//         new Signal::Oscillator::LFOZeroToOne(
-//             Signal::IWaveform::get(Signal::IWaveform::SAW_UP),
-//             0.5f,
-//             48.0f
-//         )
-//     );
-//     pModulator->enable();
-//     oOsc.setPitchModulator(pModulator);
-//    writeRawFile(&oOsc, "osc_test.raw", 5000);
+/**
+ * Main program
+ */
+int main(int const iArgCount, char const** aiArgVal) {
 
+    Signal::Envelope::Shape oShape(
+        0.0f,
+        {
+            {1.0f, 0.5f},
+            {0.0f, 2.0f}
+        }
+    );
 
 
     Signal::Packet::dumpStats();
