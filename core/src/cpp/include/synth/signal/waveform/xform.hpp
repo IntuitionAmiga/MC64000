@@ -42,29 +42,29 @@ class XForm : public IWaveform {
 
         // 2 << N * { phase multiplier, phase displacement, scale multiplier, bias }
 
-        float32 aTransform[4 * SIZE] __attribute__ ((aligned (16))) = { };
-        Ptr     pWaveform;
+        float32 afTransform[4 * SIZE] __attribute__ ((aligned (16))) = { };
+        Ptr     poWaveform;
         float32 fPeriodAdjust;
 
     public:
-        XForm(Ptr pSourceWaveform, float32 const* pCustomTransform):
-            pWaveform(pSourceWaveform)
+        XForm(Ptr poSourceWaveform, float32 const* afCustomTransform):
+            poWaveform(poSourceWaveform)
         {
             static_assert(N < 4, "Invalid size exponent for XForm");
-            fPeriodAdjust = pWaveform->getPeriod() / PERIOD;
-            if (pCustomTransform) {
+            fPeriodAdjust = poWaveform->getPeriod() / PERIOD;
+            if (afCustomTransform) {
                 for (unsigned i = 0; i < T_SIZE; ++i) {
-                    aTransform[i] = pCustomTransform[i];
+                    afTransform[i] = afCustomTransform[i];
                 }
             }
             std::fprintf(stderr, "Created XForm<%u> at %p with matrix:\n", (uint32)N, this);
             for (unsigned i = 0; i < T_SIZE; i += 4) {
                 std::fprintf(
                     stderr, "\t| %8.3f %8.3f %8.3f %8.3f |\n",
-                    aTransform[i],
-                    aTransform[i + 1],
-                    aTransform[i + 2],
-                    aTransform[i + 3]
+                    afTransform[i],
+                    afTransform[i + 1],
+                    afTransform[i + 2],
+                    afTransform[i + 3]
                 );
             }
         }
@@ -72,8 +72,8 @@ class XForm : public IWaveform {
         /**
          * Constructor for initialiser list
          */
-        XForm(Ptr pSourceWaveform, std::initializer_list<float32> const& roCustomTransform):
-            XForm(pSourceWaveform, roCustomTransform.begin())
+        XForm(Ptr poSourceWaveform, std::initializer_list<float32> const& roCustomTransform):
+            XForm(poSourceWaveform, roCustomTransform.begin())
         {
         }
 
@@ -91,28 +91,28 @@ class XForm : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* pInput) {
+        Packet::Ptr map(Packet const* poInput) {
             Packet::Ptr    pReshaped = Packet::create();
-            float32*       pDest     = pReshaped->aSamples;
-            float32 const* pSrc      = pInput->aSamples;
+            float32*       pDest     = pReshaped->afSamples;
+            float32 const* pSrc      = poInput->afSamples;
 
             // Apply input phase modification
             for (unsigned i = 0; i < PACKET_SIZE; ++i) {
                 float32 fVal          = pSrc[i];
                 float32 fFloor        = std::floor(fVal);
                 int32   iPhase        = (int32)fFloor;
-                float32 const* aSlice = aTransform + ((iPhase & (SIZE - 1)) << 2);
+                float32 const* aSlice = afTransform + ((iPhase & (SIZE - 1)) << 2);
                 pDest[i] = fPeriodAdjust * (
                     aSlice[PHASE_MUL] * (fVal - fFloor) + aSlice[PHASE_ADD]
                 );
             }
 
-            pReshaped = pWaveform->map(pReshaped);
+            pReshaped = poWaveform->map(pReshaped);
 
             // Apply the output amplitude modification
-            pDest = pReshaped->aSamples;
+            pDest = pReshaped->afSamples;
             for (unsigned i = 0; i < PACKET_SIZE; ++i) {
-                float32 const* aSlice = aTransform + ((((int32)std::floor(pSrc[i])) & (SIZE - 1)) << 2);
+                float32 const* aSlice = afTransform + ((((int32)std::floor(pSrc[i])) & (SIZE - 1)) << 2);
                 pDest[i] = (pDest[i] * aSlice[LEVEL_MUL]) + aSlice[LEVEL_ADD];
             }
             return pReshaped;
@@ -124,11 +124,11 @@ class XForm : public IWaveform {
         float32 value(float32 fTime) const {
             float32 fFloor        = std::floor(fTime);
             int32   iPhase        = (int32)fFloor;
-            float32 const* aSlice = aTransform + ((iPhase & (SIZE - 1)) << 2);
+            float32 const* aSlice = afTransform + ((iPhase & (SIZE - 1)) << 2);
             float32 fInput        = fPeriodAdjust * (
                 aSlice[PHASE_MUL] * (fTime - fFloor) + aSlice[PHASE_ADD]
             );
-            return (pWaveform->value(fInput) * aSlice[LEVEL_MUL]) + aSlice[LEVEL_ADD];
+            return (poWaveform->value(fInput) * aSlice[LEVEL_MUL]) + aSlice[LEVEL_ADD];
         }
 
         /**
@@ -159,8 +159,8 @@ class XForm : public IWaveform {
             if constexpr (bMutable) {
                 return Ptr(
                     new XForm<N, true>(
-                        pWaveform->copy(),
-                        aTransform
+                        poWaveform->copy(),
+                        afTransform
                     )
                 );
             } else {

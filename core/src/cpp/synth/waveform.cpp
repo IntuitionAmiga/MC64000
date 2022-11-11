@@ -32,10 +32,10 @@ Sine::Sine() {
  *
  * Branchless techniques used here to improve throughput.
  */
-Packet::Ptr Sine::map(Packet const* pInput) {
+Packet::Ptr Sine::map(Packet const* poInput) {
     Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->aSamples;
-    float32 const* pSrc = pInput->aSamples;
+    float32* pDest      = pOutput->afSamples;
+    float32 const* pSrc = poInput->afSamples;
 
     union {
         int32   iPi;
@@ -77,10 +77,10 @@ Triangle::Triangle() {
 /**
  * @inheritDoc
  */
-Packet::Ptr Triangle::map(Packet const* pInput) {
+Packet::Ptr Triangle::map(Packet const* poInput) {
     Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->aSamples;
-    float32 const* pSrc = pInput->aSamples;
+    float32* pDest      = pOutput->afSamples;
+    float32 const* pSrc = poInput->afSamples;
 
     union {
         int32   iTwo;
@@ -120,10 +120,10 @@ SawDown::SawDown() {
 /**
  * @inheritDoc
  */
-Packet::Ptr SawDown::map(Packet const* pInput) {
+Packet::Ptr SawDown::map(Packet const* poInput) {
     Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->aSamples;
-    float32 const* pSrc = pInput->aSamples;
+    float32* pDest      = pOutput->afSamples;
+    float32 const* pSrc = poInput->afSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
         float32 fSrc = pSrc[i] + HALF;
         pDest[i] = TWO * ((float32)std::ceil(fSrc) - fSrc - HALF);
@@ -148,10 +148,10 @@ SawUp::SawUp() {
 /**
  * @inheritDoc
  */
-Packet::Ptr SawUp::map(Packet const* pInput) {
+Packet::Ptr SawUp::map(Packet const* poInput) {
     Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->aSamples;
-    float32 const* pSrc = pInput->aSamples;
+    float32* pDest      = pOutput->afSamples;
+    float32 const* pSrc = poInput->afSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
         float32 fSrc = pSrc[i] + HALF;
         pDest[i] = TWO * (fSrc - (float32)std::floor(fSrc) - HALF);
@@ -185,10 +185,10 @@ Square::Square() {
  *
  * Branchless techniques used here to improve throughput.
  */
-Packet::Ptr Square::map(Packet const* pInput) {
+Packet::Ptr Square::map(Packet const* poInput) {
     Packet::Ptr pOutput = Packet::create();
-    int32* pDest = (int32*)pOutput->aSamples;
-    float32 const* pSrc = pInput->aSamples;
+    int32* pDest = (int32*)pOutput->afSamples;
+    float32 const* pSrc = poInput->afSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
         pDest[i] = ONE_IEEE_32 | ((int32)std::floor(pSrc[i]) & 1) << 31;
     }
@@ -212,10 +212,10 @@ FixedPWM::FixedPWM(float32 fWidth) {
 /**
  * @inheritDoc
  */
-Packet::Ptr FixedPWM::map(Packet const* pInput) {
+Packet::Ptr FixedPWM::map(Packet const* poInput) {
     Packet::Ptr pOutput = Packet::create();
-    int32* pDest = (int32*)pOutput->aSamples;
-    float32 const* pSrc = pInput->aSamples;
+    int32* pDest = (int32*)pOutput->afSamples;
+    float32 const* pSrc = poInput->afSamples;
     union {
         int32   iResult;
         float32 fResult;
@@ -252,7 +252,7 @@ std::mt19937 mt_rand;
 WhiteNoise::WhiteNoise() {
     fNormalise = 4.0f / (float64) mt_rand.max();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        aRandom[u] = (uint32)mt_rand();
+        auRandom[u] = (uint32)mt_rand();
     }
 }
 
@@ -266,18 +266,18 @@ WhiteNoise::~WhiteNoise() {
  * We get one new random value, scale it to floating point then multiply our existing random
  * table by this value. This results in the low order bit preservation after overflow.
  */
-Packet::Ptr WhiteNoise::map(Packet const* pInput) {
+Packet::Ptr WhiteNoise::map(Packet const* poInput) {
 
     constexpr float64 const RAND_SCALE = 1.0f/65536.0f;
     constexpr uint32  const WORD_MASK  = 0x7FFFFFFF;
     Packet::Ptr pOutput = Packet::create();
-    float32* aSamples   = pOutput->aSamples;
+    float32* afSamples   = pOutput->afSamples;
     float64  fRandom    = RAND_SCALE * (float64)mt_rand();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         // Update the random buffer and output buffer as we go
-        volatile uint32 uNextRandom = (uint32)(aRandom[u] * fRandom) & WORD_MASK;
-        aRandom[u]  = uNextRandom;
-        aSamples[u] = (float32)(uNextRandom * fNormalise) - 1.0f;
+        volatile uint32 uNextRandom = (uint32)(auRandom[u] * fRandom) & WORD_MASK;
+        auRandom[u]  = uNextRandom;
+        afSamples[u] = (float32)(uNextRandom * fNormalise) - 1.0f;
     }
 
     return pOutput;
@@ -292,8 +292,8 @@ float32 WhiteNoise::valueAt(float32 fTime) {
 
 class NoopDeleter {
     public:
-        void operator()(IWaveform* pWaveform) const {
-            std::fprintf(stderr, "Not deleting managed waveform at %p\n", pWaveform);
+        void operator()(IWaveform* poWaveform) const {
+            std::fprintf(stderr, "Not deleting managed waveform at %p\n", poWaveform);
         }
 };
 

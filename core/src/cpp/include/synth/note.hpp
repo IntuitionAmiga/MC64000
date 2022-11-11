@@ -61,7 +61,6 @@ class Note {
             constexpr float32 const fCoeffienct = 0.34365f;
             constexpr float32 const fOne = 1.0f;
             fResult     = (fCoeffienct * fOctave * fOctave + (fOne - fCoeffienct) * fOctave + fOne);
-
             uResult     = (uResult & 0x007FFFFF) | uExp;
             return fResult;
         }

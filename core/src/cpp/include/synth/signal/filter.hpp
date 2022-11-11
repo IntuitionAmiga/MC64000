@@ -45,10 +45,10 @@ class IFilter : public IStream {
         /**
          * Set a control stream (envelope, LFO etc) for the cutoff control. Setting null clears any existing control.
          *
-         * @param  IStream|null oCutoffControl
+         * @param  IStream|null poCutoffControl
          * @return this
          */
-        virtual IFilter* setCutoffControl(IStream* oCutoffControl) = 0;
+        virtual IFilter* setCutoffControl(IStream* poCutoffControl) = 0;
 
         /**
          * Set the baseline resonance level. In the absence of a resonance controller, this is the fixed resonance.
@@ -64,10 +64,10 @@ class IFilter : public IStream {
         /**
          * Set a control stream (envelope, LFO etc) for the resonance control. Setting null clears any existing control.
          *
-         * @param  IStream|null oResonanceControl
+         * @param  IStream|null poResonanceControl
          * @return this
          */
-        virtual IFilter* setResonanceControl(IStream* oResonanceControl) = 0;
+        virtual IFilter* setResonanceControl(IStream* poResonanceControl) = 0;
 };
 
 }

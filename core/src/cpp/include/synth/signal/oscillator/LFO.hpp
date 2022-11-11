@@ -51,13 +51,13 @@ class LFO : public IOscillator {
 
     public:
         /**
-         * @param IWaveform::Ptr pWaveform
+         * @param IWaveform::Ptr poWaveform
          * @param float32        fFrequency
          * @param float32        fDepth
          * @param bool           bRetrigger
          */
         LFO(
-            IWaveform::Ptr const& pWaveform,
+            IWaveform::Ptr const& poWaveform,
             float32 fFrequency = 0.0f,
             float32 fDepth     = 0.5f,
             bool    bRetrigger = false
@@ -114,11 +114,11 @@ class LFOOneToZero : public LFO {
          * @inheritDoc
          */
         LFOOneToZero(
-            IWaveform::Ptr const& pWaveform,
+            IWaveform::Ptr const& poWaveform,
             float32 fFrequency = 0.0f,
             float32 fDepth     = 0.5f,
             bool    bRetrigger = false
-        ) : LFO(pWaveform, fFrequency, fDepth, bRetrigger) {
+        ) : LFO(poWaveform, fFrequency, fDepth, bRetrigger) {
 
         }
 };
@@ -139,11 +139,11 @@ class LFOZeroToOne : public LFO {
          * @inheritDoc
          */
         LFOZeroToOne(
-            IWaveform::Ptr const& pWaveform,
+            IWaveform::Ptr const& poWaveform,
             float32 fFrequency = 0.0f,
             float32 fDepth     = 0.5f,
             bool    bRetrigger = false
-        ) : LFO(pWaveform, fFrequency, fDepth, bRetrigger) {
+        ) : LFO(poWaveform, fFrequency, fDepth, bRetrigger) {
 
         }
 };

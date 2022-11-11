@@ -31,7 +31,7 @@ class Packet; // Forwards reference
 
 class Packet {
     public:
-        float32 aSamples[PACKET_SIZE] __attribute__ ((aligned (16)));
+        float32 afSamples[PACKET_SIZE] __attribute__ ((aligned (16)));
 
         /**
          * Shared pointer types for passing around.
@@ -60,7 +60,7 @@ class Packet {
          */
         Ptr clone() const {
             Ptr pCopy = create();
-            std::memcpy(pCopy->aSamples, aSamples, sizeof(aSamples));
+            std::memcpy(pCopy->afSamples, afSamples, sizeof(afSamples));
             return pCopy;
         }
 
@@ -70,7 +70,7 @@ class Packet {
          * @return Ptr
          */
         Packet* clear() {
-            std::memset(aSamples, 0, sizeof(aSamples));
+            std::memset(afSamples, 0, sizeof(afSamples));
             return this;
         }
 
@@ -119,57 +119,57 @@ class Packet {
         /**
          * Sum with the values of another packet
          *
-         * @param  Packet const* pPacket
+         * @param  Packet const* poPacket
          * @return this
          */
-        Packet* sumWith(Packet const* pPacket);
+        Packet* sumWith(Packet const* poPacket);
 
         /**
          * Sum with the values of another packet
          *
-         * @param  ConstPtr pPacket
+         * @param  ConstPtr poPacket
          * @return this
          */
-        Packet* sumWith(ConstPtr const& pPacket) {
-            return sumWith(pPacket.get());
+        Packet* sumWith(ConstPtr const& poPacket) {
+            return sumWith(poPacket.get());
         }
 
         /**
          * Multiply with the values of another packet
          *
-         * @param  Packet const* pPacket
+         * @param  Packet const* poPacket
          * @return this
          */
-        Packet* modulateWith(Packet const* pPacket);
+        Packet* modulateWith(Packet const* poPacket);
 
         /**
          * Multiply with the values of another packet
          *
-         * @param  ConstPtr pPacket
+         * @param  ConstPtr poPacket
          * @return this
          */
-        Packet* modulateWith(ConstPtr const& pPacket) {
-            return modulateWith(pPacket.get());
+        Packet* modulateWith(ConstPtr const& poPacket) {
+            return modulateWith(poPacket.get());
         }
 
         /**
          * Accumulate with the scaled values of another packet
          *
-         * @param  Packet const* pPacket
+         * @param  Packet const* poPacket
          * @param  float32 fScale
          * @return this
          */
-        Packet* accumulate(Packet const* pPacket, float32 fScale);
+        Packet* accumulate(Packet const* poPacket, float32 fScale);
 
         /**
          * Accumulate with the scaled values of another packet
          *
-         * @param  ConstPtr pPacket
+         * @param  ConstPtr poPacket
          * @param  float32 fScale
          * @return this
          */
-        Packet* accumulate(ConstPtr const& pPacket, float32 fScale) {
-            return accumulate(pPacket.get(), fScale);
+        Packet* accumulate(ConstPtr const& poPacket, float32 fScale) {
+            return accumulate(poPacket.get(), fScale);
         }
 
         static void dumpStats();
@@ -194,7 +194,7 @@ class Packet {
          *
          * todo: Implement a fast recycle path with a pool of Packets
          */
-        static void destroy(Packet* pPacket);
+        static void destroy(Packet* poPacket);
 
         /**
          * Helper class for Ptr, ensures that deletion routes back to destroy()

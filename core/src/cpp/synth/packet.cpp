@@ -24,49 +24,49 @@ uint64 Packet::uPeakPacketsInUse = 0;
 
 Packet* Packet::fillWith(float32 fValue) {
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        aSamples[u] = fValue;
+        afSamples[u] = fValue;
     }
     return this;
 }
 
 Packet* Packet::scaleBy(float32 fValue) {
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        aSamples[u] *= fValue;
+        afSamples[u] *= fValue;
     }
     return this;
 }
 
 Packet* Packet::biasBy(float32 fValue) {
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        aSamples[u] += fValue;
+        afSamples[u] += fValue;
     }
     return this;
 }
 
 Packet* Packet::scaleAndBiasBy(float32 fScale, float32 fBias) {
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        aSamples[u] = aSamples[u] * fScale + fBias;
+        afSamples[u] = afSamples[u] * fScale + fBias;
     }
     return this;
 }
 
-Packet* Packet::sumWith(Packet const* pPacket) {
+Packet* Packet::sumWith(Packet const* poPacket) {
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        aSamples[u] += pPacket->aSamples[u];
+        afSamples[u] += poPacket->afSamples[u];
     }
     return this;
 }
 
-Packet* Packet::modulateWith(Packet const* pPacket) {
+Packet* Packet::modulateWith(Packet const* poPacket) {
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        aSamples[u] *= pPacket->aSamples[u];
+        afSamples[u] *= poPacket->afSamples[u];
     }
     return this;
 }
 
-Packet* Packet::accumulate(Packet const* pPacket, float32 fValue) {
+Packet* Packet::accumulate(Packet const* poPacket, float32 fValue) {
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-        aSamples[u] += pPacket->aSamples[u] * fValue;
+        afSamples[u] += poPacket->afSamples[u] * fValue;
     }
     return this;
 }
@@ -81,8 +81,8 @@ Packet* Packet::accumulate(Packet const* pPacket, float32 fValue) {
  */
 class Packet::Deleter {
     public:
-        void operator()(Packet* pPacket) const {
-            Packet::destroy(pPacket);
+        void operator()(Packet* poPacket) const {
+            Packet::destroy(poPacket);
         }
 };
 
@@ -90,12 +90,12 @@ class Packet::Deleter {
  * Create a new Packet instance and obtain a shared pointer.
  */
 Packet::Ptr Packet::create() {
-    Packet* pPacket = new Packet();
+    Packet* poPacket = new Packet();
     uint64 uPacketsInUse = ++uPacketsCreated - uPacketsDestroyed;
     if (uPacketsInUse > uPeakPacketsInUse) {
         uPeakPacketsInUse = uPacketsInUse;
     }
-    return Ptr(pPacket, Deleter());
+    return Ptr(poPacket, Deleter());
 }
 
 /**
@@ -113,10 +113,10 @@ Packet::ConstPtr Packet::getSilence() {
 /**
  * Free a Packet instance
  */
-void Packet::destroy(Packet* pPacket) {
-    if (pPacket) {
+void Packet::destroy(Packet* poPacket) {
+    if (poPacket) {
         ++uPacketsDestroyed;
-        delete pPacket;
+        delete poPacket;
     }
 }
 

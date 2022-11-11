@@ -70,7 +70,7 @@ class IStream {
          *
          * The returned packet is read only.
          *
-         * @param  size_t iIndex
+         * @param  size_t uIndex
          * @return Packet::ConstPtr
          */
         virtual Packet::ConstPtr emit(size_t uIndex = 0) = 0;

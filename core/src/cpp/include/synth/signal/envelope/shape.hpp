@@ -48,6 +48,8 @@ class Shape : public IEnvelope {
          */
         Packet::ConstPtr emit(size_t uIndex);
 
+        Shape* reset();
+
     private:
         /**
          * Internal representation of envelope point, expressed in terms of output sample position
@@ -73,7 +75,7 @@ class Shape : public IEnvelope {
 
         void processPointList(float32 fInitial, Point const* pInputPoints, size_t uNumPoints);
         void recalculate();
-        void updateInterpolants(size_t uIndex);
+        void updateInterpolants();
 };
 
 } // namespace

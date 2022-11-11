@@ -22,7 +22,7 @@ namespace MC64K::Synth::Audio::Signal::Envelope {
 class DecayPulse : public IEnvelope {
 
     protected:
-        Packet::Ptr pLastPacket;
+        Packet::Ptr poLastPacket;
         float32     fInitial;
         float32     fHalflife;
         float32     fTarget;

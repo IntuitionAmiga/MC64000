@@ -37,13 +37,13 @@ class SimpleMixer : public TStreamCommon, protected TPacketIndexAware {
          * Structure that represents an input channel and level.
          */
         struct Channel {
-            IStream::Ptr pSource;
+            IStream::Ptr poSource;
             float32      fLevel;
         };
 
         std::unordered_map<ChannelID, Channel> oChannels;
 
-        Packet::Ptr pLastPacket;
+        Packet::Ptr poLastPacket;
 
         float32 fOutputLevel;
 
@@ -92,11 +92,11 @@ class SimpleMixer : public TStreamCommon, protected TPacketIndexAware {
          * no action is taken.
          *
          * @param  ChannelID uID
-         * @param  IStream::Ptr pSource
+         * @param  IStream::Ptr poSource
          * @param  float32 fLevel
          * @return this
          */
-        SimpleMixer* addInputStream(ChannelID uID, IStream::Ptr const& pSource, float32 fLevel);
+        SimpleMixer* addInputStream(ChannelID uID, IStream::Ptr const& poSource, float32 fLevel);
 
         /**
          *  Removes an input stream, if it is attached.

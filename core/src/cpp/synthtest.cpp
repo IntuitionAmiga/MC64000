@@ -19,15 +19,15 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
  * Outputs a stream to a 16-bit raw file for a number of packets.
  */
 void writeRawFile(Signal::IStream* pStream, char const* sName, size_t uPackets) {
-    int16 aSamples[PACKET_SIZE];
+    int16 afSamples[PACKET_SIZE];
     std::FILE* pRawFile = std::fopen(sName, "wb");
     if (pRawFile) {
         for (size_t uIndex = 0; uIndex < uPackets; ++uIndex) {
             auto pOutput = pStream->emit();
             for (unsigned i = 0; i < PACKET_SIZE; ++i) {
-                aSamples[i] = (int16)(32000 * pOutput->aSamples[i]);
+                afSamples[i] = (int16)(32000 * pOutput->afSamples[i]);
             }
-            std::fwrite(aSamples, sizeof(int16), PACKET_SIZE, pRawFile);
+            std::fwrite(afSamples, sizeof(int16), PACKET_SIZE, pRawFile);
         }
         std::fclose(pRawFile);
     }
@@ -102,9 +102,9 @@ void testWaveforms() {
     char sFilename[80] = "\0";
 
     for (auto eShape : aWaveShapes) {
-        auto pInput    = Signal::Packet::create();
-        auto pWaveform = Signal::IWaveform::get(eShape);
-        auto pCopy     = pWaveform->copy();
+        Signal::Packet::Ptr poInput       = Signal::Packet::create();
+        Signal::IWaveform::Ptr poWaveform = Signal::IWaveform::get(eShape);
+        Signal::IWaveform::Ptr poCopy     = poWaveform->copy();
 
         std::printf(
             "Testing Waveform Shape %d (%s)\n"
@@ -112,25 +112,25 @@ void testWaveforms() {
             "\tcopy() returns %s instance at %p\n",
             (int)eShape,
             aWaveNames[(int)eShape],
-            pWaveform->getPeriod(),
-            (pCopy.get() == pWaveform.get() ? "original" : "new"),
-            pWaveform.get()
+            poWaveform->getPeriod(),
+            (poCopy.get() == poWaveform.get() ? "original" : "new"),
+            poWaveform.get()
         );
 
-        float32 fScale = pWaveform->getPeriod();
+        float32 fScale = poWaveform->getPeriod();
         float32 fStart = -fScale;
         fScale /= 128.0f;
 
         for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-            pInput->aSamples[u] = fStart + (float32)u * fScale;
+            poInput->afSamples[u] = fStart + (float32)u * fScale;
         }
 
-        auto pOutput = pWaveform->map(pInput);
+        Signal::Packet::Ptr pOutput = poWaveform->map(poInput);
 
-        int16 aSamples[PACKET_SIZE];
+        int16 afSamples[PACKET_SIZE];
 
         for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-            aSamples[u] = (int16)(32000.0 * pOutput->aSamples[u]);
+            afSamples[u] = (int16)(32000.0 * pOutput->afSamples[u]);
         }
 
 
@@ -145,7 +145,7 @@ void testWaveforms() {
         if (pRawFile) {
             std::printf("\tWriting %s...\n", sFilename);
             for (unsigned i = 0; i < 1000; ++i) {
-                std::fwrite(aSamples, sizeof(int16), PACKET_SIZE, pRawFile);
+                std::fwrite(afSamples, sizeof(int16), PACKET_SIZE, pRawFile);
             }
             std::fclose(pRawFile);
             std::printf("\tWrote 16-bit binary %s\n", sFilename);
@@ -154,7 +154,7 @@ void testWaveforms() {
         std::printf("\tBenchmarking map() for 1M packets: ");
         Nanoseconds::Value uMark = Nanoseconds::mark();
         for (unsigned u = 0; u < 1000000; ++u) {
-            auto pOutput = pWaveform->map(pInput);
+            auto pOutput = poWaveform->map(poInput);
         }
         uMark = Nanoseconds::mark() - uMark;
         float64 fSeconds = 1.e-9 * (float64)uMark;
@@ -275,15 +275,34 @@ void mixtest() {
  */
 int main(int const iArgCount, char const** aiArgVal) {
 
-    Signal::Envelope::Shape oShape(
-        0.0f, // start at zero
-        {
-            {1.0f, 0.5f}, // increase to 1.0 after +0.5s
-            {0.5f, 0.5f}, // decrease to 0.5 after +0.5s
-            {0.0f, 2.0f}, // decrease to 0.0 after +2.0s
-        } // total duration 3.0s
+    Signal::IEnvelope::Ptr poEnv (
+        new Signal::Envelope::Shape(
+            0.0f, // start at zero
+            {
+                {1.0f, 0.5f}, // increase to 1.0 after +0.5s
+                {0.5f, 0.5f}, // decrease to 0.5 after +0.5s
+                {0.0f, 2.0f}, // decrease to 0.0 after +2.0s
+            } // total duration 3.0s
+        )
     );
 
+
+
+    Signal::IStream::Ptr pStream1 (
+        new Signal::Oscillator::Sound(
+            Signal::IWaveform::get(Signal::IWaveform::TRIANGLE),
+            220.0f,
+            0.0f
+        )
+    );
+
+    std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream1)
+        ->setLevelEnvelope(poEnv)
+        ->setPhaseFeedbackIndex(0.25);
+
+    pStream1->enable();
+
+    writeRawFile(pStream1.get(), "env_test.raw", 600);
 
     Signal::Packet::dumpStats();
 

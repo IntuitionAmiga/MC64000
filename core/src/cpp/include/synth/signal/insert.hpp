@@ -37,10 +37,10 @@ class IInsert : public IStream {
         /**
          * Set the InputStream for this Insert. Until an input stream is set, the insert is disable()d.
          *
-         * @param  IStream|null $oInputStream
+         * @param  IStream|null poInputStream
          * @return this
          */
-        virtual IInsert* setInputStream(IStream* oInputStream) = 0;
+        virtual IInsert* setInputStream(IStream* poInputStream) = 0;
 
         /**
          * Get the dry signal level for this Insert.

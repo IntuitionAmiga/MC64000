@@ -36,7 +36,7 @@ class Square : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* pInput);
+        Packet::Ptr map(Packet const* poInput);
 
         /**
          * Static version of the value function that can be called and inlined explicitly from
@@ -119,7 +119,7 @@ class FixedPWM : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* pInput);
+        Packet::Ptr map(Packet const* poInput);
 
         /**
          * Static version of the value function that can be called and inlined explicitly from

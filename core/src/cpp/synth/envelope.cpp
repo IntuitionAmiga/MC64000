@@ -101,21 +101,21 @@ Packet::ConstPtr DecayPulse::emit(size_t uIndex) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return pLastPacket;
+        return poLastPacket;
     }
     if (bParameterChanged) {
         recalculateDecay();
     }
-    if (!pLastPacket.get()) {
-        pLastPacket = Packet::create();
+    if (!poLastPacket.get()) {
+        poLastPacket = Packet::create();
     }
-    float32* aSamples = pLastPacket->aSamples;
+    float32* afSamples = poLastPacket->afSamples;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         fCurrent *= fDecayPerSample;
-        aSamples[u] = (float32)fCurrent + fTarget;
+        afSamples[u] = (float32)fCurrent + fTarget;
     }
     uSamplePosition += PACKET_SIZE;
-    return pLastPacket;
+    return poLastPacket;
 }
 
 /**
@@ -165,8 +165,9 @@ Shape::Shape(float32 fInitial, Point const* pInputPoints, size_t uNumInputPoints
     pPoints(0),
     uNumPoints(0)
 {
-    std::fprintf(stderr, "Created Shape at %p\n", this);
+    std::fprintf(stderr, "Created Shape at %p with %lu vertices\n", this, uNumInputPoints);
     processPointList(fInitial, pInputPoints, uNumInputPoints);
+    enable();
 }
 
 /**
@@ -176,8 +177,51 @@ Shape::~Shape() {
     std::fprintf(stderr, "Destroyed Shape at %p\n", this);
 }
 
+Shape* Shape::reset() {
+    IEnvelope::reset();
+    pNextProcessPoint = pProcessPoints.get();
+    return this;
+}
+
 Packet::ConstPtr Shape::emit(size_t uIndex) {
-    return Packet::getSilence();
+    if (!bEnabled) {
+        return Packet::getSilence();
+    }
+    if (useLast(uIndex)) {
+        return pOutputPacket;
+    }
+    if (bParameterChanged) {
+        recalculate();
+    }
+    if (uSamplePosition > uFinalSamplePosition) {
+        uSamplePosition += PACKET_SIZE;
+        return pFinalPacket;
+    }
+
+    if (!pOutputPacket.get()) {
+        pOutputPacket = Packet::create();
+    }
+
+    // Does the next packet contain a vertex?
+    if (uSamplePosition + PACKET_SIZE > pNextProcessPoint->uSamplePosition) {
+        // version that checks for interpolant change. There could even be more than one...
+        float32* afSamples = pOutputPacket->afSamples;
+        for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+            if (pNextProcessPoint->uSamplePosition == uSamplePosition) {
+                updateInterpolants();
+                ++pNextProcessPoint; // we should probably range check this too...
+            }
+            afSamples[u] = (float32)(fYOffset + (float64)(++uSamplePosition - uXOffset) * fGradient);
+        }
+    } else {
+        // version that doesn't check for interpolant change
+        float32* afSamples = pOutputPacket->afSamples;
+        for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+            afSamples[u] = (float32)(fYOffset + (float64)(++uSamplePosition - uXOffset) * fGradient);
+        }
+    }
+
+    return pOutputPacket;
 }
 
 /**
@@ -230,9 +274,9 @@ void Shape::recalculate() {
     bParameterChanged = false;
 }
 
-void Shape::updateInterpolants(size_t uIndex) {
-    ProcessPoint const& rA = pProcessPoints[uIndex];
-    ProcessPoint const& rB = pProcessPoints[uIndex + 1];
+void Shape::updateInterpolants() {
+    ProcessPoint const& rA = pNextProcessPoint[0];
+    ProcessPoint const& rB = pNextProcessPoint[1];
     fGradient = (rB.fLevel - rA.fLevel) / (float64)(rB.uSamplePosition - rA.uSamplePosition);
     fYOffset  = rA.fLevel;
     uXOffset  = rA.uSamplePosition;

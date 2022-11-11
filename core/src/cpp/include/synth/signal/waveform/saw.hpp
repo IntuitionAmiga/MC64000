@@ -36,7 +36,7 @@ class SawDown : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* pInput);
+        Packet::Ptr map(Packet const* poInput);
 
         /**
          * Static version of the value function that can be called and inlined explicitly from
@@ -94,7 +94,7 @@ class SawUp : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* pInput);
+        Packet::Ptr map(Packet const* poInput);
 
         /**
          * Static version of the value function that can be called and inlined explicitly from

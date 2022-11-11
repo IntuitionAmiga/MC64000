@@ -28,7 +28,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
 class WhiteNoise : public IWaveform {
 
     private:
-        uint32  aRandom[PACKET_SIZE];
+        uint32  auRandom[PACKET_SIZE];
         float64 fNormalise;
 
     public:
@@ -45,7 +45,7 @@ class WhiteNoise : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* pInput);
+        Packet::Ptr map(Packet const* poInput);
 
         /**
          * Static version of the value function that can be called and inlined explicitly from

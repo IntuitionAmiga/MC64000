@@ -91,8 +91,7 @@ class IWaveform /*: public Util::ISometimesShareable */ {
          * Factory method to obtain a custom width PWM
          */
         static Ptr createPWM(float32 fWidth);
-        static Ptr createPWM(IStream::Ptr pWidthModulator);
-        static Ptr createXForm(Ptr pSource, float32 const* pMatrix);
+        static Ptr createPWM(IStream::Ptr poWidthModulator);
 
         /**
          * Returns the period of this function, i.e. the numeric interval after which it's
@@ -105,19 +104,19 @@ class IWaveform /*: public Util::ISometimesShareable */ {
         /**
          * Calculate a Packets worth of output values for a Packets worth of input values
          *
-         * @param  Packet const* pInput
+         * @param  Packet const* poInput
          * @return Packet::Ptr
          */
-        virtual Packet::Ptr map(Packet const* pInput) = 0;
+        virtual Packet::Ptr map(Packet const* poInput) = 0;
 
         /**
          * Calculate a Packets worth of output values for a Packets worth of input values
          *
-         * @param  Packet::ConstPtr oInput
+         * @param  Packet::ConstPtr poInput
          * @return Packet::Ptr
          */
-        Packet::Ptr map(Packet::ConstPtr const& pInput) {
-            return map(pInput.get());
+        Packet::Ptr map(Packet::ConstPtr const& poInput) {
+            return map(poInput.get());
         }
 
         /**

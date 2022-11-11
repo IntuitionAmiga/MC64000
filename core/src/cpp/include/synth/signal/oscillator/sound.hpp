@@ -38,12 +38,12 @@ class Sound : public IOscillator {
         };
 
     protected:
-        IStream::Ptr pPitchModulator;
-        IStream::Ptr pPhaseModulator;
-        IStream::Ptr pLevelModulator;
+        IStream::Ptr poPitchModulator;
+        IStream::Ptr poPhaseModulator;
+        IStream::Ptr poLevelModulator;
 
-        IEnvelope::Ptr pPitchEnvelope;
-        IEnvelope::Ptr pLevelEnvelope;
+        IEnvelope::Ptr poPitchEnvelope;
+        IEnvelope::Ptr poLevelEnvelope;
 
         float32 fPhaseModulationIndex = 1.0;
         float32 fLevelModulationIndex = 1.0;
@@ -76,7 +76,7 @@ class Sound : public IOscillator {
 
     public:
         Sound(
-            IWaveform::Ptr const& pWaveform,
+            IWaveform::Ptr const& poWaveform,
             float32 fFrequency = DEF_FREQUENCY,
             float32 fPhase     = 0.0f
         );
@@ -100,8 +100,8 @@ class Sound : public IOscillator {
         /**
          * Set a Pitch Modulator, e.g. LFO (though can be any stream)
          */
-        Sound* setPitchModulator(IStream::Ptr const& pModulator) {
-            pPitchModulator = pModulator;
+        Sound* setPitchModulator(IStream::Ptr const& poModulator) {
+            poPitchModulator = poModulator;
             configureInputStage();
             return this;
         }
@@ -109,8 +109,8 @@ class Sound : public IOscillator {
         /**
          * Set a Phase Modulator, e.g. another oscillator (though can be any stream)
          */
-        Sound* setPhaseModulator(IStream::Ptr const& pModulator) {
-            pPhaseModulator = pModulator;
+        Sound* setPhaseModulator(IStream::Ptr const& poModulator) {
+            poPhaseModulator = poModulator;
             configureInputStage();
             return this;
         }
@@ -127,8 +127,8 @@ class Sound : public IOscillator {
         /**
          * Set a Level Modulator, e.g. another oscillator (though can be any stream)
          */
-        Sound* setLevelModulator(IStream::Ptr const& pModulator) {
-            pLevelModulator = pModulator;
+        Sound* setLevelModulator(IStream::Ptr const& poModulator) {
+            poLevelModulator = poModulator;
             configureOutputStage();
             return this;
         }
@@ -142,8 +142,8 @@ class Sound : public IOscillator {
         /**
          * Set a Pitch Envelope (TODO Envelope::Ptr)
          */
-        Sound* setPitchEnvelope(IEnvelope::Ptr const& pEnvelope) {
-            pPitchEnvelope = pEnvelope;
+        Sound* setPitchEnvelope(IEnvelope::Ptr const& poEnvelope) {
+            poPitchEnvelope = poEnvelope;
             configureInputStage();
             return this;
         }
@@ -151,8 +151,8 @@ class Sound : public IOscillator {
         /**
          * Set a Level Envelope (TODO Envelope::Ptr)
          */
-        Sound* setLevelEnvelope(IEnvelope::Ptr const& pEnvelope) {
-            pLevelEnvelope = pEnvelope;
+        Sound* setLevelEnvelope(IEnvelope::Ptr const& poEnvelope) {
+            poLevelEnvelope = poEnvelope;
             configureOutputStage();
             return this;
         }
@@ -166,7 +166,7 @@ class Sound : public IOscillator {
         /**
          * @inheritDoc
          */
-        Sound* setWaveform(IWaveform::Ptr const& pWaveform);
+        Sound* setWaveform(IWaveform::Ptr const& poWaveform);
 
     private:
         typedef void (*Stage)(Sound*);
@@ -178,30 +178,30 @@ class Sound : public IOscillator {
         void configureInputStage();
         void configureOutputStage();
 
-        void populatePitchShiftedPacket(Packet const* pPitchShifts);
-        void populatePitchAndPhaseShiftedPacket(Packet const* pPitchShifts, Packet const* pPhaseShifts);
-        void populateOutputPacketWithFeedback(Packet const* pLevelPacket);
+        void populatePitchShiftedPacket(Packet const* poPitchShifts);
+        void populatePitchAndPhaseShiftedPacket(Packet const* poPitchShifts, Packet const* poPhaseShifts);
+        void populateOutputPacketWithFeedback(Packet const* poLevelPacket);
 
         // Configuration optimised Input stages
-        static void inputAperiodic(Sound* pOscillator);
-        static void inputDirect(Sound* pOscillator);
-        static void inputPitchMod(Sound* pOscillator);
-        static void inputPitchEnv(Sound* pOscillator);
-        static void inputPitchModEnv(Sound* pOscillator);
-        static void inputPhaseMod(Sound* pOscillator);
-        static void inputPhaseModPitchMod(Sound* pOscillator);
-        static void inputPhaseModPitchEnv(Sound* pOscillator);
-        static void inputPhaseModPitchModEnv(Sound* pOscillator);
+        static void inputAperiodic(Sound* poOscillator);
+        static void inputDirect(Sound* poOscillator);
+        static void inputPitchMod(Sound* poOscillator);
+        static void inputPitchEnv(Sound* poOscillator);
+        static void inputPitchModEnv(Sound* poOscillator);
+        static void inputPhaseMod(Sound* poOscillator);
+        static void inputPhaseModPitchMod(Sound* poOscillator);
+        static void inputPhaseModPitchEnv(Sound* poOscillator);
+        static void inputPhaseModPitchModEnv(Sound* poOscillator);
 
         // Configuration optimised Output stages
-        static void outputDirect(Sound* pOscillator);
-        static void outputLevelMod(Sound* pOscillator);
-        static void outputLevelEnv(Sound* pOscillator);
-        static void outputLevelModEnv(Sound* pOscillator);
-        static void outputFeedback(Sound* pOscillator);
-        static void outputFeedbackLevelMod(Sound* pOscillator);
-        static void outputFeedbackLevelEnv(Sound* pOscillator);
-        static void outputFeedbackLevelModEnv(Sound* pOscillator);
+        static void outputDirect(Sound* poOscillator);
+        static void outputLevelMod(Sound* poOscillator);
+        static void outputLevelEnv(Sound* poOscillator);
+        static void outputLevelModEnv(Sound* poOscillator);
+        static void outputFeedback(Sound* poOscillator);
+        static void outputFeedbackLevelMod(Sound* poOscillator);
+        static void outputFeedbackLevelEnv(Sound* poOscillator);
+        static void outputFeedbackLevelModEnv(Sound* poOscillator);
 };
 
 }

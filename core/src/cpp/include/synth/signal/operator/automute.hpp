@@ -27,7 +27,7 @@ namespace MC64K::Synth::Audio::Signal::Operator {
 class AutoMuteSilence : public IStream, protected TPacketIndexAware {
 
     private:
-        IStream::Ptr pSource;
+        IStream::Ptr poSource;
         float64 fThresholdSquared;
         float64 fLastTotalSquared;
         uint32  uSilentPacketLimit;
@@ -41,7 +41,7 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
         static constexpr float32 const DEF_DURATION  = 0.05f;
 
         AutoMuteSilence(
-            IStream::Ptr pInput,
+            IStream::Ptr poInput,
             float32 fDuration = DEF_DURATION,
             float32 fRMSLevel = DEF_THRESHOLD
         );
@@ -92,13 +92,13 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
         /**
          * Set a new input stream. If the pointer is empty, the unit is disabled.
          */
-        AutoMuteSilence* setStream(IStream::Ptr const& pInput);
+        AutoMuteSilence* setStream(IStream::Ptr const& poInput);
 
         /**
          * Get the enclosed stream
          */
         IStream::Ptr getStream() const {
-            return pSource;
+            return poSource;
         }
 
 };

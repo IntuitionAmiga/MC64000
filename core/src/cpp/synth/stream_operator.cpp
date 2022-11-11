@@ -37,17 +37,17 @@ SimpleMixer::~SimpleMixer() {
 SimpleMixer* SimpleMixer::reset() {
     uLastIndex = 0;
     uSamplePosition = 0;
-    if ( auto p = pLastPacket.get() ) {
+    if ( auto p = poLastPacket.get() ) {
         p->clear();
     }
     std::fprintf(stderr, "SimpleMixer %p reset()\n", this);
     for (auto pPair = oChannels.begin(); pPair != oChannels.end(); ++pPair) {
-        pPair->second.pSource->reset();
+        pPair->second.poSource->reset();
         std::fprintf(
             stderr,
             "\tResetting input ID:%lu [%p]\n",
             pPair->first,
-            pPair->second.pSource.get()
+            pPair->second.poSource.get()
         );
     }
     return this;
@@ -61,27 +61,27 @@ Packet::ConstPtr SimpleMixer::emit(size_t uIndex) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return pLastPacket;
+        return poLastPacket;
     }
     return emitNew();
 }
 
 Packet::ConstPtr SimpleMixer::emitNew() {
-    if (!pLastPacket.get()) {
-        pLastPacket = Packet::create();
+    if (!poLastPacket.get()) {
+        poLastPacket = Packet::create();
     }
-    Packet* pOutput = pLastPacket.get();
+    Packet* pOutput = poLastPacket.get();
     pOutput->clear();
     for (auto pPair = oChannels.begin(); pPair != oChannels.end(); ++pPair) {
-        if (pPair->second.pSource->isEnabled()) {
+        if (pPair->second.poSource->isEnabled()) {
             pOutput->accumulate(
-                pPair->second.pSource->emit(uLastIndex),
+                pPair->second.poSource->emit(uLastIndex),
                 pPair->second.fLevel
             );
         }
     }
     pOutput->scaleBy(fOutputLevel);
-    return pLastPacket;
+    return poLastPacket;
 }
 
 /**
@@ -100,16 +100,16 @@ SimpleMixer* SimpleMixer::setOutputLevel(float32 fLevel) {
  * no action is taken.
  *
  * @param  ChannelID uID
- * @param  IStream::Ptr pSource
+ * @param  IStream::Ptr poSource
  * @param  float32 fLevel
  * @return this
  */
-SimpleMixer* SimpleMixer::addInputStream(SimpleMixer::ChannelID uID, IStream::Ptr const& pSource, float32 fLevel) {
-    if (pSource.get()) {
+SimpleMixer* SimpleMixer::addInputStream(SimpleMixer::ChannelID uID, IStream::Ptr const& poSource, float32 fLevel) {
+    if (poSource.get()) {
 
-        std::fprintf(stderr, "SimpleMixer %p addInputStream() setting %p [ID:%lu]\n", this, pSource.get(), uID);
+        std::fprintf(stderr, "SimpleMixer %p addInputStream() setting %p [ID:%lu]\n", this, poSource.get(), uID);
         Channel& roChannel = oChannels[uID];
-        roChannel.pSource  = pSource;
+        roChannel.poSource  = poSource;
         roChannel.fLevel   = fLevel;
     } else {
         std::fprintf(stderr, "SimpleMixer %p addInputStream() not adding empty stream [ID:%lu]\n", this, uID);
@@ -165,11 +165,11 @@ namespace MC64K::Synth::Audio::Signal::Operator {
  * @inheritDoc
  */
 AutoMuteSilence::AutoMuteSilence(
-    IStream::Ptr pInput,
+    IStream::Ptr poInput,
     float32 fDuration,
     float32 fRMSLevel
 ) {
-    setStream(pInput);
+    setStream(poInput);
     setDuration(fDuration);
     setThreshold(fRMSLevel);
     std::fprintf(stderr, "Created AutoMuteSilence at %p\n", this);
@@ -186,7 +186,7 @@ AutoMuteSilence::~AutoMuteSilence() {
  * @inheritDoc
  */
 size_t AutoMuteSilence::getPosition() {
-    return pSource.get() ? pSource->getPosition() : 0;
+    return poSource.get() ? poSource->getPosition() : 0;
 }
 
 /**
@@ -200,7 +200,7 @@ bool AutoMuteSilence::isEnabled() {
  * @inheritDoc
  */
 AutoMuteSilence* AutoMuteSilence::enable() {
-    if (pSource.get()) {
+    if (poSource.get()) {
         fLastTotalSquared  = 0.0;
         uSilentPacketCount = 0;
         bEnabled = true;
@@ -222,8 +222,8 @@ AutoMuteSilence* AutoMuteSilence::disable() {
  * @inheritDoc
  */
 AutoMuteSilence* AutoMuteSilence::reset() {
-    if (pSource.get()) {
-        pSource->reset();
+    if (poSource.get()) {
+        poSource->reset();
         fLastTotalSquared  = 0.0;
         uSilentPacketCount = 0;
         bEnabled = true;
@@ -236,12 +236,12 @@ AutoMuteSilence* AutoMuteSilence::reset() {
  */
 Packet::ConstPtr AutoMuteSilence::emit(size_t uIndex) {
     if (bEnabled) {
-        auto pPacket = pSource->emit(uIndex);
+        auto poPacket = poSource->emit(uIndex);
         float64 fTotalSquared = 0.0;
 
-        float32 const* aSamples = pPacket->aSamples;
+        float32 const* afSamples = poPacket->afSamples;
         for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-            float64 fSample = aSamples[u];
+            float64 fSample = afSamples[u];
             fTotalSquared += fSample * fSample;
         }
         fTotalSquared *= RMS_SCALE;
@@ -261,7 +261,7 @@ Packet::ConstPtr AutoMuteSilence::emit(size_t uIndex) {
             // Not rising but above the threshold, keep gate open
             uSilentPacketCount = 0;
         }
-        return pPacket;
+        return poPacket;
     } else {
         return Packet::getSilence();
     }
@@ -298,9 +298,9 @@ AutoMuteSilence* AutoMuteSilence::setThreshold(float32 fRMSLevel) {
 /**
  * @inheritDoc
  */
-AutoMuteSilence* AutoMuteSilence::setStream(IStream::Ptr const& pInput) {
-    pSource = pInput;
-    if (!pSource.get()) {
+AutoMuteSilence* AutoMuteSilence::setStream(IStream::Ptr const& poInput) {
+    poSource = poInput;
+    if (!poSource.get()) {
         disable();
     }
     return this;
