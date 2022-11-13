@@ -177,12 +177,18 @@ Shape::~Shape() {
     std::fprintf(stderr, "Destroyed Shape at %p\n", this);
 }
 
+/**
+ * @inheritDoc
+ */
 Shape* Shape::reset() {
     IEnvelope::reset();
     pNextProcessPoint = pProcessPoints.get();
     return this;
 }
 
+/**
+ * @inheritDoc
+ */
 Packet::ConstPtr Shape::emit(size_t uIndex) {
     if (!bEnabled) {
         return Packet::getSilence();
@@ -274,6 +280,9 @@ void Shape::recalculate() {
     bParameterChanged = false;
 }
 
+/**
+ * @inheritDoc
+ */
 void Shape::updateInterpolants() {
     ProcessPoint const& rA = pNextProcessPoint[0];
     ProcessPoint const& rB = pNextProcessPoint[1];

@@ -19,7 +19,23 @@
 namespace MC64K::Synth::Audio::Signal {
 using namespace MC64K::StandardTestHost::Audio::IConfig;
 
-class IFilter : public IStream {
+/**
+ * IFilter
+ */
+class IFilter : public TStreamCommon, protected TPacketIndexAware  {
+
+    protected:
+        IStream::Ptr   poInputStream;
+        IStream::Ptr   poCutoffModulator;
+        IStream::Ptr   poResonanceModulator;
+        IEnvelope::Ptr poCutoffEnvelope;
+        IEnvelope::Ptr poResonanceEnvelope;
+        Packet::Ptr    poLastOutputPacket;
+
+        float64 fFixedCutoff;
+        float64 fFixedResonance;
+
+        virtual void configure() = 0;
 
     public:
         // Cutoff range is normalised
@@ -40,34 +56,68 @@ class IFilter : public IStream {
          * @param  float32 fCutoff
          * @return this
          */
-        virtual IFilter* setCutoff(float32 fCutoff) = 0;
+        IFilter* setCutoff(float32 fCutoff) {
+            fFixedCutoff = fCutoff > MIN_CUTOFF ? fCutoff : MIN_CUTOFF;
+            configure();
+            return this;
+        }
 
         /**
-         * Set a control stream (envelope, LFO etc) for the cutoff control. Setting null clears any existing control.
-         *
-         * @param  IStream|null poCutoffControl
+         * @param  IStream::Ptr poCutoffControl
          * @return this
          */
-        virtual IFilter* setCutoffControl(IStream* poCutoffControl) = 0;
+        IFilter* setCutoffModulator(IStream::Ptr const& poNewCutoffModulator) {
+            poCutoffModulator = poNewCutoffModulator;
+            configure();
+            return this;
+        }
+
+        /**
+         * @param IEnvelope::Ptr
+         * return this
+         */
+        IFilter* setCutoffEnvelope(IEnvelope::Ptr const& poNewEnvelope) {
+            poCutoffEnvelope = poNewEnvelope;
+            configure();
+            return this;
+        }
 
         /**
          * Set the baseline resonance level. In the absence of a resonance controller, this is the fixed resonance.
          * Otherwise it is the resonance value when the control signal level is 1.0. Values should be in the range
-         * MIN_RESONANCE to MAX_RESONANCE. Note that values above MAX_RESONANCe may be tolerated depending on the filter
+         * MIN_RESONANCE to MAX_RESONANCE. Note that values above MAX_RESONANCE may be tolerated depending on the filter
          * type.
          *
          * @param  float fResonance
          * @return this
          */
-        virtual IFilter* setResonance(float32 fResonance) = 0;
+        IFilter* setResonance(float32 fResonance) {
+            fFixedResonance = fResonance > MIN_RESONANCE ? fResonance : MIN_RESONANCE;
+            configure();
+            return this;
+        }
 
         /**
          * Set a control stream (envelope, LFO etc) for the resonance control. Setting null clears any existing control.
          *
-         * @param  IStream|null poResonanceControl
+         * @param  IStream::Ptr poResonanceControl
          * @return this
          */
-        virtual IFilter* setResonanceControl(IStream* poResonanceControl) = 0;
+        IFilter* setResonanceModulator(IStream::Ptr const& poNewResonanceModulator) {
+            poResonanceModulator = poNewResonanceModulator;
+            configure();
+            return this;
+        }
+
+        /**
+         * @param IEnvelope::Ptr
+         * return this
+         */
+        IFilter* setResonanceEnvelope(IEnvelope::Ptr const& poNewEnvelope) {
+            poResonanceEnvelope = poNewEnvelope;
+            configure();
+            return this;
+        }
 };
 
 }
