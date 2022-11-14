@@ -22,7 +22,21 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
 /**
  * IStream interface
  *
- * Main interface for sequential packet producers.
+ * An IStream implementation produces a sequential stream of Packet instances. This could be
+ * a pure generator, e.g. an Oscillator or Envelope, or something that processes the result(s) of
+ * one or more other IStream, such as a Filter or a Mixer. Packets are obtained from the emit()
+ * method, which accepts an optional index value of the current packet being evaluated. This
+ * allows any stream to detect when it has been asked for the same packet again, which may happen
+ * when one stream is being used as a data source for several others, e.g. an LFO controlling
+ * several other oscillators.
+ *
+ * Packets returned from emit() have const semantics. If you need to modify a packet from a
+ * stream, you will need to clone it. The main motivation for this is to allow an efficient
+ * implementation where packet recycling is easier to manage.
+ *
+ * A stream can be enabled or disabled. A disabled stream will still emit packets when asked
+ * but the disabled packet will be silence (all values zero).
+ *
  */
 class IStream {
     public:
@@ -80,13 +94,24 @@ class IStream {
 };
 
 /**
- * Common, optional implementation for stream components
+ * Common, optional implementation for stream components.
+ *
+ * Provides a ready implementation of position query, enabling and disabling. Uses a hook
+ * to check if a stream can be enabled before enabling. For example, an Oscillator can check
+ * that it has an appropriate Waveform before it can be enabled.
+ *
  */
 class TStreamCommon : public IStream {
 
     protected:
-        size_t uSamplePosition = 0;
-        bool   bEnabled        = false;
+        Packet::Ptr poOutputPacket;
+        size_t      uSamplePosition = 0;
+        bool        bEnabled        = false;
+
+        /**
+         * Override. Returns true if the stream can be enabled.
+         */
+        virtual bool canEnable();
 
     public:
         /**
@@ -105,19 +130,18 @@ class TStreamCommon : public IStream {
 
         /**
          * @inheritDoc
+         *
+         * Checks the response from canEnable before enabling. Does nothing if the stream
+         * is already enabled.
          */
-        IStream* enable() {
-            bEnabled = true;
-            return this;
-        };
+        IStream* enable();
 
         /**
          * @inheritDoc
+         *
+         * Disables the stream. Does nothing if the stream is already disabled.
          */
-        IStream* disable() {
-            bEnabled = false;
-            return this;
-        }
+        IStream* disable();
 };
 
 }

@@ -89,6 +89,11 @@ class Sound : public IOscillator {
         Sound* reset();
 
         /**
+         * @inheritDoc
+         */
+        Sound* enable();
+
+        /**
          * Set the antialias mode explicitly
          */
         Sound* setAntialiasMode(Antialias eMode) {

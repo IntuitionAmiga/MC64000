@@ -32,7 +32,6 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
         static constexpr uint64 const SAMPLE_COUNTER_MASK = 0xFFF;
 
         IWaveform::Ptr poWaveform;
-        Packet::Ptr    poLastPacket;
         float64        fTimeStep;
         float64        fScaleVal;
         float32        fFrequency;
@@ -41,6 +40,13 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
         float32        fPhaseCorrection;
         float32        fWaveformPeriod;
         bool           bAperiodic;
+
+        /**
+         * @inheritDoc
+         *
+         * Overridden to return false if we don't have a waveform set.
+         */
+        bool           canEnable();
 
         /**
          * Limit the frequency. This is intended to be overridden

@@ -101,21 +101,18 @@ Packet::ConstPtr DecayPulse::emit(size_t uIndex) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return poLastPacket;
+        return poOutputPacket;
     }
     if (bParameterChanged) {
         recalculateDecay();
     }
-    if (!poLastPacket.get()) {
-        poLastPacket = Packet::create();
-    }
-    float32* afSamples = poLastPacket->afSamples;
+    float32* afSamples = poOutputPacket->afSamples;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         fCurrent *= fDecayPerSample;
         afSamples[u] = (float32)fCurrent + fTarget;
     }
     uSamplePosition += PACKET_SIZE;
-    return poLastPacket;
+    return poOutputPacket;
 }
 
 /**
@@ -161,12 +158,12 @@ namespace MC64K::Synth::Audio::Signal::Envelope {
 /**
  * @inheritDoc
  */
-Shape::Shape(float32 fInitial, Point const* pInputPoints, size_t uNumInputPoints):
-    pPoints(0),
+Shape::Shape(float32 fInitial, Point const* aoInputPoints, size_t uNumInputPoints):
+    aoPoints(0),
     uNumPoints(0)
 {
     std::fprintf(stderr, "Created Shape at %p with %lu vertices\n", this, uNumInputPoints);
-    processPointList(fInitial, pInputPoints, uNumInputPoints);
+    processPointList(fInitial, aoInputPoints, uNumInputPoints);
     enable();
 }
 
@@ -182,7 +179,7 @@ Shape::~Shape() {
  */
 Shape* Shape::reset() {
     IEnvelope::reset();
-    pNextProcessPoint = pProcessPoints.get();
+    pNextProcessPoint = aoProcessPoints.get();
     return this;
 }
 
@@ -194,7 +191,7 @@ Packet::ConstPtr Shape::emit(size_t uIndex) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return pOutputPacket;
+        return poOutputPacket;
     }
     if (bParameterChanged) {
         recalculate();
@@ -204,14 +201,10 @@ Packet::ConstPtr Shape::emit(size_t uIndex) {
         return pFinalPacket;
     }
 
-    if (!pOutputPacket.get()) {
-        pOutputPacket = Packet::create();
-    }
-
     // Does the next packet contain a vertex?
     if (uSamplePosition + PACKET_SIZE > pNextProcessPoint->uSamplePosition) {
         // version that checks for interpolant change. There could even be more than one...
-        float32* afSamples = pOutputPacket->afSamples;
+        float32* afSamples = poOutputPacket->afSamples;
         for (unsigned u = 0; u < PACKET_SIZE; ++u) {
             if (pNextProcessPoint->uSamplePosition == uSamplePosition) {
                 updateInterpolants();
@@ -221,33 +214,33 @@ Packet::ConstPtr Shape::emit(size_t uIndex) {
         }
     } else {
         // version that doesn't check for interpolant change
-        float32* afSamples = pOutputPacket->afSamples;
+        float32* afSamples = poOutputPacket->afSamples;
         for (unsigned u = 0; u < PACKET_SIZE; ++u) {
             afSamples[u] = (float32)(fYOffset + (float64)(++uSamplePosition - uXOffset) * fGradient);
         }
     }
 
-    return pOutputPacket;
+    return poOutputPacket;
 }
 
 /**
  * @inheritDoc
  */
-void Shape::processPointList(float32 fInitial, Point const* pInputPoints, size_t uNumInputPoints) {
+void Shape::processPointList(float32 fInitial, Point const* aoInputPoints, size_t uNumInputPoints) {
     uNumPoints = uNumInputPoints + 1;
-    pPoints.reset(new Point[uNumPoints]);
-    pProcessPoints.reset(new ProcessPoint[uNumPoints + 1]);
-    pPoints[0].fLevel = fInitial;
-    pPoints[0].fTime  = 0.0f;
-    std::printf("\t[%.2f, %.2f]\n", pPoints[0].fLevel, pPoints[0].fTime);
+    aoPoints.reset(new Point[uNumPoints]);
+    aoProcessPoints.reset(new ProcessPoint[uNumPoints + 1]);
+    aoPoints[0].fLevel = fInitial;
+    aoPoints[0].fTime  = 0.0f;
+    std::printf("\t[%.2f, %.2f]\n", aoPoints[0].fLevel, aoPoints[0].fTime);
     for (size_t u = 0; u < uNumInputPoints; ++u) {
-        float32 fTime  = pInputPoints[u].fTime;
-        pPoints[u + 1].fLevel = pInputPoints[u].fLevel;
-        pPoints[u + 1].fTime  = (fTime < MIN_TIME) ? MIN_TIME : ((fTime > MAX_TIME) ? MAX_TIME : fTime);
-        std::printf("\t[%.2f, %.2f]\n", pPoints[u + 1].fLevel, pPoints[u + 1].fTime);
+        float32 fTime  = aoInputPoints[u].fTime;
+        aoPoints[u + 1].fLevel = aoInputPoints[u].fLevel;
+        aoPoints[u + 1].fTime  = (fTime < MIN_TIME) ? MIN_TIME : ((fTime > MAX_TIME) ? MAX_TIME : fTime);
+        std::printf("\t[%.2f, %.2f]\n", aoPoints[u + 1].fLevel, aoPoints[u + 1].fTime);
     }
     bParameterChanged = true;
-    pNextProcessPoint = pProcessPoints.get();
+    pNextProcessPoint = aoProcessPoints.get();
 }
 
 /**
@@ -256,25 +249,25 @@ void Shape::processPointList(float32 fInitial, Point const* pInputPoints, size_t
 void Shape::recalculate() {
     float64 fTimeTotal = 0.0f;
     for (size_t u = 0; u < uNumPoints; ++u) {
-        fTimeTotal += pPoints[u].fTime * fTimeScale;
-        pProcessPoints[u].uSamplePosition = (size_t)(fTimeTotal * PROCESS_RATE);
-        pProcessPoints[u].fLevel = pPoints[u].fLevel * fLevelScale;
+        fTimeTotal += aoPoints[u].fTime * fTimeScale;
+        aoProcessPoints[u].uSamplePosition = (size_t)(fTimeTotal * PROCESS_RATE);
+        aoProcessPoints[u].fLevel = aoPoints[u].fLevel * fLevelScale;
     }
 
     size_t uLastPoint = uNumPoints - 1;
 
     // Pad on the last ProcessPoint again, with a slight time offset to ensure that the interpolation code
     // is always acting between a pair of ProcessPoints and doesn't wander off the end of the array
-    pProcessPoints[uNumPoints] = pProcessPoints[uLastPoint];
-    pProcessPoints[uNumPoints].uSamplePosition += 16; // will never be reached.
+    aoProcessPoints[uNumPoints] = aoProcessPoints[uLastPoint];
+    aoProcessPoints[uNumPoints].uSamplePosition += 16; // will never be reached.
 
     // Fill the final packet with the last level value.
     if (!pFinalPacket.get()) {
         pFinalPacket = Packet::create();
     }
-    pFinalPacket->fillWith((float32)pProcessPoints[uLastPoint].fLevel);
+    pFinalPacket->fillWith((float32)aoProcessPoints[uLastPoint].fLevel);
 
-    uFinalSamplePosition = pProcessPoints[uLastPoint].uSamplePosition;
+    uFinalSamplePosition = aoProcessPoints[uLastPoint].uSamplePosition;
 
     // Clear the changed flag
     bParameterChanged = false;

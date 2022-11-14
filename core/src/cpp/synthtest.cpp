@@ -10,6 +10,7 @@
 #include <synth/signal/oscillator/sound.hpp>
 #include <synth/signal/envelope/decaypulse.hpp>
 #include <synth/signal/envelope/shape.hpp>
+#include <synth/signal/filter/4polemulti.hpp>
 
 using namespace MC64K::Machine;
 using namespace MC64K::Synth::Audio;
@@ -279,30 +280,28 @@ int main(int const iArgCount, char const** aiArgVal) {
         new Signal::Envelope::Shape(
             0.0f, // start at zero
             {
-                {1.0f, 0.5f}, // increase to 1.0 after +0.5s
-                {0.5f, 0.5f}, // decrease to 0.5 after +0.5s
-                {0.0f, 2.0f}, // decrease to 0.0 after +2.0s
-            } // total duration 3.0s
+                {1.0f, 3.0f}, // increase to 1.0 after 2s
+            }
         )
     );
 
-
-
-    Signal::IStream::Ptr pStream1 (
+    Signal::IStream::Ptr poSaw (
         new Signal::Oscillator::Sound(
-            Signal::IWaveform::get(Signal::IWaveform::TRIANGLE),
-            220.0f,
+            Signal::IWaveform::get(Signal::IWaveform::SAW_DOWN),
+            110.0f,
             0.0f
         )
     );
 
-    std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream1)
-        ->setLevelEnvelope(poEnv)
-        ->setPhaseFeedbackIndex(0.25);
-
-    pStream1->enable();
-
-    writeRawFile(pStream1.get(), "env_test.raw", 600);
+    Signal::Filter::FourPoleMultiMode oFilter(
+        poSaw,
+        Signal::Filter::FourPoleMultiMode::LOW_PASS,
+        1.0f,
+        0.0f
+    );
+    oFilter.setCutoffEnvelope(poEnv);
+    oFilter.enable();
+    writeRawFile(&oFilter, "filter_test.raw", 600);
 
     Signal::Packet::dumpStats();
 

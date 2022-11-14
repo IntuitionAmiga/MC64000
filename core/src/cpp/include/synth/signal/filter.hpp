@@ -30,12 +30,23 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
         IStream::Ptr   poResonanceModulator;
         IEnvelope::Ptr poCutoffEnvelope;
         IEnvelope::Ptr poResonanceEnvelope;
-        Packet::Ptr    poLastOutputPacket;
 
         float64 fFixedCutoff;
         float64 fFixedResonance;
 
+        /**
+         * @inheritDoc
+         *
+         * Overridden - filter cannot be enabled if there is no input stream set.
+         */
+        bool    canEnable();
+
         virtual void configure() = 0;
+
+        IFilter(IStream::Ptr poStream, float32 fCutoff, float32 fResonance):
+            poInputStream{poStream},
+            fFixedCutoff{fCutoff},
+            fFixedResonance{fResonance} { }
 
     public:
         // Cutoff range is normalised
@@ -47,6 +58,18 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
         static constexpr float32 const MIN_RESONANCE = 0.0f;
         static constexpr float32 const DEF_RESONANCE = 0.0f;
         static constexpr float32 const MAX_RESONANCE = 1.0f;
+
+        IFilter* reset();
+
+        IFilter* enable();
+
+        IFilter* setInputStream(IStream::Ptr const& poStream) {
+            poInputStream = poStream;
+            if (!poInputStream.get()) {
+                disable();
+            }
+            return this;
+        }
 
         /**
          * Set the baseline cutoff level. In the absence of a cutoff controller, this is the fixed cutoff. Otherwise it is
