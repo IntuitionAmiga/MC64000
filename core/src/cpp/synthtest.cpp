@@ -16,6 +16,8 @@ using namespace MC64K::Machine;
 using namespace MC64K::Synth::Audio;
 using namespace MC64K::StandardTestHost::Audio::IConfig;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Outputs a stream to a 16-bit raw file for a number of packets.
  */
@@ -33,6 +35,8 @@ void writeRawFile(Signal::IStream* pStream, char const* sName, size_t uPackets) 
         std::fclose(pRawFile);
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Tests the standard waveforms
@@ -167,6 +171,8 @@ void testWaveforms() {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Outputs the frequency table versus the ideal values (for when approximations are in use)
  */
@@ -183,6 +189,8 @@ void freqTable() {
         );
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Benchmarks a stream by timing the generation of 10M packets
@@ -206,6 +214,8 @@ void benchmark(Signal::IStream* pStream) {
         fTimeGenerated / fSeconds
     );
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void mixtest() {
     Signal::IStream::Ptr pStream1 (
@@ -271,39 +281,72 @@ void mixtest() {
     writeRawFile(&oMix, "mix_test.raw", 1000);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void testNotes() {
+
+    char const* asGood[] = {
+        "C-1", "C#-1",
+        "Db-1", "D-1", "D#-1",
+        "Eb-1", "E-1", "Fb-1",
+        "E#-1", "F-1", "F#-1",
+        "Gb-1", "G-1", "G#-1",
+        "Ab-1", "A-1", "A#-1",
+        "Bb-1", "B-1", "B#-1",
+
+        "C0", "C#0",
+        "Db0", "D0", "D#0",
+        "Eb0", "E0", "Fb0",
+        "E#0", "F0", "F#0",
+        "Gb0", "G0", "G#0",
+        "Ab0", "A0", "A#0",
+        "Bb0", "B0", "B#0",
+
+        "C4", "C#4",
+        "Db4", "D4", "D#4",
+        "Eb4", "E4", "Fb4",
+        "E#4", "F4", "F#4",
+        "Gb4", "G4", "G#4",
+        "Ab4", "A4", "A#4",
+        "Bb4", "B4", "B#4",
+
+        "C9", "C#9",
+        "Db9", "D9", "D#9",
+        "Eb9", "E9", "Fb9",
+        "E#9", "F9", "F#9",
+        "Gb9", "G9", // 127
+    };
+
+    for (unsigned u = 0; u < sizeof(asGood)/sizeof(char const*); ++u) {
+        std::printf("Note (good): %s => %u\n", asGood[u], Note::getNumber(asGood[u]));
+    }
+
+    char const* asBad[] = {
+        0,
+        "\0",
+        "blah",
+        "1",
+        "C",
+        "Cb",
+        "B-2", // range
+        "G#9", // range
+    };
+
+    for (unsigned u = 0; u < sizeof(asBad)/sizeof(char const*); ++u) {
+        std::printf("Note (bad): %s => %u\n", asBad[u], Note::getNumber(asBad[u]));
+    }
+
+}
+
+
 /**
  * Main program
  */
 int main(int const iArgCount, char const** aiArgVal) {
 
-    Signal::IEnvelope::Ptr poEnv (
-        new Signal::Envelope::Shape(
-            0.0f, // start at zero
-            {
-                {1.0f, 3.0f}, // increase to 1.0 after 2s
-            }
-        )
-    );
+    testNotes();
 
-    Signal::IStream::Ptr poSaw (
-        new Signal::Oscillator::Sound(
-            Signal::IWaveform::get(Signal::IWaveform::SAW_DOWN),
-            110.0f,
-            0.0f
-        )
-    );
-
-    Signal::Filter::FourPoleMultiMode oFilter(
-        poSaw,
-        Signal::Filter::FourPoleMultiMode::LOW_PASS,
-        1.0f,
-        0.0f
-    );
-    oFilter.setCutoffEnvelope(poEnv);
-    oFilter.enable();
-    writeRawFile(&oFilter, "filter_test.raw", 600);
-
-    Signal::Packet::dumpStats();
+//    Signal::Packet::dumpStats();
 
     return EXIT_SUCCESS;
 }

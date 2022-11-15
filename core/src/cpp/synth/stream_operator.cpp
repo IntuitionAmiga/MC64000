@@ -19,6 +19,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <synth/signal/operator/mixer.hpp>
+#include <synth/signal/operator/automute.hpp>
+#include <synth/signal/operator/packet_relay.hpp>
+
 namespace MC64K::Synth::Audio::Signal::Operator {
 
 SimpleMixer::SimpleMixer(float32 fOutputLevel): fOutputLevel(fOutputLevel) {
@@ -154,12 +157,7 @@ SimpleMixer* SimpleMixer::setInputLevel(SimpleMixer::ChannelID uID, float32 fLev
     return this;
 }
 
-} // namespace
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-#include <synth/signal/operator/automute.hpp>
-namespace MC64K::Synth::Audio::Signal::Operator {
 
 /**
  * @inheritDoc
@@ -304,6 +302,36 @@ AutoMuteSilence* AutoMuteSilence::setStream(IStream::Ptr const& poInput) {
         disable();
     }
     return this;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+PacketRelay::PacketRelay() {
+    bEnabled = true;
+    std::fprintf(
+        stderr,
+        "Created PacketRelay at %p\n",
+        this
+    );
+}
+
+PacketRelay::~PacketRelay() {
+    std::fprintf(
+        stderr,
+        "Destroyed PacketRelay at %p\n",
+        this
+    );
+}
+
+/**
+ * @inheritDoc
+ */
+Packet::ConstPtr PacketRelay::emit(size_t uIndex) {
+    uSamplePosition += PACKET_SIZE;
+    if (!poOutputPacket.get()) {
+        return Packet::getSilence();
+    }
+    return poOutputPacket;
 }
 
 }

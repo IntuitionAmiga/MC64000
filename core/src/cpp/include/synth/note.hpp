@@ -27,6 +27,10 @@ class Note {
         static constexpr int32   const SEMIS_PER_OCTAVE = 12;
         static constexpr float32 const FACTOR_PER_SEMI  = 1.0f / (float32)SEMIS_PER_OCTAVE;
 
+        static constexpr uint32  const ILLEGAL_NOTE     = 0xFFFFFFFF;
+
+        static uint32 getNumber(char const* sName);
+
         static float32 getFrequency(
             int32   iNumber,
             float32 fBendSemis       = 0.0f,

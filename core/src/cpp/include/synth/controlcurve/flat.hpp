@@ -1,5 +1,5 @@
-#ifndef MC64K_SYNTH_IFACE_HPP
-    #define MC64K_SYNTH_IFACE_HPP
+#ifndef MC64K_SYNTH_CTRL_CURVE_FLAT_HPP
+    #define MC64K_SYNTH_CTRL_CURVE_FLAT_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -15,22 +15,26 @@
  */
 
 #include <misc/scalar.hpp>
+#include <synth/controlcurve.hpp>
 
-namespace MC64K::Synth::Audio {
+namespace MC64K::Synth::Audio::ControlCurve {
 
 /**
- * Interface for control curve. Maps a floating point value (typically in the range 0.0 - 127.0) to
- * some other value. Used for things like velocity curves, etc.
+ * Flat control curve. Ignores whatever value is passed and returns the fixed value passed
+ * on construction.
  */
-class IControlCurve {
-    public:
-        float32 const DEF_RANGE_MIN = 0.0;
-        float32 const DEF_RANGE_MAX = 127.0;
-        float32 const DEF_RANGE     = DEF_RANGE_MAX - DEF_RANGE_MIN;
-        float32 const DEF_SCALE     = 1.0 / DEF_RANGE;
+class Flat : public IControlCurve {
+    private:
+        float32 fFixed;
 
-        virtual ~IControlCurve()           = default;
-        virtual float32 map(float32 const) = 0;
+    public:
+        Flat(float32 fValue);
+        ~Flat();
+
+        /**
+         * @inheritDoc
+         */
+        float32 map(float32 const);
 };
 
 }
