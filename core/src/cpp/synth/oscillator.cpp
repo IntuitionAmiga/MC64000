@@ -293,7 +293,7 @@ void Sound::populatePitchShiftedPacket(Packet const* poPitchShifts) {
     uint32         uCounter          = getCyclicSampleCounter();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         // Calculate frequency of next sample after applying the semitone delta.
-        float64 fNextFrequency = fFrequency * Note::semisToMultiplier(pPitchSamples[u]);
+        float64 fNextFrequency = fFrequency * Note::semisToMultiplierApprox(pPitchSamples[u]);
 
         // Evaluate the point in time
         float64 fTime          = fTimeStep * uCounter++;
@@ -331,7 +331,7 @@ void Sound::populatePitchAndPhaseShiftedPacket(
     float32        fPhaseShift       = 0.0f;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         // Calculate frequency of next sample after applying the semitone delta.
-        float64 fNextFrequency = fFrequency * Note::semisToMultiplier(pPitchSamples[u]);
+        float64 fNextFrequency = fFrequency * Note::semisToMultiplierApprox(pPitchSamples[u]);
 
         // Evaluate the point in time
         float64 fTime = fTimeStep * uCounter++;

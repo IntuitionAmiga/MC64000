@@ -19,6 +19,11 @@
 
 namespace MC64K::Synth::Audio {
 
+/**
+ * IMachine
+ *
+ * Top level interface for Machines. A machine represents a fixed musical unit
+ */
 class IMachine {
     public:
         enum Voice {
@@ -31,18 +36,108 @@ class IMachine {
         static constexpr float32 const VOICE_ATTENUATE = 1.0f / (float32)MAX_POLYPHONY;
 
         // Getters
-        virtual uint32      getNumVoices()              const = 0;
-        virtual float32     getVoiceLevel(Voice uVoice) const = 0;
-        virtual float32     getOutputLevel()            const = 0;
+
+        /**
+         * Get the number of voices the machine has. Value is in the range MIN_POLYPHONY to
+         * MAX_POLYPHONY.
+         *
+         * @return uint32
+         */
+        virtual uint32 getNumVoices() const = 0;
+
+        /**
+         * Get the volume level for the enumerated voice. A value of 1.0 represents the
+         * loudest intensity, though the value can be higher. Values can also be negative,
+         * which results in the inversion of the output.
+         *
+         * @param  Voice eVoice
+         * @return float32
+         */
+        virtual float32 getVoiceLevel(Voice eVoice) const = 0;
+
+        /**
+         * Get the volume level for the machine output. A value of 1.0 represents the
+         * loudest intensity, though the value can be higher. Values can also be negative,
+         * which results in the inversion of the output.
+         *
+         * @param  Voice eVoice
+         * @return float32
+         */
+        virtual float32 getOutputLevel() const = 0;
 
         // Mutators
-        virtual IMachine*   setOutputLevel(float32 fLevel)                   = 0;
-        virtual Voice       allocateVoice()                                  = 0;
-        virtual IMachine*   setVoiceLevel(Voice uVoice, float32 fLevel)      = 0;
-        virtual IMachine*   setVoiceNote(Voice uVoice, uint32 uNote)         = 0;
-        virtual IMachine*   setVoiceVelocity(Voice uVoice, uint32 uVelocity) = 0;
-        virtual IMachine*   startVoice(Voice uVoice)                         = 0;
-        virtual IMachine*   stopVoice(Voice uVoice)                          = 0;
+
+        /**
+         * Set the volume level for the machine output. A value of 1.0 represents the
+         * loudest intensity, though the value can be higher. Values can also be negative,
+         * which results in the inversion of the output.
+         *
+         * @param  float32 fLevel
+         * @return IMachine* this
+         */
+        virtual IMachine* setOutputLevel(float32 fLevel) = 0;
+
+        /**
+         * Allocate a Voice. This will be the number of the first free Voice, otherwise the
+         * machine is free to determine how to allocate from the voices already in use.
+         *
+         * @return Voice
+         */
+        virtual Voice allocateVoice() = 0;
+
+        /**
+         * Set the volume level for the enumerated voice. A value of 1.0 represents the
+         * loudest intensity, though the value can be higher. Values can also be negative,
+         * which results in the inversion of the output.
+         *
+         * @param  Voice     eVoice
+         * @param  float32   fLevel
+         * @return IMachine* this
+         */
+        virtual IMachine* setVoiceLevel(Voice eVoice, float32 fLevel) = 0;
+
+        /**
+         * Set the note number for the enumerated voice. This should be in the range
+         * 0-127 as per the MIDI specification.
+         *
+         * @param  Voice     eVoice
+         * @param  uint32    uNote
+         * @return IMachine* this
+         */
+        virtual IMachine* setVoiceNote(Voice eVoice, uint32 uNote) = 0;
+
+        /**
+         * Set the velocity level for the enumerated voice. Notionally this is in the range
+         * 0-127 as per the MIDI standard, but accepts a floating point value. The expectation
+         * is that the value will be mapped via one or more Control Curve implementation to
+         * velocity sensitive attributes of the machine's sound generator.
+         *
+         * @param  Voice     eVoice
+         * @param  float32   fVelocity
+         * @return IMachine* this
+         */
+        virtual IMachine* setVoiceVelocity(Voice eVoice, float32 fVelocity) = 0;
+
+        /**
+         * Set the enumerated voice playing.
+         *
+         * @param  Voice     eVoice
+         * @return IMachine* this
+         */
+        virtual IMachine* startVoice(Voice eVoice) = 0;
+
+        /**
+         * Stops the enumerated voice. The stop can be either hard, or soft:
+         *
+         * Hard: Immediately ceases the voice.
+         * Soft: Signals that the voice should stop gracefully, following any release envelope
+         *       etc.
+         *
+         * @param  Voice     eVoice
+         * @param  bool      bSoft
+         * @return IMachine* this
+         */
+        virtual IMachine* stopVoice(Voice eVoice, bool bSoft) = 0;
 };
 
 }

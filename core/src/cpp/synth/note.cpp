@@ -34,7 +34,7 @@ uint32 Note::getNumber(char const* sName) {
         return ILLEGAL_NOTE;
     }
 
-    // Incorporate the fact that C0 is not 12 into the base semitone
+    // Incorporate the fact that C0 is 12 into the base semitone
     int iSemitone = 12;
 
     // First Character
@@ -99,11 +99,6 @@ uint32 Note::getNumber(char const* sName) {
 octave:
     // expected values are -1, 0, 1, 2...9
     switch (*sName) {
-        case '-':
-            iMultiplier = -12;
-            ++sName;
-            goto octave;
-
         case '0':
         case '1':
         case '2':
@@ -116,6 +111,11 @@ octave:
         case '9':
             iNote = (int)(*sName) - '0';
             break;
+
+        case '-':
+            iMultiplier = -12;
+            ++sName;
+            goto octave;
 
         default:
             return ILLEGAL_NOTE;

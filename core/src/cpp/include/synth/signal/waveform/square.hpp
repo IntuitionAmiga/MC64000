@@ -80,6 +80,8 @@ class Square : public IWaveform {
         }
 };
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Basic fixed duty cycle PWM
  */
@@ -178,6 +180,63 @@ class FixedPWM : public IWaveform {
         }
 };
 
-}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Basic fixed duty cycle PWM
+ */
+class ModulatedPWM : public IWaveform {
+
+    private:
+        IStream::Ptr poWidthModulator;
+        float32      fModDepth;
+        float32      fModBias;
+    public:
+        ModulatedPWM(IStream::Ptr const& poModulator, float32 fModDepth, float32 fModBias);
+        ~ModulatedPWM();
+
+        /**
+         * @inheritDoc
+         */
+        float32 getPeriod() const {
+            return ONE;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        Packet::Ptr map(Packet const* poInput);
+
+        /**
+         * @inheritDoc
+         */
+        float32 value(float32 fTime) const;
+
+        /**
+         * @inheritDoc
+         */
+        FixedShape getShape() const {
+            return IWaveform::PULSE;
+        };
+
+        /**
+         * @inheritDoc
+         */
+        bool isDiscontinuous() const {
+            return true;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        bool isAperiodic() const {
+            return false;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        Ptr copy();
+};
 
 #endif

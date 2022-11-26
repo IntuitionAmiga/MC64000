@@ -26,11 +26,33 @@ class Note {
         static constexpr int32   const CENTRE_REFERENCE = 69; // LMAO: A4
         static constexpr int32   const SEMIS_PER_OCTAVE = 12;
         static constexpr float32 const FACTOR_PER_SEMI  = 1.0f / (float32)SEMIS_PER_OCTAVE;
-
         static constexpr uint32  const ILLEGAL_NOTE     = 0xFFFFFFFF;
 
+        /**
+         * Converts a simple C string note name to a MIDI note number.
+         *
+         * Acceptable note names are of the form <note[modifier]><octave> where
+         *
+         * note     = a, A, b, B, c, C, d, D, e, E, g, G
+         * modifier = #, b
+         * octave   = -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+         *
+         * Sharp and flat aliases of the same note are legal, e.g. D#, Eb
+         *
+         * The lowest legal note name is C-1, which results in note number 0, the highest
+         * is G9 which results in note number 127.
+         *
+         * All illegal and out of range input results in a return of ILLEGAL_NOTE
+         *
+         * @param  char const* sName
+         * @return uint32
+         */
         static uint32 getNumber(char const* sName);
 
+        /**
+         * Gets the frequency, in Hz for a given note number, inclusive of optional pitch
+         * bend and any non-standard scaling.
+         */
         static float32 getFrequency(
             int32   iNumber,
             float32 fBendSemis       = 0.0f,
@@ -41,13 +63,17 @@ class Note {
         /**
          * Converts fractional semitones to frequency multiplier
          */
-
-#ifdef AUDIO_PITCH_EXACT
         static inline float32 semisToMultiplier(float32 fSemitones) {
             return std::exp2(fSemitones * FACTOR_PER_SEMI);
         }
-#else
-        static float32 semisToMultiplier(float32 fSemitones) {
+
+        /**
+         * Converts fractional semitones to frequency multiplier. This is an approximate version
+         * that has some error but is faster for use cases where exact pitch is less important and
+         * performance matters, e.g. in pitch modulation by an LFO, where the values are calculated
+         * per sample.
+         */
+        static float32 semisToMultiplierApprox(float32 fSemitones) {
             union {
                 uint32  uResult;
                 float32 fResult;
@@ -68,7 +94,6 @@ class Note {
             uResult     = (uResult & 0x007FFFFF) | uExp;
             return fResult;
         }
-#endif
 };
 
 }
