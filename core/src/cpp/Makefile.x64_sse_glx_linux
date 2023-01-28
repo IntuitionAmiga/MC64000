@@ -13,9 +13,13 @@ USE_AUDIO_OUT = alsa
 VM_PC_RESERVE_REG = r12
 #VM_PC_RESERVE_REG = none
 
+#VM_DEA_RESERVE_REG = r13
+VM_DEA_RESERVE_REG = none
+
+
 # Compiler settings
-CXXFLAGS = --std=c++17 -Wall -Wconversion -Werror -Ofast -march=native -mtune=native -mfpmath=sse -msse4 -fPIC -pipe -Iinclude
-GCC_CXXFLAGS = -fexpensive-optimizations -funroll-all-loops -DMESSAGE='"Compiled with GCC"'
+CXXFLAGS = --std=c++17 -Wall -Wconversion -Werror -Ofast -march=native -mtune=native -mfpmath=sse -msse4 -fPIC -pipe -Iinclude -DALLOW_MISALIGNED_IMMEDIATE -DREPORT_MIPS
+GCC_CXXFLAGS = -fexpensive-optimizations -funroll-all-loops -DMESSAGE='"Compiled with GCC"' -DINTERPRETER_JUMPTBL -DTHREADED_DISPATCH
 CLANG_CXXFLAGS = -v -funroll-loops -DMESSAGE='"Compiled with Clang"'
 UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'
 
@@ -24,9 +28,17 @@ LIBS = -lX11 -lGL -lasound
 
 ifeq ($(CXX),g++)
   ifeq ($(VM_PC_RESERVE_REG),none)
-    GCC_EXTRA = -fwhole-program -flto
+    ifeq ($(VM_DEA_RESERVE_REG),none))
+      GCC_EXTRA = -fwhole-program -flto
+    else
+      GCC_EXTRA = -DUSE_GLOBAL_DEA='"$(VM_DEA_RESERVE_REG)"' -ffixed-$(VM_DEA_RESERVE_REG)
+    endif
   else
-    GCC_EXTRA = -DUSE_GLOBAL_PC='"$(VM_PC_RESERVE_REG)"' -ffixed-$(VM_PC_RESERVE_REG)
+    ifeq ($(VM_DEA_RESERVE_REG),none))
+      GCC_EXTRA = -DUSE_GLOBAL_PC='"$(VM_PC_RESERVE_REG)"' -ffixed-$(VM_PC_RESERVE_REG)
+    else
+      GCC_EXTRA = -DUSE_GLOBAL_PC='"$(VM_PC_RESERVE_REG)"' -DUSE_GLOBAL_DEA='"$(VM_DEA_RESERVE_REG)"' -ffixed-$(VM_PC_RESERVE_REG) -ffixed-$(VM_DEA_RESERVE_REG)
+    endif
   endif
   CXXFLAGS += $(GCC_CXXFLAGS) $(GCC_EXTRA)
 else ifeq ($(CXX),clang++)

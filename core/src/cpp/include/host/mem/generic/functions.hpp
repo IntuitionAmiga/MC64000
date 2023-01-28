@@ -16,7 +16,7 @@
 
 #include <misc/scalar.hpp>
 #include <host/memory.hpp>
-
+#include <type_traits>
 /**
  * Naive generic versions
  */
