@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_AUDIO_CONFIG_HPP
-    #define MC64K_STANDARD_TEST_HOST_AUDIO_CONFIG_HPP
+#ifndef MC64K_SYNTH_SIGNAL_WAVE_CONSTANTS_HPP
+    #define MC64K_SYNTH_SIGNAL_WAVE_CONSTANTS_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,17 +14,21 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include <host/standard_test_host_audio.hpp>
+#include <cmath>
+#include <synth/signal.hpp>
 
-/**
- * PDE to the rescue...
- */
-namespace MC64K::StandardTestHost::Audio::IConfig {
+namespace MC64K::Synth::Audio::Signal::Waveform {
 
-    constexpr int32   const PROCESS_RATE  = 48000;
-    constexpr size_t  const PACKET_SIZE   = 256;
-    constexpr float64 const SAMPLE_PERIOD = 1.0f / (float64)PROCESS_RATE;
-    constexpr float64 const PACKET_PERIOD = (float64)PACKET_SIZE / (float64)PROCESS_RATE;
-};
+// 32-bit integer representation of commonly used float values
+constexpr int32 const ONE_IEEE_32 = 0x3F800000;
+constexpr int32 const TWO_IEEE_32 = 0x40000000;
+constexpr int32 const PI_IEEE_32  = 0x40490FDB;
+
+constexpr float32 const HALF   = 0.5f;
+constexpr float32 const ONE    = 1.0f;
+constexpr float32 const TWO    = 2.0f;
+constexpr float32 const TWO_PI = (float32)(2.0 * M_PI);
+
+}
 
 #endif

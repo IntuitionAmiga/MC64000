@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_AUDIO_CONFIG_HPP
-    #define MC64K_STANDARD_TEST_HOST_AUDIO_CONFIG_HPP
+#ifndef MC64K_SYNTH_SIGNAL_HPP
+    #define MC64K_SYNTH_SIGNAL_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,17 +14,20 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include <host/standard_test_host_audio.hpp>
+#include <memory>
+#include <misc/scalar.hpp>
+#include <host/audio/config.hpp>
 
-/**
- * PDE to the rescue...
- */
-namespace MC64K::StandardTestHost::Audio::IConfig {
+#include "signal/packet.hpp"
+#include "signal/stream.hpp"
+#include "signal/envelope.hpp"
+#include "signal/waveform.hpp"
+#include "signal/oscillator.hpp"
+#include "signal/filter.hpp"
+#include "signal/insert.hpp"
 
-    constexpr int32   const PROCESS_RATE  = 48000;
-    constexpr size_t  const PACKET_SIZE   = 256;
-    constexpr float64 const SAMPLE_PERIOD = 1.0f / (float64)PROCESS_RATE;
-    constexpr float64 const PACKET_PERIOD = (float64)PACKET_SIZE / (float64)PROCESS_RATE;
-};
+namespace MC64K::Synth::Audio::Signal {
+
+}
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef MC64K_STANDARD_TEST_HOST_AUDIO_CONFIG_HPP
-    #define MC64K_STANDARD_TEST_HOST_AUDIO_CONFIG_HPP
+#ifndef MC64K_SYNTH_CTRL_CURVE_FLAT_HPP
+    #define MC64K_SYNTH_CTRL_CURVE_FLAT_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,17 +14,28 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include <host/standard_test_host_audio.hpp>
+#include <misc/scalar.hpp>
+#include <synth/controlcurve.hpp>
+
+namespace MC64K::Synth::Audio::ControlCurve {
 
 /**
- * PDE to the rescue...
+ * Flat control curve. Ignores whatever value is passed and returns the fixed value passed
+ * on construction.
  */
-namespace MC64K::StandardTestHost::Audio::IConfig {
+class Flat : public IControlCurve {
+    private:
+        float32 fFixed;
 
-    constexpr int32   const PROCESS_RATE  = 48000;
-    constexpr size_t  const PACKET_SIZE   = 256;
-    constexpr float64 const SAMPLE_PERIOD = 1.0f / (float64)PROCESS_RATE;
-    constexpr float64 const PACKET_PERIOD = (float64)PACKET_SIZE / (float64)PROCESS_RATE;
+    public:
+        Flat(float32 fValue);
+        ~Flat();
+
+        /**
+         * @inheritDoc
+         */
+        float32 map(float32 const);
 };
 
+}
 #endif

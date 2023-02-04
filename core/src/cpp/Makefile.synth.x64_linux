@@ -1,0 +1,31 @@
+# Project: MC64000 Audio
+
+# Target
+BIN      = bin/synth_x64
+
+# This seds the source file to use for the audio output device. Platform dependent.
+USE_AUDIO_OUT = alsa
+
+# Compiler settings
+CXXFLAGS         = --std=c++17 -Wall -Wconversion -Werror -Ofast -march=native -mtune=native -mavx2 -fPIC -pipe -Iinclude
+GCC_CXXFLAGS     = -DMESSAGE='"Compiled with GCC"'
+CLANG_CXXFLAGS   = -v -funroll-loops -DMESSAGE='"Compiled with Clang"'
+UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'
+
+# Needed libraries
+LIBS = -lasound
+
+ifeq ($(CXX),g++)
+  GCC_EXTRA = -fwhole-program -flto
+  CXXFLAGS += $(GCC_CXXFLAGS) $(GCC_EXTRA)
+else ifeq ($(CXX),clang++)
+  CXXFLAGS += $(CLANG_CXXFLAGS)
+else
+  CXXFLAGS += $(UNKNOWN_CXXFLAGS)
+endif
+
+# Makefile settings
+ARCH     = x64_linux
+MEXT     = $(ARCH)
+
+include synth.make
