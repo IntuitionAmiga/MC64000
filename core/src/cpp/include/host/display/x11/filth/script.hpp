@@ -118,6 +118,7 @@ void* updateLUT8Filth(Context& roContext) {
                 }
                 filth_end:
                 // Calculate buffer location
+                // Yucky modulo to get the coordinates back into a sensible place.
                 uint32 xSrc = xDst + uViewXOffset;
                 if (xSrc > roContext.uBufferWidth) {
                     xSrc %= roContext.uBufferWidth;
@@ -182,6 +183,7 @@ void* updateARGB32Filth(Context& roContext) {
             }
             filth_end:
             // Calculate buffer location
+            // Yucky modulo to get the coordinates back into a sensible place.
             uint32 xSrc = xDst + uViewXOffset;
             if (xSrc > roContext.uBufferWidth) {
                 xSrc %= roContext.uBufferWidth;
