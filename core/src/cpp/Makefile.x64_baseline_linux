@@ -1,0 +1,34 @@
+# Project: MC64000
+
+# Target
+BIN      = bin/interpreter_x64
+
+# This sets the source file to use for the display context manager. Platform dependent.
+USE_DISP_CTX = x11
+
+# This seds the source file to use for the audio output device. Platform dependent.
+USE_AUDIO_OUT = alsa
+
+# Compiler settings
+CXXFLAGS = --std=c++17 -Wall -Wconversion -Werror -O2 -march=native -mtune=native -fPIC -pipe -Iinclude
+GCC_CXXFLAGS = -DMESSAGE='"Compiled with GCC"'
+CLANG_CXXFLAGS = -v -funroll-loops -DMESSAGE='"Compiled with Clang"'
+UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'
+
+# Needed libraries
+LIBS = -lX11 -lasound
+
+ifeq ($(CXX),g++)
+  GCC_EXTRA = -fwhole-program -flto
+  CXXFLAGS += $(GCC_CXXFLAGS) $(GCC_EXTRA)
+else ifeq ($(CXX),clang++)
+  CXXFLAGS += $(CLANG_CXXFLAGS)
+else
+  CXXFLAGS += $(UNKNOWN_CXXFLAGS)
+endif
+
+# Makefile settings
+ARCH     = x64_linux
+MEXT     = $(ARCH)
+
+include mc64k.make
