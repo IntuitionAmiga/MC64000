@@ -19,6 +19,9 @@
 
 namespace MC64K::StandardTestHost::Display::x11 {
 
+/**
+ * Updates the visible portion of an 8-bit surface.
+ */
 void* updateLUT8Generic(Context& roContext) {
     if (uint32 const* puPalette = roContext.puPalette) {
         uint32* pDst = (uint32*)roContext.puImageBuffer;
@@ -97,7 +100,9 @@ void* updateLUT8Generic(Context& roContext) {
     return roContext.puImageBuffer;
 }
 
-
+/**
+ * Updates the visible portion of a 32-bit surface.
+ */
 void* updateARGB32Generic(Context& roContext) {
 
     uint32* pDst = (uint32*)roContext.puImageBuffer;
