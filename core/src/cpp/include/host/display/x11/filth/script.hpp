@@ -71,7 +71,10 @@ inline size_t subFromImmediate(uint8 const* puCode, uint8* puBase) {
     return sizeof(T) + sizeof(uint16);
 }
 
-
+/**
+ * Updates the visible portion of an 8-bit surface, using the FILTH script to modify palette,
+ * offsets, etc. according to the beam location.
+ */
 void* updateLUT8Filth(Context& roContext) {
     if (uint32* puPalette = roContext.puPalette) {
         uint32* pDst        = (uint32*)roContext.puImageBuffer;
@@ -83,10 +86,10 @@ void* updateLUT8Filth(Context& roContext) {
         for (uint32 yDst = 0; yDst < roContext.uViewHeight; ++yDst) {
             for (uint32 xDst = 0; xDst < roContext.uViewWidth; ++xDst) {
 
-                // Determine beam position
+                // Determine beam position as 32-bit YYYY:XXXX
                 uint32 uBeamPos = yDst << 16 | xDst;
 
-                // Do filth
+                // Do FILTH. Each operation happens at a defined beam position
                 if (getImmediate<uint32>(puCode) == uBeamPos) {
                     puCode += sizeof(uint32);
                     while (uint8 uCommand = *puCode++) {
@@ -99,161 +102,14 @@ void* updateLUT8Filth(Context& roContext) {
                                 goto filth_end;
                                 break; // Assume puCode now points at next beam position
 
-                            case FC_SET_PALETTE: {
-                                uint8 uIndex = *puCode++;
-                                puPalette[uIndex] = getImmediate<uint32>(puCode);
-                                puCode += sizeof(uint32);
-                                break;
-                            }
+                            #define  FILTH_COMMAND_PALLETE
+                            #include "commands/palette.hpp"
 
-                            case FC_ADD_PALETTE_RGB: {
-                                // todo - this sucks
-                                uint8 uIndex = *puCode++;
-                                ((uint8*)(&puPalette[uIndex]))[0] += puCode[0];
-                                ((uint8*)(&puPalette[uIndex]))[1] += puCode[1];
-                                ((uint8*)(&puPalette[uIndex]))[2] += puCode[2];
-                                puCode += sizeof(uint32);
-                                break;
-                            }
+                            #define  FILTH_COMMAND_VIEW
+                            #include "commands/view.hpp"
 
-                            case FC_SUB_PALETTE_RGB: {
-                                // todo - this sucks
-                                uint8 uIndex = *puCode++;
-                                ((uint8*)(&puPalette[uIndex]))[0] -= puCode[0];
-                                ((uint8*)(&puPalette[uIndex]))[1] -= puCode[1];
-                                ((uint8*)(&puPalette[uIndex]))[2] -= puCode[2];
-                                puCode += sizeof(uint32);
-                                break;
-                            }
-
-                            case FC_SET_PALETTE_R: {
-                                uint32 uIndex = *puCode++;
-                                ((uint8*)(&puPalette[uIndex]))[2] = *puCode++;
-                                break;
-                            }
-
-                            case FC_ADD_PALETTE_R: {
-                                uint32 uIndex = *puCode++;
-                                ((uint8*)(&puPalette[uIndex]))[2] += *puCode++;
-                                break;
-                            }
-
-                            case FC_SUB_PALETTE_R: {
-                                uint32 uIndex = *puCode++;
-                                ((uint8*)(&puPalette[uIndex]))[2] -= *puCode++;
-                                break;
-                            }
-
-                            case FC_SET_PALETTE_G: {
-                                uint32 uIndex = *puCode++;
-                                ((uint8*)(&puPalette[uIndex]))[1] = *puCode++;
-                                break;
-                            }
-
-                            case FC_ADD_PALETTE_G: {
-                                uint32 uIndex = *puCode++;
-                                ((uint8*)(&puPalette[uIndex]))[1] += *puCode++;
-                                break;
-                            }
-
-                            case FC_SUB_PALETTE_G: {
-                                uint32 uIndex = *puCode++;
-                                ((uint8*)(&puPalette[uIndex]))[1] -= *puCode++;
-                                break;
-                            }
-
-                            case FC_SET_PALETTE_B: {
-                                uint32 uIndex = *puCode++;
-                                ((uint8*)(&puPalette[uIndex]))[0] = *puCode++;
-                                break;
-                            }
-
-                            case FC_ADD_PALETTE_B: {
-                                uint32 uIndex = *puCode++;
-                                ((uint8*)(&puPalette[uIndex]))[0] += *puCode++;
-                                break;
-                            }
-
-                            case FC_SUB_PALETTE_B: {
-                                uint32 uIndex = *puCode++;
-                                ((uint8*)(&puPalette[uIndex]))[0] -= *puCode++;
-                                break;
-                            }
-
-                            case FC_SWP_PALETTE: {
-                                uint8 uIndexA = *puCode++;
-                                uint8 uIndexB = *puCode++;
-                                uint32 uRGB = puPalette[uIndexA];
-                                puPalette[uIndexA] = puPalette[uIndexB];
-                                puPalette[uIndexB] = uRGB;
-                                break;
-                            }
-
-                            case FC_SET_VIEW_X:
-                                uViewXOffset = getImmediate<uint16>(puCode);
-                                puCode += sizeof(uint16);
-                                break;
-
-                            case FC_ADD_VIEW_X:
-                                uViewXOffset += getImmediate<uint16>(puCode);
-                                puCode += sizeof(uint16);
-                                break;
-
-                            case FC_SUB_VIEW_X:
-                                uViewXOffset -= getImmediate<uint16>(puCode);
-                                puCode += sizeof(uint16);
-                                break;
-
-                            case FC_SET_VIEW_Y:
-                                uViewYOffset = getImmediate<uint16>(puCode);
-                                puCode += sizeof(uint16);
-                                break;
-
-                            case FC_ADD_VIEW_Y:
-                                uViewYOffset += getImmediate<uint16>(puCode);
-                                puCode += sizeof(uint16);
-                                break;
-
-                            case FC_SUB_VIEW_Y:
-                                uViewYOffset -= getImmediate<uint16>(puCode);
-                                puCode += sizeof(uint16);
-                                break;
-
-                            case FC_SET_BYTE:
-                                puCode += setImmediate<uint8>(puCode, roContext.puFilthScript);
-                                break;
-
-                            case FC_SET_WORD:
-                                puCode += setImmediate<uint16>(puCode, roContext.puFilthScript);
-                                break;
-
-                            case FC_SET_LONG:
-                                puCode += setImmediate<uint32>(puCode, roContext.puFilthScript);
-                                break;
-
-                            case FC_ADD_BYTE:
-                                puCode += addToImmediate<uint8>(puCode, roContext.puFilthScript);
-                                break;
-
-                            case FC_ADD_WORD:
-                                puCode += addToImmediate<uint16>(puCode, roContext.puFilthScript);
-                                break;
-
-                            case FC_ADD_LONG:
-                                puCode += addToImmediate<uint32>(puCode, roContext.puFilthScript);
-                                break;
-
-                            case FC_SUB_BYTE:
-                                puCode += subFromImmediate<uint8>(puCode, roContext.puFilthScript);
-                                break;
-
-                            case FC_SUB_WORD:
-                                puCode += subFromImmediate<uint16>(puCode, roContext.puFilthScript);
-                                break;
-
-                            case FC_SUB_LONG:
-                                puCode += subFromImmediate<uint32>(puCode, roContext.puFilthScript);
-                                break;
+                            #define  FILTH_COMMAND_SELFMOD
+                            #include "commands/selfmod.hpp"
 
                             default:
                                 break;
@@ -280,7 +136,10 @@ void* updateLUT8Filth(Context& roContext) {
 }
 
 
-
+/**
+ * Updates the visible portion of a 32-bit surface, using the FILTH script to modify palette,
+ * offsets, etc. according to the beam location.
+ */
 void* updateARGB32Filth(Context& roContext) {
     uint32* pDst        = (uint32*)roContext.puImageBuffer;
     uint32 const* pSrc  = roContext.oDisplayBuffer.puLong;
@@ -307,77 +166,14 @@ void* updateARGB32Filth(Context& roContext) {
                             goto filth_end;
                             break; // Assume puCode now points at next beam position
 
-                        case FC_SET_VIEW_X:
-                            // Next 16-bit value is the new View X
-                            uViewXOffset = getImmediate<uint16>(puCode);
-                            puCode += sizeof(uint16);
-                            break;
+                            // Palette commands not recognised in RGB mode. They may be
+                            // misinterpreted as other data if present.
 
-                        case FC_ADD_VIEW_X:
-                            // Next 16-bit value is the new View X
-                            uViewXOffset += getImmediate<uint16>(puCode);
-                            puCode += sizeof(uint16);
-                            break;
+                            #define  FILTH_COMMAND_VIEW
+                            #include "commands/view.hpp"
 
-                        case FC_SUB_VIEW_X:
-                            // Next 16-bit value is the new View X
-                            uViewXOffset -= getImmediate<uint16>(puCode);
-                            puCode += sizeof(uint16);
-                            break;
-
-                        case FC_SET_VIEW_Y:
-                            // Next 16-bit value is the new View Y
-                            uViewYOffset = getImmediate<uint16>(puCode);
-                            puCode += sizeof(uint16);
-                            break;
-
-                        case FC_ADD_VIEW_Y:
-                            // Next 16-bit value is the new View Y
-                            uViewYOffset += getImmediate<uint16>(puCode);
-                            puCode += sizeof(uint16);
-                            break;
-
-                        case FC_SUB_VIEW_Y:
-                            // Next 16-bit value is the new View Y
-                            uViewYOffset -= getImmediate<uint16>(puCode);
-                            puCode += sizeof(uint16);
-                            break;
-
-                        case FC_SET_BYTE:
-                            puCode += setImmediate<uint8>(puCode, roContext.puFilthScript);
-                            break;
-
-                        case FC_SET_WORD:
-                            puCode += setImmediate<uint16>(puCode, roContext.puFilthScript);
-                            break;
-
-                        case FC_SET_LONG:
-                            puCode += setImmediate<uint32>(puCode, roContext.puFilthScript);
-                            break;
-
-                        case FC_ADD_BYTE:
-                            puCode += addToImmediate<uint8>(puCode, roContext.puFilthScript);
-                            break;
-
-                        case FC_ADD_WORD:
-                            puCode += addToImmediate<uint16>(puCode, roContext.puFilthScript);
-                            break;
-
-                        case FC_ADD_LONG:
-                            puCode += addToImmediate<uint32>(puCode, roContext.puFilthScript);
-                            break;
-
-                        case FC_SUB_BYTE:
-                            puCode += subFromImmediate<uint8>(puCode, roContext.puFilthScript);
-                            break;
-
-                        case FC_SUB_WORD:
-                            puCode += subFromImmediate<uint16>(puCode, roContext.puFilthScript);
-                            break;
-
-                        case FC_SUB_LONG:
-                            puCode += subFromImmediate<uint32>(puCode, roContext.puFilthScript);
-                            break;
+                            #define  FILTH_COMMAND_SELFMOD
+                            #include "commands/selfmod.hpp"
 
                         default:
                             break;
