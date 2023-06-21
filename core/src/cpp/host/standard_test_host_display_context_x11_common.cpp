@@ -60,6 +60,7 @@ void Context::allocateBuffer() {
     switch (uPixelFormat) {
 
         case PXL_LUT_8: {
+            // 8 bit index, 256 colours
             uNumBufferBytes = uNumBufferPixels;
 
             // Calculate the total allocation size including the viewport sized transfer buffer and palette.
@@ -73,15 +74,16 @@ void Context::allocateBuffer() {
         }
 
         case PXL_HAM_555: {
+            // 5 bit index, 32 colours
             uNumBufferBytes = uNumBufferPixels;
 
             // Calculate the total allocation size including the viewport sized transfer buffer and palette.
-            size_t uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 256) * sizeof(RGB555);
+            size_t uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 32) * sizeof(RGB555);
 
             oDisplayBuffer.puByte =
             puData                = new uint8[uTotalAlloc];
             oPaletteData.puWord   = (RGB555*)(puData + uNumBufferBytes);
-            puImageBuffer         = (LUT8*)(oPaletteData.puWord + 256);
+            puImageBuffer         = (LUT8*)(oPaletteData.puWord + 32);
             break;
         }
 
