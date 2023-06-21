@@ -66,10 +66,10 @@ GLenum const aType[] = {
 };
 
 char const* aFormatDescriptors[] = {
-    "8-bit, ARGB 32 Palette",
-    "8-bit, HAM 555 Palette",
-    "16-bit, RGB 555",
-    "32-bit, ARGB 32",
+    "8 BPP, ARGB32 Palette",
+    "8 BPP, HAM, RGB555 Palette",
+    "16 BPP, RGB555",
+    "32 BPP, ARGB32",
 };
 
 /**
@@ -136,7 +136,7 @@ Device::Device(Display::OpenParams const& roOpenParams):
 
     std::snprintf(
         sTitleBuffer, sizeof(sTitleBuffer)-1,
-        "MC64K %d x %d [%d:%s] @ %dHz (GL scale %dx)",
+        "MC64K (GL) %d x %d [Format:%d, %s] @ %dHz, Scaling: %dx",
         (int)oContext.uViewWidth,
         (int)oContext.uViewHeight,
         (int)oContext.uPixelFormat,
