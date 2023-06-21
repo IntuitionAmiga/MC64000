@@ -17,19 +17,24 @@
 #include <host/standard_test_host_display.hpp>
 #include <host/display/x11/raii.hpp>
 
+#include "conversion.hpp"
+
 namespace MC64K::StandardTestHost::Display::x11 {
 
 /**
  * Updates the visible portion of an 8-bit surface, for some palette mapped display type
  *
  * Palette is assumed to be the same data format as the target display
+ *
+ * T is expected to be an integer type
+ * C is expected to be one of the conversion classes
  */
-template<typename T>
-void* updateLUT8Generic(Context& roContext) {
-        static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
+template<typename T, class C>
+void* updateLUT8ViewPort(Context& roContext) {
+    static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
 
-
-    if (T const* oPaletteData = roContext.oPaletteData.as<T const>()) {
+    if (T const* puPalette = roContext.oPaletteData.as<T const>()) {
+        C::init();
         T*       pDst = (T*)roContext.puImageBuffer;
         unsigned y1   = 0;
         for (
@@ -48,7 +53,8 @@ void* updateLUT8Generic(Context& roContext) {
                 x2 < roContext.uBufferWidth && x1 < roContext.uViewWidth;
                 ++x1, ++x2
             ) {
-                *pDst++ = oPaletteData[*pSrc++];
+
+                *pDst++ = C::convert(puPalette, *pSrc++);
             }
 
             if (x1 < roContext.uViewWidth) {
@@ -61,7 +67,7 @@ void* updateLUT8Generic(Context& roContext) {
                     x1 < roContext.uViewWidth;
                     ++x1, ++x2
                 ) {
-                    *pDst++ = oPaletteData[*pSrc++];
+                    *pDst++ = C::convert(puPalette, *pSrc++);
                 }
             }
         }
@@ -82,7 +88,7 @@ void* updateLUT8Generic(Context& roContext) {
                     x2 < roContext.uBufferWidth && x1 < roContext.uViewWidth;
                     ++x1, ++x2
                 ) {
-                    *pDst++ = oPaletteData[*pSrc++];
+                    *pDst++ = C::convert(puPalette, *pSrc++);
                 }
 
                 if (x1 < roContext.uViewWidth) {
@@ -96,24 +102,23 @@ void* updateLUT8Generic(Context& roContext) {
                         x1 < roContext.uViewWidth;
                         ++x1, ++x2
                     ) {
-                        *pDst++ = oPaletteData[*pSrc++];
+                        *pDst++ = C::convert(puPalette, *pSrc++);
                     }
                 }
             }
         }
-
     }
     return roContext.puImageBuffer;
 }
 
 
 /**
- * Updates the visible portion of a surface. This is a general implementation.
+ * Updates the visible portion of an RGB surface, for some palette mapped display type
  *
- * PixelWord is expected to be some integer type.
+ * T is expected to be an integer type
  */
 template<typename T>
-void* updateGeneric(Context& roContext) {
+void* updateViewPort(Context& roContext) {
     static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
 
     T* pDst = (T*)roContext.puImageBuffer;

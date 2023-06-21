@@ -41,6 +41,37 @@ inline void Device::updateMousePosition() {
     oContext.uPositionY    = (uint16) ((float32)event<::XMotionEvent>().y * fMouseYScale);
 }
 
+// Maps PXL_x to glTexImage2D() internalformat parameter
+GLint const aInternalFormat[] = {
+    GL_RGBA,
+    GL_RGB5,
+    GL_RGB5,
+    GL_RGBA,
+};
+
+// Maps PXL_x to glTexImage2D() format parameter
+GLenum const aFormat[] = {
+    GL_BGRA,
+    GL_BGRA,
+    GL_BGRA,
+    GL_BGRA,
+};
+
+// Maps PXL_x to glTexImage2D() type parameter
+GLenum const aType[] = {
+    GL_UNSIGNED_BYTE,
+    GL_UNSIGNED_SHORT,
+    GL_UNSIGNED_SHORT,
+    GL_UNSIGNED_BYTE,
+};
+
+char const* aFormatDescriptors[] = {
+    "8-bit, ARGB 32 Palette",
+    "8-bit, HAM 555 Palette",
+    "16-bit, RGB 555",
+    "32-bit, ARGB 32",
+};
+
 /**
  * Constructor. We use RAII here and throw exceptions if a requirement can't be met.
  */
@@ -93,8 +124,6 @@ Device::Device(Display::OpenParams const& roOpenParams):
 
     std::fprintf(stderr, "xGL::Device: Got window handle %u\n", (unsigned)uWindowID);
 
-    ::XStoreName(poDisplay, uWindowID, "MC64K (GL)");
-
     oContext.uViewWidth       = roOpenParams.uViewWidth;
     oContext.uViewHeight      = roOpenParams.uViewHeight;
     oContext.uBufferWidth     = roOpenParams.uBufferWidth;
@@ -104,6 +133,19 @@ Device::Device(Display::OpenParams const& roOpenParams):
     oContext.uRateHz          = roOpenParams.uRateHz < 1 ? 1 : roOpenParams.uRateHz;
     oContext.poDevice        = this;
     oContext.allocateBuffer();
+
+    std::snprintf(
+        sTitleBuffer, sizeof(sTitleBuffer)-1,
+        "MC64K %d x %d [%d:%s] @ %dHz (GL scale %dx)",
+        (int)oContext.uViewWidth,
+        (int)oContext.uViewHeight,
+        (int)oContext.uPixelFormat,
+        aFormatDescriptors[oContext.uPixelFormat],
+        (int)oContext.uRateHz,
+        (int)iScaleFactor
+    );
+
+    ::XStoreName(poDisplay, uWindowID, sTitleBuffer);
 
     ::glXMakeCurrent(poDisplay, uWindowID, pGLXContext);
 
@@ -120,12 +162,12 @@ Device::Device(Display::OpenParams const& roOpenParams):
     ::glTexImage2D(
         GL_TEXTURE_2D,
         0,
-        GL_RGBA,
+        aInternalFormat[roOpenParams.uPixelFormat], //GL_RGBA,
         roOpenParams.uViewWidth,
         roOpenParams.uViewHeight,
         0,
-        GL_BGRA,
-        GL_UNSIGNED_BYTE,
+        aFormat[roOpenParams.uPixelFormat],//GL_BGRA,
+        aType[roOpenParams.uPixelFormat],//GL_UNSIGNED_BYTE,
         oContext.puImageBuffer
     );
     ::glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);

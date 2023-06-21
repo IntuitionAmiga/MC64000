@@ -16,7 +16,9 @@
     @def display_vector #3
 
     @equ PXL_CLUT_8       0
-    @equ PXL_ARGB         1
+    @equ PXL_HAM_555      1
+    @equ PXL_RGB_555      2
+    @equ PXL_ARGB         3
 
     ; Callback entry points
     @equ DISPLAY_REG_CALL_FRAME           0

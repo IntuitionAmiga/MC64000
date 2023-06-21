@@ -17,32 +17,35 @@
 #include <host/standard_test_host_display.hpp>
 #include <host/display/x11/raii.hpp>
 
+#include "conversion.hpp"
+
 namespace MC64K::StandardTestHost::Display::x11 {
 
 /**
  * Transfer routine for:
  *
- * Pixel Format  == LUT8
+ * Pixel Format  == LUT8/HAM
  * Buffer Size   == View Size
  * X Offset      == 0
  * Y Offset      == 0
  * Filth Script  == nullptr
  */
-template<typename T>
-void* updateLUT8Simple(Context& roContext) {
+template<typename T, typename C>
+void* updateLUT8(Context& roContext) {
     static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
 
-    if (T const* oPaletteData = roContext.oPaletteData.as<T const>()) {
+    // Just expand out the palette to the target
+    if (T const* puPalette = roContext.oPaletteData.as<T const>()) {
+        C::init();
         T*            pDst = (T*)roContext.puImageBuffer;
         uint8 const*  pSrc = roContext.oDisplayBuffer.puByte;
         uint32        uCnt = roContext.uNumBufferPixels;
         while (uCnt--) {
-            *pDst++ = oPaletteData[*pSrc++];
+            *pDst++ = C::convert(puPalette, *pSrc++);
         }
     }
     return roContext.puImageBuffer;
 }
-
 
 /**
  * Transfer routine for:
@@ -53,8 +56,10 @@ void* updateLUT8Simple(Context& roContext) {
  * Y Offset      == 0
  * Filth Script  == nullptr
  */
-void* updateRGBSimple(Context& roContext) {
-    return roContext.oDisplayBuffer.puByte; // Just return the display buffer as-is
+template<typename T>
+void* update(Context& roContext) {
+     // Just return the display buffer as-is. This doesn't even really need templating.
+    return roContext.oDisplayBuffer.puByte;
 }
 
 }

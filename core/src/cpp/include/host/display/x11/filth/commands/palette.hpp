@@ -15,95 +15,106 @@
 
 /**
  * FILTH processor (switch/case) handlers for palette related commands
+ *
+ * Note that these are included in templated code
  */
 
 case FC_SET_PALETTE: {
     uint8 uIndex = *puCode++;
-    oPaletteData[uIndex] = getImmediate<uint32>(puCode);
-    puCode += sizeof(uint32);
+    puPalette[uIndex] = getImmediate<T>(puCode);
+    puCode += sizeof(T);
     break;
 }
 
 case FC_ADD_PALETTE_RGB: {
-    // todo - this sucks
+    // todo - this sucks and will not work for non 32-bit displays
     uint8 uIndex = *puCode++;
-    ((uint8*)(&oPaletteData[uIndex]))[0] += puCode[0];
-    ((uint8*)(&oPaletteData[uIndex]))[1] += puCode[1];
-    ((uint8*)(&oPaletteData[uIndex]))[2] += puCode[2];
+    ((uint8*)(&puPalette[uIndex]))[0] += puCode[0];
+    ((uint8*)(&puPalette[uIndex]))[1] += puCode[1];
+    ((uint8*)(&puPalette[uIndex]))[2] += puCode[2];
     puCode += sizeof(uint32);
     break;
 }
 
 case FC_SUB_PALETTE_RGB: {
-    // todo - this sucks
+    // todo - this sucks and will not work for non 32-bit displays
     uint8 uIndex = *puCode++;
-    ((uint8*)(&oPaletteData[uIndex]))[0] -= puCode[0];
-    ((uint8*)(&oPaletteData[uIndex]))[1] -= puCode[1];
-    ((uint8*)(&oPaletteData[uIndex]))[2] -= puCode[2];
+    ((uint8*)(&puPalette[uIndex]))[0] -= puCode[0];
+    ((uint8*)(&puPalette[uIndex]))[1] -= puCode[1];
+    ((uint8*)(&puPalette[uIndex]))[2] -= puCode[2];
     puCode += sizeof(uint32);
     break;
 }
 
 case FC_SET_PALETTE_R: {
+    // todo - this sucks and will not work for non 32-bit displays
     uint32 uIndex = *puCode++;
-    ((uint8*)(&oPaletteData[uIndex]))[2] = *puCode++;
+    ((uint8*)(&puPalette[uIndex]))[2] = *puCode++;
     break;
 }
 
 case FC_ADD_PALETTE_R: {
+    // todo - this sucks and will not work for non 32-bit displays
     uint32 uIndex = *puCode++;
-    ((uint8*)(&oPaletteData[uIndex]))[2] += *puCode++;
+    ((uint8*)(&puPalette[uIndex]))[2] += *puCode++;
     break;
 }
 
 case FC_SUB_PALETTE_R: {
+    // todo - this sucks and will not work for non 32-bit displays
     uint32 uIndex = *puCode++;
-    ((uint8*)(&oPaletteData[uIndex]))[2] -= *puCode++;
+    ((uint8*)(&puPalette[uIndex]))[2] -= *puCode++;
     break;
 }
 
 case FC_SET_PALETTE_G: {
+    // todo - this sucks and will not work for non 32-bit displays
     uint32 uIndex = *puCode++;
-    ((uint8*)(&oPaletteData[uIndex]))[1] = *puCode++;
+    ((uint8*)(&puPalette[uIndex]))[1] = *puCode++;
     break;
 }
 
 case FC_ADD_PALETTE_G: {
+    // todo - this sucks and will not work for non 32-bit displays
     uint32 uIndex = *puCode++;
-    ((uint8*)(&oPaletteData[uIndex]))[1] += *puCode++;
+    ((uint8*)(&puPalette[uIndex]))[1] += *puCode++;
     break;
 }
 
 case FC_SUB_PALETTE_G: {
+    // todo - this sucks and will not work for non 32-bit displays
     uint32 uIndex = *puCode++;
-    ((uint8*)(&oPaletteData[uIndex]))[1] -= *puCode++;
+    ((uint8*)(&puPalette[uIndex]))[1] -= *puCode++;
     break;
 }
 
 case FC_SET_PALETTE_B: {
+    // todo - this sucks and will not work for non 32-bit displays
     uint32 uIndex = *puCode++;
-    ((uint8*)(&oPaletteData[uIndex]))[0] = *puCode++;
+    ((uint8*)(&puPalette[uIndex]))[0] = *puCode++;
     break;
 }
 
 case FC_ADD_PALETTE_B: {
+    // todo - this sucks and will not work for non 32-bit displays
     uint32 uIndex = *puCode++;
-    ((uint8*)(&oPaletteData[uIndex]))[0] += *puCode++;
+    ((uint8*)(&puPalette[uIndex]))[0] += *puCode++;
     break;
 }
 
 case FC_SUB_PALETTE_B: {
+    // todo - this sucks and will not work for non 32-bit displays
     uint32 uIndex = *puCode++;
-    ((uint8*)(&oPaletteData[uIndex]))[0] -= *puCode++;
+    ((uint8*)(&puPalette[uIndex]))[0] -= *puCode++;
     break;
 }
 
 case FC_SWP_PALETTE: {
     uint8 uIndexA = *puCode++;
     uint8 uIndexB = *puCode++;
-    uint32 uRGB = oPaletteData[uIndexA];
-    oPaletteData[uIndexA] = oPaletteData[uIndexB];
-    oPaletteData[uIndexB] = uRGB;
+    T uRGB = puPalette[uIndexA];
+    puPalette[uIndexA] = puPalette[uIndexB];
+    puPalette[uIndexB] = uRGB;
     break;
 }
 
