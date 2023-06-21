@@ -20,12 +20,18 @@
 namespace MC64K::StandardTestHost::Display::x11 {
 
 /**
- * Updates the visible portion of an 8-bit surface.
+ * Updates the visible portion of an 8-bit surface, for some palette mapped display type
+ *
+ * Palette is assumed to be the same data format as the target display
  */
+template<typename T>
 void* updateLUT8Generic(Context& roContext) {
-    if (uint32 const* puPalette = roContext.puPalette) {
-        uint32* pDst = (uint32*)roContext.puImageBuffer;
-        unsigned y1 = 0;
+        static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
+
+
+    if (T const* oPaletteData = roContext.oPaletteData.as<T const>()) {
+        T*       pDst = (T*)roContext.puImageBuffer;
+        unsigned y1   = 0;
         for (
             unsigned y2 = roContext.uViewYOffset;
             y2 < roContext.uBufferHeight && y1 < roContext.uViewHeight;
@@ -42,7 +48,7 @@ void* updateLUT8Generic(Context& roContext) {
                 x2 < roContext.uBufferWidth && x1 < roContext.uViewWidth;
                 ++x1, ++x2
             ) {
-                *pDst++ = puPalette[*pSrc++];
+                *pDst++ = oPaletteData[*pSrc++];
             }
 
             if (x1 < roContext.uViewWidth) {
@@ -55,7 +61,7 @@ void* updateLUT8Generic(Context& roContext) {
                     x1 < roContext.uViewWidth;
                     ++x1, ++x2
                 ) {
-                    *pDst++ = puPalette[*pSrc++];
+                    *pDst++ = oPaletteData[*pSrc++];
                 }
             }
         }
@@ -76,7 +82,7 @@ void* updateLUT8Generic(Context& roContext) {
                     x2 < roContext.uBufferWidth && x1 < roContext.uViewWidth;
                     ++x1, ++x2
                 ) {
-                    *pDst++ = puPalette[*pSrc++];
+                    *pDst++ = oPaletteData[*pSrc++];
                 }
 
                 if (x1 < roContext.uViewWidth) {
@@ -90,7 +96,7 @@ void* updateLUT8Generic(Context& roContext) {
                         x1 < roContext.uViewWidth;
                         ++x1, ++x2
                     ) {
-                        *pDst++ = puPalette[*pSrc++];
+                        *pDst++ = oPaletteData[*pSrc++];
                     }
                 }
             }
@@ -100,12 +106,18 @@ void* updateLUT8Generic(Context& roContext) {
     return roContext.puImageBuffer;
 }
 
-/**
- * Updates the visible portion of a 32-bit surface.
- */
-void* updateARGB32Generic(Context& roContext) {
 
-    uint32* pDst = (uint32*)roContext.puImageBuffer;
+/**
+ * Updates the visible portion of a surface. This is a general implementation.
+ *
+ * PixelWord is expected to be some integer type.
+ */
+template<typename T>
+void* updateGeneric(Context& roContext) {
+    static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
+
+    T* pDst = (T*)roContext.puImageBuffer;
+    T const* pBaseSrc = roContext.oDisplayBuffer.as<T const>();
     unsigned y1 = 0;
     for (
         unsigned y2 = roContext.uViewYOffset;
@@ -114,8 +126,7 @@ void* updateARGB32Generic(Context& roContext) {
     ) {
 
         // Start at uViewXOffset, uViewYOffset
-        uint32 const* pSrc = roContext.oDisplayBuffer.puLong + (y2 * roContext.uBufferWidth) +
-            roContext.uViewXOffset;
+        T const* pSrc = pBaseSrc + (y2 * roContext.uBufferWidth) + roContext.uViewXOffset;
 
         // Upper left quadrant
         unsigned x1 = 0;
@@ -129,7 +140,7 @@ void* updateARGB32Generic(Context& roContext) {
 
         if (x1 < roContext.uViewWidth) {
             // Start at 0, uViewYOffset
-            pSrc = roContext.oDisplayBuffer.puLong + (y2 * roContext.uBufferWidth);
+            pSrc = pBaseSrc + (y2 * roContext.uBufferWidth);
 
             // Upper right quadrant
             for (
@@ -149,7 +160,7 @@ void* updateARGB32Generic(Context& roContext) {
             ++y1, ++y2
         ) {
             // Start at uViewXOffset, 0
-            uint32 const* pSrc = roContext.oDisplayBuffer.puLong + (y2 * roContext.uBufferWidth) + roContext.uViewXOffset;
+            T const* pSrc = pBaseSrc + (y2 * roContext.uBufferWidth) + roContext.uViewXOffset;
 
             // Lower left quadrant
             unsigned x1 = 0;
@@ -163,7 +174,7 @@ void* updateARGB32Generic(Context& roContext) {
 
             if (x1 < roContext.uViewWidth) {
                 // Start at 0, 0
-                pSrc = roContext.oDisplayBuffer.puLong + (y2 * roContext.uBufferWidth);
+                pSrc = pBaseSrc + (y2 * roContext.uBufferWidth);
 
                 // Lower right quadrant
                 for (

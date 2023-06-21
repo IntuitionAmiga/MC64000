@@ -33,8 +33,14 @@ enum Call {
 };
 
 enum PixelFormat {
+    // Simple formats
     PXL_LUT_8   = 0,
     PXL_ARGB_32 = 1,
+
+    // Other formats
+	PXL_RGB_555 = 2,
+	PXL_RGB_565 = 3,
+
     PXL_MAX
 };
 

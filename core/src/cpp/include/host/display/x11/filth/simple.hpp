@@ -28,28 +28,32 @@ namespace MC64K::StandardTestHost::Display::x11 {
  * Y Offset      == 0
  * Filth Script  == nullptr
  */
+template<typename T>
 void* updateLUT8Simple(Context& roContext) {
-    if (uint32 const* puPalette = roContext.puPalette) {
-        uint32*       pDst = (uint32*)roContext.puImageBuffer;
+    static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
+
+    if (T const* oPaletteData = roContext.oPaletteData.as<T const>()) {
+        T*            pDst = (T*)roContext.puImageBuffer;
         uint8 const*  pSrc = roContext.oDisplayBuffer.puByte;
         uint32        uCnt = roContext.uNumBufferPixels;
         while (uCnt--) {
-            *pDst++ = puPalette[*pSrc++];
+            *pDst++ = oPaletteData[*pSrc++];
         }
     }
     return roContext.puImageBuffer;
 }
 
+
 /**
  * Transfer routine for:
  *
- * Pixel Format  == ARGB_32
+ * Pixel Format  == Any non-palette
  * Buffer Size   == View Size
  * X Offset      == 0
  * Y Offset      == 0
  * Filth Script  == nullptr
  */
-void* updateARGB32Simple(Context& roContext) {
+void* updateRGBSimple(Context& roContext) {
     return roContext.oDisplayBuffer.puByte; // Just return the display buffer as-is
 }
 

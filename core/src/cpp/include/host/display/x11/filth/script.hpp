@@ -76,7 +76,7 @@ inline size_t subFromImmediate(uint8 const* puCode, uint8* puBase) {
  * offsets, etc. according to the beam location.
  */
 void* updateLUT8Filth(Context& roContext) {
-    if (uint32* puPalette = roContext.puPalette) {
+    if (uint32* oPaletteData = roContext.oPaletteData.puLong) {
         uint32* pDst        = (uint32*)roContext.puImageBuffer;
         uint8* pSrc         = roContext.oDisplayBuffer.puByte;
         uint8* puCode       = roContext.puFilthScript;
@@ -127,7 +127,7 @@ void* updateLUT8Filth(Context& roContext) {
                 if (ySrc > roContext.uBufferHeight) {
                     ySrc %= roContext.uBufferHeight;
                 }
-                *pDst++ = puPalette[pSrc[ySrc * roContext.uBufferWidth + xSrc]];
+                *pDst++ = oPaletteData[pSrc[ySrc * roContext.uBufferWidth + xSrc]];
             }
         }
         roContext.uViewXOffset = uViewXOffset;

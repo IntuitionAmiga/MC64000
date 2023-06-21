@@ -27,7 +27,9 @@
 namespace MC64K::StandardTestHost::Display::x11 {
 
 uint8 const aPixelSize[] = {
-    1, 4
+    sizeof(uint8),
+    sizeof(uint32),
+    sizeof(uint16),
 };
 
 void Context::allocateBuffer() {
@@ -44,21 +46,39 @@ void Context::allocateBuffer() {
         (int)uViewWidth,   (int)uViewHeight,   uNumViewPixels
     );
 
+    uint32 uPixelSize = aPixelSize[uPixelFormat];
+
     switch (uPixelFormat) {
         case PXL_ARGB_32: {
             // Calculate the VM buffer size
-            uNumBufferBytes = uNumBufferPixels * sizeof(uint32);
+            uNumBufferBytes = uNumBufferPixels * uPixelSize;
 
             // Calculate the total allocation size,
             // including the viewport sized transfer
             // buffer
-            size_t uTotalAlloc = uNumBufferBytes + uNumViewPixels * sizeof(uint32);
+            size_t uTotalAlloc = uNumBufferBytes + uNumViewPixels * uPixelSize;
 
-            puPalette = nullptr;
+            oPaletteData.puAny    = nullptr;
             oDisplayBuffer.puByte = puData = new uint8[uTotalAlloc];
-            puImageBuffer = puData + uNumBufferBytes;
+            puImageBuffer         = puData + uNumBufferBytes;
             break;
         }
+
+		case PXL_RGB_555: {
+            // Calculate the VM buffer size
+            uNumBufferBytes = uNumBufferPixels * uPixelSize;
+
+            // Calculate the total allocation size,
+            // including the viewport sized transfer
+            // buffer
+            size_t uTotalAlloc = uNumBufferBytes + uNumViewPixels * uPixelSize;
+
+            oPaletteData.puAny    = nullptr;
+            oDisplayBuffer.puByte = puData = new uint8[uTotalAlloc];
+            puImageBuffer         = puData + uNumBufferBytes;
+            break;
+		}
+
         case PXL_LUT_8: {
             uNumBufferBytes = uNumBufferPixels;
 
@@ -66,9 +86,9 @@ void Context::allocateBuffer() {
             size_t uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 256) * sizeof(uint32);
 
             oDisplayBuffer.puByte =
-                puData    = new uint8[uTotalAlloc];
-            puPalette     = (uint32*)(puData + uNumBufferBytes);
-            puImageBuffer = (uint8*)(puPalette + 256);
+            puData                = new uint8[uTotalAlloc];
+            oPaletteData.puLong   = (uint32*)(puData + uNumBufferBytes);
+            puImageBuffer         = (uint8*)(oPaletteData.puLong + 256);
             break;
         }
         default: {
@@ -87,13 +107,17 @@ void Context::allocateBuffer() {
 typedef void* (*UpdateFunction)(Context& roContext);
 
 /**
- * Index: (width/height/offset) << 1 | format
+ * Index: (width/height/offset) << 2 | format
  */
 UpdateFunction aUpdateFunctions[] = {
-    updateLUT8Simple,
-    updateARGB32Simple,
-    updateLUT8Generic,
-    updateARGB32Generic,
+    updateLUT8Simple<uint32>,
+    updateRGBSimple,
+    updateRGBSimple,
+
+    updateLUT8Generic<uint32>,
+    updateGeneric<uint32>,
+    updateGeneric<uint16>,
+
 };
 
 /**
@@ -102,6 +126,10 @@ UpdateFunction aUpdateFunctions[] = {
 UpdateFunction aComplexUpdateFunctions[] = {
     updateLUT8Filth,
     updateARGB32Filth,
+    nullptr,
+    nullptr,
+    //updateRGB555Filth,
+    //updateRGB565Filth,
 };
 
 void* Context::updateBuffers() {
@@ -117,7 +145,7 @@ void* Context::updateBuffers() {
             uViewXOffset | uViewYOffset | // Nonzero View offsets ?
             (uViewWidth ^ uBufferWidth) | // Buffer/View width difference ?
             (uViewHeight ^ uBufferHeight) // Buffer/View height difference ?
-        ) ? 2 : 0);
+        ) ? 4 : 0);
 
     return aUpdateFunctions[uSelect](*this);
 }
