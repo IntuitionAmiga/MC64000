@@ -86,7 +86,7 @@ class PaletteToHAM555 {
                     break;
 
                 case 0b111: // Set R, G and B
-                    return uPrevRGB = (T)((uPrevRGB << 10) | (uVal << 5) | uVal);
+                    return uPrevRGB = (T)((uVal << 10) | (uVal << 5) | uVal);
                     break;
             }
             return uPrevRGB;
