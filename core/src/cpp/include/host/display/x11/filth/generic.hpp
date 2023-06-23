@@ -39,13 +39,13 @@ namespace MC64K::StandardTestHost::Display::x11 {
  * T is expected to be an integer type
  * C is expected to be one of the conversion classes
  */
-template<typename T, class C>
+template<class Conversion>
 void* updatePalettedViewModified(Context& roContext) {
-    static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
 
-    if (T const* puPalette = roContext.oPaletteData.as<T const>()) {
-        C oConversion;
-        T*       pDst = (T*)roContext.puImageBuffer;
+
+    if (typename Conversion::Pixel const* puPalette = roContext.oPaletteData.as<typename Conversion::Pixel const>()) {
+        Conversion oConversion;
+        typename Conversion::Pixel*       pDst = (typename Conversion::Pixel*)roContext.puImageBuffer;
         unsigned y1   = 0;
         for (
             unsigned y2 = roContext.uViewYOffset;
@@ -124,14 +124,13 @@ void* updatePalettedViewModified(Context& roContext) {
 /**
  * Updates the visible portion of an RGB surface, for some palette mapped display type
  *
- * T is expected to be an integer type
+ * Format is expected to be an integer type
  */
-template<typename T>
+template<typename Format>
 void* updateRGBViewModified(Context& roContext) {
-    static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
 
-    T* pDst = (T*)roContext.puImageBuffer;
-    T const* pBaseSrc = roContext.oDisplayBuffer.as<T const>();
+    typename Format::Pixel* pDst = (typename Format::Pixel*)roContext.puImageBuffer;
+    typename Format::Pixel const* pBaseSrc = roContext.oDisplayBuffer.as<typename Format::Pixel const>();
     unsigned y1 = 0;
     for (
         unsigned y2 = roContext.uViewYOffset;
@@ -140,7 +139,7 @@ void* updateRGBViewModified(Context& roContext) {
     ) {
 
         // Start at uViewXOffset, uViewYOffset
-        T const* pSrc = pBaseSrc + (y2 * roContext.uBufferWidth) + roContext.uViewXOffset;
+        typename Format::Pixel const* pSrc = pBaseSrc + (y2 * roContext.uBufferWidth) + roContext.uViewXOffset;
 
         // Upper left quadrant
         unsigned x1 = 0;
@@ -174,7 +173,7 @@ void* updateRGBViewModified(Context& roContext) {
             ++y1, ++y2
         ) {
             // Start at uViewXOffset, 0
-            T const* pSrc = pBaseSrc + (y2 * roContext.uBufferWidth) + roContext.uViewXOffset;
+            typename Format::Pixel const* pSrc = pBaseSrc + (y2 * roContext.uBufferWidth) + roContext.uViewXOffset;
 
             // Lower left quadrant
             unsigned x1 = 0;

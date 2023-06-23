@@ -15,83 +15,273 @@
  */
 
 #include <host/standard_test_host_display.hpp>
+#include <host/standard_test_host_display.hpp>
 
 namespace MC64K::StandardTestHost::Display::x11 {
 
 /**
- * Palette Lookup. Converts an assumed 8-bit pixel value into the target RGB value.
+ * Palette Lookup for 32-bit colour model. Each 32-bit word is assumed to have byte addressable
+ * pixels here.
+ *
+ * PaletteGeneric32<Format::X> where X is a valid 32-bit, 8-bit per gun formats
+ *
  */
-template<typename T>
-class PaletteLookup {
-    static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
+template<typename Format>
+class PaletteTo32Bit {
+
+    static_assert(
+        std::is_same<uint32, typename Format::Pixel>::value,
+        "Invalid Format::Pixel type for this template"
+    );
+
     public:
-        void init() {
+        typedef typename Format::Pixel Pixel;
+
+        Pixel convert(Pixel const* puPalette, uint8 uPixel) {
+            return puPalette[uPixel];
         }
 
-        T convert(T const* puPalette, uint8 uPixel) {
-            return puPalette[uPixel];
+        /**
+         * Support for FILTH palette operations
+         */
+        void setPaletteAlpha(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::ALPHA] = *puCode++;
+        }
+
+        void setPaletteRed(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::RED] = *puCode++;
+        }
+
+        void setPaletteGreen(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::GREEN] = *puCode++;
+        }
+
+        void setPaletteBlue(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::BLUE] = *puCode++;
+        }
+
+        void addPaletteAlpha(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::ALPHA] += *puCode++;
+        }
+
+        void addPaletteRed(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::RED] += *puCode++;
+        }
+
+        void addPaletteGreen(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::GREEN] += *puCode++;
+        }
+
+        void addPaletteBlue(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::BLUE] += *puCode++;
+        }
+
+        void subPaletteRed(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::RED] -= *puCode++;
+        }
+
+        void subPaletteGreen(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::GREEN] -= *puCode++;
+        }
+
+        void subPaletteBlue(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::BLUE] -= *puCode++;
+        }
+
+        void addPaletteRGB(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::BLUE]  += puCode[Format::BLUE];
+            ((uint8*)(&puPalette[uIndex]))[Format::GREEN] += puCode[Format::GREEN];
+            ((uint8*)(&puPalette[uIndex]))[Format::RED]   += puCode[Format::RED];
+            puCode += sizeof(Pixel);
+        }
+
+        void subPaletteRGB(Pixel* puPalette, uint8* &puCode) {
+            uint8 uIndex = *puCode++;
+            ((uint8*)(&puPalette[uIndex]))[Format::BLUE]  -= puCode[Format::BLUE];
+            ((uint8*)(&puPalette[uIndex]))[Format::GREEN] -= puCode[Format::GREEN];
+            ((uint8*)(&puPalette[uIndex]))[Format::RED]   -= puCode[Format::RED];
+            puCode += sizeof(Pixel);
         }
 };
 
+
+
 /**
  * Palette Lookup. Converts an assumed 8-bit pixel value into a 15-bit target RGB value
- * using a Hold And Modify approach in which e can either:
+ * using a Hold And Modify approach in which we can either:
  *
  * Set the 15 bit from one of 32 palette entries
  * Hold a previous value and set one RGB component to the immediate 5-bit value
  * Hold a previous value and set a pair of RGB components simultaneously to the immediate 5-bit value
  * Set all RGB components to the immediate 5-bit value (greyscale)
- *
- * This is a template in name only, to facilitate usage in the template functions that
- * convert pixels.
  */
-template<typename T>
-class PaletteToHAM555 {
-    static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
-    private:
-        T uPrevRGB;
+template<typename Format>
+class PaletteHAM555To15Bit {
+
+    static_assert(
+        std::is_same<uint16, typename Format::Pixel>::value,
+        "Invalid Format::Pixel type for this template"
+    );
 
     public:
-        PaletteToHAM555() : uPrevRGB(0) {}
 
-        T convert(T const* pPalette, uint8 uPixel) {
-            T uVal = uPixel & 0b00011111;
+        typedef typename Format::Pixel Pixel;
+
+    private:
+        Pixel uPrevRGB;
+
+    public:
+        PaletteHAM555To15Bit() : uPrevRGB(0) {}
+
+        Pixel convert(Pixel const* puPalette, uint8 uPixel) {
+            typename Format::Pixel uVal = uPixel & 0b00011111;
             switch (uPixel >> 5) {
                 case 0b000: // Palette entry
-                    return uPrevRGB = pPalette[uPixel];
+                    return uPrevRGB = puPalette[uPixel];
                     break;
 
                 case 0b001: // Hold R, G, set B
-                    return uPrevRGB = (T)((uPrevRGB & 0b111111111100000) | uVal);
+                    return uPrevRGB = (Pixel)(
+                        (uPrevRGB & ~Format::MASK_BLUE) |
+                        (uVal << Format::BLUE)
+                    );
                     break;
 
                 case 0b010: // Hold R, B, set G
-                    return uPrevRGB = (T)((uPrevRGB & 0b111110000011111) | (uVal << 5));
+                    return uPrevRGB = (typename Format::Pixel)(
+                        (uPrevRGB & ~Format::MASK_GREEN) |
+                        (uVal << Format::GREEN)
+                    );
                     break;
 
                 case 0b011: // Hold R, set G, B
-                    return uPrevRGB = (T)((uPrevRGB & 0b111110000000000) | (uVal << 5) | uVal);
+                    return uPrevRGB = (Pixel)(
+                        (uPrevRGB & Format::MASK_RED) |
+                        (uVal << Format::GREEN) |
+                        (uVal << Format::BLUE)
+                    );
                     break;
 
                 case 0b100: // Hold G, B, set R
-                    return uPrevRGB = (T)((uPrevRGB & 0b000001111111111) | (uVal << 10));
+                    return uPrevRGB = (Pixel)(
+                        (uPrevRGB & ~Format::MASK_RED) |
+                        (uVal << Format::RED)
+                    );
                     break;
 
                 case 0b101: // Hold G, set R, B
-                    return uPrevRGB = (T)((uPrevRGB & 0b000001111100000) | (uVal << 10) | uVal);
+                    return uPrevRGB = (Pixel)(
+                        (uPrevRGB & Format::MASK_GREEN) |
+                        (uVal << Format::RED) |
+                        (uVal << Format::BLUE)
+                    );
                     break;
 
                 case 0b110: // Hold B, set G, B
-                    return uPrevRGB = (T)((uPrevRGB & 0b000000000011111) | (uVal << 10) | (uVal << 5));
+                    return uPrevRGB = (Pixel)(
+                        (uPrevRGB & Format::MASK_BLUE) |
+                        (uVal << Format::RED) |
+                        (uVal << Format::GREEN)
+                    );
                     break;
 
                 case 0b111: // Set R, G and B
-                    return uPrevRGB = (T)((uVal << 10) | (uVal << 5) | uVal);
+                    return uPrevRGB = (Pixel)(
+                        (uVal << Format::RED) |
+                        (uVal << Format::GREEN) |
+                        (uVal << Format::BLUE)
+                    );
                     break;
             }
             return uPrevRGB;
-    }
-};
+        }
+
+        /**
+         * Support for FILTH palette operations
+         */
+        void setPaletteAlpha(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::ALPHA] = *puCode++;
+        }
+
+        void setPaletteRed(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::RED] = *puCode++;
+        }
+
+        void setPaletteGreen(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::GREEN] = *puCode++;
+        }
+
+        void setPaletteBlue(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::BLUE] = *puCode++;
+        }
+
+        void addPaletteAlpha(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::ALPHA] += *puCode++;
+        }
+
+        void addPaletteRed(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::RED] += *puCode++;
+        }
+
+        void addPaletteGreen(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::GREEN] += *puCode++;
+        }
+
+        void addPaletteBlue(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::BLUE] += *puCode++;
+        }
+
+        void subPaletteRed(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::RED] -= *puCode++;
+        }
+
+        void subPaletteGreen(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::GREEN] -= *puCode++;
+        }
+
+        void subPaletteBlue(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::BLUE] -= *puCode++;
+        }
+
+        void addPaletteRGB(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::BLUE]  += puCode[Format::BLUE];
+            //((uint8*)(&puPalette[uIndex]))[Format::GREEN] += puCode[Format::GREEN];
+            //((uint8*)(&puPalette[uIndex]))[Format::RED]   += puCode[Format::RED];
+            //puCode += sizeof(Pixel);
+        }
+
+        void subPaletteRGB(Pixel* puPalette, uint8* &puCode) {
+            //uint8 uIndex = *puCode++;
+            //((uint8*)(&puPalette[uIndex]))[Format::BLUE]  -= puCode[Format::BLUE];
+            //((uint8*)(&puPalette[uIndex]))[Format::GREEN] -= puCode[Format::GREEN];
+            //((uint8*)(&puPalette[uIndex]))[Format::RED]   -= puCode[Format::RED];
+            //puCode += sizeof(Pixel);
+        }
+    };
 
 }
 

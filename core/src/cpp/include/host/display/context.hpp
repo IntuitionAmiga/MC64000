@@ -16,6 +16,8 @@
 
 #include <host/standard_test_host_display.hpp>
 
+#include "format.hpp"
+
 namespace MC64K::StandardTestHost::Display {
 
 /**

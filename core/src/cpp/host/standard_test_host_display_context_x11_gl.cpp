@@ -66,7 +66,7 @@ GLenum const aType[] = {
 };
 
 char const* aFormatDescriptors[] = {
-    "8 BPP, ARGB32 Palette",
+    "8 BPP, ARB32 Palette",
     "8 BPP, HAM, RGB555 Palette",
     "16 BPP, RGB555",
     "32 BPP, ARGB32",

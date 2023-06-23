@@ -27,18 +27,14 @@
 
 namespace MC64K::StandardTestHost::Display::x11 {
 
-typedef uint8  LUT8;
-typedef uint16 RGB555;
-typedef uint32 ARGB32;
-
 /**
  * Word size of pixels, by format
  */
 uint8 const aPixelSize[] = {
-    sizeof(LUT8),       // PXL_LUT_8
-    sizeof(LUT8),       // PXL_HAM_555
-    sizeof(RGB555),     // PXL_RGB_555
-    sizeof(ARGB32),     // PXL_ARGB_32
+    sizeof(Format::LUT8::Pixel),       // PXL_LUT_8
+    sizeof(Format::LUT8::Pixel),       // PXL_HAM_555
+    sizeof(Format::RGB555::Pixel),     // PXL_RGB_555
+    sizeof(Format::ARGB32::Pixel),     // PXL_ARGB_32
 };
 
 void Context::allocateBuffer() {
@@ -66,12 +62,12 @@ void Context::allocateBuffer() {
             uNumBufferBytes = uNumBufferPixels;
 
             // Calculate the total allocation size including the viewport sized transfer buffer and palette.
-            uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 256) * sizeof(ARGB32);
+            uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 256) * sizeof(Format::ARGB32::Pixel);
 
             oDisplayBuffer.puByte =
             puData                = new uint8[uTotalAlloc];
-            oPaletteData.puLong   = (ARGB32*)(puData + uNumBufferBytes);
-            puImageBuffer         = (LUT8*)(oPaletteData.puLong + 256);
+            oPaletteData.puLong   = (Format::ARGB32::Pixel*)(puData + uNumBufferBytes);
+            puImageBuffer         = (Format::LUT8::Pixel*)(oPaletteData.puLong + 256);
             break;
         }
 
@@ -80,12 +76,12 @@ void Context::allocateBuffer() {
             uNumBufferBytes = uNumBufferPixels;
 
             // Calculate the total allocation size including the viewport sized transfer buffer and palette.
-            uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 32) * sizeof(RGB555);
+            uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 32) * sizeof(Format::RGB555::Pixel);
 
             oDisplayBuffer.puByte =
             puData                = new uint8[uTotalAlloc];
-            oPaletteData.puWord   = (RGB555*)(puData + uNumBufferBytes);
-            puImageBuffer         = (LUT8*)(oPaletteData.puWord + 32);
+            oPaletteData.puWord   = (Format::RGB555::Pixel*)(puData + uNumBufferBytes);
+            puImageBuffer         = (Format::LUT8::Pixel*)(oPaletteData.puWord + 32);
             break;
         }
 
@@ -126,24 +122,24 @@ typedef void* (*UpdateFunction)(Context& roContext);
  * Index: (width|height|offset diff) << 2 | format
  */
 UpdateFunction aUpdateFunctions[] = {
-    updatePaletted<ARGB32, PaletteLookup<ARGB32>>,
-    updatePaletted<RGB555, PaletteToHAM555<RGB555>>,
-    updateRGB<RGB555>,
-    updateRGB<ARGB32>,
-    updatePalettedViewModified<ARGB32, PaletteLookup<ARGB32>>,
-    updatePalettedViewModified<RGB555, PaletteToHAM555<RGB555>>,
-    updateRGBViewModified<RGB555>,
-    updateRGBViewModified<ARGB32>,
+    updatePaletted<PaletteTo32Bit<Format::ARGB32>>,
+    updatePaletted<PaletteHAM555To15Bit<Format::RGB555>>,
+    updateRGB<Format::RGB555>,
+    updateRGB<Format::ARGB32>,
+    updatePalettedViewModified<PaletteTo32Bit<Format::ARGB32>>,
+    updatePalettedViewModified<PaletteHAM555To15Bit<Format::RGB555>>,
+    updateRGBViewModified<Format::RGB555>,
+    updateRGBViewModified<Format::ARGB32>,
 };
 
 /**
  * Index: format
  */
 UpdateFunction aComplexUpdateFunctions[] = {
-    updatePalettedScripted<ARGB32, PaletteLookup<ARGB32>>,   // ARGB32 is the the palette format here
-    updatePalettedScripted<RGB555, PaletteToHAM555<RGB555>>, // RGB555 is the the palette format here
-    updateRGBScripted<RGB555>,
-    updateRGBScripted<ARGB32>,
+    updatePalettedScripted<PaletteTo32Bit<Format::ARGB32>>,   // Format::ARGB32::Pixel is the the palette format here
+    updatePalettedScripted<PaletteHAM555To15Bit<Format::RGB555>>, // Format::RGB555::Pixel is the the palette format here
+    updateRGBScripted<Format::RGB555>,
+    updateRGBScripted<Format::ARGB32>,
 };
 
 void* Context::updateBuffers() {

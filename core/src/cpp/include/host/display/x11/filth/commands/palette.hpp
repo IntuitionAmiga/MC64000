@@ -21,98 +21,70 @@
 
 case FC_SET_PALETTE: {
     uint8 uIndex = *puCode++;
-    puPalette[uIndex] = getImmediate<T>(puCode);
-    puCode += sizeof(T);
+    puPalette[uIndex] = getImmediate<typename Conversion::Pixel>(puCode);
+    puCode += sizeof(typename Conversion::Pixel);
     break;
 }
 
 case FC_ADD_PALETTE_RGB: {
-    // todo - this sucks and will not work for non 32-bit displays
-    uint8 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[0] += puCode[0];
-    ((uint8*)(&puPalette[uIndex]))[1] += puCode[1];
-    ((uint8*)(&puPalette[uIndex]))[2] += puCode[2];
-    puCode += sizeof(uint32);
+    oConversion.addPaletteRGB(puPalette, puCode);
     break;
 }
 
 case FC_SUB_PALETTE_RGB: {
-    // todo - this sucks and will not work for non 32-bit displays
-    uint8 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[0] -= puCode[0];
-    ((uint8*)(&puPalette[uIndex]))[1] -= puCode[1];
-    ((uint8*)(&puPalette[uIndex]))[2] -= puCode[2];
-    puCode += sizeof(uint32);
+    oConversion.subPaletteRGB(puPalette, puCode);
     break;
 }
 
 case FC_SET_PALETTE_R: {
-    // todo - this sucks and will not work for non 32-bit displays
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[2] = *puCode++;
+    oConversion.setPaletteRed(puPalette, puCode);
     break;
 }
 
 case FC_ADD_PALETTE_R: {
-    // todo - this sucks and will not work for non 32-bit displays
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[2] += *puCode++;
+    oConversion.addPaletteRed(puPalette, puCode);
     break;
 }
 
 case FC_SUB_PALETTE_R: {
-    // todo - this sucks and will not work for non 32-bit displays
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[2] -= *puCode++;
+    oConversion.subPaletteRed(puPalette, puCode);
     break;
 }
 
 case FC_SET_PALETTE_G: {
-    // todo - this sucks and will not work for non 32-bit displays
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[1] = *puCode++;
+    oConversion.setPaletteGreen(puPalette, puCode);
     break;
 }
 
 case FC_ADD_PALETTE_G: {
-    // todo - this sucks and will not work for non 32-bit displays
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[1] += *puCode++;
+    oConversion.addPaletteGreen(puPalette, puCode);
     break;
 }
 
 case FC_SUB_PALETTE_G: {
-    // todo - this sucks and will not work for non 32-bit displays
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[1] -= *puCode++;
+    oConversion.subPaletteGreen(puPalette, puCode);
     break;
 }
 
 case FC_SET_PALETTE_B: {
-    // todo - this sucks and will not work for non 32-bit displays
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[0] = *puCode++;
+    oConversion.setPaletteBlue(puPalette, puCode);
     break;
 }
 
 case FC_ADD_PALETTE_B: {
-    // todo - this sucks and will not work for non 32-bit displays
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[0] += *puCode++;
+    oConversion.addPaletteBlue(puPalette, puCode);
     break;
 }
 
 case FC_SUB_PALETTE_B: {
-    // todo - this sucks and will not work for non 32-bit displays
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[0] -= *puCode++;
+    oConversion.subPaletteBlue(puPalette, puCode);
     break;
 }
 
 case FC_SWP_PALETTE: {
     uint8 uIndexA = *puCode++;
     uint8 uIndexB = *puCode++;
-    T uRGB = puPalette[uIndexA];
+    typename Conversion::Pixel uRGB = puPalette[uIndexA];
     puPalette[uIndexA] = puPalette[uIndexB];
     puPalette[uIndexB] = uRGB;
     break;

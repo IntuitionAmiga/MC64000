@@ -37,21 +37,23 @@ namespace MC64K::StandardTestHost::Display::x11 {
 /**
  * Transfer routine for:
  *
- * Pixel Format  == LUT8/HAM
+ * Pixel Format  == LUT 8
  * Buffer Size   == View Size
  * X Offset      == 0
  * Y Offset      == 0
  * Filth Script  == nullptr
+ *
+ * Conversion is a valid 8-bit to RGB Conversion template, e.g. PaletteTo32Bit<Format::ARGB32> etc
  */
-template<typename T, typename C>
+template<typename Conversion>
 void* updatePaletted(Context& roContext) {
-    static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
 
     // Just expand out the palette to the target
-    if (T const* puPalette = roContext.oPaletteData.as<T const>()) {
+    if (typename Conversion::Pixel const* puPalette = roContext.oPaletteData.as<typename Conversion::Pixel const>()) {
 
-        C oConversion; // This is inlined
-        T*            pDst = (T*)roContext.puImageBuffer;
+        Conversion oConversion; // This is inlined
+
+        typename Conversion::Pixel* pDst = (typename Conversion::Pixel*)roContext.puImageBuffer;
         uint8 const*  pSrc = roContext.oDisplayBuffer.puByte;
         uint32        uCnt = roContext.uNumBufferPixels;
         while (uCnt--) {
@@ -70,7 +72,7 @@ void* updatePaletted(Context& roContext) {
  * Y Offset      == 0
  * Filth Script  == nullptr
  */
-template<typename T>
+template<typename Format>
 void* updateRGB(Context& roContext) {
      // Just return the display buffer as-is. This doesn't even really need templating.
     return roContext.oDisplayBuffer.puByte;

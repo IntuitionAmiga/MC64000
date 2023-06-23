@@ -77,18 +77,17 @@ inline size_t subFromImmediate(uint8 const* puCode, uint8* puBase) {
  * Updates the visible portion of an 8-bit surface, using the FILTH script to modify palette,
  * offsets, etc. according to the beam location.
  */
-template<typename T, typename C>
+template<typename Conversion>
 void* updatePalettedScripted(Context& roContext) {
-    static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
 
-    if (T* puPalette        = roContext.oPaletteData.as<T>()) {
-        T* pDst             = (T*)roContext.puImageBuffer;
+    if (typename Conversion::Pixel* puPalette = roContext.oPaletteData.as<typename Conversion::Pixel>()) {
+        typename Conversion::Pixel* pDst      = (typename Conversion::Pixel*)roContext.puImageBuffer;
         uint8* pSrc         = roContext.oDisplayBuffer.puByte;
         uint8* puCode       = roContext.puFilthScript;
         uint16 uViewXOffset = roContext.uViewXOffset;
         uint16 uViewYOffset = roContext.uViewYOffset;
 
-        C oConversion; // this is inlined
+        Conversion oConversion; // this is inlined
 
         for (uint32 yDst = 0; yDst < roContext.uViewHeight; ++yDst) {
             for (uint32 xDst = 0; xDst < roContext.uViewWidth; ++xDst) {
@@ -148,12 +147,10 @@ void* updatePalettedScripted(Context& roContext) {
  * Updates the visible portion of a 32-bit surface, using the FILTH script to modify palette,
  * offsets, etc. according to the beam location.
  */
-template<typename T>
+template<typename Format>
 void* updateRGBScripted(Context& roContext) {
-    static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
-
-    T*       pDst       = (T*)roContext.puImageBuffer;
-    T const* pSrc       = roContext.oDisplayBuffer.as<T const>();
+    typename Format::Pixel*       pDst = (typename Format::Pixel*)roContext.puImageBuffer;
+    typename Format::Pixel const* pSrc = roContext.oDisplayBuffer.as<typename Format::Pixel const>();
     uint8* puCode       = roContext.puFilthScript;
     uint16 uViewXOffset = roContext.uViewXOffset;
     uint16 uViewYOffset = roContext.uViewYOffset;

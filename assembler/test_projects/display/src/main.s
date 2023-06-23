@@ -71,18 +71,34 @@ main:
     move.w  #%0011110111100000, (a1)+
     move.w  #%0111111111100000, (a1)+
 
-    move.l  DISPLAY_REG_SOFT_BUFFER_PIXELS(a0), d0
-    move.q  DISPLAY_REG_SOFT_BUFFER_ADDRESS(a0), a1
+    lea     .filth_script, DISPLAY_REG_FILTH(a0)
 
+    clr.q   d0
     clr.q   d1
     clr.q   d2
-.fill:
-    and.b   #%00011111,d2
-    //or.b    #%01100000,d2
-    move.b  d2, (a1)+
-    add.b   #1,d1
-    move.b  d1,d2
-    dbnz    d0, .fill
+    clr.q   d3
+
+    move.q  DISPLAY_REG_SOFT_BUFFER_ADDRESS(a0), a1
+
+    move.w  DISPLAY_REG_VIEW_HEIGHT(a0), d1
+
+.line_loop:
+    move.w  DISPLAY_REG_VIEW_WIDTH(a0), d2
+    sub.w   #1, d2
+
+    move.b  #%11100000,(a1)+ // start at black
+    move.b  d1, d0
+    lsl.b   #5, d0
+
+.pixel_loop:
+    move.b  d2, d3
+    and.b   #%00011111, d3
+    or.b    d0, d3
+
+    move.b  d3, (a1)+
+
+    dbnz d2, .pixel_loop;
+    dbnz d1, .line_loop;
 
     ; Begin the main event loop
     hcf     display_begin
@@ -133,6 +149,73 @@ on_key_down:
     dc.b PXL_HAM_555
 
     ; target refresh rate (Hz)
-    dc.b 60
+    dc.b 15
 
+    @align  0, 8
+.filth_script:
 
+    ; Slice up the screen into horizontal bands
+    dc.w    0, 0                  ; beam position
+    dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
+    dc.w    0                     ; x offset value (script offset 5)
+
+    dc.b    DISPLAY_FC_WAIT       ; wait until...
+    dc.w    0, 92                 ; beam position
+    dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
+    dc.w    0                     ; x offset value (script offset 13)
+
+    dc.b    DISPLAY_FC_WAIT       ; wait until...
+    dc.w    0, 110                ; beam position
+    dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
+    dc.w    0                     ; x offset value (script offset 21)
+
+    dc.b    DISPLAY_FC_WAIT       ; wait until...
+    dc.w    0, 125                ; beam position
+    dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
+    dc.w    0                     ; x offset value (script offset 29)
+
+    dc.b    DISPLAY_FC_WAIT       ; wait until...
+    dc.w    0, 154                ; beam position
+    dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
+    dc.w    0                     ; x offset value (script offset 37)
+
+    dc.b    DISPLAY_FC_WAIT       ; wait until...
+    dc.w    0, 176                ; beam position
+    dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
+    dc.w    0                     ; x offset value (script offset 45)
+
+    dc.b    DISPLAY_FC_WAIT       ; wait until ...
+    dc.w    0, 192                ; beam position
+    dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
+    dc.w    0                     ; x offset value (script offset 53)
+
+    dc.b    DISPLAY_FC_WAIT       ; wait until ...
+    dc.w    0, 220                ; beam position
+    dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
+    dc.w    0                     ; x offset value (script offset 61)
+
+    dc.b    DISPLAY_FC_WAIT       ; wait until ...
+    dc.w    0, 230                ; beam position
+    dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
+    dc.w    0                     ; x offset value (script offset 69)
+
+    ; Update the X offset of each slice
+    dc.b    DISPLAY_FC_ADD_WORD
+    dc.w    5, 5                   ; increment word at offset 5 (the x offset value)
+    dc.b    DISPLAY_FC_ADD_WORD
+    dc.w    13, 4                  ; increment word at offset 13 (the x offset value)
+    dc.b    DISPLAY_FC_ADD_WORD
+    dc.w    21, 3                  ; increment word at offset 21 (the x offset value)
+    dc.b    DISPLAY_FC_ADD_WORD
+    dc.w    29, 2                  ; increment word at offset 29 (the x offset value)
+    dc.b    DISPLAY_FC_ADD_WORD
+    dc.w    37, 1                  ; increment word at offset 37 the x offset value)
+    dc.b    DISPLAY_FC_ADD_WORD
+    dc.w    45, 2                  ; increment word at offset 45 (the x offset value)
+    dc.b    DISPLAY_FC_ADD_WORD
+    dc.w    53, 3                  ; increment word at offset 53 (the x offset value)
+    dc.b    DISPLAY_FC_ADD_WORD
+    dc.w    61, 5                  ; increment word at offset 61 (the x offset value)
+    dc.b    DISPLAY_FC_ADD_WORD
+    dc.w    69, 8                  ; increment word at offset 69 (the x offset value)
+    dc.b    DISPLAY_FC_END         ; end
