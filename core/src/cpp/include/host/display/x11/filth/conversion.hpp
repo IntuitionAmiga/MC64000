@@ -212,74 +212,74 @@ class PaletteHAM555To15Bit {
          * Support for FILTH palette operations
          */
         void setPaletteAlpha(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::ALPHA] = *puCode++;
+            // todo
+            puCode += 2;
         }
 
         void setPaletteRed(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::RED] = *puCode++;
+            uint8 uIndex = *puCode++;
+            puPalette[uIndex] = (Pixel)((puPalette[uIndex] & ~Format::MASK_RED) |
+                ((*puCode++ & Format::MASK_BITS) <<  Format::RED)
+            );
         }
 
         void setPaletteGreen(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::GREEN] = *puCode++;
+            uint8 uIndex = *puCode++;
+            puPalette[uIndex] = (Pixel)((puPalette[uIndex] & ~Format::MASK_GREEN) |
+                ((*puCode++ & Format::MASK_BITS) <<  Format::GREEN)
+            );
         }
 
         void setPaletteBlue(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::BLUE] = *puCode++;
+            uint8 uIndex = *puCode++;
+            puPalette[uIndex] = (Pixel)((puPalette[uIndex] & ~Format::MASK_BLUE) |
+                ((*puCode++ & Format::MASK_BITS) <<  Format::BLUE)
+            );
         }
 
         void addPaletteAlpha(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::ALPHA] += *puCode++;
+            // todo
+            puCode += 2;
         }
 
         void addPaletteRed(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::RED] += *puCode++;
+            // todo
+            puCode += 2;
         }
 
         void addPaletteGreen(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::GREEN] += *puCode++;
+            // todo
+            puCode += 2;
         }
 
         void addPaletteBlue(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::BLUE] += *puCode++;
+            // todo
+            puCode += 2;
         }
 
         void subPaletteRed(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::RED] -= *puCode++;
+            // todo
+            puCode += 2;
         }
 
         void subPaletteGreen(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::GREEN] -= *puCode++;
+            // todo
+            puCode += 2;
         }
 
         void subPaletteBlue(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::BLUE] -= *puCode++;
+            // todo
+            puCode += 2;
         }
 
         void addPaletteRGB(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::BLUE]  += puCode[Format::BLUE];
-            //((uint8*)(&puPalette[uIndex]))[Format::GREEN] += puCode[Format::GREEN];
-            //((uint8*)(&puPalette[uIndex]))[Format::RED]   += puCode[Format::RED];
-            //puCode += sizeof(Pixel);
+            // todo
+            puCode += 1 + sizeof(Pixel);
         }
 
         void subPaletteRGB(Pixel* puPalette, uint8* &puCode) {
-            //uint8 uIndex = *puCode++;
-            //((uint8*)(&puPalette[uIndex]))[Format::BLUE]  -= puCode[Format::BLUE];
-            //((uint8*)(&puPalette[uIndex]))[Format::GREEN] -= puCode[Format::GREEN];
-            //((uint8*)(&puPalette[uIndex]))[Format::RED]   -= puCode[Format::RED];
-            //puCode += sizeof(Pixel);
+            // todo
+            puCode += 1 + sizeof(Pixel);
         }
     };
 
