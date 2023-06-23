@@ -16,6 +16,8 @@
 
 #include <host/standard_test_host_display.hpp>
 
+#include "format.hpp"
+
 namespace MC64K::StandardTestHost::Display {
 
 /**
@@ -26,6 +28,13 @@ union PixelPointer {
     uint8*  puByte;
     uint16* puWord;
     uint32* puLong;
+
+    template<typename T>
+    inline T* as() const {
+        static_assert(std::is_integral<T>::value, "Invalid template type for pixel access");
+        return (T*)puAny;
+    }
+
     PixelPointer(): puAny(nullptr) {}
 };
 
@@ -99,7 +108,7 @@ struct Context {
      * Address of direct accessible pixel buffer
      */
     PixelPointer oDisplayBuffer;
-    uint32*      puPalette;
+    PixelPointer oPaletteData;
     uint32       uNumBufferPixels;
     uint32       uNumBufferBytes;
     uint16       uBufferWidth;

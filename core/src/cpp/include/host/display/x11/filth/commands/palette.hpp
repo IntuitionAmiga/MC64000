@@ -15,93 +15,76 @@
 
 /**
  * FILTH processor (switch/case) handlers for palette related commands
+ *
+ * Note that these are included in templated code
  */
 
 case FC_SET_PALETTE: {
     uint8 uIndex = *puCode++;
-    puPalette[uIndex] = getImmediate<uint32>(puCode);
-    puCode += sizeof(uint32);
+    puPalette[uIndex] = getImmediate<typename Conversion::Pixel>(puCode);
+    puCode += sizeof(typename Conversion::Pixel);
     break;
 }
 
 case FC_ADD_PALETTE_RGB: {
-    // todo - this sucks
-    uint8 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[0] += puCode[0];
-    ((uint8*)(&puPalette[uIndex]))[1] += puCode[1];
-    ((uint8*)(&puPalette[uIndex]))[2] += puCode[2];
-    puCode += sizeof(uint32);
+    oConversion.addPaletteRGB(puPalette, puCode);
     break;
 }
 
 case FC_SUB_PALETTE_RGB: {
-    // todo - this sucks
-    uint8 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[0] -= puCode[0];
-    ((uint8*)(&puPalette[uIndex]))[1] -= puCode[1];
-    ((uint8*)(&puPalette[uIndex]))[2] -= puCode[2];
-    puCode += sizeof(uint32);
+    oConversion.subPaletteRGB(puPalette, puCode);
     break;
 }
 
 case FC_SET_PALETTE_R: {
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[2] = *puCode++;
+    oConversion.setPaletteRed(puPalette, puCode);
     break;
 }
 
 case FC_ADD_PALETTE_R: {
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[2] += *puCode++;
+    oConversion.addPaletteRed(puPalette, puCode);
     break;
 }
 
 case FC_SUB_PALETTE_R: {
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[2] -= *puCode++;
+    oConversion.subPaletteRed(puPalette, puCode);
     break;
 }
 
 case FC_SET_PALETTE_G: {
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[1] = *puCode++;
+    oConversion.setPaletteGreen(puPalette, puCode);
     break;
 }
 
 case FC_ADD_PALETTE_G: {
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[1] += *puCode++;
+    oConversion.addPaletteGreen(puPalette, puCode);
     break;
 }
 
 case FC_SUB_PALETTE_G: {
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[1] -= *puCode++;
+    oConversion.subPaletteGreen(puPalette, puCode);
     break;
 }
 
 case FC_SET_PALETTE_B: {
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[0] = *puCode++;
+    oConversion.setPaletteBlue(puPalette, puCode);
     break;
 }
 
 case FC_ADD_PALETTE_B: {
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[0] += *puCode++;
+    oConversion.addPaletteBlue(puPalette, puCode);
     break;
 }
 
 case FC_SUB_PALETTE_B: {
-    uint32 uIndex = *puCode++;
-    ((uint8*)(&puPalette[uIndex]))[0] -= *puCode++;
+    oConversion.subPaletteBlue(puPalette, puCode);
     break;
 }
 
 case FC_SWP_PALETTE: {
     uint8 uIndexA = *puCode++;
     uint8 uIndexB = *puCode++;
-    uint32 uRGB = puPalette[uIndexA];
+    typename Conversion::Pixel uRGB = puPalette[uIndexA];
     puPalette[uIndexA] = puPalette[uIndexB];
     puPalette[uIndexB] = uRGB;
     break;

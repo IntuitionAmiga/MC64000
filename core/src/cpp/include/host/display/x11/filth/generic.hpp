@@ -17,15 +17,36 @@
 #include <host/standard_test_host_display.hpp>
 #include <host/display/x11/raii.hpp>
 
+#include "conversion.hpp"
+
+/**
+ * These functions handle the conversion of the virtual framebuffer pixels to a given RGB format
+ * for the case when the virtual framebuffer and viewport are the not the same size or there are
+ * modificatons to the scroll position.
+ *
+ * One function is provided for converting an indexed colour format and one for transferring RGB
+ * direct. The indexed version requires a conversion template parameter. The conversion it provides
+ * is inlined in the template generation.
+ */
+
 namespace MC64K::StandardTestHost::Display::x11 {
 
 /**
- * Updates the visible portion of an 8-bit surface.
+ * Updates the visible portion of an 8-bit surface, for some palette mapped display type
+ *
+ * Palette is assumed to be the same data format as the target display
+ *
+ * T is expected to be an integer type
+ * C is expected to be one of the conversion classes
  */
-void* updateLUT8Generic(Context& roContext) {
-    if (uint32 const* puPalette = roContext.puPalette) {
-        uint32* pDst = (uint32*)roContext.puImageBuffer;
-        unsigned y1 = 0;
+template<class Conversion>
+void* updatePalettedViewModified(Context& roContext) {
+
+
+    if (typename Conversion::Pixel const* puPalette = roContext.oPaletteData.as<typename Conversion::Pixel const>()) {
+        Conversion oConversion;
+        typename Conversion::Pixel*       pDst = (typename Conversion::Pixel*)roContext.puImageBuffer;
+        unsigned y1   = 0;
         for (
             unsigned y2 = roContext.uViewYOffset;
             y2 < roContext.uBufferHeight && y1 < roContext.uViewHeight;
@@ -42,7 +63,7 @@ void* updateLUT8Generic(Context& roContext) {
                 x2 < roContext.uBufferWidth && x1 < roContext.uViewWidth;
                 ++x1, ++x2
             ) {
-                *pDst++ = puPalette[*pSrc++];
+                *pDst++ = oConversion.convert(puPalette, *pSrc++);
             }
 
             if (x1 < roContext.uViewWidth) {
@@ -55,7 +76,7 @@ void* updateLUT8Generic(Context& roContext) {
                     x1 < roContext.uViewWidth;
                     ++x1, ++x2
                 ) {
-                    *pDst++ = puPalette[*pSrc++];
+                    *pDst++ = oConversion.convert(puPalette, *pSrc++);
                 }
             }
         }
@@ -76,7 +97,7 @@ void* updateLUT8Generic(Context& roContext) {
                     x2 < roContext.uBufferWidth && x1 < roContext.uViewWidth;
                     ++x1, ++x2
                 ) {
-                    *pDst++ = puPalette[*pSrc++];
+                    *pDst++ = oConversion.convert(puPalette, *pSrc++);
                 }
 
                 if (x1 < roContext.uViewWidth) {
@@ -90,22 +111,26 @@ void* updateLUT8Generic(Context& roContext) {
                         x1 < roContext.uViewWidth;
                         ++x1, ++x2
                     ) {
-                        *pDst++ = puPalette[*pSrc++];
+                        *pDst++ = oConversion.convert(puPalette, *pSrc++);
                     }
                 }
             }
         }
-
     }
     return roContext.puImageBuffer;
 }
 
-/**
- * Updates the visible portion of a 32-bit surface.
- */
-void* updateARGB32Generic(Context& roContext) {
 
-    uint32* pDst = (uint32*)roContext.puImageBuffer;
+/**
+ * Updates the visible portion of an RGB surface, for some palette mapped display type
+ *
+ * Format is expected to be an integer type
+ */
+template<typename Format>
+void* updateRGBViewModified(Context& roContext) {
+
+    typename Format::Pixel* pDst = (typename Format::Pixel*)roContext.puImageBuffer;
+    typename Format::Pixel const* pBaseSrc = roContext.oDisplayBuffer.as<typename Format::Pixel const>();
     unsigned y1 = 0;
     for (
         unsigned y2 = roContext.uViewYOffset;
@@ -114,8 +139,7 @@ void* updateARGB32Generic(Context& roContext) {
     ) {
 
         // Start at uViewXOffset, uViewYOffset
-        uint32 const* pSrc = roContext.oDisplayBuffer.puLong + (y2 * roContext.uBufferWidth) +
-            roContext.uViewXOffset;
+        typename Format::Pixel const* pSrc = pBaseSrc + (y2 * roContext.uBufferWidth) + roContext.uViewXOffset;
 
         // Upper left quadrant
         unsigned x1 = 0;
@@ -129,7 +153,7 @@ void* updateARGB32Generic(Context& roContext) {
 
         if (x1 < roContext.uViewWidth) {
             // Start at 0, uViewYOffset
-            pSrc = roContext.oDisplayBuffer.puLong + (y2 * roContext.uBufferWidth);
+            pSrc = pBaseSrc + (y2 * roContext.uBufferWidth);
 
             // Upper right quadrant
             for (
@@ -149,7 +173,7 @@ void* updateARGB32Generic(Context& roContext) {
             ++y1, ++y2
         ) {
             // Start at uViewXOffset, 0
-            uint32 const* pSrc = roContext.oDisplayBuffer.puLong + (y2 * roContext.uBufferWidth) + roContext.uViewXOffset;
+            typename Format::Pixel const* pSrc = pBaseSrc + (y2 * roContext.uBufferWidth) + roContext.uViewXOffset;
 
             // Lower left quadrant
             unsigned x1 = 0;
@@ -163,7 +187,7 @@ void* updateARGB32Generic(Context& roContext) {
 
             if (x1 < roContext.uViewWidth) {
                 // Start at 0, 0
-                pSrc = roContext.oDisplayBuffer.puLong + (y2 * roContext.uBufferWidth);
+                pSrc = pBaseSrc + (y2 * roContext.uBufferWidth);
 
                 // Lower right quadrant
                 for (

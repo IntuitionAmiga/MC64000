@@ -33,8 +33,16 @@ enum Call {
 };
 
 enum PixelFormat {
-    PXL_LUT_8   = 0,
-    PXL_ARGB_32 = 1,
+    // 8-bit pixels
+    PXL_LUT_8   = 0, // 8-bit pixel, paletted, ARGB-32 colour format
+    PXL_HAM_555 = 1, // 5-bit pixel with 3-bit HAM modifier, RGB 555 colour format
+
+    // 16-bit pixels
+	PXL_RGB_555 = 2,  // 16-bit pixel, RGB 555 colourspace
+
+    // 32-bit pixels
+    PXL_ARGB_32 = 3,  // 32-bit pixel, ARGB-32 colour format
+
     PXL_MAX
 };
 

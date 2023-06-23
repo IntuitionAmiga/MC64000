@@ -17,6 +17,8 @@
 #include <host/standard_test_host_display.hpp>
 #include <host/display/x11/raii.hpp>
 
+#include "conversion.hpp"
+
 namespace MC64K::StandardTestHost::Display::x11 {
 
 /**
@@ -75,13 +77,17 @@ inline size_t subFromImmediate(uint8 const* puCode, uint8* puBase) {
  * Updates the visible portion of an 8-bit surface, using the FILTH script to modify palette,
  * offsets, etc. according to the beam location.
  */
-void* updateLUT8Filth(Context& roContext) {
-    if (uint32* puPalette = roContext.puPalette) {
-        uint32* pDst        = (uint32*)roContext.puImageBuffer;
+template<typename Conversion>
+void* updatePalettedScripted(Context& roContext) {
+
+    if (typename Conversion::Pixel* puPalette = roContext.oPaletteData.as<typename Conversion::Pixel>()) {
+        typename Conversion::Pixel* pDst      = (typename Conversion::Pixel*)roContext.puImageBuffer;
         uint8* pSrc         = roContext.oDisplayBuffer.puByte;
         uint8* puCode       = roContext.puFilthScript;
         uint16 uViewXOffset = roContext.uViewXOffset;
         uint16 uViewYOffset = roContext.uViewYOffset;
+
+        Conversion oConversion; // this is inlined
 
         for (uint32 yDst = 0; yDst < roContext.uViewHeight; ++yDst) {
             for (uint32 xDst = 0; xDst < roContext.uViewWidth; ++xDst) {
@@ -127,7 +133,7 @@ void* updateLUT8Filth(Context& roContext) {
                 if (ySrc > roContext.uBufferHeight) {
                     ySrc %= roContext.uBufferHeight;
                 }
-                *pDst++ = puPalette[pSrc[ySrc * roContext.uBufferWidth + xSrc]];
+                *pDst++ = oConversion.convert(puPalette, pSrc[ySrc * roContext.uBufferWidth + xSrc]);
             }
         }
         roContext.uViewXOffset = uViewXOffset;
@@ -141,9 +147,10 @@ void* updateLUT8Filth(Context& roContext) {
  * Updates the visible portion of a 32-bit surface, using the FILTH script to modify palette,
  * offsets, etc. according to the beam location.
  */
-void* updateARGB32Filth(Context& roContext) {
-    uint32* pDst        = (uint32*)roContext.puImageBuffer;
-    uint32 const* pSrc  = roContext.oDisplayBuffer.puLong;
+template<typename Format>
+void* updateRGBScripted(Context& roContext) {
+    typename Format::Pixel*       pDst = (typename Format::Pixel*)roContext.puImageBuffer;
+    typename Format::Pixel const* pSrc = roContext.oDisplayBuffer.as<typename Format::Pixel const>();
     uint8* puCode       = roContext.puFilthScript;
     uint16 uViewXOffset = roContext.uViewXOffset;
     uint16 uViewYOffset = roContext.uViewYOffset;

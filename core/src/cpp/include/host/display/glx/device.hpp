@@ -37,6 +37,8 @@ class Device : public Display::Device {
         float32            fMouseXScale;
         float32            fMouseYScale;
 
+        char               sTitleBuffer[128];
+
     public:
         /**
          * Constructor. Follows RAII principle.

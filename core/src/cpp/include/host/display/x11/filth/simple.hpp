@@ -17,24 +17,47 @@
 #include <host/standard_test_host_display.hpp>
 #include <host/display/x11/raii.hpp>
 
+#include "conversion.hpp"
+
+/**
+ * These functions handle the conversion of the virtual framebuffer pixels to a given RGB format
+ * for the case when the virtual framebuffer and viewport are the same size and there are no
+ * viewport modifications (e.g. scroll offsets or FILTH scripts).
+ *
+ * For the simplest case, where the virtual framebuffer pixel format is the same as the target, no
+ * conversion is performed.
+ *
+ * One function is provided for converting an indexed colour format and one for transferring RGB
+ * direct. The indexed version requires a conversion template parameter. The conversion it provides
+ * is inlined in the template generation.
+ */
+
 namespace MC64K::StandardTestHost::Display::x11 {
 
 /**
  * Transfer routine for:
  *
- * Pixel Format  == LUT8
+ * Pixel Format  == LUT 8
  * Buffer Size   == View Size
  * X Offset      == 0
  * Y Offset      == 0
  * Filth Script  == nullptr
+ *
+ * Conversion is a valid 8-bit to RGB Conversion template, e.g. PaletteTo32Bit<Format::ARGB32> etc
  */
-void* updateLUT8Simple(Context& roContext) {
-    if (uint32 const* puPalette = roContext.puPalette) {
-        uint32*       pDst = (uint32*)roContext.puImageBuffer;
+template<typename Conversion>
+void* updatePaletted(Context& roContext) {
+
+    // Just expand out the palette to the target
+    if (typename Conversion::Pixel const* puPalette = roContext.oPaletteData.as<typename Conversion::Pixel const>()) {
+
+        Conversion oConversion; // This is inlined
+
+        typename Conversion::Pixel* pDst = (typename Conversion::Pixel*)roContext.puImageBuffer;
         uint8 const*  pSrc = roContext.oDisplayBuffer.puByte;
         uint32        uCnt = roContext.uNumBufferPixels;
         while (uCnt--) {
-            *pDst++ = puPalette[*pSrc++];
+            *pDst++ = oConversion.convert(puPalette, *pSrc++);
         }
     }
     return roContext.puImageBuffer;
@@ -43,14 +66,16 @@ void* updateLUT8Simple(Context& roContext) {
 /**
  * Transfer routine for:
  *
- * Pixel Format  == ARGB_32
+ * Pixel Format  == Any non-palette
  * Buffer Size   == View Size
  * X Offset      == 0
  * Y Offset      == 0
  * Filth Script  == nullptr
  */
-void* updateARGB32Simple(Context& roContext) {
-    return roContext.oDisplayBuffer.puByte; // Just return the display buffer as-is
+template<typename Format>
+void* updateRGB(Context& roContext) {
+     // Just return the display buffer as-is. This doesn't even really need templating.
+    return roContext.oDisplayBuffer.puByte;
 }
 
 }

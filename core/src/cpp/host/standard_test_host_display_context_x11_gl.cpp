@@ -41,6 +41,37 @@ inline void Device::updateMousePosition() {
     oContext.uPositionY    = (uint16) ((float32)event<::XMotionEvent>().y * fMouseYScale);
 }
 
+// Maps PXL_x to glTexImage2D() internalformat parameter
+GLint const aInternalFormat[] = {
+    GL_RGBA,
+    GL_RGB5_A1,
+    GL_RGB5_A1,
+    GL_RGBA,
+};
+
+// Maps PXL_x to glTexImage2D() format parameter
+GLenum const aFormat[] = {
+    GL_BGRA,
+    GL_BGRA_EXT,
+    GL_BGRA_EXT,
+    GL_BGRA,
+};
+
+// Maps PXL_x to glTexImage2D() type parameter
+GLenum const aType[] = {
+    GL_UNSIGNED_BYTE,
+    GL_UNSIGNED_SHORT_1_5_5_5_REV,
+    GL_UNSIGNED_SHORT_1_5_5_5_REV,
+    GL_UNSIGNED_BYTE,
+};
+
+char const* aFormatDescriptors[] = {
+    "8 BPP, ARB32 Palette",
+    "8 BPP, HAM, RGB555 Palette",
+    "16 BPP, RGB555",
+    "32 BPP, ARGB32",
+};
+
 /**
  * Constructor. We use RAII here and throw exceptions if a requirement can't be met.
  */
@@ -93,8 +124,6 @@ Device::Device(Display::OpenParams const& roOpenParams):
 
     std::fprintf(stderr, "xGL::Device: Got window handle %u\n", (unsigned)uWindowID);
 
-    ::XStoreName(poDisplay, uWindowID, "MC64K (GL)");
-
     oContext.uViewWidth       = roOpenParams.uViewWidth;
     oContext.uViewHeight      = roOpenParams.uViewHeight;
     oContext.uBufferWidth     = roOpenParams.uBufferWidth;
@@ -104,6 +133,19 @@ Device::Device(Display::OpenParams const& roOpenParams):
     oContext.uRateHz          = roOpenParams.uRateHz < 1 ? 1 : roOpenParams.uRateHz;
     oContext.poDevice        = this;
     oContext.allocateBuffer();
+
+    std::snprintf(
+        sTitleBuffer, sizeof(sTitleBuffer)-1,
+        "MC64K (GL) %d x %d [Format:%d, %s] @ %dHz, Scaling: %dx",
+        (int)oContext.uViewWidth,
+        (int)oContext.uViewHeight,
+        (int)oContext.uPixelFormat,
+        aFormatDescriptors[oContext.uPixelFormat],
+        (int)oContext.uRateHz,
+        (int)iScaleFactor
+    );
+
+    ::XStoreName(poDisplay, uWindowID, sTitleBuffer);
 
     ::glXMakeCurrent(poDisplay, uWindowID, pGLXContext);
 
@@ -120,14 +162,17 @@ Device::Device(Display::OpenParams const& roOpenParams):
     ::glTexImage2D(
         GL_TEXTURE_2D,
         0,
-        GL_RGBA,
+        aInternalFormat[roOpenParams.uPixelFormat],
         roOpenParams.uViewWidth,
         roOpenParams.uViewHeight,
         0,
-        GL_BGRA,
-        GL_UNSIGNED_BYTE,
+        aFormat[roOpenParams.uPixelFormat],
+        aType[roOpenParams.uPixelFormat],
         oContext.puImageBuffer
     );
+
+    std::fprintf(stderr, "glError() => 0x%04X\n", (unsigned)::glGetError());
+
     ::glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     ::glDisable(GL_DEPTH_TEST);
     ::glEnable(GL_TEXTURE_2D);
@@ -258,9 +303,9 @@ void Device::runEventLoop() {
                 0, // y pos
                 oContext.uViewWidth,
                 oContext.uViewHeight,
-                GL_BGRA,          // format
-                GL_UNSIGNED_BYTE, // type
-                pData             // data
+                aFormat[oContext.uPixelFormat], // format
+                aType[oContext.uPixelFormat],   // data type
+                pData                           // data
             );
 
             //uTime = Nanoseconds::mark() - uTime;

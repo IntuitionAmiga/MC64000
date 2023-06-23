@@ -23,11 +23,18 @@
 #include <host/display/x11/filth/generic.hpp>
 #include <host/display/x11/filth/script.hpp>
 
+#include <host/display/x11/filth/conversion.hpp>
 
 namespace MC64K::StandardTestHost::Display::x11 {
 
+/**
+ * Word size of pixels, by format
+ */
 uint8 const aPixelSize[] = {
-    1, 4
+    sizeof(Format::LUT8::Pixel),       // PXL_LUT_8
+    sizeof(Format::LUT8::Pixel),       // PXL_HAM_555
+    sizeof(Format::RGB555::Pixel),     // PXL_RGB_555
+    sizeof(Format::ARGB32::Pixel),     // PXL_ARGB_32
 };
 
 void Context::allocateBuffer() {
@@ -44,33 +51,57 @@ void Context::allocateBuffer() {
         (int)uViewWidth,   (int)uViewHeight,   uNumViewPixels
     );
 
+    uint32 uPixelSize = aPixelSize[uPixelFormat];
+
+    size_t uTotalAlloc = 0;
+
     switch (uPixelFormat) {
+
+        case PXL_LUT_8: {
+            // 8 bit index, 256 colours
+            uNumBufferBytes = uNumBufferPixels;
+
+            // Calculate the total allocation size including the viewport sized transfer buffer and palette.
+            uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 256) * sizeof(Format::ARGB32::Pixel);
+
+            oDisplayBuffer.puByte =
+            puData                = new uint8[uTotalAlloc];
+            oPaletteData.puLong   = (Format::ARGB32::Pixel*)(puData + uNumBufferBytes);
+            puImageBuffer         = (Format::LUT8::Pixel*)(oPaletteData.puLong + 256);
+            break;
+        }
+
+        case PXL_HAM_555: {
+            // 5 bit index, 32 colours
+            uNumBufferBytes = uNumBufferPixels;
+
+            // Calculate the total allocation size including the viewport sized transfer buffer and palette.
+            uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 32) * sizeof(Format::RGB555::Pixel);
+
+            oDisplayBuffer.puByte =
+            puData                = new uint8[uTotalAlloc];
+            oPaletteData.puWord   = (Format::RGB555::Pixel*)(puData + uNumBufferBytes);
+            puImageBuffer         = (Format::LUT8::Pixel*)(oPaletteData.puWord + 32);
+            break;
+        }
+
+        // Basic symmetric formats have the same allocation semantics
+		case PXL_RGB_555:
         case PXL_ARGB_32: {
             // Calculate the VM buffer size
-            uNumBufferBytes = uNumBufferPixels * sizeof(uint32);
+            uNumBufferBytes = uNumBufferPixels * uPixelSize;
 
             // Calculate the total allocation size,
             // including the viewport sized transfer
             // buffer
-            size_t uTotalAlloc = uNumBufferBytes + uNumViewPixels * sizeof(uint32);
+            uTotalAlloc = uNumBufferBytes + uNumViewPixels * uPixelSize;
 
-            puPalette = nullptr;
+            oPaletteData.puAny    = nullptr;
             oDisplayBuffer.puByte = puData = new uint8[uTotalAlloc];
-            puImageBuffer = puData + uNumBufferBytes;
+            puImageBuffer         = puData + uNumBufferBytes;
             break;
-        }
-        case PXL_LUT_8: {
-            uNumBufferBytes = uNumBufferPixels;
+		}
 
-            // Calculate the total allocation size including the viewport sized transfer buffer and palette.
-            size_t uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 256) * sizeof(uint32);
-
-            oDisplayBuffer.puByte =
-                puData    = new uint8[uTotalAlloc];
-            puPalette     = (uint32*)(puData + uNumBufferBytes);
-            puImageBuffer = (uint8*)(puPalette + 256);
-            break;
-        }
         default: {
             throw Error();
             break;
@@ -78,30 +109,37 @@ void Context::allocateBuffer() {
     }
     std::fprintf(
         stderr,
-        "X11Context RAII: Allocated Pixel Buffer %d x %d x %d at %p\n",
+        "X11Context RAII: Allocated Pixel Buffer %d x %d x %d at %p, total allocation is %u bytes\n",
         (int)uBufferWidth, (int)uBufferHeight, (int)aPixelSize[uPixelFormat],
-        oDisplayBuffer.puByte
+        oDisplayBuffer.puByte,
+        (unsigned)uTotalAlloc
     );
 }
 
 typedef void* (*UpdateFunction)(Context& roContext);
 
 /**
- * Index: (width/height/offset) << 1 | format
+ * Index: (width|height|offset diff) << 2 | format
  */
 UpdateFunction aUpdateFunctions[] = {
-    updateLUT8Simple,
-    updateARGB32Simple,
-    updateLUT8Generic,
-    updateARGB32Generic,
+    updatePaletted<PaletteTo32Bit<Format::ARGB32>>,
+    updatePaletted<PaletteHAM555To15Bit<Format::RGB555>>,
+    updateRGB<Format::RGB555>,
+    updateRGB<Format::ARGB32>,
+    updatePalettedViewModified<PaletteTo32Bit<Format::ARGB32>>,
+    updatePalettedViewModified<PaletteHAM555To15Bit<Format::RGB555>>,
+    updateRGBViewModified<Format::RGB555>,
+    updateRGBViewModified<Format::ARGB32>,
 };
 
 /**
  * Index: format
  */
 UpdateFunction aComplexUpdateFunctions[] = {
-    updateLUT8Filth,
-    updateARGB32Filth,
+    updatePalettedScripted<PaletteTo32Bit<Format::ARGB32>>,   // Format::ARGB32::Pixel is the the palette format here
+    updatePalettedScripted<PaletteHAM555To15Bit<Format::RGB555>>, // Format::RGB555::Pixel is the the palette format here
+    updateRGBScripted<Format::RGB555>,
+    updateRGBScripted<Format::ARGB32>,
 };
 
 void* Context::updateBuffers() {
@@ -117,7 +155,7 @@ void* Context::updateBuffers() {
             uViewXOffset | uViewYOffset | // Nonzero View offsets ?
             (uViewWidth ^ uBufferWidth) | // Buffer/View width difference ?
             (uViewHeight ^ uBufferHeight) // Buffer/View height difference ?
-        ) ? 2 : 0);
+        ) ? 4 : 0);
 
     return aUpdateFunctions[uSelect](*this);
 }
