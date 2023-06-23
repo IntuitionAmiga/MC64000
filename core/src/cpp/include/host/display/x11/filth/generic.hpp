@@ -19,6 +19,16 @@
 
 #include "conversion.hpp"
 
+/**
+ * These functions handle the conversion of the virtual framebuffer pixels to a given RGB format
+ * for the case when the virtual framebuffer and viewport are the not the same size or there are
+ * modificatons to the scroll position.
+ *
+ * One function is provided for converting an indexed colour format and one for transferring RGB
+ * direct. The indexed version requires a conversion template parameter. The conversion it provides
+ * is inlined in the template generation.
+ */
+
 namespace MC64K::StandardTestHost::Display::x11 {
 
 /**
@@ -30,11 +40,11 @@ namespace MC64K::StandardTestHost::Display::x11 {
  * C is expected to be one of the conversion classes
  */
 template<typename T, class C>
-void* updateLUT8ViewPort(Context& roContext) {
+void* updatePalettedViewModified(Context& roContext) {
     static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
 
     if (T const* puPalette = roContext.oPaletteData.as<T const>()) {
-        C::init();
+        C oConversion;
         T*       pDst = (T*)roContext.puImageBuffer;
         unsigned y1   = 0;
         for (
@@ -53,8 +63,7 @@ void* updateLUT8ViewPort(Context& roContext) {
                 x2 < roContext.uBufferWidth && x1 < roContext.uViewWidth;
                 ++x1, ++x2
             ) {
-
-                *pDst++ = C::convert(puPalette, *pSrc++);
+                *pDst++ = oConversion.convert(puPalette, *pSrc++);
             }
 
             if (x1 < roContext.uViewWidth) {
@@ -67,7 +76,7 @@ void* updateLUT8ViewPort(Context& roContext) {
                     x1 < roContext.uViewWidth;
                     ++x1, ++x2
                 ) {
-                    *pDst++ = C::convert(puPalette, *pSrc++);
+                    *pDst++ = oConversion.convert(puPalette, *pSrc++);
                 }
             }
         }
@@ -88,7 +97,7 @@ void* updateLUT8ViewPort(Context& roContext) {
                     x2 < roContext.uBufferWidth && x1 < roContext.uViewWidth;
                     ++x1, ++x2
                 ) {
-                    *pDst++ = C::convert(puPalette, *pSrc++);
+                    *pDst++ = oConversion.convert(puPalette, *pSrc++);
                 }
 
                 if (x1 < roContext.uViewWidth) {
@@ -102,7 +111,7 @@ void* updateLUT8ViewPort(Context& roContext) {
                         x1 < roContext.uViewWidth;
                         ++x1, ++x2
                     ) {
-                        *pDst++ = C::convert(puPalette, *pSrc++);
+                        *pDst++ = oConversion.convert(puPalette, *pSrc++);
                     }
                 }
             }
@@ -118,7 +127,7 @@ void* updateLUT8ViewPort(Context& roContext) {
  * T is expected to be an integer type
  */
 template<typename T>
-void* updateViewPort(Context& roContext) {
+void* updateRGBViewModified(Context& roContext) {
     static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
 
     T* pDst = (T*)roContext.puImageBuffer;

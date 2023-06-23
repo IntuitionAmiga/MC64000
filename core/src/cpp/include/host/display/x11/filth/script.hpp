@@ -78,7 +78,7 @@ inline size_t subFromImmediate(uint8 const* puCode, uint8* puBase) {
  * offsets, etc. according to the beam location.
  */
 template<typename T, typename C>
-void* updateLUT8Scripted(Context& roContext) {
+void* updatePalettedScripted(Context& roContext) {
     static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
 
     if (T* puPalette        = roContext.oPaletteData.as<T>()) {
@@ -88,7 +88,7 @@ void* updateLUT8Scripted(Context& roContext) {
         uint16 uViewXOffset = roContext.uViewXOffset;
         uint16 uViewYOffset = roContext.uViewYOffset;
 
-        C::init();
+        C oConversion; // this is inlined
 
         for (uint32 yDst = 0; yDst < roContext.uViewHeight; ++yDst) {
             for (uint32 xDst = 0; xDst < roContext.uViewWidth; ++xDst) {
@@ -134,7 +134,7 @@ void* updateLUT8Scripted(Context& roContext) {
                 if (ySrc > roContext.uBufferHeight) {
                     ySrc %= roContext.uBufferHeight;
                 }
-                *pDst++ = C::convert(puPalette, pSrc[ySrc * roContext.uBufferWidth + xSrc]);
+                *pDst++ = oConversion.convert(puPalette, pSrc[ySrc * roContext.uBufferWidth + xSrc]);
             }
         }
         roContext.uViewXOffset = uViewXOffset;
@@ -149,7 +149,7 @@ void* updateLUT8Scripted(Context& roContext) {
  * offsets, etc. according to the beam location.
  */
 template<typename T>
-void* updateScripted(Context& roContext) {
+void* updateRGBScripted(Context& roContext) {
     static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
 
     T*       pDst       = (T*)roContext.puImageBuffer;

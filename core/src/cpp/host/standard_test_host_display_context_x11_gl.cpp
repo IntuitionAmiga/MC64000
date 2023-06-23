@@ -44,24 +44,24 @@ inline void Device::updateMousePosition() {
 // Maps PXL_x to glTexImage2D() internalformat parameter
 GLint const aInternalFormat[] = {
     GL_RGBA,
-    GL_RGB5,
-    GL_RGB5,
+    GL_RGB5_A1,
+    GL_RGB5_A1,
     GL_RGBA,
 };
 
 // Maps PXL_x to glTexImage2D() format parameter
 GLenum const aFormat[] = {
     GL_BGRA,
-    GL_BGRA,
-    GL_BGRA,
+    GL_BGRA_EXT,
+    GL_BGRA_EXT,
     GL_BGRA,
 };
 
 // Maps PXL_x to glTexImage2D() type parameter
 GLenum const aType[] = {
     GL_UNSIGNED_BYTE,
-    GL_UNSIGNED_SHORT,
-    GL_UNSIGNED_SHORT,
+    GL_UNSIGNED_SHORT_1_5_5_5_REV,
+    GL_UNSIGNED_SHORT_1_5_5_5_REV,
     GL_UNSIGNED_BYTE,
 };
 
@@ -162,14 +162,17 @@ Device::Device(Display::OpenParams const& roOpenParams):
     ::glTexImage2D(
         GL_TEXTURE_2D,
         0,
-        aInternalFormat[roOpenParams.uPixelFormat], //GL_RGBA,
+        aInternalFormat[roOpenParams.uPixelFormat],
         roOpenParams.uViewWidth,
         roOpenParams.uViewHeight,
         0,
-        aFormat[roOpenParams.uPixelFormat],//GL_BGRA,
-        aType[roOpenParams.uPixelFormat],//GL_UNSIGNED_BYTE,
+        aFormat[roOpenParams.uPixelFormat],
+        aType[roOpenParams.uPixelFormat],
         oContext.puImageBuffer
     );
+
+    std::fprintf(stderr, "glError() => 0x%04X\n", (unsigned)::glGetError());
+
     ::glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     ::glDisable(GL_DEPTH_TEST);
     ::glEnable(GL_TEXTURE_2D);
@@ -300,9 +303,9 @@ void Device::runEventLoop() {
                 0, // y pos
                 oContext.uViewWidth,
                 oContext.uViewHeight,
-                GL_BGRA,          // format
-                GL_UNSIGNED_BYTE, // type
-                pData             // data
+                aFormat[oContext.uPixelFormat], // format
+                aType[oContext.uPixelFormat],   // data type
+                pData                           // data
             );
 
             //uTime = Nanoseconds::mark() - uTime;

@@ -57,6 +57,8 @@ void Context::allocateBuffer() {
 
     uint32 uPixelSize = aPixelSize[uPixelFormat];
 
+    size_t uTotalAlloc = 0;
+
     switch (uPixelFormat) {
 
         case PXL_LUT_8: {
@@ -64,7 +66,7 @@ void Context::allocateBuffer() {
             uNumBufferBytes = uNumBufferPixels;
 
             // Calculate the total allocation size including the viewport sized transfer buffer and palette.
-            size_t uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 256) * sizeof(ARGB32);
+            uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 256) * sizeof(ARGB32);
 
             oDisplayBuffer.puByte =
             puData                = new uint8[uTotalAlloc];
@@ -78,7 +80,7 @@ void Context::allocateBuffer() {
             uNumBufferBytes = uNumBufferPixels;
 
             // Calculate the total allocation size including the viewport sized transfer buffer and palette.
-            size_t uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 32) * sizeof(RGB555);
+            uTotalAlloc = uNumBufferBytes + (uNumViewPixels + 32) * sizeof(RGB555);
 
             oDisplayBuffer.puByte =
             puData                = new uint8[uTotalAlloc];
@@ -96,7 +98,7 @@ void Context::allocateBuffer() {
             // Calculate the total allocation size,
             // including the viewport sized transfer
             // buffer
-            size_t uTotalAlloc = uNumBufferBytes + uNumViewPixels * uPixelSize;
+            uTotalAlloc = uNumBufferBytes + uNumViewPixels * uPixelSize;
 
             oPaletteData.puAny    = nullptr;
             oDisplayBuffer.puByte = puData = new uint8[uTotalAlloc];
@@ -111,39 +113,37 @@ void Context::allocateBuffer() {
     }
     std::fprintf(
         stderr,
-        "X11Context RAII: Allocated Pixel Buffer %d x %d x %d at %p\n",
+        "X11Context RAII: Allocated Pixel Buffer %d x %d x %d at %p, total allocation is %u bytes\n",
         (int)uBufferWidth, (int)uBufferHeight, (int)aPixelSize[uPixelFormat],
-        oDisplayBuffer.puByte
+        oDisplayBuffer.puByte,
+        (unsigned)uTotalAlloc
     );
 }
 
 typedef void* (*UpdateFunction)(Context& roContext);
 
-template<>
-RGB555 PaletteToHAM555<RGB555>::uPrevRGB = 0;
-
 /**
  * Index: (width|height|offset diff) << 2 | format
  */
 UpdateFunction aUpdateFunctions[] = {
-    updateLUT8<ARGB32, PaletteLookup<ARGB32>>,
-    updateLUT8<RGB555, PaletteToHAM555<RGB555>>,
-    update<RGB555>,
-    update<ARGB32>,
-    updateLUT8ViewPort<ARGB32, PaletteLookup<ARGB32>>,
-    updateLUT8ViewPort<RGB555, PaletteToHAM555<RGB555>>,
-    updateViewPort<RGB555>,
-    updateViewPort<ARGB32>,
+    updatePaletted<ARGB32, PaletteLookup<ARGB32>>,
+    updatePaletted<RGB555, PaletteToHAM555<RGB555>>,
+    updateRGB<RGB555>,
+    updateRGB<ARGB32>,
+    updatePalettedViewModified<ARGB32, PaletteLookup<ARGB32>>,
+    updatePalettedViewModified<RGB555, PaletteToHAM555<RGB555>>,
+    updateRGBViewModified<RGB555>,
+    updateRGBViewModified<ARGB32>,
 };
 
 /**
  * Index: format
  */
 UpdateFunction aComplexUpdateFunctions[] = {
-    updateLUT8Scripted<ARGB32, PaletteLookup<ARGB32>>,   // ARGB32 is the the palette format here
-    updateLUT8Scripted<RGB555, PaletteToHAM555<RGB555>>, // RGB555 is the the palette format here
-    updateScripted<RGB555>,
-    updateScripted<ARGB32>,
+    updatePalettedScripted<ARGB32, PaletteLookup<ARGB32>>,   // ARGB32 is the the palette format here
+    updatePalettedScripted<RGB555, PaletteToHAM555<RGB555>>, // RGB555 is the the palette format here
+    updateRGBScripted<RGB555>,
+    updateRGBScripted<ARGB32>,
 };
 
 void* Context::updateBuffers() {

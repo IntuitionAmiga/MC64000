@@ -124,7 +124,6 @@ inline void findBlock() {
                 Interpreter::gpr<ABI::INT_REG_0>().value<T>(),
                 uSize
             );
-
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NONE;
         } else {
             Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_NULL_PTR;
@@ -133,7 +132,6 @@ inline void findBlock() {
         Interpreter::gpr<ABI::INT_REG_0>().uQuad = ABI::ERR_BAD_SIZE;
     }
 }
-
 
 }
 

@@ -20,27 +20,62 @@ main:
     biz.q   a0, exit  ; no display?
     move.q  a0, -(sp) ; save the context on the stack for safe keeping
 
-    ; Initialise palette here
-    ;
-    ; You can update palette entries at any time.
-    ; You can chante the pointer to point at your own palette if you prefer but it has to have
-    ; 256 32-bit entries.
-    move.q  DISPLAY_REG_PALETTE_ADDRESS(a0), a1
-
-    ; mock WB2.0 4-colour palette
-    move.l  #$999999, (a1)+ ; grey
-    move.l  #$101010, (a1)+ ; almost black
-    move.l  #$EEEEEE, (a1)+ ; almost white
-    move.l  #$6060CC, (a1)+ ; blueish
-
-
-
     ; Populate the callback handlers
     lea     on_frame,      DISPLAY_REG_CALL_FRAME(a0)     ; called every frame before refresh
     lea     on_key_down,   DISPLAY_REG_CALL_KEY_PRESS(a0) ; called before every frame for keypresses
 
-    lea     .copperlist,   DISPLAY_REG_FILTH(a0)
 
+    move.q  DISPLAY_REG_PALETTE_ADDRESS(a0), a1
+
+    ; Don't need black, white or greys as these can be set as 111xxxxx ham pixels
+
+    move.w  #%0000000000000001, (a1)+ // 0
+    move.w  #%0000000000100000, (a1)+ // 1
+    move.w  #%0000000000100001, (a1)+ // 2
+    move.w  #%0000010000000000, (a1)+ // 3
+    move.w  #%0000010000000001, (a1)+ // 4
+    move.w  #%0000010000100000, (a1)+ // 5
+
+    move.w  #%0000000000000011, (a1)+ // 6
+    move.w  #%0000000001100000, (a1)+ // 7
+    move.w  #%0000000001100011, (a1)+ // 8
+    move.w  #%0000110000000000, (a1)+ // 9
+    move.w  #%0000010000000011, (a1)+ // 10
+    move.w  #%0000110001100000, (a1)+ // 11
+
+    move.w  #%0000000000000111, (a1)+ // 12
+    move.w  #%0000000011100000, (a1)+ // 13
+    move.w  #%0000000011100111, (a1)+ // 14
+    move.w  #%0001110000000000, (a1)+ // 15
+    move.w  #%0001110000000111, (a1)+ // 16
+    move.w  #%0001110011100000, (a1)+ // 17
+
+    move.w  #%0000000000001111, (a1)+ // 18
+    move.w  #%0000000111100000, (a1)+ // 19
+    move.w  #%0000000111101111, (a1)+ // 20
+    move.w  #%0011110000000000, (a1)+ // 21
+    move.w  #%0011110000001111, (a1)+ // 22
+    move.w  #%0011110111100000, (a1)+ // 23
+
+    move.w  #%0000000000011111, (a1)+ // 24
+    move.w  #%0000001111100000, (a1)+ // 25
+    move.w  #%0000001111111111, (a1)+ // 26
+    move.w  #%0111110000000000, (a1)+ // 27
+    move.w  #%0111110000011111, (a1)+ // 28
+    move.w  #%0111111111100000, (a1)+ // 29
+
+    move.l  DISPLAY_REG_SOFT_BUFFER_PIXELS(a0), d0
+    move.q  DISPLAY_REG_SOFT_BUFFER_ADDRESS(a0), a1
+
+    clr.q   d1
+    clr.q   d2
+.fill:
+    and.b   #%00011111,d2
+    or.b    #%11100000,d2
+    move.b  d2, (a1)+
+    add.b   #1,d1
+    move.b  d1,d2
+    dbnz    d0, .fill
 
     ; Begin the main event loop
     hcf     display_begin
@@ -88,77 +123,9 @@ on_key_down:
     dc.w 1 << DISPLAY_BIT_DRAW_BUFFER_ALL_FRAMES | 1 << DISPLAY_BIT_FLIP_ALL_FRAMES
 
     ; pixel format
-    dc.b PXL_CLUT_8
+    dc.b PXL_HAM_555
 
     ; target refresh rate (Hz)
     dc.b 60
 
-.copperlist:
-    dc.w    0, 0          ; beam position x, y
-    dc.b    DISPLAY_FC_SET_PALETTE, 0
-    dc.l    0x0005060A    ; begin
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 4          ; beam position
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A    ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 8          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A    ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 12          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A    ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 16          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A    ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 20          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 24          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A * 2 ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 28          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A * 2 ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 32          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A * 2  ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 36          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A * 2 ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 40          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A * 3 ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 44          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A * 3 ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 48          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A * 3  ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 52          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A * 3   ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 56          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A * 3   ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 60          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A * 4   ; sky delta
-    dc.b    DISPLAY_FC_WAIT
-    dc.w    0, 64          ; beam position x, y
-    dc.b    DISPLAY_FC_ADD_PALETTE_RGB, 0
-    dc.l    0x0005060A * 4    ; sky delta
-    dc.b    DISPLAY_FC_END
+

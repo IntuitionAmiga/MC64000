@@ -25,10 +25,10 @@ template<typename T>
 class PaletteLookup {
     static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
     public:
-        static void init() {
+        void init() {
         }
 
-        static T convert(T const* puPalette, uint8 uPixel) {
+        T convert(T const* puPalette, uint8 uPixel) {
             return puPalette[uPixel];
         }
 };
@@ -49,14 +49,12 @@ template<typename T>
 class PaletteToHAM555 {
     static_assert(std::is_integral<T>::value, "Invalid template type for pixel");
     private:
-        static T uPrevRGB;
+        T uPrevRGB;
 
     public:
-        static void init() {
-            uPrevRGB = 0;
-        }
+        PaletteToHAM555() : uPrevRGB(0) {}
 
-        static T convert(T const* pPalette, uint8 uPixel) {
+        T convert(T const* pPalette, uint8 uPixel) {
             T uVal = uPixel & 0b00011111;
             switch (uPixel >> 5) {
                 case 0b000: // Palette entry
