@@ -25,6 +25,8 @@
 
 #include <host/display/x11/filth/conversion.hpp>
 
+#include <host/display/x11/quirks.hpp>
+
 namespace MC64K::StandardTestHost::Display::x11 {
 
 /**
