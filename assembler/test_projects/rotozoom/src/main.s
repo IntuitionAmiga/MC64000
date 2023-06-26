@@ -31,7 +31,7 @@ main:
     ; Populate the callback handlers
     lea     on_frame,    DISPLAY_REG_CALL_FRAME(a0)
     lea     on_key_down, DISPLAY_REG_CALL_KEY_PRESS(a0)
-    ;lea     .filth,      DISPLAY_REG_FILTH(a0)
+    lea     .filth,      DISPLAY_REG_FILTH(a0)
 
     ; Set parameters
     lea     .texel_data,  a2
@@ -73,6 +73,7 @@ on_frame: ; a0 contains display context
 .yloop:
     move.w      DISPLAY_REG_WIDTH(a0), d3
     fmovel.s    d2, fp8     ; fp8 = y
+
 .xloop:
     fmovel.s    d3, fp7     ; fp7 = x
 
@@ -106,7 +107,23 @@ on_frame: ; a0 contains display context
 
 ; handlers
 on_key_down: ; a0 contains display context
+    bne.w      #KSC_ESC, DISPLAY_REG_EVENT_CODE(a0), .check_filth
     bclr.w     #DISPLAY_BIT_EVENT_LOOP_RUNNING, DISPLAY_REG_FLAGS(a0)
+
+.done:
+    rts
+
+.check_filth:
+    bne.w      #KSC_F, DISPLAY_REG_EVENT_CODE(a0), .done
+    biz.q      DISPLAY_REG_FILTH(a0), .filth_on
+
+.filth_off:
+    clr.q      DISPLAY_REG_FILTH(a0)
+    clr.w      DISPLAY_REG_VIEW_Y_OFFSET(a0)
+    rts
+
+.filth_on:
+    lea        .filth, DISPLAY_REG_FILTH(a0)
     rts
 
 ; data
@@ -130,14 +147,20 @@ on_key_down: ; a0 contains display context
     dc.w    0, 80                 ; beam position 0, 80
     dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
     dc.w    0                     ; x offset value
-    dc.b    DISPLAY_FC_WAIT       ; wait
-    dc.w    0, 160                ; beam position
+    dc.b    DISPLAY_FC_SET_VIEW_Y ; set view y offset
+    dc.w    80                    ; y offset value
+
+    dc.b    DISPLAY_FC_WAIT       ; wait until...
+    dc.w    0, 400                ; beam position 0, 400
+    dc.b    DISPLAY_FC_SET_VIEW_Y ; set view y offset
+    dc.w    0                     ; y offset value
     dc.b    DISPLAY_FC_SET_VIEW_X ; set view x offset
     dc.w    0                     ; x offset value
-    ;dc.b    DISPLAY_FC_ADD_WORD
-    ;dc.w    2, 1                  ; increment word at offset 2 (the uppser beam y offset value)
+
     dc.b    DISPLAY_FC_ADD_WORD
     dc.w    5, 2                  ; increment word at offset 5 (the x offset value)
-    ;dc.b    DISPLAY_FC_SUB_WORD
-    ;dc.w    10, 1                 ; increment word at offset 9 (the lower beam y offset value)
+
+    dc.b    DISPLAY_FC_ADD_WORD
+    dc.w    8, 1                  ; increment word at offset 8 (the y offset value)
+
     dc.b    DISPLAY_FC_END        ; end

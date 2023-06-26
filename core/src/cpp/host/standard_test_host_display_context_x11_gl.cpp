@@ -253,7 +253,10 @@ void Device::runEventLoop() {
     Nanoseconds::Value uIdle    = 0;
     Nanoseconds::Value uBegin   = Nanoseconds::mark();
 
-    ulong uFrames = 0;
+    Nanoseconds::Value uInterpreter = 0;
+    Nanoseconds::Value uDisplay     = 0;
+
+    unsigned long uFrames = 0;
 
     oContext.uFlags |= FLAG_RUNNING;
 
@@ -288,12 +291,14 @@ void Device::runEventLoop() {
             }
         }
 
+        Nanoseconds::Value uMark2 = Nanoseconds::mark();
+
+        uInterpreter += uMark2 - uMark;
+
         // Check if we need to copy the pixel buffer to the offscreen buffer
         if (oContext.uFlags & (FLAG_DRAW_BUFFER_NEXT_FRAME|FLAG_DRAW_BUFFER_ALL_FRAMES)) {
 
-            //Nanoseconds::Value uTime = Nanoseconds::mark();
             void* pData = oContext.updateBuffers();
-
 
             // HERE GL Texture Update
             ::glTexSubImage2D(
@@ -308,9 +313,6 @@ void Device::runEventLoop() {
                 pData                           // data
             );
 
-            //uTime = Nanoseconds::mark() - uTime;
-
-            //std::printf("%lu,%lu\n", uFrames, uTime);
             oContext.uFlags &= (uint16)~FLAG_DRAW_BUFFER_NEXT_FRAME;
         }
 
@@ -320,7 +322,11 @@ void Device::runEventLoop() {
             oContext.uFlags &= (uint16)~FLAG_FLIP_NEXT_FRAME;
         }
 
-        Nanoseconds::Value uElapsed = Nanoseconds::mark() - uMark;
+        Nanoseconds::Value uMark3 = Nanoseconds::mark();
+
+        uDisplay += uMark3 - uMark2;
+
+        Nanoseconds::Value uElapsed = uMark3 - uMark;
 
         if (uElapsed < uFrametime) {
             uIdle += (uFrametime - uElapsed);
@@ -338,6 +344,20 @@ void Device::runEventLoop() {
         (100.0 * (float64)uIdle)/(float64)uTotal,
         uFrames,
         1e9 * (float64)uFrames / (float64)uTotal
+    );
+
+    float64 fBudgetScale = 100.0 / (float64)uFrametime;
+
+    std::fprintf(
+        stderr,
+        "\nBudget:      %8lu ns/frame"
+        "\nInterpreter: %8lu ns/frame [%.2f %%]"
+        "\nDisplay:     %8lu ns/frame [%.2f %%]\n\n",
+        uFrametime,
+        uInterpreter/uFrames,
+        fBudgetScale * (float64)(uInterpreter/uFrames),
+        uDisplay/uFrames,
+        fBudgetScale * (float64)(uDisplay/uFrames)
     );
 }
 
@@ -364,6 +384,7 @@ void Device::handleEvent() {
     switch (oEvent.type) {
         case NoExpose:
             break;
+
         case Expose:
             XWindowAttributes oWinAttr;
             ::XGetWindowAttributes(oDisplay.get(), uWindowID, &oWinAttr);
@@ -371,26 +392,30 @@ void Device::handleEvent() {
             fMouseXScale = (float32)oContext.uBufferWidth /  (float32) oWinAttr.width;
             fMouseYScale = (float32)oContext.uBufferHeight / (float32) oWinAttr.height;
             break;
+
         case KeyPress:
             if (oContext.apVMCall[CALL_KEY_PRESS]) {
-                oContext.uEventRawCode = (uint16) event<::XKeyEvent>().keycode;
+                oContext.uEventRawCode = (uint16) event<::XKeyEvent>().keycode - x11::KEYSCANCODE_OFFSET;
                 updateMousePosition();
                 invokeVMCallback(oContext.apVMCall[CALL_KEY_PRESS]);
             }
             break;
+
         case KeyRelease:
             if (oContext.apVMCall[CALL_KEY_RELEASE]) {
-                oContext.uEventRawCode = (uint16) event<::XKeyEvent>().keycode;
+                oContext.uEventRawCode = (uint16) event<::XKeyEvent>().keycode - x11::KEYSCANCODE_OFFSET;
                 updateMousePosition();
                 invokeVMCallback(oContext.apVMCall[CALL_KEY_RELEASE]);
             }
             break;
+
         case MotionNotify:
             if (oContext.apVMCall[CALL_MOVEMENT]) {
                 updateMousePosition();
                 invokeVMCallback(oContext.apVMCall[CALL_MOVEMENT]);
             }
             break;
+
         case ButtonPress:
             if (oContext.apVMCall[CALL_BUTTON_PRESS]) {
                 oContext.uEventRawCode = (uint16) event<::XButtonEvent>().button;
@@ -398,6 +423,7 @@ void Device::handleEvent() {
                 invokeVMCallback(oContext.apVMCall[CALL_BUTTON_PRESS]);
             }
             break;
+
         case ButtonRelease:
             if (oContext.apVMCall[CALL_BUTTON_RELEASE]) {
                 oContext.uEventRawCode = (uint16) event<::XButtonEvent>().button;
@@ -405,6 +431,7 @@ void Device::handleEvent() {
                 invokeVMCallback(oContext.apVMCall[CALL_BUTTON_RELEASE]);
             }
             break;
+
         default:
             std::printf("Other Event %d\n", oEvent.type);
             break;

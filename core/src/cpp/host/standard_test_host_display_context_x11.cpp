@@ -29,7 +29,6 @@
 using MC64K::Machine::Interpreter;
 using MC64K::Machine::Nanoseconds;
 
-
 namespace MC64K::StandardTestHost::Display {
 
 namespace x11 {
@@ -266,22 +265,24 @@ void Device::handleEvent() {
             break;
         case KeyPress:
             if (oContext.apVMCall[CALL_KEY_PRESS]) {
-                oContext.uEventRawCode = (uint16) event<::XKeyEvent>().keycode;
+                oContext.uEventRawCode = (uint16) event<::XKeyEvent>().keycode - KEYSCANCODE_OFFSET;
                 oContext.uEventRawMask = (uint16) event<::XKeyEvent>().state;
                 oContext.uPositionX    = (uint16) event<::XKeyEvent>().x;
                 oContext.uPositionY    = (uint16) event<::XKeyEvent>().y;
                 invokeVMCallback(oContext.apVMCall[CALL_KEY_PRESS]);
             }
             break;
+
         case KeyRelease:
             if (oContext.apVMCall[CALL_KEY_RELEASE]) {
-                oContext.uEventRawCode = (uint16) event<::XKeyEvent>().keycode;
+                oContext.uEventRawCode = (uint16) event<::XKeyEvent>().keycode - KEYSCANCODE_OFFSET;
                 oContext.uEventRawMask = (uint16) event<::XKeyEvent>().state;
                 oContext.uPositionX    = (uint16) event<::XKeyEvent>().x;
                 oContext.uPositionY    = (uint16) event<::XKeyEvent>().y;
                 invokeVMCallback(oContext.apVMCall[CALL_KEY_RELEASE]);
             }
             break;
+
         case MotionNotify:
             if (oContext.apVMCall[CALL_MOVEMENT]) {
                 oContext.uEventRawMask = (uint16) event<::XKeyEvent>().state;
@@ -290,6 +291,7 @@ void Device::handleEvent() {
                 invokeVMCallback(oContext.apVMCall[CALL_MOVEMENT]);
             }
             break;
+
         case ButtonPress:
             if (oContext.apVMCall[CALL_BUTTON_PRESS]) {
                 oContext.uEventRawCode = (uint16) event<::XButtonEvent>().button;
@@ -299,6 +301,7 @@ void Device::handleEvent() {
                 invokeVMCallback(oContext.apVMCall[CALL_BUTTON_PRESS]);
             }
             break;
+
         case ButtonRelease:
             if (oContext.apVMCall[CALL_BUTTON_RELEASE]) {
                 oContext.uEventRawCode = (uint16) event<::XButtonEvent>().button;
@@ -308,6 +311,7 @@ void Device::handleEvent() {
                 invokeVMCallback(oContext.apVMCall[CALL_BUTTON_RELEASE]);
             }
             break;
+
         default:
             std::printf("Other Event %d\n", oEvent.type);
             break;
