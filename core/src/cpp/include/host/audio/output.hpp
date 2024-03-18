@@ -23,7 +23,7 @@ namespace MC64K::StandardTestHost::Audio {
 
 
 /**
- * PixelPointer. Simple union to avoid casts.
+ * SamplePointer. Simple union to avoid casts.
  */
 union SamplePointer {
     void*  pAny;

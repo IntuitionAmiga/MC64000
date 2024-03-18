@@ -91,6 +91,7 @@ class IStream {
 
         typedef std::shared_ptr<IStream> Ptr;
         typedef std::shared_ptr<IStream const> ConstPtr;
+
 };
 
 /**
