@@ -46,7 +46,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          *
          * Overridden to return false if we don't have a waveform set.
          */
-        bool           canEnable();
+        bool           canEnable() const;
 
         /**
          * Limit the frequency. This is intended to be overridden
@@ -55,7 +55,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          * @param float32
          * @return float32
          */
-        virtual float32 clampFrequency(float32 fFrequency) {
+        virtual float32 clampFrequency(float32 fFrequency) const {
             return fFrequency;
         };
 
@@ -73,7 +73,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          *
          * @return uint32
          */
-        uint32 getCyclicSampleCounter() {
+        uint32 getCyclicSampleCounter() const {
             return (uint32)(uSamplePosition & SAMPLE_COUNTER_MASK);
         }
 

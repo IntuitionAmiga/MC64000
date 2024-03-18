@@ -28,7 +28,7 @@ IEnvelope* IEnvelope::setTimeScale(float32 fNewTimeScale) {
     if (fNewTimeScale < MIN_TIME_SCALE) {
         fNewTimeScale = MIN_TIME_SCALE;
     }
-    if (fabs(fNewTimeScale - fTimeScale) > MIN_TIME_SCALE_DIFF) {
+    if (std::fabs(fNewTimeScale - fTimeScale) > MIN_TIME_SCALE_DIFF) {
         fTimeScale        = fNewTimeScale;
         bParameterChanged = true;
     }
@@ -39,7 +39,7 @@ IEnvelope* IEnvelope::setTimeScale(float32 fNewTimeScale) {
  * @inheritDoc
  */
 IEnvelope* IEnvelope::setLevelScale(float32 fNewLevelScale) {
-    if (fabs(fNewLevelScale - fLevelScale) > MIN_LEVEL_SCALE_DIFF) {
+    if (std::fabs(fNewLevelScale - fLevelScale) > MIN_LEVEL_SCALE_DIFF) {
         fLevelScale       = fNewLevelScale;
         bParameterChanged = true;
     }

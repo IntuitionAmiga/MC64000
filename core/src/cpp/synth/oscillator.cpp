@@ -49,7 +49,7 @@ IOscillator::IOscillator(
  *
  * We only allow the oscillator to be enabled if it has a waveform.
  */
-bool IOscillator::canEnable() {
+bool IOscillator::canEnable() const {
     return poWaveform.get() != 0;
 }
 
@@ -138,7 +138,7 @@ LFO::~LFO() {
 /**
  * @inheritDoc
  */
-float32 LFO::clampFrequency(float32 fNewFrequency) {
+float32 LFO::clampFrequency(float32 fNewFrequency) const {
     return fNewFrequency < MIN_FREQUENCY ? MIN_FREQUENCY : (
         fNewFrequency > MAX_FREQUENCY ?
         MAX_FREQUENCY : fNewFrequency
@@ -273,7 +273,7 @@ Sound* Sound::enable() {
 /**
  * @inheritDoc
  */
-float32 Sound::clampFrequency(float32 fNewFrequency) {
+float32 Sound::clampFrequency(float32 fNewFrequency) const {
     return fNewFrequency < MIN_FREQUENCY ? MIN_FREQUENCY : (
         fNewFrequency > MAX_FREQUENCY ?
         MAX_FREQUENCY : fNewFrequency

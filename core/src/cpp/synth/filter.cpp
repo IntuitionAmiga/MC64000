@@ -47,7 +47,7 @@ IFilter* IFilter::reset() {
     return this;
 }
 
-bool IFilter::canEnable() {
+bool IFilter::canEnable() const {
     return poInputStream.get() != 0;
 }
 
