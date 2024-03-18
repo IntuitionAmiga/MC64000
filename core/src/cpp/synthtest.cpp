@@ -345,8 +345,8 @@ void testNotes() {
 int main(int const iArgCount, char const** aiArgVal) {
 
     testNotes();
-
-//    Signal::Packet::dumpStats();
+    mixtest();
+    Signal::Packet::dumpStats();
 
     return EXIT_SUCCESS;
 }

@@ -39,7 +39,7 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
          *
          * Overridden - filter cannot be enabled if there is no input stream set.
          */
-        bool    canEnable();
+        bool    canEnable() const;
 
         virtual void configure() = 0;
 

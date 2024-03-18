@@ -65,7 +65,7 @@ class Sound : public IOscillator {
         /**
          * @inheritDoc
          */
-        float32 clampFrequency(float32 fFrequency);
+        float32 clampFrequency(float32 fFrequency) const;
 
         /**
          * @inheritDoc

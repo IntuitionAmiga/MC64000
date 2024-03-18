@@ -237,6 +237,7 @@ class ModulatedPWM : public IWaveform {
          * @inheritDoc
          */
         Ptr copy();
-};
+    };
+}
 
 #endif
