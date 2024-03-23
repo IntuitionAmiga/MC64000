@@ -65,12 +65,12 @@ class Sound : public IOscillator {
         /**
          * @inheritDoc
          */
-        float32 clampFrequency(float32 fFrequency) const;
+        float32 clampFrequency(float32 fFrequency) const override;
 
         /**
          * @inheritDoc
          */
-        Packet::ConstPtr emitNew();
+        Packet::ConstPtr emitNew() override;
 
         void configureAntialias();
 
@@ -86,12 +86,12 @@ class Sound : public IOscillator {
         /**
          * @inheritDoc
          */
-        Sound* reset();
+        Sound* reset() override;
 
         /**
          * @inheritDoc
          */
-        Sound* enable();
+        Sound* enable() override;
 
         /**
          * Set the antialias mode explicitly

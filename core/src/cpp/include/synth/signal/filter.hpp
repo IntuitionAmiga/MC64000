@@ -59,9 +59,9 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
         static constexpr float32 const DEF_RESONANCE = 0.0f;
         static constexpr float32 const MAX_RESONANCE = 1.0f;
 
-        IFilter* reset();
+        IFilter* reset() override;
 
-        IFilter* enable();
+        IFilter* enable() override;
 
         IFilter* setInputStream(IStream::Ptr const& poStream) {
             poInputStream = poStream;

@@ -1,5 +1,5 @@
-#ifndef MC64K_SYNTH_CTRL_CURVE_FLAT_HPP
-    #define MC64K_SYNTH_CTRL_CURVE_FLAT_HPP
+#ifndef MC64K_SYNTH_MACHINE_MONOPHONIC_HPP
+    #define MC64K_SYNTH_MACHINE_MONOPHONIC_HPP
 
 /**
  *   888b     d888  .d8888b.   .d8888b.      d8888  888    d8P
@@ -14,28 +14,22 @@
  *    - 64-bit 680x0-inspired Virtual Machine and assembler -
  */
 
-#include <misc/scalar.hpp>
-#include <synth/controlcurve.hpp>
+#include <synth/machine.hpp>
+#include <synth/signal/operator/leveladjust.hpp>
 
-namespace MC64K::Synth::Audio::ControlCurve {
+namespace MC64K::Synth::Audio::Machine {
 
-/**
- * Flat control curve. Ignores whatever value is passed and returns the fixed value passed
- * on construction.
- */
-class Flat : public IControlCurve {
-    private:
-        float32 fFixed;
+class Monophonic : public IMachine {
+
+    protected:
+        //Signal::Operator::LevelAdjust oVoice;
 
     public:
-        Flat(float32 fValue);
-        ~Flat();
-
-        /**
-         * @inheritDoc
-         */
-        float32 map(float32 const) const override;
+        Polyphony getNumVoices() const override {
+            return ONE_VOICE;
+        };
 };
 
-}
+} // namespace
+
 #endif

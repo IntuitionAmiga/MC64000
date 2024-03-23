@@ -35,7 +35,7 @@ class IEnvelope : public TStreamCommon, protected TPacketIndexAware {
         /**
          * @inheritDoc
          */
-        IEnvelope* reset();
+        IEnvelope* reset() override;
 
         /**
          * Set a scaling factor for envelope timing. A smaller value results in a faster envelope. Use to simlulate the

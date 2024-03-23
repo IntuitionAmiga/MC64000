@@ -47,14 +47,14 @@ class IStream {
          *
          * @return bool
          */
-        virtual bool isEnabled() = 0;
+        virtual bool isEnabled() const = 0;
 
         /**
          * Get the current stream position
          *
          * @return size_t
          */
-        virtual size_t getPosition() = 0;
+        virtual size_t getPosition() const = 0;
 
         /**
          * Enable a stream.
@@ -112,20 +112,20 @@ class TStreamCommon : public IStream {
         /**
          * Override. Returns true if the stream can be enabled.
          */
-        virtual bool canEnable();
+        virtual bool canEnable() const;
 
     public:
         /**
          * @inheritDoc
          */
-        size_t getPosition() {
+        size_t getPosition() const override {
             return uSamplePosition;
         }
 
         /**
          * @inheritDoc
          */
-        bool isEnabled() {
+        bool isEnabled() const override {
             return bEnabled;
         }
 
@@ -135,14 +135,14 @@ class TStreamCommon : public IStream {
          * Checks the response from canEnable before enabling. Does nothing if the stream
          * is already enabled.
          */
-        IStream* enable();
+        IStream* enable() override;
 
         /**
          * @inheritDoc
          *
          * Disables the stream. Does nothing if the stream is already disabled.
          */
-        IStream* disable();
+        IStream* disable() override;
 };
 
 }

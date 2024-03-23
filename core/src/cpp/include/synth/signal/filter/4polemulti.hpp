@@ -54,10 +54,10 @@ class FourPoleMultiMode : public IFilter  {
         void filterSample(float64 fInput, float64 fCutoff, float64 fResonance);
 
     protected:
-        void configure();
+        void configure() override;
 
     public:
-        Packet::ConstPtr emit(uint64 uIndex);
+        Packet::ConstPtr emit(uint64 uIndex) override;
 
         FourPoleMultiMode* setMode(Mode eMode) {
             this->eMode = eMode;

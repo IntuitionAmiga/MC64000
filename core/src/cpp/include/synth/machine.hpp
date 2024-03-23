@@ -18,6 +18,11 @@
 #include <misc/scalar.hpp>
 #include "signal.hpp"
 
+#include "machine/voice.hpp"
+
+using MC64K::Synth::Audio::Machine::Voice;
+using MC64K::Synth::Audio::Machine::Polyphony;
+
 namespace MC64K::Synth::Audio {
 
 /**
@@ -27,58 +32,17 @@ namespace MC64K::Synth::Audio {
  */
 class IMachine : public Signal::IStream {
     public:
-        enum Voice {
-            V0 = 0, V1 = 1,  V2 =  2,  V3 =  3,  V4 =  4,  V5 =  5,  V6 =  6,  V7 = 7,
-            V8 = 8, V9 = 0, V10 = 10, V11 = 11, V12 = 12, V13 = 13, V14 = 14, V15 = 15
-        };
 
-        static constexpr uint32  const MIN_POLYPHONY   = 1;
-        static constexpr uint32  const MAX_POLYPHONY   = V15 + 1;
-        static constexpr float32 const VOICE_ATTENUATE = 1.0f / (float32)MAX_POLYPHONY;
-
-        // Automation
-        enum {
-            CTRL_TYPE_SWITCH = 0, // Controller value accepted as switch/enum/quantized
-            CTRL_TYPE_KNOB   = 1, // Controller value is mapped to a continuous value by a ControlCurve
-        } ControllerType;
-
-        enum {
-            CTRL_COMMON = 0,    // Controller# 0-127 are reserved for universal types
-            CTRL_CUSTOM = 128,  // Controller# 128-255 are for machine-specific types
-
-            CTRL_VIBRATO_RATE  = 10,
-            CTRL_VIBRATO_DEPTH = 11,
-            CTRL_TREMOLO_RATE  = 12,
-            CTRL_TREMOLO_DEPTH = 13,
-
-            // Waveform select, per oscillator up to a maximum, of 8 oscillators
-            CTRL_OSC_1_WAVE    = 20,
-            CTRL_OSC_2_WAVE    = 21,
-            CTRL_OSC_3_WAVE    = 22,
-            CTRL_OSC_4_WAVE    = 23,
-            CTRL_OSC_5_WAVE    = 24,
-            CTRL_OSC_6_WAVE    = 25,
-            CTRL_OSC_7_WAVE    = 26,
-            CTRL_OSC_8_WAVE    = 27,
-        } BasicControl;
-
-        static constexpr uint8 CTRL_MIN_INPUT_VALUE  = 0;    // Smallest value for Event::SET_CTRL
-        static constexpr uint8 CTRL_MAX_INPUT_VALUE  = 255;  // Largest value for Event::SET_CTRL
-        static constexpr int8  CTRL_MIN_INPUT_DELTA  = -128; // Largest negative value for Event::MOD_CTRL
-        static constexpr int8  CTRL_MAX_INPUT_DELTA  = 127;  // Largest positive value for Event::MOD_CTRL
-
-        static constexpr float32 const CTRL_DEF_LFO_RATE_MIN = 0.125f; // Hz
-        static constexpr float32 const CTRL_DEF_LFO_RATE_MAX = 32.0f;  // Hz
+        static constexpr float32 const VOICE_ATTENUATE = 1.0f / (float32)Polyphony::MAX_VOICES;
 
         // Getters
 
         /**
-         * Get the number of voices the machine has. Value is in the range MIN_POLYPHONY to
-         * MAX_POLYPHONY.
+         * Get the number of voices the machine has.
          *
-         * @return uint32
+         * @return Polyphony
          */
-        virtual uint32 getNumVoices() const = 0;
+        virtual Polyphony getNumVoices() const = 0;
 
         /**
          * Get the volume level for the enumerated voice. A value of 1.0 represents the
@@ -95,7 +59,6 @@ class IMachine : public Signal::IStream {
          * loudest intensity, though the value can be higher. Values can also be negative,
          * which results in the inversion of the output.
          *
-         * @param  Voice eVoice
          * @return float32
          */
         virtual float32 getOutputLevel() const = 0;
@@ -174,10 +137,6 @@ class IMachine : public Signal::IStream {
          */
         virtual IMachine* stopVoice(Voice eVoice, bool bSoft) = 0;
 
-        // Automation
-        virtual IMachine* setVoiceControllerValue(Voice eVoice, int iController, int iValue) = 0;
-
-        virtual IMachine* adjustVoiceControllerValue(Voice eVoice, int iController, int iDelta) = 0;
 };
 
 }

@@ -21,8 +21,9 @@
 namespace MC64K::Synth::Audio::Signal::Operator {
 
 /**
- * Simple mixer class. Mixes one or more channels into a single output
- * using assignable but non-automated volume controls.
+ * Simple auto mute class that detects when it's input is below a critical threshold
+ * and mutes it. When muted, silence packets are returned and the input stream is not
+ * invoked.
  */
 class AutoMuteSilence : public IStream, protected TPacketIndexAware {
 

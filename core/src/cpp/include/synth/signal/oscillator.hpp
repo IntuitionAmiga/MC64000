@@ -46,7 +46,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          *
          * Overridden to return false if we don't have a waveform set.
          */
-        bool           canEnable() const;
+        bool           canEnable() const override;
 
         /**
          * Limit the frequency. This is intended to be overridden
@@ -122,12 +122,12 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
         /**
          * @inheritDoc
          */
-        IOscillator* reset();
+        IOscillator* reset() override;
 
         /**
          * @inheritDoc
          */
-        Packet::ConstPtr emit(size_t uIndex = 0);
+        Packet::ConstPtr emit(size_t uIndex = 0) override;
 
         typedef std::shared_ptr<IOscillator> Ptr;
         typedef std::shared_ptr<IOscillator const> ConstPtr;

@@ -5,6 +5,7 @@
 #include <host/audio/output.hpp>
 #include <synth/note.hpp>
 #include <synth/signal.hpp>
+#include <synth/signal/operator/leveladjust.hpp>
 #include <synth/signal/operator/mixer.hpp>
 #include <synth/signal/operator/automute.hpp>
 #include <synth/signal/oscillator/LFO.hpp>
@@ -237,7 +238,7 @@ void mixtest(Audio::Context* poContext) {
     Signal::IStream::Ptr pStream1 (
         new Signal::Oscillator::Sound(
             Signal::IWaveform::get(Signal::IWaveform::SINE),
-            440.0f,
+            110.0f,
             0.0f
         )
     );
@@ -245,7 +246,7 @@ void mixtest(Audio::Context* poContext) {
     Signal::IStream::Ptr pStream2 (
         new Signal::Oscillator::Sound(
             Signal::IWaveform::get(Signal::IWaveform::SINE),
-            110.0f,
+            55.1f,
             0.0f
         )
     );
@@ -253,7 +254,7 @@ void mixtest(Audio::Context* poContext) {
     Signal::IStream::Ptr pStream3 (
         new Signal::Oscillator::Sound(
             Signal::IWaveform::get(Signal::IWaveform::SINE),
-            440.0f,
+            110.0f,
             0.0f
         )
     );
@@ -268,25 +269,34 @@ void mixtest(Audio::Context* poContext) {
     std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream3)->setLevelEnvelope(pEnv);
     std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream2)->setLevelEnvelope(pEnv);
     std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream1)->setLevelEnvelope(pEnv);
-    Signal::Operator::SimpleMixer oMix(1.0f);
-    oMix.addInputStream(
-        0xdeadbeef,
-        pStream1,
-        0.8f
-    );
-    oMix.addInputStream(
-        0xabadafe,
-        pStream2,
-        0.1f
-    );
-    oMix.addInputStream(
-        0x69696969,
-        pStream3,
-        0.1f
+
+    Signal::IStream::Ptr pMixer (
+        new Signal::Operator::FixedMixer(3, 1.0f)
     );
 
-    oMix.enable();
-    writeAudio(&oMix, poContext, 1000);
+    std::reinterpret_pointer_cast<Signal::Operator::FixedMixer>(pMixer)
+        ->setChannel(
+            0,
+            pStream1,
+            0.8f
+        )
+        ->setChannel(
+            1,
+            pStream2,
+            0.1f
+        )
+        ->setChannel(
+            2,
+            pStream3,
+            0.1f
+        );
+
+    pMixer->enable();
+
+    Signal::Operator::LevelAdjust oAdjust(pMixer, 0.5f, 0.0f);
+
+    oAdjust.enable();
+    writeAudio(&oAdjust, poContext, 500);
     //writeRawFile(&oMix, "mix_test.raw", 1000);
 }
 
@@ -358,7 +368,7 @@ int main(int const iArgCount, char const** aiArgVal) {
 
     Audio::OutputPCMDevice* poOutput = Audio::createOutputPCMDevice(
         Audio::IConfig::PROCESS_RATE,
-        25, // ms
+        50, // ms
         Audio::Output::CH_MONO,
         Audio::Output::INT_16
     );
@@ -376,5 +386,9 @@ int main(int const iArgCount, char const** aiArgVal) {
         delete poOutput;
     }
     Signal::Packet::dumpStats();
+
+    testWaveforms();
+    Signal::Packet::dumpStats();
+
     return EXIT_SUCCESS;
 }

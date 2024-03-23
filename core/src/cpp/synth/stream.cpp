@@ -22,7 +22,7 @@ namespace MC64K::Synth::Audio::Signal {
 /**
  * @inheritDoc
  */
-bool TStreamCommon::canEnable() {
+bool TStreamCommon::canEnable() const {
     return true;
 }
 

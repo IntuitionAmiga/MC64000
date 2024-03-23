@@ -14,18 +14,142 @@
 #include <cmath>
 #include <cstdio>
 #include <synth/signal.hpp>
-#include <synth/signal/operator/mixer.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include <synth/signal/operator/leveladjust.hpp>
 #include <synth/signal/operator/mixer.hpp>
 #include <synth/signal/operator/automute.hpp>
 #include <synth/signal/operator/packet_relay.hpp>
 
 namespace MC64K::Synth::Audio::Signal::Operator {
 
+LevelAdjust::LevelAdjust(
+    IStream::Ptr const& poSource,
+    float32 fInitialOutputLevel,
+    float32 fInitialOutputBias
+):
+    poSource{poSource},
+    fOutputLevel{0.0f},
+    fOutputBias{fInitialOutputBias},
+    bMuted{false}
+{
+    setOutputLevel(fInitialOutputLevel);
+    std::fprintf(stderr, "Created LevelAdjust at %p with output level %.3f\n", this, fOutputLevel);
+}
+
+LevelAdjust::~LevelAdjust() {
+    std::fprintf(stderr, "Destroyed LevelAdjust at %p\n", this);
+}
+
+bool LevelAdjust::canEnable() const {
+    return poSource.get() != nullptr;
+}
+
+/**
+ * @inheritDoc
+ */
+Packet::ConstPtr LevelAdjust::emit(size_t uIndex) {
+    if (!bEnabled || bMuted) {
+        return Packet::getSilence();
+    }
+    if (useLast(uIndex)) {
+        return poLastPacket;
+    }
+    return emitNew();
+}
+
+Packet::ConstPtr LevelAdjust::emitNew() {
+    if (!poLastPacket.get()) {
+        poLastPacket = Packet::create();
+    }
+    poLastPacket->scaleAndBiasBy(poSource->emit(uLastIndex), fOutputLevel, fOutputBias);
+    return poLastPacket;
+}
+
+LevelAdjust* LevelAdjust::reset() {
+    uLastIndex = 0;
+    uSamplePosition = 0;
+    if ( auto p = poLastPacket.get() ) {
+        p->clear();
+    }
+    if ( auto p = poSource.get() ) {
+        p->reset();
+    }
+    return this;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+FixedMixer::FixedMixer(uint32 uNumChannels, float32 fOutputLevel):
+    pChannels{nullptr},
+    uBitMap{0},
+    fOutputLevel{fOutputLevel} {
+    this->uNumChannels = uNumChannels < MIN_CHANNELS ?
+        MIN_CHANNELS : uNumChannels > MAX_CHANNELS ?
+            MAX_CHANNELS : uNumChannels;
+    pChannels = new Channel[this->uNumChannels];
+    std::fprintf(stderr, "Created FixedMixer at %p with output level %.3f\n", this, fOutputLevel);
+}
+
+FixedMixer::~FixedMixer() {
+    delete[] pChannels;
+    std::fprintf(stderr, "Destroyed FixedMixer at %p\n", this);
+}
+
+/**
+ * @inheritDoc
+ */
+Packet::ConstPtr FixedMixer::emit(size_t uIndex) {
+
+    if (!bEnabled || 0 == uBitMap) {
+        return Packet::getSilence();
+    }
+    if (useLast(uIndex)) {
+        return poLastPacket;
+    }
+    return emitNew();
+}
+
+Packet::ConstPtr FixedMixer::emitNew() {
+    if (!poLastPacket.get()) {
+        poLastPacket = Packet::create();
+    }
+    Packet* poOutput = poLastPacket.get();
+    poOutput->clear();
+    for (uint32 uChannelNum = 0; uChannelNum < uNumChannels; ++uChannelNum) {
+        if (auto poInput = pChannels[uChannelNum].poSource.get()) {
+            if (poInput->isEnabled()) {
+                poOutput->accumulate(
+                    poInput->emit(uLastIndex),
+                    pChannels[uChannelNum].fLevel * fOutputLevel
+                );
+            }
+        }
+    }
+    return poLastPacket;
+}
+
+FixedMixer* FixedMixer::reset() {
+    uLastIndex = 0;
+    uSamplePosition = 0;
+    if ( auto p = poLastPacket.get() ) {
+        p->clear();
+    }
+    std::fprintf(stderr, "FixedMixer %p reset()\n", this);
+
+    for (uint32 uChannelNum = 0; uChannelNum < uNumChannels; ++uChannelNum) {
+        if (auto poInput = pChannels[uChannelNum].poSource.get()) {
+            poInput->reset();
+        }
+    }
+    return this;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 SimpleMixer::SimpleMixer(float32 fOutputLevel): fOutputLevel(fOutputLevel) {
-    std::fprintf(stderr, "Created SimpleMixer at %p\n", this);
+    std::fprintf(stderr, "Created SimpleMixer at %p with output level %.3f\n", this, fOutputLevel);
 }
 
 SimpleMixer::~SimpleMixer() {
@@ -123,7 +247,7 @@ SimpleMixer* SimpleMixer::addInputStream(SimpleMixer::ChannelID uID, IStream::Pt
 /**
  *  Removes an input stream, if it is attached.
  */
-SimpleMixer* SimpleMixer::removeIputStream(SimpleMixer::ChannelID uID) {
+SimpleMixer* SimpleMixer::removeInputStream(SimpleMixer::ChannelID uID) {
     oChannels.erase(uID);
     return this;
 }
