@@ -21,6 +21,107 @@
 namespace MC64K::Synth::Audio::Signal::Operator {
 
 /**
+ * Simple mixer class. Mixes a fixed number of input channels into an output.
+ */
+class FixedMixer : public TStreamCommon, protected TPacketIndexAware {
+
+    private:
+        struct Channel {
+            IStream::Ptr poSource;
+            float32      fLevel;
+        };
+
+        Channel*    pChannels;
+        Packet::Ptr poLastPacket;
+
+        uint64      uBitMap;
+        float32     fOutputLevel;
+        uint32      uNumChannels;
+
+    public:
+        static constexpr uint32 const MIN_CHANNELS = 2;
+        static constexpr uint32 const MAX_CHANNELS = 64;
+
+        FixedMixer(uint32 uNumChannels, float32 fOutputLevel = 1.0f);
+        ~FixedMixer();
+
+        /**
+         * @inheritDoc
+         */
+        FixedMixer* reset() override;
+
+        /**
+         * @inheritDoc
+         */
+        Packet::ConstPtr emit(size_t uIndex = 0) override;
+
+        size_t getInputCount() const {
+            return uNumChannels;
+        }
+
+        /**
+         * Get the level for an input. Returns zero for any channel out of range.
+         *
+         * @param  uint32 uChannelNum
+         * @return float32
+         */
+        float32 getInputLevel(uint32 uChannelNum) const {
+            if (uChannelNum < uNumChannels) {
+                return pChannels[uChannelNum].fLevel;
+            }
+            return 0.0f;
+        }
+
+        /**
+         * Set the level for an input. If the input channel number is out of range, no
+         * action is taken.
+         *
+         * @param  uint32 uChannelNum
+         * @return FixedMixer*
+         */
+        FixedMixer* setInputLevel(uint32 uChannelNum, float32 fLevel) {
+            if (uChannelNum < uNumChannels) {
+                pChannels[uChannelNum].fLevel = fLevel;
+            }
+            return this;
+        }
+
+
+        /**
+         * Returns the current output level.
+         *
+         * @return float32
+         */
+        float32 getOutputLevel() const {
+            return fOutputLevel;
+        }
+
+        FixedMixer* setChannel(uint32 uChannelNum, IStream::Ptr const& poSource, float32 fLevel) {
+            if (uChannelNum < uNumChannels) {
+                pChannels[uChannelNum].poSource = poSource;
+                pChannels[uChannelNum].fLevel   = fLevel;
+                if (poSource.get()) {
+                    uBitMap |= 1 << uChannelNum;
+                } else {
+                    uBitMap &= ~(1 << uChannelNum);
+                }
+            }
+            return this;
+        }
+
+    protected:
+        /**
+         * Generate a new packet. This is called by emit() when it is determined that
+         * the packet we are being asked for is not the one we last calculated.
+         *
+         * @return Packet::ConstPtr
+         */
+        Packet::ConstPtr emitNew();
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
  * Simple mixer class. Mixes one or more channels into a single output
  * using assignable but non-automated volume controls.
  */
@@ -54,12 +155,12 @@ class SimpleMixer : public TStreamCommon, protected TPacketIndexAware {
         /**
          * @inheritDoc
          */
-        SimpleMixer* reset();
+        SimpleMixer* reset() override;
 
         /**
          * @inheritDoc
          */
-        Packet::ConstPtr emit(size_t uIndex = 0);
+        Packet::ConstPtr emit(size_t uIndex = 0) override;
 
         /**
          * Returns the number of input streams.
@@ -101,7 +202,7 @@ class SimpleMixer : public TStreamCommon, protected TPacketIndexAware {
         /**
          *  Removes an input stream, if it is attached.
          */
-        SimpleMixer* removeIputStream(ChannelID uID);
+        SimpleMixer* removeInputStream(ChannelID uID);
 
         /**
          * Get the level for an input. Returns zero for any unrecognised input ID.
@@ -130,6 +231,10 @@ class SimpleMixer : public TStreamCommon, protected TPacketIndexAware {
         Packet::ConstPtr emitNew();
 
 };
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 } // namespace
 

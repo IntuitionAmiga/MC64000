@@ -44,7 +44,7 @@ class Gamma : public IControlCurve {
         /**
          * @inheritDoc
          */
-        float32 map(float32 const);
+        float32 map(float32 const) const override;
 };
 
 }

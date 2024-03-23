@@ -32,7 +32,7 @@ Flat::~Flat() {
     std::fprintf(stderr, "Destoyed CC Flat at %p\n", this);
 }
 
-float32 Flat::map(float32 const) {
+float32 Flat::map(float32 const) const {
     return fFixed;
 }
 
@@ -64,7 +64,7 @@ Linear::~Linear() {
 /**
  * @inheritDoc
  */
-float32 Linear::map(float32 const fInput) {
+float32 Linear::map(float32 const fInput) const {
     float32 fValue = fInScale * (fInput - fInBase);
     return fOutBase + fValue * fOutScale;
 }
@@ -99,7 +99,7 @@ Gamma::~Gamma() {
 /**
  * @inheritDoc
  */
-float32 Gamma::map(float32 const fInput) {
+float32 Gamma::map(float32 const fInput) const {
     float32 fValue = fInScale * (fInput - fInBase);
     return fOutBase + (float32)std::pow(fValue, fGamma) * fOutScale;
 }
@@ -126,7 +126,7 @@ Octave::~Octave() {
 /**
  * @inheritDoc
  */
-float32 Octave::map(float32 const fInput) {
+float32 Octave::map(float32 const fInput) const {
     float32 fControlValue = fInput - fCentrePosition;
     return fCentreOutput * (float32)std::exp2(fScalePerOctave * fControlValue);
 }

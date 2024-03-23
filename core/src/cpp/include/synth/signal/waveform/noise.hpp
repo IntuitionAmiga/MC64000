@@ -38,14 +38,14 @@ class WhiteNoise : public IWaveform {
         /**
          * @inheritDoc
          */
-        float32 getPeriod() const {
+        float32 getPeriod() const override {
             return ONE;
         }
 
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* poInput);
+        Packet::Ptr map(Packet const* poInput) override;
 
         /**
          * Static version of the value function that can be called and inlined explicitly from
@@ -56,28 +56,28 @@ class WhiteNoise : public IWaveform {
         /**
          * @inheritDoc
          */
-        float32 value(float32 fTime) const {
+        float32 value(float32 fTime) const override {
             return valueAt(fTime);
         }
 
         /**
          * @inheritDoc
          */
-        FixedShape getShape() const {
+        FixedShape getShape() const override {
             return IWaveform::NOISE;
         };
 
         /**
          * @inheritDoc
          */
-        bool isDiscontinuous() const {
+        bool isDiscontinuous() const override {
             return false;
         }
 
         /**
          * @inheritDoc
          */
-        bool isAperiodic() const {
+        bool isAperiodic() const override {
             return true;
         }
 };

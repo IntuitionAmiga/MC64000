@@ -35,12 +35,12 @@ class LFO : public IOscillator {
         /**
          * @inheritDoc
          */
-        float32 clampFrequency(float32 fFrequency) const;
+        float32 clampFrequency(float32 fFrequency) const override;
 
         /**
          * @inheritDoc
          */
-        Packet::ConstPtr emitNew();
+        Packet::ConstPtr emitNew() override;
 
         /**
          * Common waveform input packet generation
@@ -88,7 +88,7 @@ class LFO : public IOscillator {
         /**
          * @inheritDoc
          */
-        LFO* reset() {
+        LFO* reset() override {
             if (bRetrigger) {
                 IOscillator::reset();
             }

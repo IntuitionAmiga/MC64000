@@ -84,14 +84,14 @@ class XForm : public IWaveform {
         /**
          * @inheritDoc
          */
-        float32 getPeriod() const {
+        float32 getPeriod() const override {
             return PERIOD;
         }
 
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* poInput) {
+        Packet::Ptr map(Packet const* poInput) override {
             Packet::Ptr    pReshaped = Packet::create();
             float32*       pDest     = pReshaped->afSamples;
             float32 const* pSrc      = poInput->afSamples;
@@ -134,21 +134,21 @@ class XForm : public IWaveform {
         /**
          * @inheritDoc
          */
-        FixedShape getShape() const {
+        FixedShape getShape() const override {
             return IWaveform::XFORM;
         };
 
         /**
          * @inheritDoc
          */
-        bool isDiscontinuous() const {
+        bool isDiscontinuous() const override {
             return true;
         }
 
         /**
          * @inheritDoc
          */
-        bool isAperiodic() const {
+        bool isAperiodic() const override {
             return false;
         }
 

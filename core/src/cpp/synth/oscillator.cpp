@@ -251,6 +251,7 @@ Sound* Sound::enable() {
     IOscillator::enable();
     if (isEnabled()) {
         IStream* poInput;
+
         if ((poInput = poPitchModulator.get())) {
             poInput->reset();
         }

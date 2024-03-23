@@ -46,9 +46,9 @@ class Shape : public IEnvelope {
         /**
          * @inheritDoc
          */
-        Packet::ConstPtr emit(size_t uIndex);
+        Packet::ConstPtr emit(size_t uIndex) override;
 
-        Shape* reset();
+        Shape* reset() override;
 
     private:
         /**

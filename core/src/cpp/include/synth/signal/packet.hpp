@@ -39,6 +39,8 @@ class Packet {
         typedef std::shared_ptr<Packet> Ptr;
         typedef std::shared_ptr<Packet const> ConstPtr;
 
+        class Pool;
+
         /**
          * Obtain a new instance
          *
@@ -108,13 +110,28 @@ class Packet {
         Packet* biasBy(float32 fValue);
 
         /**
-         * Fill a packet with the given value.
+         * Scale and adjust a packet by the given values
          *
          * @param  float32 fScale
          * @param  float32 fBias
          * @return this
          */
         Packet* scaleAndBiasBy(float32 fScale, float32 fBias);
+
+        /**
+         * Fill a packet with the scaled and adjusted content of the input packet.
+         *
+         * @param  float32 fScale
+         * @param  float32 fBias
+         * @return this
+         */
+
+        Packet* scaleAndBiasBy(Packet const* poPacket, float32 fScale, float32 fBias);
+
+        Packet* scaleAndBiasBy(ConstPtr const& poPacket, float32 fScale, float32 fBias) {
+            return scaleAndBiasBy(poPacket.get(), fScale, fBias);
+        }
+
 
         /**
          * Sum with the values of another packet
@@ -201,6 +218,7 @@ class Packet {
          * for proper handling.
          */
         class Deleter;
+        friend class Pool;
 };
 
 /**

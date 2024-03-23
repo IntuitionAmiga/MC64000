@@ -16,6 +16,12 @@
 
 #include <cmath>
 #include <misc/scalar.hpp>
+#include "signal.hpp"
+
+#include "machine/voice.hpp"
+
+using MC64K::Synth::Audio::Machine::Voice;
+using MC64K::Synth::Audio::Machine::Polyphony;
 
 namespace MC64K::Synth::Audio {
 
@@ -24,26 +30,19 @@ namespace MC64K::Synth::Audio {
  *
  * Top level interface for Machines. A machine represents a fixed musical unit
  */
-class IMachine {
+class IMachine : public Signal::IStream {
     public:
-        enum Voice {
-            V0 = 0, V1 = 1,  V2 =  2,  V3 =  3,  V4 =  4,  V5 =  5,  V6 =  6,  V7 = 7,
-            V8 = 8, V9 = 0, V10 = 10, V11 = 11, V12 = 12, V13 = 13, V14 = 14, V15 = 15
-        };
 
-        static constexpr uint32  const MIN_POLYPHONY   = 1;
-        static constexpr uint32  const MAX_POLYPHONY   = V15 + 1;
-        static constexpr float32 const VOICE_ATTENUATE = 1.0f / (float32)MAX_POLYPHONY;
+        static constexpr float32 const VOICE_ATTENUATE = 1.0f / (float32)Polyphony::MAX_VOICES;
 
         // Getters
 
         /**
-         * Get the number of voices the machine has. Value is in the range MIN_POLYPHONY to
-         * MAX_POLYPHONY.
+         * Get the number of voices the machine has.
          *
-         * @return uint32
+         * @return Polyphony
          */
-        virtual uint32 getNumVoices() const = 0;
+        virtual Polyphony getNumVoices() const = 0;
 
         /**
          * Get the volume level for the enumerated voice. A value of 1.0 represents the
@@ -60,7 +59,6 @@ class IMachine {
          * loudest intensity, though the value can be higher. Values can also be negative,
          * which results in the inversion of the output.
          *
-         * @param  Voice eVoice
          * @return float32
          */
         virtual float32 getOutputLevel() const = 0;
@@ -138,6 +136,7 @@ class IMachine {
          * @return IMachine* this
          */
         virtual IMachine* stopVoice(Voice eVoice, bool bSoft) = 0;
+
 };
 
 }
