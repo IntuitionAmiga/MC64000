@@ -43,8 +43,8 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
 
         virtual void configure() = 0;
 
-        IFilter(IStream::Ptr oStreamPtr, float32 fCutoff, float32 fResonance):
-            oInputStreamPtr{oStreamPtr},
+        IFilter(IStream::Ptr const& roStreamPtr, float32 fCutoff, float32 fResonance):
+            oInputStreamPtr{roStreamPtr},
             fFixedCutoff{fCutoff},
             fFixedResonance{fResonance} { }
 

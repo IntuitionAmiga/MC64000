@@ -42,7 +42,7 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
         static constexpr float32 const DEF_DURATION  = 0.05f;
 
         AutoMuteSilence(
-            IStream::Ptr poInput,
+            IStream::Ptr const& roInput,
             float32 fDuration = DEF_DURATION,
             float32 fRMSLevel = DEF_THRESHOLD
         );
@@ -93,7 +93,7 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
         /**
          * Set a new input stream. If the pointer is empty, the unit is disabled.
          */
-        AutoMuteSilence* setStream(IStream::Ptr const& poInput);
+        AutoMuteSilence* setStream(IStream::Ptr const& roInputPtr);
 
         /**
          * Get the enclosed stream
