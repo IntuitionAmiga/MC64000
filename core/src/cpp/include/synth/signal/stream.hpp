@@ -92,6 +92,10 @@ class IStream {
         typedef std::shared_ptr<IStream> Ptr;
         typedef std::shared_ptr<IStream const> ConstPtr;
 
+        // Many components cannot be constructed without an input stream reference but allow the input
+        // to be changed. We provide a static global pointer here which can be given to constructors in
+        // examples like this.
+        static Ptr NONE;
 };
 
 /**
@@ -102,7 +106,7 @@ class IStream {
  * that it has an appropriate Waveform before it can be enabled.
  *
  */
-class TStreamCommon : public IStream {
+class TStreamCommon : public virtual IStream {
 
     protected:
         Packet::Ptr poOutputPacket;

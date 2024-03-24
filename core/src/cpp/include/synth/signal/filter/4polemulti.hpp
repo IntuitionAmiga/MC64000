@@ -65,6 +65,7 @@ class FourPoleMultiMode : public IFilter  {
             return this;
         }
 
+        FourPoleMultiMode(Mode eMode, float32 fCutoff, float32 fResonance);
         FourPoleMultiMode(IStream::Ptr const& poInput, Mode eMode, float32 fCutoff, float32 fResonance);
         ~FourPoleMultiMode();
 

@@ -57,6 +57,7 @@ class DecayPulse : public IEnvelope {
          * @return this
          */
         DecayPulse* setHalflife(float32 fHalflife);
+
 };
 
 } // namespace

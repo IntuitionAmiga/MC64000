@@ -31,7 +31,6 @@ class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
         float32     fOutputBias;
         bool        bMuted;
     public:
-
         LevelAdjust(IStream::Ptr const& poSource, float32 fOutputLevel = 1.0f, float32 fOutputBias = 0.0f);
         ~LevelAdjust();
 
@@ -83,6 +82,10 @@ class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
             }
             return this;
         }
+
+        typedef std::shared_ptr<LevelAdjust> Ptr;
+        typedef std::shared_ptr<LevelAdjust const> ConstPtr;
+
 
     protected:
         /**

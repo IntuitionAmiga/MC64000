@@ -14,6 +14,9 @@
 #include <synth/signal/envelope/shape.hpp>
 #include <synth/signal/filter/4polemulti.hpp>
 
+#include <synth/machine/tbnan.hpp>
+
+
 using namespace MC64K::Machine;
 using namespace MC64K::Synth::Audio;
 //using namespace MC64K::StandardTestHost::Audio::IConfig;
@@ -387,8 +390,10 @@ int main(int const iArgCount, char const** aiArgVal) {
     }
     Signal::Packet::dumpStats();
 
-    testWaveforms();
-    Signal::Packet::dumpStats();
+    //Machine::TBNaN oBass;
+
+    //testWaveforms();
+    //Signal::Packet::dumpStats();
 
     return EXIT_SUCCESS;
 }

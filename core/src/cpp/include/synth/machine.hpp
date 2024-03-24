@@ -30,7 +30,7 @@ namespace MC64K::Synth::Audio {
  *
  * Top level interface for Machines. A machine represents a fixed musical unit
  */
-class IMachine : public Signal::IStream {
+class IMachine : public virtual Signal::IStream {
     public:
 
         static constexpr float32 const VOICE_ATTENUATE = 1.0f / (float32)Polyphony::MAX_VOICES;
