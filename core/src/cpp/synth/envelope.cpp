@@ -159,7 +159,7 @@ namespace MC64K::Synth::Audio::Signal::Envelope {
  * @inheritDoc
  */
 Shape::Shape(float32 fInitial, Point const* aoInputPoints, size_t uNumInputPoints):
-    aoPoints(0),
+    poPoints(0),
     uNumPoints(0)
 {
     std::fprintf(stderr, "Created Shape at %p with %lu vertices\n", this, uNumInputPoints);
@@ -198,7 +198,7 @@ Packet::ConstPtr Shape::emit(size_t uIndex) {
     }
     if (uSamplePosition > uFinalSamplePosition) {
         uSamplePosition += PACKET_SIZE;
-        return pFinalPacket;
+        return oFinalPacketPtr;
     }
 
     // Does the next packet contain a vertex?
@@ -228,16 +228,16 @@ Packet::ConstPtr Shape::emit(size_t uIndex) {
  */
 void Shape::processPointList(float32 fInitial, Point const* aoInputPoints, size_t uNumInputPoints) {
     uNumPoints = uNumInputPoints + 1;
-    aoPoints.reset(new Point[uNumPoints]);
+    poPoints.reset(new Point[uNumPoints]);
     aoProcessPoints.reset(new ProcessPoint[uNumPoints + 1]);
-    aoPoints[0].fLevel = fInitial;
-    aoPoints[0].fTime  = 0.0f;
-    std::printf("\t[%.2f, %.2f]\n", aoPoints[0].fLevel, aoPoints[0].fTime);
+    poPoints[0].fLevel = fInitial;
+    poPoints[0].fTime  = 0.0f;
+    std::printf("\t[%.2f, %.2f]\n", poPoints[0].fLevel, poPoints[0].fTime);
     for (size_t u = 0; u < uNumInputPoints; ++u) {
         float32 fTime  = aoInputPoints[u].fTime;
-        aoPoints[u + 1].fLevel = aoInputPoints[u].fLevel;
-        aoPoints[u + 1].fTime  = (fTime < MIN_TIME) ? MIN_TIME : ((fTime > MAX_TIME) ? MAX_TIME : fTime);
-        std::printf("\t[%.2f, %.2f]\n", aoPoints[u + 1].fLevel, aoPoints[u + 1].fTime);
+        poPoints[u + 1].fLevel = aoInputPoints[u].fLevel;
+        poPoints[u + 1].fTime  = (fTime < MIN_TIME) ? MIN_TIME : ((fTime > MAX_TIME) ? MAX_TIME : fTime);
+        std::printf("\t[%.2f, %.2f]\n", poPoints[u + 1].fLevel, poPoints[u + 1].fTime);
     }
     bParameterChanged = true;
     pNextProcessPoint = aoProcessPoints.get();
@@ -249,9 +249,9 @@ void Shape::processPointList(float32 fInitial, Point const* aoInputPoints, size_
 void Shape::recalculate() {
     float64 fTimeTotal = 0.0f;
     for (size_t u = 0; u < uNumPoints; ++u) {
-        fTimeTotal += aoPoints[u].fTime * fTimeScale;
+        fTimeTotal += poPoints[u].fTime * fTimeScale;
         aoProcessPoints[u].uSamplePosition = (size_t)(fTimeTotal * PROCESS_RATE);
-        aoProcessPoints[u].fLevel = aoPoints[u].fLevel * fLevelScale;
+        aoProcessPoints[u].fLevel = poPoints[u].fLevel * fLevelScale;
     }
 
     size_t uLastPoint = uNumPoints - 1;
@@ -262,10 +262,10 @@ void Shape::recalculate() {
     aoProcessPoints[uNumPoints].uSamplePosition += 16; // will never be reached.
 
     // Fill the final packet with the last level value.
-    if (!pFinalPacket.get()) {
-        pFinalPacket = Packet::create();
+    if (!oFinalPacketPtr.get()) {
+        oFinalPacketPtr = Packet::create();
     }
-    pFinalPacket->fillWith((float32)aoProcessPoints[uLastPoint].fLevel);
+    oFinalPacketPtr->fillWith((float32)aoProcessPoints[uLastPoint].fLevel);
 
     uFinalSamplePosition = aoProcessPoints[uLastPoint].uSamplePosition;
 

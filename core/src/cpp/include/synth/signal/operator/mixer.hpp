@@ -27,7 +27,7 @@ class FixedMixer : public TStreamCommon, protected TPacketIndexAware {
 
     private:
         struct Channel {
-            IStream::Ptr poSource;
+            IStream::Ptr oSourcePtr;
             float32      fLevel;
         };
 
@@ -96,11 +96,11 @@ class FixedMixer : public TStreamCommon, protected TPacketIndexAware {
             return fOutputLevel;
         }
 
-        FixedMixer* setChannel(uint32 uChannelNum, IStream::Ptr const& poSource, float32 fLevel) {
+        FixedMixer* setChannel(uint32 uChannelNum, IStream::Ptr const& roSourcePtr, float32 fLevel) {
             if (uChannelNum < uNumChannels) {
-                pChannels[uChannelNum].poSource = poSource;
+                pChannels[uChannelNum].oSourcePtr = roSourcePtr;
                 pChannels[uChannelNum].fLevel   = fLevel;
-                if (poSource.get()) {
+                if (roSourcePtr.get()) {
                     uBitMap |= 1 << uChannelNum;
                 } else {
                     uBitMap &= ~(1 << uChannelNum);
@@ -138,7 +138,7 @@ class SimpleMixer : public TStreamCommon, protected TPacketIndexAware {
          * Structure that represents an input channel and level.
          */
         struct Channel {
-            IStream::Ptr poSource;
+            IStream::Ptr oSourcePtr;
             float32      fLevel;
         };
 
@@ -193,11 +193,11 @@ class SimpleMixer : public TStreamCommon, protected TPacketIndexAware {
          * no action is taken.
          *
          * @param  ChannelID uID
-         * @param  IStream::Ptr poSource
+         * @param  IStream::Ptr oSourcePtr
          * @param  float32 fLevel
          * @return this
          */
-        SimpleMixer* addInputStream(ChannelID uID, IStream::Ptr const& poSource, float32 fLevel);
+        SimpleMixer* addInputStream(ChannelID uID, IStream::Ptr const& roSourcePtr, float32 fLevel);
 
         /**
          *  Removes an input stream, if it is attached.

@@ -66,9 +66,9 @@ IOscillator* IOscillator::reset() {
 /**
  * @inheritDoc
  */
-IOscillator* IOscillator::setWaveform(IWaveform::Ptr const& pNewWaveform) {
-    if (pNewWaveform.get()) {
-        oWaveformPtr    = pNewWaveform->copy();
+IOscillator* IOscillator::setWaveform(IWaveform::Ptr const& roNewWaveformPtr) {
+    if (roNewWaveformPtr.get()) {
+        oWaveformPtr    = roNewWaveformPtr->copy();
         fWaveformPeriod = oWaveformPtr->getPeriod();
         fTimeStep       = fWaveformPeriod * SAMPLE_PERIOD;
         fScaleVal       = fTimeStep * fFrequency;

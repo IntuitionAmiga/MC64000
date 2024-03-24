@@ -34,7 +34,7 @@ class Shape : public IEnvelope {
             float32 fTime;
         };
 
-        Shape(float32 fInitial, Point const* aoPoints, size_t uNumPoints);
+        Shape(float32 fInitial, Point const* poPoints, size_t uNumPoints);
 
         /**
          * Convenience constructor that allows brace initialised input
@@ -60,9 +60,9 @@ class Shape : public IEnvelope {
             float64 fLevel;
         };
 
-        Packet::Ptr   pFinalPacket;
+        Packet::Ptr   oFinalPacketPtr;
 
-        std::unique_ptr<Point[]>        aoPoints;
+        std::unique_ptr<Point[]>        poPoints;
         std::unique_ptr<ProcessPoint[]> aoProcessPoints;
 
         ProcessPoint* pNextProcessPoint;

@@ -28,7 +28,7 @@ namespace MC64K::Synth::Audio::Signal::Operator {
 class AutoMuteSilence : public IStream, protected TPacketIndexAware {
 
     private:
-        IStream::Ptr poSource;
+        IStream::Ptr oSourcePtr;
         float64 fThresholdSquared;
         float64 fLastTotalSquared;
         uint32  uSilentPacketLimit;
@@ -99,7 +99,7 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
          * Get the enclosed stream
          */
         IStream::Ptr getStream() const {
-            return poSource;
+            return oSourcePtr;
         }
 
 };
