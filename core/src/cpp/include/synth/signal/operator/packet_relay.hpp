@@ -34,7 +34,7 @@ class PacketRelay : public TStreamCommon {
          * Set a packet to relay
          */
         PacketRelay* setPacket(Packet::Ptr const& poPacket) {
-            poOutputPacket = poPacket;
+            oOutputPacketPtr = poPacket;
             return this;
         }
 

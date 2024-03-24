@@ -468,10 +468,10 @@ PacketRelay::~PacketRelay() {
  */
 Packet::ConstPtr PacketRelay::emit(size_t uIndex) {
     uSamplePosition += PACKET_SIZE;
-    if (!poOutputPacket.get()) {
+    if (!oOutputPacketPtr.get()) {
         return Packet::getSilence();
     }
-    return poOutputPacket;
+    return oOutputPacketPtr;
 }
 
 }

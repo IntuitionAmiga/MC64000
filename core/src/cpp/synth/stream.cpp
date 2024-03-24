@@ -34,7 +34,7 @@ bool TStreamCommon::canEnable() const {
 IStream* TStreamCommon::enable() {
     if (!bEnabled) {
         if (canEnable()) {
-            poOutputPacket = Packet::create();
+            oOutputPacketPtr = Packet::create();
             bEnabled = true;
             std::fprintf(stderr, "\tEnabled stream %p\n", this);
         } else {
@@ -52,7 +52,7 @@ IStream* TStreamCommon::enable() {
 IStream* TStreamCommon::disable() {
     if (bEnabled) {
         bEnabled = false;
-        poOutputPacket.reset();
+        oOutputPacketPtr.reset();
         std::fprintf(stderr, "\tDisabled stream %p\n", this);
     } else {
         std::fprintf(stderr, "\tStream %p already disabled\n", this);

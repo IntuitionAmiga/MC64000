@@ -109,7 +109,7 @@ class IStream {
 class TStreamCommon : public virtual IStream {
 
     protected:
-        Packet::Ptr poOutputPacket;
+        Packet::Ptr oOutputPacketPtr;
         size_t      uSamplePosition = 0;
         bool        bEnabled        = false;
 

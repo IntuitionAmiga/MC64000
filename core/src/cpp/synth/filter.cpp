@@ -131,10 +131,10 @@ Packet::ConstPtr FourPoleMultiMode::emit(uint64 uIndex) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return poOutputPacket;
+        return oOutputPacketPtr;
     }
     cProcess(this);
-    return poOutputPacket;
+    return oOutputPacketPtr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,7 +200,7 @@ Packet::ConstPtr FourPoleMultiMode::resonanceModEnv(FourPoleMultiMode* poFilter)
  */
 void FourPoleMultiMode::lowPassFixedCFixedQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput    = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput   = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput   = poFilter->oOutputPacketPtr->afSamples;
     float64        fResonance = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         poFilter->filterSample(afInput[u], poFilter->fFixedCutoff, fResonance);
@@ -213,7 +213,7 @@ void FourPoleMultiMode::lowPassFixedCFixedQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::lowPassVaryingCFixedQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput    = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput   = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput   = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afCutoff   = poFilter->cCutoff(poFilter)->afSamples;
     float64        fResonance = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -227,7 +227,7 @@ void FourPoleMultiMode::lowPassVaryingCFixedQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::lowPassFixedCFVaryingQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput     = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput    = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput    = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afResonance = poFilter->cResonance(poFilter)->afSamples;
     float64        fResonance  = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -241,7 +241,7 @@ void FourPoleMultiMode::lowPassFixedCFVaryingQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::lowPassVaryingCVaryingQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput     = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput    = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput    = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afCutoff    = poFilter->cCutoff(poFilter)->afSamples;
     float32 const* afResonance = poFilter->cResonance(poFilter)->afSamples;
     float64        fResonance  = poFilter->fFixedResonance * SCALE_MAX_Q;
@@ -262,7 +262,7 @@ void FourPoleMultiMode::lowPassVaryingCVaryingQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::hiPassFixedCFixedQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput    = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput   = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput   = poFilter->oOutputPacketPtr->afSamples;
     float64        fResonance = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         poFilter->filterSample(afInput[u], poFilter->fFixedCutoff, fResonance);
@@ -275,7 +275,7 @@ void FourPoleMultiMode::hiPassFixedCFixedQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::hiPassVaryingCFixedQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput    = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput   = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput   = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afCutoff   = poFilter->cCutoff(poFilter)->afSamples;
     float64        fResonance = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -290,7 +290,7 @@ void FourPoleMultiMode::hiPassVaryingCFixedQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::hiPassFixedCFVaryingQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput     = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput    = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput    = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afResonance = poFilter->cResonance(poFilter)->afSamples;
     float64        fResonance  = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -304,7 +304,7 @@ void FourPoleMultiMode::hiPassFixedCFVaryingQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::hiPassVaryingCVaryingQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput     = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput    = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput    = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afCutoff    = poFilter->cCutoff(poFilter)->afSamples;
     float32 const* afResonance = poFilter->cResonance(poFilter)->afSamples;
     float64        fResonance  = poFilter->fFixedResonance * SCALE_MAX_Q;
@@ -325,7 +325,7 @@ void FourPoleMultiMode::hiPassVaryingCVaryingQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::bandPassFixedCFixedQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput    = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput   = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput   = poFilter->oOutputPacketPtr->afSamples;
     float64        fResonance = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         poFilter->filterSample(afInput[u], poFilter->fFixedCutoff, fResonance);
@@ -338,7 +338,7 @@ void FourPoleMultiMode::bandPassFixedCFixedQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::bandPassVaryingCFixedQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput    = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput   = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput   = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afCutoff   = poFilter->cCutoff(poFilter)->afSamples;
     float64        fResonance = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -352,7 +352,7 @@ void FourPoleMultiMode::bandPassVaryingCFixedQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::bandPassFixedCFVaryingQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput     = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput    = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput    = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afResonance = poFilter->cResonance(poFilter)->afSamples;
     float64        fResonance  = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -366,7 +366,7 @@ void FourPoleMultiMode::bandPassFixedCFVaryingQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::bandPassVaryingCVaryingQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput     = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput    = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput    = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afCutoff    = poFilter->cCutoff(poFilter)->afSamples;
     float32 const* afResonance = poFilter->cResonance(poFilter)->afSamples;
     float64        fResonance  = poFilter->fFixedResonance * SCALE_MAX_Q;
@@ -387,7 +387,7 @@ void FourPoleMultiMode::bandPassVaryingCVaryingQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::bandRejectFixedCFixedQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput    = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput   = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput   = poFilter->oOutputPacketPtr->afSamples;
     float64        fResonance = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         poFilter->filterSample(afInput[u], poFilter->fFixedCutoff, fResonance);
@@ -400,7 +400,7 @@ void FourPoleMultiMode::bandRejectFixedCFixedQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::bandRejectVaryingCFixedQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput    = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput   = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput   = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afCutoff   = poFilter->cCutoff(poFilter)->afSamples;
     float64        fResonance = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -414,7 +414,7 @@ void FourPoleMultiMode::bandRejectVaryingCFixedQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::bandRejectFixedCFVaryingQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput     = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput    = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput    = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afResonance = poFilter->cResonance(poFilter)->afSamples;
     float64        fResonance  = poFilter->fFixedResonance * SCALE_MAX_Q;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -428,7 +428,7 @@ void FourPoleMultiMode::bandRejectFixedCFVaryingQ(FourPoleMultiMode* poFilter) {
  */
 void FourPoleMultiMode::bandRejectVaryingCVaryingQ(FourPoleMultiMode* poFilter) {
     float32 const* afInput     = poFilter->poInputStream->emit(poFilter->uLastIndex)->afSamples;
-    float32*       afOutput    = poFilter->poOutputPacket->afSamples;
+    float32*       afOutput    = poFilter->oOutputPacketPtr->afSamples;
     float32 const* afCutoff    = poFilter->cCutoff(poFilter)->afSamples;
     float32 const* afResonance = poFilter->cResonance(poFilter)->afSamples;
     float64        fResonance  = poFilter->fFixedResonance * SCALE_MAX_Q;

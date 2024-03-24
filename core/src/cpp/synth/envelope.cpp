@@ -101,18 +101,18 @@ Packet::ConstPtr DecayPulse::emit(size_t uIndex) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return poOutputPacket;
+        return oOutputPacketPtr;
     }
     if (bParameterChanged) {
         recalculateDecay();
     }
-    float32* afSamples = poOutputPacket->afSamples;
+    float32* afSamples = oOutputPacketPtr->afSamples;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         fCurrent *= fDecayPerSample;
         afSamples[u] = (float32)fCurrent + fTarget;
     }
     uSamplePosition += PACKET_SIZE;
-    return poOutputPacket;
+    return oOutputPacketPtr;
 }
 
 /**
@@ -191,7 +191,7 @@ Packet::ConstPtr Shape::emit(size_t uIndex) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return poOutputPacket;
+        return oOutputPacketPtr;
     }
     if (bParameterChanged) {
         recalculate();
@@ -204,7 +204,7 @@ Packet::ConstPtr Shape::emit(size_t uIndex) {
     // Does the next packet contain a vertex?
     if (uSamplePosition + PACKET_SIZE > pNextProcessPoint->uSamplePosition) {
         // version that checks for interpolant change. There could even be more than one...
-        float32* afSamples = poOutputPacket->afSamples;
+        float32* afSamples = oOutputPacketPtr->afSamples;
         for (unsigned u = 0; u < PACKET_SIZE; ++u) {
             if (pNextProcessPoint->uSamplePosition == uSamplePosition) {
                 updateInterpolants();
@@ -214,13 +214,13 @@ Packet::ConstPtr Shape::emit(size_t uIndex) {
         }
     } else {
         // version that doesn't check for interpolant change
-        float32* afSamples = poOutputPacket->afSamples;
+        float32* afSamples = oOutputPacketPtr->afSamples;
         for (unsigned u = 0; u < PACKET_SIZE; ++u) {
             afSamples[u] = (float32)(fYOffset + (float64)(++uSamplePosition - uXOffset) * fGradient);
         }
     }
 
-    return poOutputPacket;
+    return oOutputPacketPtr;
 }
 
 /**
