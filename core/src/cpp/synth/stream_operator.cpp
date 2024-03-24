@@ -25,11 +25,11 @@
 namespace MC64K::Synth::Audio::Signal::Operator {
 
 LevelAdjust::LevelAdjust(
-    IStream::Ptr const& poSource,
+    IStream::Ptr const& roSourceInputPtr,
     float32 fInitialOutputLevel,
     float32 fInitialOutputBias
 ):
-    poSource{poSource},
+    oSourceInputPtr{roSourceInputPtr},
     fOutputLevel{0.0f},
     fOutputBias{fInitialOutputBias},
     bMuted{false}
@@ -43,7 +43,7 @@ LevelAdjust::~LevelAdjust() {
 }
 
 bool LevelAdjust::canEnable() const {
-    return poSource.get() != nullptr;
+    return oSourceInputPtr.get() != nullptr;
 }
 
 /**
@@ -54,26 +54,26 @@ Packet::ConstPtr LevelAdjust::emit(size_t uIndex) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return poLastPacket;
+        return oLastPacketPtr;
     }
     return emitNew();
 }
 
 Packet::ConstPtr LevelAdjust::emitNew() {
-    if (!poLastPacket.get()) {
-        poLastPacket = Packet::create();
+    if (!oLastPacketPtr.get()) {
+        oLastPacketPtr = Packet::create();
     }
-    poLastPacket->scaleAndBiasBy(poSource->emit(uLastIndex), fOutputLevel, fOutputBias);
-    return poLastPacket;
+    oLastPacketPtr->scaleAndBiasBy(oSourceInputPtr->emit(uLastIndex), fOutputLevel, fOutputBias);
+    return oLastPacketPtr;
 }
 
 LevelAdjust* LevelAdjust::reset() {
     uLastIndex = 0;
     uSamplePosition = 0;
-    if ( auto p = poLastPacket.get() ) {
+    if ( auto p = oLastPacketPtr.get() ) {
         p->clear();
     }
-    if ( auto p = poSource.get() ) {
+    if ( auto p = oSourceInputPtr.get() ) {
         p->reset();
     }
     return this;

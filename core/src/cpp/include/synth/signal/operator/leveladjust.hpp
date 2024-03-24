@@ -24,14 +24,14 @@ namespace MC64K::Synth::Audio::Signal::Operator {
  */
 class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
     private:
-        IStream::Ptr    poSource;
-        Packet::Ptr     poLastPacket;
+        IStream::Ptr    oSourceInputPtr;
+        Packet::Ptr     oLastPacketPtr;
 
         float32     fOutputLevel;
         float32     fOutputBias;
         bool        bMuted;
     public:
-        LevelAdjust(IStream::Ptr const& poSource, float32 fOutputLevel = 1.0f, float32 fOutputBias = 0.0f);
+        LevelAdjust(IStream::Ptr const& roSourceInputPtr, float32 fOutputLevel = 1.0f, float32 fOutputBias = 0.0f);
         ~LevelAdjust();
 
         /**
@@ -50,7 +50,7 @@ class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
         Packet::ConstPtr emit(size_t uIndex = 0) override;
 
         size_t getPosition() const override {
-            if ( auto p = poSource.get() ) {
+            if ( auto p = oSourceInputPtr.get() ) {
                 return p->getPosition();
             }
             return uSamplePosition;
@@ -75,10 +75,10 @@ class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
             return this;
         }
 
-        LevelAdjust* setSourceInput(IStream::Ptr const& poNewSource) {
-            poSource = poNewSource;
+        LevelAdjust* setSourceInput(IStream::Ptr const& roNewSourcePtr) {
+            oSourceInputPtr = roNewSourcePtr;
             if (bEnabled) {
-                bEnabled = (poSource.get() != nullptr);
+                bEnabled = (oSourceInputPtr.get() != nullptr);
             }
             return this;
         }
