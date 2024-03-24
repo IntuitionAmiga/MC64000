@@ -25,11 +25,11 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
 class IFilter : public TStreamCommon, protected TPacketIndexAware  {
 
     protected:
-        IStream::Ptr   poInputStream;
-        IStream::Ptr   poCutoffModulator;
-        IStream::Ptr   poResonanceModulator;
-        IEnvelope::Ptr poCutoffEnvelope;
-        IEnvelope::Ptr poResonanceEnvelope;
+        IStream::Ptr   oInputStreamPtr;
+        IStream::Ptr   oCutoffModulatorPtr;
+        IStream::Ptr   oResonanceModulatorPtr;
+        IEnvelope::Ptr oCutoffEnvelopePtr;
+        IEnvelope::Ptr oResonanceEnvelopePtr;
 
         float64 fFixedCutoff;
         float64 fFixedResonance;
@@ -43,8 +43,8 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
 
         virtual void configure() = 0;
 
-        IFilter(IStream::Ptr poStream, float32 fCutoff, float32 fResonance):
-            poInputStream{poStream},
+        IFilter(IStream::Ptr oStreamPtr, float32 fCutoff, float32 fResonance):
+            oInputStreamPtr{oStreamPtr},
             fFixedCutoff{fCutoff},
             fFixedResonance{fResonance} { }
 
@@ -63,9 +63,9 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
 
         IFilter* enable() override;
 
-        IFilter* setInputStream(IStream::Ptr const& poStream) {
-            poInputStream = poStream;
-            if (!poInputStream.get()) {
+        IFilter* setInputStream(IStream::Ptr const& roInputStreamPtr) {
+            oInputStreamPtr = roInputStreamPtr;
+            if (!oInputStreamPtr.get()) {
                 disable();
             }
             return this;
@@ -89,8 +89,8 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
          * @param  IStream::Ptr poCutoffControl
          * @return this
          */
-        IFilter* setCutoffModulator(IStream::Ptr const& poNewCutoffModulator) {
-            poCutoffModulator = poNewCutoffModulator;
+        IFilter* setCutoffModulator(IStream::Ptr const& roNewCutoffModulatorPtr) {
+            oCutoffModulatorPtr = roNewCutoffModulatorPtr;
             configure();
             return this;
         }
@@ -99,8 +99,8 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
          * @param IEnvelope::Ptr
          * return this
          */
-        IFilter* setCutoffEnvelope(IEnvelope::Ptr const& poNewEnvelope) {
-            poCutoffEnvelope = poNewEnvelope;
+        IFilter* setCutoffEnvelope(IEnvelope::Ptr const& roNewEnvelopePtr) {
+            oCutoffEnvelopePtr = roNewEnvelopePtr;
             configure();
             return this;
         }
@@ -126,8 +126,8 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
          * @param  IStream::Ptr poResonanceControl
          * @return this
          */
-        IFilter* setResonanceModulator(IStream::Ptr const& poNewResonanceModulator) {
-            poResonanceModulator = poNewResonanceModulator;
+        IFilter* setResonanceModulator(IStream::Ptr const& roNewResonanceModulatorPtr) {
+            oResonanceModulatorPtr = roNewResonanceModulatorPtr;
             configure();
             return this;
         }
@@ -136,8 +136,8 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
          * @param IEnvelope::Ptr
          * return this
          */
-        IFilter* setResonanceEnvelope(IEnvelope::Ptr const& poNewEnvelope) {
-            poResonanceEnvelope = poNewEnvelope;
+        IFilter* setResonanceEnvelope(IEnvelope::Ptr const& roNewEnvelopePtr) {
+            oResonanceEnvelopePtr = roNewEnvelopePtr;
             configure();
             return this;
         }

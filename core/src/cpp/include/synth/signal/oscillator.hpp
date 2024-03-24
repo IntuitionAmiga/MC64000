@@ -31,7 +31,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
     protected:
         static constexpr uint64 const SAMPLE_COUNTER_MASK = 0xFFF;
 
-        IWaveform::Ptr poWaveform;
+        IWaveform::Ptr oWaveformPtr;
         float64        fTimeStep;
         float64        fScaleVal;
         float32        fFrequency;
@@ -90,12 +90,12 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
 
     public:
         /**
-         * @param IWaveform::Ptr poWaveform
+         * @param IWaveform::Ptr roWaveformPtr
          * @param float32        fFrequency
          * @param float32        fPhase
          */
         IOscillator(
-            IWaveform::Ptr const& poWaveform,
+            IWaveform::Ptr const& roWaveformPtr,
             float32 fFrequency = 0.0f,
             float32 fPhase     = 0.0f
         );
@@ -109,7 +109,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          * @param  IWaveform::Ptr poWaveform
          * @return this
          */
-        IOscillator* setWaveform(IWaveform::Ptr const& poWaveform);
+        IOscillator* setWaveform(IWaveform::Ptr const& roWaveformPtr);
 
         /**
          * Set the baseline frequency to emit.

@@ -31,7 +31,7 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
  * @inheritDoc
  */
 IOscillator::IOscillator(
-    IWaveform::Ptr const& poWaveform,
+    IWaveform::Ptr const& roWaveformPtr,
     float32 fInitialFrequency,
     float32 fInitialPhase
 ):
@@ -41,7 +41,7 @@ IOscillator::IOscillator(
     fWaveformPeriod(1.0f)
 {
     setFrequency(fInitialFrequency);
-    setWaveform(poWaveform);
+    setWaveform(roWaveformPtr);
 }
 
 /**
@@ -50,7 +50,7 @@ IOscillator::IOscillator(
  * We only allow the oscillator to be enabled if it has a waveform.
  */
 bool IOscillator::canEnable() const {
-    return poWaveform.get() != 0;
+    return oWaveformPtr.get() != 0;
 }
 
 /**
@@ -68,13 +68,13 @@ IOscillator* IOscillator::reset() {
  */
 IOscillator* IOscillator::setWaveform(IWaveform::Ptr const& pNewWaveform) {
     if (pNewWaveform.get()) {
-        poWaveform       = pNewWaveform->copy();
-        fWaveformPeriod = poWaveform->getPeriod();
+        oWaveformPtr       = pNewWaveform->copy();
+        fWaveformPeriod = oWaveformPtr->getPeriod();
         fTimeStep       = fWaveformPeriod * SAMPLE_PERIOD;
         fScaleVal       = fTimeStep * fFrequency;
         bAperiodic      = false;
     } else {
-        poWaveform       = 0;
+        oWaveformPtr       = 0;
         fWaveformPeriod = 1.0f;
         fTimeStep       = fWaveformPeriod * SAMPLE_PERIOD;
         bAperiodic      = false;
@@ -114,12 +114,12 @@ Packet::ConstPtr IOscillator::emit(size_t uIndex) {
 namespace MC64K::Synth::Audio::Signal::Oscillator {
 
 LFO::LFO(
-    IWaveform::Ptr const& poWaveform,
+    IWaveform::Ptr const& roWaveformPtr,
     float32 fFrequency,
     float32 fDepth,
     bool    bRetrigger
 ) :
-    IOscillator(poWaveform, fFrequency, 0.0f),
+    IOscillator(roWaveformPtr, fFrequency, 0.0f),
     fDepth(fDepth),
     fBias(0.0f),
     bRetrigger(bRetrigger)
@@ -161,7 +161,7 @@ Packet const* LFO::generateCommon() {
  * @inheritDoc
  */
 Packet::ConstPtr LFO::emitNew() {
-    oOutputPacketPtr = poWaveform->map(generateCommon());
+    oOutputPacketPtr = oWaveformPtr->map(generateCommon());
     oOutputPacketPtr->scaleBy(fDepth);
     return oOutputPacketPtr;
 }
@@ -171,7 +171,7 @@ Packet::ConstPtr LFO::emitNew() {
  * @inheritDoc
  */
 Packet::ConstPtr LFOZeroToOne::emitNew() {
-    oOutputPacketPtr = poWaveform->map(generateCommon());
+    oOutputPacketPtr = oWaveformPtr->map(generateCommon());
     oOutputPacketPtr->scaleAndBiasBy(Waveform::HALF * fDepth, Waveform::HALF * fDepth);
     return oOutputPacketPtr;
 }
@@ -180,7 +180,7 @@ Packet::ConstPtr LFOZeroToOne::emitNew() {
  * @inheritDoc
  */
 Packet::ConstPtr LFOOneToZero::emitNew() {
-    oOutputPacketPtr = poWaveform->map(generateCommon());
+    oOutputPacketPtr = oWaveformPtr->map(generateCommon());
     oOutputPacketPtr->scaleAndBiasBy(
         Waveform::HALF * fDepth,
         Waveform::ONE - Waveform::HALF * fDepth
@@ -196,11 +196,11 @@ Packet::ConstPtr LFOOneToZero::emitNew() {
 namespace MC64K::Synth::Audio::Signal::Oscillator {
 
 Sound::Sound(
-    IWaveform::Ptr const& poWaveform,
+    IWaveform::Ptr const& roWaveformPtr,
     float32 fFrequency,
     float32 fPhase
 ) :
-    IOscillator(poWaveform, fFrequency, fPhase)
+    IOscillator(roWaveformPtr, fFrequency, fPhase)
 {
     setFrequency(fFrequency);
     configureInputStage();
@@ -364,7 +364,7 @@ void Sound::populateOutputPacketWithFeedback(Packet const* poLevelPacket) {
     float32        fIndex        = fPhaseFeedbackIndex * FEEDBACK_SCALE;
     float32*       pSamples      = oOutputPacketPtr->afSamples;
     float32 const* pLevelSamples = poLevelPacket->afSamples;
-    IWaveform*     pWave         = poWaveform.get();
+    IWaveform*     pWave         = oWaveformPtr.get();
 
     float32 fFb1 = fFeedback1;
     float32 fFb2 = fFeedback2;
@@ -561,12 +561,12 @@ char const* aInputStageNames[8] = {
  * @inheritDoc
  */
 void Sound::configureInputStage() {
-    if (poWaveform.get() && poWaveform->isAperiodic()) {
+    if (oWaveformPtr.get() && oWaveformPtr->isAperiodic()) {
         cInput = &inputAperiodic;
         std::fprintf(
             stderr,
             "Oscillator::Sound::configureInputStage(): Waveform %d is aperiodic\n",
-            poWaveform->getShape()
+            oWaveformPtr->getShape()
         );
 
     } else {
@@ -588,7 +588,7 @@ void Sound::configureInputStage() {
  * @inheritDoc
  */
 void Sound::outputDirect(Sound* poOscillator) {
-    poOscillator->oOutputPacketPtr = poOscillator->poWaveform->map(
+    poOscillator->oOutputPacketPtr = poOscillator->oWaveformPtr->map(
         poOscillator->oOutputPacketPtr.get()
     );
 }
@@ -597,7 +597,7 @@ void Sound::outputDirect(Sound* poOscillator) {
  * @inheritDoc
  */
 void Sound::outputLevelMod(Sound* poOscillator) {
-    poOscillator->oOutputPacketPtr = poOscillator->poWaveform->map(
+    poOscillator->oOutputPacketPtr = poOscillator->oWaveformPtr->map(
         poOscillator->oOutputPacketPtr.get()
     );
     Packet::Ptr pOutputLevel = poOscillator
@@ -614,7 +614,7 @@ void Sound::outputLevelMod(Sound* poOscillator) {
  * @inheritDoc
  */
 void Sound::outputLevelEnv(Sound* poOscillator) {
-    poOscillator->oOutputPacketPtr = poOscillator->poWaveform->map(
+    poOscillator->oOutputPacketPtr = poOscillator->oWaveformPtr->map(
         poOscillator->oOutputPacketPtr.get()
     );
     poOscillator->oOutputPacketPtr->modulateWith(
@@ -628,7 +628,7 @@ void Sound::outputLevelEnv(Sound* poOscillator) {
  * @inheritDoc
  */
 void Sound::outputLevelModEnv(Sound* poOscillator) {
-    poOscillator->oOutputPacketPtr = poOscillator->poWaveform->map(
+    poOscillator->oOutputPacketPtr = poOscillator->oWaveformPtr->map(
         poOscillator->oOutputPacketPtr.get()
     );
     Packet::Ptr pOutputLevel = poOscillator
@@ -653,7 +653,7 @@ void Sound::outputLevelModEnv(Sound* poOscillator) {
 void Sound::outputFeedback(Sound* poOscillator) {
     float32    fIndex   = poOscillator->fPhaseFeedbackIndex * FEEDBACK_SCALE;
     float32*   pSamples = poOscillator->oOutputPacketPtr->afSamples;
-    IWaveform* pWave    = poOscillator->poWaveform.get();
+    IWaveform* pWave    = poOscillator->oWaveformPtr.get();
 
     float32 fFeedback1 = poOscillator->fFeedback1;
     float32 fFeedback2 = poOscillator->fFeedback2;
@@ -763,7 +763,7 @@ void Sound::configureAntialias() {
             bAntialias = true;
             break;
         case AA_AUTO:
-            bAntialias = (poWaveform.get() && poWaveform->isDiscontinuous());
+            bAntialias = (oWaveformPtr.get() && oWaveformPtr->isDiscontinuous());
             break;
         default:
             break;
