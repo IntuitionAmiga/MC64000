@@ -38,12 +38,12 @@ class Sound : public IOscillator {
         };
 
     protected:
-        IStream::Ptr poPitchModulator;
-        IStream::Ptr poPhaseModulator;
-        IStream::Ptr poLevelModulator;
+        IStream::Ptr oPitchModulatorPtr;
+        IStream::Ptr oPhaseModulatorPtr;
+        IStream::Ptr oLevelModulatorPtr;
 
-        IEnvelope::Ptr poPitchEnvelope;
-        IEnvelope::Ptr poLevelEnvelope;
+        IEnvelope::Ptr oPitchEnvelopePtr;
+        IEnvelope::Ptr oLevelEnvelopePtr;
 
         float32 fPhaseModulationIndex = 1.0;
         float32 fLevelModulationIndex = 1.0;
@@ -76,7 +76,7 @@ class Sound : public IOscillator {
 
     public:
         Sound(
-            IWaveform::Ptr const& poWaveform,
+            IWaveform::Ptr const& roWaveformPtr,
             float32 fFrequency = DEF_FREQUENCY,
             float32 fPhase     = 0.0f
         );
@@ -105,8 +105,8 @@ class Sound : public IOscillator {
         /**
          * Set a Pitch Modulator, e.g. LFO (though can be any stream)
          */
-        Sound* setPitchModulator(IStream::Ptr const& poModulator) {
-            poPitchModulator = poModulator;
+        Sound* setPitchModulator(IStream::Ptr const& roModulatorPtr) {
+            oPitchModulatorPtr = roModulatorPtr;
             configureInputStage();
             return this;
         }
@@ -114,8 +114,8 @@ class Sound : public IOscillator {
         /**
          * Set a Phase Modulator, e.g. another oscillator (though can be any stream)
          */
-        Sound* setPhaseModulator(IStream::Ptr const& poModulator) {
-            poPhaseModulator = poModulator;
+        Sound* setPhaseModulator(IStream::Ptr const& roModulatorPtr) {
+            oPhaseModulatorPtr = roModulatorPtr;
             configureInputStage();
             return this;
         }
@@ -132,8 +132,8 @@ class Sound : public IOscillator {
         /**
          * Set a Level Modulator, e.g. another oscillator (though can be any stream)
          */
-        Sound* setLevelModulator(IStream::Ptr const& poModulator) {
-            poLevelModulator = poModulator;
+        Sound* setLevelModulator(IStream::Ptr const& roModulatorPtr) {
+            oLevelModulatorPtr = roModulatorPtr;
             configureOutputStage();
             return this;
         }
@@ -147,8 +147,8 @@ class Sound : public IOscillator {
         /**
          * Set a Pitch Envelope (TODO Envelope::Ptr)
          */
-        Sound* setPitchEnvelope(IEnvelope::Ptr const& poEnvelope) {
-            poPitchEnvelope = poEnvelope;
+        Sound* setPitchEnvelope(IEnvelope::Ptr const& roEnvelopePtr) {
+            oPitchEnvelopePtr = roEnvelopePtr;
             configureInputStage();
             return this;
         }
@@ -156,8 +156,8 @@ class Sound : public IOscillator {
         /**
          * Set a Level Envelope (TODO Envelope::Ptr)
          */
-        Sound* setLevelEnvelope(IEnvelope::Ptr const& poEnvelope) {
-            poLevelEnvelope = poEnvelope;
+        Sound* setLevelEnvelope(IEnvelope::Ptr const& roEnvelopePtr) {
+            oLevelEnvelopePtr = roEnvelopePtr;
             configureOutputStage();
             return this;
         }
@@ -171,7 +171,7 @@ class Sound : public IOscillator {
         /**
          * @inheritDoc
          */
-        Sound* setWaveform(IWaveform::Ptr const& poWaveform);
+        Sound* setWaveform(IWaveform::Ptr const& roWaveformPtr);
 
     private:
         typedef void (*Stage)(Sound*);
