@@ -238,6 +238,7 @@ void benchmark(Signal::IStream* pStream) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void mixtest(Audio::Context* poContext) {
+    // test smart pointer wiring
     Signal::IStream::Ptr pStream1 (
         new Signal::Oscillator::Sound(
             Signal::IWaveform::get(Signal::IWaveform::SINE),
@@ -273,31 +274,36 @@ void mixtest(Audio::Context* poContext) {
     std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream2)->setLevelEnvelope(pEnv);
     std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream1)->setLevelEnvelope(pEnv);
 
-    Signal::IStream::Ptr pMixer (
-        new Signal::Operator::FixedMixer(3, 1.0f)
-    );
+//     Signal::IStream::Ptr pMixer (
+//         new Signal::Operator::FixedMixer(3, 1.0f)
+//     );
+//
+//     std::reinterpret_pointer_cast<Signal::Operator::FixedMixer>(pMixer)
+//         ->setChannel(
+//             0,
+//             pStream1,
+//             0.8f
+//         )
+//         ->setChannel(
+//             1,
+//             pStream2,
+//             0.1f
+//         )
+//         ->setChannel(
+//             2,
+//             pStream3,
+//             0.1f
+//         );
+//
+//     pMixer->enable();
 
-    std::reinterpret_pointer_cast<Signal::Operator::FixedMixer>(pMixer)
-        ->setChannel(
-            0,
-            pStream1,
-            0.8f
-        )
-        ->setChannel(
-            1,
-            pStream2,
-            0.1f
-        )
-        ->setChannel(
-            2,
-            pStream3,
-            0.1f
-        );
-
-    pMixer->enable();
-
-    Signal::Operator::LevelAdjust oAdjust(pMixer, 0.5f, 0.0f);
-
+    // test hybrid wiring
+    Signal::Operator::FixedMixer oMixer(3, 1.0f);
+    oMixer.setChannel(0, pStream1, 0.8f);
+    oMixer.setChannel(1, pStream2, 0.1f);
+    oMixer.setChannel(2, pStream3, 0.1f);
+    oMixer.enable();
+    Signal::Operator::LevelAdjust oAdjust(oMixer, 0.5f, 0.0f);
     oAdjust.enable();
     writeAudio(&oAdjust, poContext, 500);
     //writeRawFile(&oMix, "mix_test.raw", 1000);

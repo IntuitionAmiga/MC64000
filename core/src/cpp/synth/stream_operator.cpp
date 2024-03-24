@@ -25,6 +25,21 @@
 namespace MC64K::Synth::Audio::Signal::Operator {
 
 LevelAdjust::LevelAdjust(
+    IStream& roSourceInput,
+    float32 fInitialOutputLevel,
+    float32 fInitialOutputBias
+):
+    poSourceInput{&roSourceInput},
+    fOutputLevel{0.0f},
+    fOutputBias{fInitialOutputBias},
+    bMuted{false}
+{
+    setOutputLevel(fInitialOutputLevel);
+    std::fprintf(stderr, "Created LevelAdjust at %p with output level %.3f with input at %p\n", this, fOutputLevel, poSourceInput);
+}
+
+
+LevelAdjust::LevelAdjust(
     IStream::Ptr const& roSourceInputPtr,
     float32 fInitialOutputLevel,
     float32 fInitialOutputBias
@@ -34,6 +49,7 @@ LevelAdjust::LevelAdjust(
     fOutputBias{fInitialOutputBias},
     bMuted{false}
 {
+    poSourceInput = oSourceInputPtr.get();
     setOutputLevel(fInitialOutputLevel);
     std::fprintf(stderr, "Created LevelAdjust at %p with output level %.3f\n", this, fOutputLevel);
 }
@@ -43,7 +59,7 @@ LevelAdjust::~LevelAdjust() {
 }
 
 bool LevelAdjust::canEnable() const {
-    return oSourceInputPtr.get() != nullptr;
+    return poSourceInput != nullptr;
 }
 
 /**
@@ -63,7 +79,7 @@ Packet::ConstPtr LevelAdjust::emitNew() {
     if (!oLastPacketPtr.get()) {
         oLastPacketPtr = Packet::create();
     }
-    oLastPacketPtr->scaleAndBiasBy(oSourceInputPtr->emit(uLastIndex), fOutputLevel, fOutputBias);
+    oLastPacketPtr->scaleAndBiasBy(poSourceInput->emit(uLastIndex), fOutputLevel, fOutputBias);
     return oLastPacketPtr;
 }
 
@@ -73,8 +89,8 @@ LevelAdjust* LevelAdjust::reset() {
     if ( auto p = oLastPacketPtr.get() ) {
         p->clear();
     }
-    if ( auto p = oSourceInputPtr.get() ) {
-        p->reset();
+    if (poSourceInput) {
+        poSourceInput->reset();
     }
     return this;
 }

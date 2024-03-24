@@ -26,11 +26,14 @@ class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
     private:
         IStream::Ptr    oSourceInputPtr;
         Packet::Ptr     oLastPacketPtr;
+        IStream*        poSourceInput;
 
         float32     fOutputLevel;
         float32     fOutputBias;
         bool        bMuted;
+
     public:
+        LevelAdjust(IStream& roSourceInput, float32 fOutputLevel = 1.0f, float32 fOutputBias = 0.0f);
         LevelAdjust(IStream::Ptr const& roSourceInputPtr, float32 fOutputLevel = 1.0f, float32 fOutputBias = 0.0f);
         ~LevelAdjust();
 
@@ -50,8 +53,8 @@ class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
         Packet::ConstPtr emit(size_t uIndex = 0) override;
 
         size_t getPosition() const override {
-            if ( auto p = oSourceInputPtr.get() ) {
-                return p->getPosition();
+            if (poSourceInput) {
+                return poSourceInput->getPosition();
             }
             return uSamplePosition;
         }
@@ -75,10 +78,19 @@ class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
             return this;
         }
 
+        LevelAdjust* setSourceInput(IStream& roNewSource) {
+            poSourceInput = &roNewSource;
+            if (bEnabled) {
+                bEnabled = (poSourceInput != nullptr);
+            }
+            return this;
+        }
+
         LevelAdjust* setSourceInput(IStream::Ptr const& roNewSourcePtr) {
             oSourceInputPtr = roNewSourcePtr;
+            poSourceInput   = oSourceInputPtr.get();
             if (bEnabled) {
-                bEnabled = (oSourceInputPtr.get() != nullptr);
+                bEnabled = (poSourceInput != nullptr);
             }
             return this;
         }
