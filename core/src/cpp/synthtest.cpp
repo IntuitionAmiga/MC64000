@@ -241,7 +241,7 @@ void mixtest(Audio::Context* poContext) {
     // test smart pointer wiring
     Signal::IStream::Ptr pStream1 (
         new Signal::Oscillator::Sound(
-            Signal::IWaveform::get(Signal::IWaveform::SINE),
+            Signal::IWaveform::get(Signal::IWaveform::TRIANGLE),
             110.0f,
             0.0f
         )
@@ -314,9 +314,19 @@ void mixtest(Audio::Context* poContext) {
     oMixer.setInputSource(1, pStream2, 0.1f);
     oMixer.setInputSource(2, pStream3, 0.1f);
     oMixer.enable();
-    Signal::Operator::LevelAdjust oAdjust(oMixer, 0.5f, 0.0f);
+    Signal::Operator::LevelAdjust oAdjust(oMixer, 0.75f, 0.0f);
     oAdjust.enable();
-    writeAudio(&oAdjust, poContext, 500);
+
+    // hardwire a filter
+    Signal::Filter::FourPoleMultiMode oFilter(
+        oAdjust,
+        Signal::Filter::FourPoleMultiMode::LOW_PASS,
+        0.05f,
+        0.05f
+    );
+    oFilter.enable();
+
+    writeAudio(&oFilter, poContext, 500);
     //writeRawFile(&oMix, "mix_test.raw", 1000);
 }
 

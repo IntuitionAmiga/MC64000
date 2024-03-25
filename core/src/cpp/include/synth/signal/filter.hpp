@@ -31,6 +31,12 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
         IEnvelope::Ptr oCutoffEnvelopePtr;
         IEnvelope::Ptr oResonanceEnvelopePtr;
 
+        IStream*   poInputStream;
+        IStream*   poCutoffModulator;
+        IStream*   poResonanceModulator;
+        IEnvelope* poCutoffEnvelope;
+        IEnvelope* poResonanceEnvelope;
+
         float64 fFixedCutoff;
         float64 fFixedResonance;
 
@@ -43,10 +49,29 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
 
         virtual void configure() = 0;
 
+        IFilter(IStream& roStream, float32 fCutoff, float32 fResonance):
+            poInputStream{&roStream},
+            poCutoffModulator{nullptr},
+            poResonanceModulator{nullptr},
+            poCutoffEnvelope{nullptr},
+            poResonanceEnvelope{nullptr},
+            fFixedCutoff{fCutoff},
+            fFixedResonance{fResonance} {
+
+            }
+
+
         IFilter(IStream::Ptr const& roStreamPtr, float32 fCutoff, float32 fResonance):
             oInputStreamPtr{roStreamPtr},
+            poInputStream{roStreamPtr.get()},
+            poCutoffModulator{nullptr},
+            poResonanceModulator{nullptr},
+            poCutoffEnvelope{nullptr},
+            poResonanceEnvelope{nullptr},
             fFixedCutoff{fCutoff},
-            fFixedResonance{fResonance} { }
+            fFixedResonance{fResonance} {
+
+            }
 
     public:
         // Cutoff range is normalised
@@ -63,9 +88,14 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
 
         IFilter* enable() override;
 
+        IFilter* setInputStream(IStream& roInputStream) {
+            poInputStream = &roInputStream;
+            return this;
+        }
+
         IFilter* setInputStream(IStream::Ptr const& roInputStreamPtr) {
             oInputStreamPtr = roInputStreamPtr;
-            if (!oInputStreamPtr.get()) {
+            if (!(poInputStream = oInputStreamPtr.get())) {
                 disable();
             }
             return this;
@@ -86,11 +116,36 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
         }
 
         /**
+         * @param  IStream& roCutoffControl
+         * @return this
+         *
+         * Hardwired version
+         */
+        IFilter* setCutoffModulator(IStream& roNewCutoffModulator) {
+            poCutoffModulator   = &roNewCutoffModulator;
+            configure();
+            return this;
+        }
+
+        /**
          * @param  IStream::Ptr poCutoffControl
          * @return this
          */
         IFilter* setCutoffModulator(IStream::Ptr const& roNewCutoffModulatorPtr) {
             oCutoffModulatorPtr = roNewCutoffModulatorPtr;
+            poCutoffModulator   = roNewCutoffModulatorPtr.get();
+            configure();
+            return this;
+        }
+
+        /**
+         * @param IEnvelope& roNewEnvelope
+         * return this
+         *
+         * Hardwired version
+         */
+        IFilter* setCutoffEnvelope(IEnvelope& roNewEnvelope) {
+            poCutoffEnvelope = &roNewEnvelope;
             configure();
             return this;
         }
@@ -123,11 +178,35 @@ class IFilter : public TStreamCommon, protected TPacketIndexAware  {
         /**
          * Set a control stream (envelope, LFO etc) for the resonance control. Setting null clears any existing control.
          *
+         * @param  IStream& roResonanceControl
+         * @return this
+         *
+         * Hardwired version.
+         */
+        IFilter* setResonanceModulator(IStream& roNewResonanceModulator) {
+            poResonanceModulator = &roNewResonanceModulator;
+            configure();
+            return this;
+        }
+
+        /**
+         * Set a control stream (envelope, LFO etc) for the resonance control. Setting null clears any existing control.
+         *
          * @param  IStream::Ptr poResonanceControl
          * @return this
          */
         IFilter* setResonanceModulator(IStream::Ptr const& roNewResonanceModulatorPtr) {
             oResonanceModulatorPtr = roNewResonanceModulatorPtr;
+            configure();
+            return this;
+        }
+
+        /**
+         * @param IEnvelope::Ptr
+         * return this
+         */
+        IFilter* setResonanceEnvelope(IEnvelope& roNewEnvelope) {
+            poResonanceEnvelope = &roNewEnvelope;
             configure();
             return this;
         }

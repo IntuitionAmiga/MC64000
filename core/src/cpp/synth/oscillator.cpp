@@ -200,7 +200,12 @@ Sound::Sound(
     float32 fFrequency,
     float32 fPhase
 ) :
-    IOscillator(roWaveformPtr, fFrequency, fPhase)
+    IOscillator(roWaveformPtr, fFrequency, fPhase),
+    poPitchModulator{nullptr},
+    poPhaseModulator{nullptr},
+    poLevelModulator{nullptr},
+    poPitchEnvelope{nullptr},
+    poLevelEnvelope{nullptr}
 {
     setFrequency(fFrequency);
     configureInputStage();
