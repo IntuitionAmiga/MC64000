@@ -98,18 +98,18 @@ LevelAdjust* LevelAdjust::reset() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 FixedMixer::FixedMixer(uint32 uNumChannels, float32 fOutputLevel):
-    pChannels{nullptr},
+    poChannels{nullptr},
     uBitMap{0},
     fOutputLevel{fOutputLevel} {
     this->uNumChannels = uNumChannels < MIN_CHANNELS ?
         MIN_CHANNELS : uNumChannels > MAX_CHANNELS ?
             MAX_CHANNELS : uNumChannels;
-    pChannels = new Channel[this->uNumChannels];
+    poChannels = new Channel[this->uNumChannels];
     std::fprintf(stderr, "Created FixedMixer at %p with output level %.3f\n", this, fOutputLevel);
 }
 
 FixedMixer::~FixedMixer() {
-    delete[] pChannels;
+    delete[] poChannels;
     std::fprintf(stderr, "Destroyed FixedMixer at %p\n", this);
 }
 
@@ -122,40 +122,40 @@ Packet::ConstPtr FixedMixer::emit(size_t uIndex) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return poLastPacket;
+        return oLastPacketPtr;
     }
     return emitNew();
 }
 
 Packet::ConstPtr FixedMixer::emitNew() {
-    if (!poLastPacket.get()) {
-        poLastPacket = Packet::create();
+    if (!oLastPacketPtr.get()) {
+        oLastPacketPtr = Packet::create();
     }
-    Packet* poOutput = poLastPacket.get();
+    Packet* poOutput = oLastPacketPtr.get();
     poOutput->clear();
     for (uint32 uChannelNum = 0; uChannelNum < uNumChannels; ++uChannelNum) {
-        if (auto poInput = pChannels[uChannelNum].oSourcePtr.get()) {
+        if (auto poInput = poChannels[uChannelNum].poSource) {
             if (poInput->isEnabled()) {
                 poOutput->accumulate(
                     poInput->emit(uLastIndex),
-                    pChannels[uChannelNum].fLevel * fOutputLevel
+                    poChannels[uChannelNum].fLevel * fOutputLevel
                 );
+
             }
         }
     }
-    return poLastPacket;
+    return oLastPacketPtr;
 }
 
 FixedMixer* FixedMixer::reset() {
     uLastIndex = 0;
     uSamplePosition = 0;
-    if ( auto p = poLastPacket.get() ) {
+    if ( auto p = oLastPacketPtr.get() ) {
         p->clear();
     }
     std::fprintf(stderr, "FixedMixer %p reset()\n", this);
-
     for (uint32 uChannelNum = 0; uChannelNum < uNumChannels; ++uChannelNum) {
-        if (auto poInput = pChannels[uChannelNum].oSourcePtr.get()) {
+        if (auto poInput = poChannels[uChannelNum].poSource) {
             poInput->reset();
         }
     }
@@ -180,17 +180,17 @@ SimpleMixer::~SimpleMixer() {
 SimpleMixer* SimpleMixer::reset() {
     uLastIndex = 0;
     uSamplePosition = 0;
-    if ( auto p = poLastPacket.get() ) {
+    if ( auto p = oLastPacketPtr.get() ) {
         p->clear();
     }
     std::fprintf(stderr, "SimpleMixer %p reset()\n", this);
     for (auto pPair = oChannels.begin(); pPair != oChannels.end(); ++pPair) {
-        pPair->second.oSourcePtr->reset();
+        pPair->second.poSource->reset();
         std::fprintf(
             stderr,
             "\tResetting input ID:%lu [%p]\n",
             pPair->first,
-            pPair->second.oSourcePtr.get()
+            pPair->second.poSource
         );
     }
     return this;
@@ -204,27 +204,27 @@ Packet::ConstPtr SimpleMixer::emit(size_t uIndex) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return poLastPacket;
+        return oLastPacketPtr;
     }
     return emitNew();
 }
 
 Packet::ConstPtr SimpleMixer::emitNew() {
-    if (!poLastPacket.get()) {
-        poLastPacket = Packet::create();
+    if (!oLastPacketPtr.get()) {
+        oLastPacketPtr = Packet::create();
     }
-    Packet* pOutput = poLastPacket.get();
+    Packet* pOutput = oLastPacketPtr.get();
     pOutput->clear();
     for (auto pPair = oChannels.begin(); pPair != oChannels.end(); ++pPair) {
-        if (pPair->second.oSourcePtr->isEnabled()) {
+        if (pPair->second.poSource->isEnabled()) {
             pOutput->accumulate(
-                pPair->second.oSourcePtr->emit(uLastIndex),
+                pPair->second.poSource->emit(uLastIndex),
                 pPair->second.fLevel
             );
         }
     }
     pOutput->scaleBy(fOutputLevel);
-    return poLastPacket;
+    return oLastPacketPtr;
 }
 
 /**
@@ -249,11 +249,11 @@ SimpleMixer* SimpleMixer::setOutputLevel(float32 fLevel) {
  */
 SimpleMixer* SimpleMixer::addInputStream(SimpleMixer::ChannelID uID, IStream::Ptr const& oSourcePtr, float32 fLevel) {
     if (oSourcePtr.get()) {
-
         std::fprintf(stderr, "SimpleMixer %p addInputStream() setting %p [ID:%lu]\n", this, oSourcePtr.get(), uID);
-        Channel& roChannel = oChannels[uID];
-        roChannel.oSourcePtr  = oSourcePtr;
-        roChannel.fLevel   = fLevel;
+        Channel& roChannel   = oChannels[uID];
+        roChannel.oSourcePtr = oSourcePtr;
+        roChannel.poSource   = oSourcePtr.get();
+        roChannel.fLevel     = fLevel;
     } else {
         std::fprintf(stderr, "SimpleMixer %p addInputStream() not adding empty stream [ID:%lu]\n", this, uID);
     }

@@ -223,21 +223,21 @@ Sound::~Sound() {
  */
 Sound* Sound::reset() {
     IOscillator::reset();
-    IStream* poInput;
-    if ((poInput = oPitchModulatorPtr.get())) {
-        poInput->reset();
+
+    if (poPitchModulator) {
+        poPitchModulator->reset();
     }
-    if ((poInput = oPhaseModulatorPtr.get())) {
-        poInput->reset();
+    if (poPhaseModulator) {
+        poPhaseModulator->reset();
     }
-    if ((poInput = oLevelModulatorPtr.get())) {
-        poInput->reset();
+    if (poLevelModulator) {
+        poLevelModulator->reset();
     }
-    if ((poInput = oLevelEnvelopePtr.get())) {
-        poInput->reset();
+    if (poLevelEnvelope) {
+        poLevelEnvelope->reset();
     }
-    if ((poInput = oPitchEnvelopePtr.get())) {
-        poInput->reset();
+    if (poPitchEnvelope) {
+        poPitchEnvelope->reset();
     }
     return this;
 }
@@ -250,22 +250,21 @@ Sound* Sound::reset() {
 Sound* Sound::enable() {
     IOscillator::enable();
     if (isEnabled()) {
-        IStream* poInput;
-
-        if ((poInput = oPitchModulatorPtr.get())) {
-            poInput->reset();
+        // should this be enable()?
+        if (poPitchModulator) {
+            poPitchModulator->reset();
         }
-        if ((poInput = oPhaseModulatorPtr.get())) {
-            poInput->reset();
+        if (poPhaseModulator) {
+            poPhaseModulator->reset();
         }
-        if ((poInput = oLevelModulatorPtr.get())) {
-            poInput->reset();
+        if (poLevelModulator) {
+            poLevelModulator->reset();
         }
-        if ((poInput = oLevelEnvelopePtr.get())) {
-            poInput->reset();
+        if (poLevelEnvelope) {
+            poLevelEnvelope->reset();
         }
-        if ((poInput = oPitchEnvelopePtr.get())) {
-            poInput->reset();
+        if (poPitchEnvelope) {
+            poPitchEnvelope->reset();
         }
     }
     return this;
@@ -417,7 +416,7 @@ void Sound::inputDirect(Sound* poOscillator) {
 void Sound::inputPitchMod(Sound* poOscillator) {
     poOscillator->populatePitchShiftedPacket(
         poOscillator
-            ->oPitchModulatorPtr
+            ->poPitchModulator
             ->emit(poOscillator->uLastIndex).get()
     );
 }
@@ -430,7 +429,7 @@ void Sound::inputPitchMod(Sound* poOscillator) {
 void Sound::inputPitchEnv(Sound* poOscillator) {
     poOscillator->populatePitchShiftedPacket(
         poOscillator
-            ->oPitchEnvelopePtr
+            ->poPitchEnvelope
             ->emit(poOscillator->uLastIndex).get()
     );
 }
@@ -442,12 +441,12 @@ void Sound::inputPitchEnv(Sound* poOscillator) {
  */
 void Sound::inputPitchModEnv(Sound* poOscillator) {
     Packet::Ptr poPitchShifts = poOscillator
-        ->oPitchModulatorPtr
+        ->poPitchModulator
         ->emit(poOscillator->uLastIndex)
         ->clone();
     poPitchShifts->sumWith(
         poOscillator
-            ->oPitchEnvelopePtr
+            ->poPitchEnvelope
             ->emit(poOscillator->uLastIndex).get()
     );
     poOscillator->populatePitchShiftedPacket(poPitchShifts.get());
@@ -460,7 +459,7 @@ void Sound::inputPitchModEnv(Sound* poOscillator) {
  */
 void Sound::inputPhaseMod(Sound* poOscillator) {
     float32 const* poPhaseShifts = poOscillator
-        ->oPhaseModulatorPtr
+        ->poPhaseModulator
         ->emit(poOscillator->uLastIndex)
         ->afSamples;
     float32* pSamples    = poOscillator->oOutputPacketPtr->afSamples;
@@ -484,10 +483,10 @@ void Sound::inputPhaseMod(Sound* poOscillator) {
 void Sound::inputPhaseModPitchMod(Sound* poOscillator) {
     poOscillator->populatePitchAndPhaseShiftedPacket(
         poOscillator
-            ->oPitchModulatorPtr
+            ->poPitchModulator
             ->emit(poOscillator->uLastIndex).get(),
         poOscillator
-            ->oPhaseModulatorPtr
+            ->poPhaseModulator
             ->emit(poOscillator->uLastIndex).get()
     );
 }
@@ -500,10 +499,10 @@ void Sound::inputPhaseModPitchMod(Sound* poOscillator) {
 void Sound::inputPhaseModPitchEnv(Sound* poOscillator) {
     poOscillator->populatePitchAndPhaseShiftedPacket(
         poOscillator
-        ->oPitchEnvelopePtr
+        ->poPitchEnvelope
         ->emit(poOscillator->uLastIndex).get(),
         poOscillator
-        ->oPhaseModulatorPtr
+        ->poPhaseModulator
         ->emit(poOscillator->uLastIndex).get()
     );
 }
@@ -516,18 +515,18 @@ void Sound::inputPhaseModPitchEnv(Sound* poOscillator) {
  */
 void Sound::inputPhaseModPitchModEnv(Sound* poOscillator) {
     Packet::Ptr poPitchShifts = poOscillator
-        ->oPitchModulatorPtr
+        ->poPitchModulator
         ->emit(poOscillator->uLastIndex)
         ->clone();
     poPitchShifts->sumWith(
         poOscillator
-            ->oPitchEnvelopePtr
+            ->poPitchEnvelope
             ->emit(poOscillator->uLastIndex).get()
         );
     poOscillator->populatePitchAndPhaseShiftedPacket(
         poPitchShifts.get(),
         poOscillator
-        ->oPhaseModulatorPtr
+        ->poPhaseModulator
         ->emit(poOscillator->uLastIndex).get()
     );
 }
@@ -571,9 +570,9 @@ void Sound::configureInputStage() {
 
     } else {
         unsigned uUseStage =
-            (oPitchModulatorPtr.get() ? 1 : 0) |
-            (oPitchEnvelopePtr.get()  ? 2 : 0) |
-            ((oPhaseModulatorPtr.get() && MIN_PHASE_MOD_INDEX < fPhaseModulationIndex) ? 4 : 0);
+            (poPitchModulator ? 1 : 0) |
+            (poPitchEnvelope  ? 2 : 0) |
+            ((poPhaseModulator && MIN_PHASE_MOD_INDEX < fPhaseModulationIndex) ? 4 : 0);
         cInput = aInputStages[uUseStage];
         std::fprintf(
             stderr,
@@ -600,14 +599,14 @@ void Sound::outputLevelMod(Sound* poOscillator) {
     poOscillator->oOutputPacketPtr = poOscillator->oWaveformPtr->map(
         poOscillator->oOutputPacketPtr.get()
     );
-    Packet::Ptr pOutputLevel = poOscillator
-        ->oLevelModulatorPtr
+    Packet* pOutputLevel = poOscillator
+        ->poLevelModulator
         ->emit(poOscillator->uLastIndex)
-        ->clone();
+        ->clone().get();
     pOutputLevel->scaleBy(poOscillator->fLevelModulationIndex);
     poOscillator
         ->oOutputPacketPtr
-        ->modulateWith(pOutputLevel.get());
+        ->modulateWith(pOutputLevel);
 }
 
 /**
@@ -619,7 +618,7 @@ void Sound::outputLevelEnv(Sound* poOscillator) {
     );
     poOscillator->oOutputPacketPtr->modulateWith(
         poOscillator
-            ->oLevelEnvelopePtr
+            ->poLevelEnvelope
             ->emit(poOscillator->uLastIndex).get()
     );
 }
@@ -631,20 +630,20 @@ void Sound::outputLevelModEnv(Sound* poOscillator) {
     poOscillator->oOutputPacketPtr = poOscillator->oWaveformPtr->map(
         poOscillator->oOutputPacketPtr.get()
     );
-    Packet::Ptr pOutputLevel = poOscillator
-        ->oLevelModulatorPtr
+    Packet* pOutputLevel = poOscillator
+        ->poLevelModulator
         ->emit(poOscillator->uLastIndex)
-        ->clone();
+        ->clone().get();
     pOutputLevel
         ->scaleBy(poOscillator->fLevelModulationIndex)
         ->modulateWith(
             poOscillator
-                ->oLevelModulatorPtr
+                ->poLevelModulator
                 ->emit(poOscillator->uLastIndex).get()
           );
     poOscillator
         ->oOutputPacketPtr
-        ->modulateWith(pOutputLevel.get());
+        ->modulateWith(pOutputLevel);
 }
 
 /**
@@ -676,40 +675,40 @@ void Sound::outputFeedback(Sound* poOscillator) {
  * @inheritDoc
  */
 void Sound::outputFeedbackLevelMod(Sound* poOscillator) {
-    Packet::Ptr pOutputLevel = poOscillator
-        ->oLevelModulatorPtr
+    Packet* pOutputLevel = poOscillator
+        ->poLevelModulator
         ->emit(poOscillator->uLastIndex)
-        ->clone();
+        ->clone().get();
     pOutputLevel->scaleBy(poOscillator->fLevelModulationIndex);
-    poOscillator->populateOutputPacketWithFeedback(pOutputLevel.get());
+    poOscillator->populateOutputPacketWithFeedback(pOutputLevel);
 }
 
 /**
  * @inheritDoc
  */
 void Sound::outputFeedbackLevelEnv(Sound* poOscillator) {
-    Packet::Ptr pOutputLevel = poOscillator
-        ->oLevelEnvelopePtr
+    Packet* pOutputLevel = poOscillator
+        ->poLevelEnvelope
         ->emit(poOscillator->uLastIndex)
-        ->clone();
-    poOscillator->populateOutputPacketWithFeedback(pOutputLevel.get());
+        ->clone().get();
+    poOscillator->populateOutputPacketWithFeedback(pOutputLevel);
 }
 
 /**
  * @inheritDoc
  */
 void Sound::outputFeedbackLevelModEnv(Sound* poOscillator) {
-    Packet::Ptr pOutputLevel = poOscillator
-        ->oLevelModulatorPtr
+    Packet* pOutputLevel = poOscillator
+        ->poLevelModulator
         ->emit(poOscillator->uLastIndex)
-        ->clone();
+        ->clone().get();
     pOutputLevel->scaleBy(poOscillator->fLevelModulationIndex);
     pOutputLevel->modulateWith(
         poOscillator
-            ->oLevelEnvelopePtr
+            ->poLevelEnvelope
             ->emit(poOscillator->uLastIndex).get()
     );
-    poOscillator->populateOutputPacketWithFeedback(pOutputLevel.get());
+    poOscillator->populateOutputPacketWithFeedback(pOutputLevel);
 }
 
 /**
@@ -742,8 +741,8 @@ char const* aOutputStageNames[8] = {
  */
 void Sound::configureOutputStage() {
     unsigned uUseStage =
-        ((oLevelModulatorPtr.get() && MIN_LEVEL_MOD_INDEX < fLevelModulationIndex) ? 1 : 0) |
-        (oLevelEnvelopePtr.get() ? 2 : 0) |
+        ((poLevelModulator && MIN_LEVEL_MOD_INDEX < fLevelModulationIndex) ? 1 : 0) |
+        (poLevelEnvelope ? 2 : 0) |
         ((!bAperiodic && MIN_FEEDBACK_MOD_INDEX < fPhaseFeedbackIndex) ? 4 : 0);
     cOutput = aOutputStages[uUseStage];
     std::fprintf(
@@ -797,7 +796,7 @@ Packet::ConstPtr Sound::emitNew() {
         float32* aUnfiltered = oOutputPacketPtr->afSamples;
         float32* aFiltered   = pNextOutputPacket->afSamples;
 
-        for (unsigned u=0; u < PACKET_SIZE; ++u) {
+        for (unsigned u = 0; u < PACKET_SIZE; ++u) {
             float32 fSample = aUnfiltered[u];
             aFiltered[u] = 0.0625f * (
                 fSample + fPrev4 +
