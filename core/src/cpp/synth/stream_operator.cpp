@@ -58,10 +58,6 @@ LevelAdjust::~LevelAdjust() {
     std::fprintf(stderr, "Destroyed LevelAdjust at %p\n", this);
 }
 
-bool LevelAdjust::canEnable() const {
-    return poSourceInput != nullptr;
-}
-
 /**
  * @inheritDoc
  */

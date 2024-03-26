@@ -24,7 +24,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  * @inheritDoc
  */
 Sine::Sine() {
-    std::fprintf(stderr, "Created Sine at %p\n", this);
+    //std::fprintf(stderr, "Created Sine at %p\n", this);
 }
 
 /**
@@ -57,7 +57,7 @@ Packet::Ptr Sine::map(Packet const* poInput) {
  * @inheritDoc
  */
 Sine::~Sine() {
-    std::fprintf(stderr, "Destroyed SineFast at %p\n", this);
+    //std::fprintf(stderr, "Destroyed SineFast at %p\n", this);
 }
 
 }
@@ -71,7 +71,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  * @inheritDoc
  */
 Triangle::Triangle() {
-    std::fprintf(stderr, "Created Triangle at %p\n", this);
+    //std::fprintf(stderr, "Created Triangle at %p\n", this);
 }
 
 /**
@@ -100,7 +100,7 @@ Packet::Ptr Triangle::map(Packet const* poInput) {
  * @inheritDoc
  */
 Triangle::~Triangle() {
-    std::fprintf(stderr, "Destroyed Triangle at %p\n", this);
+    //std::fprintf(stderr, "Destroyed Triangle at %p\n", this);
 }
 
 }
@@ -114,7 +114,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  * @inheritDoc
  */
 SawDown::SawDown() {
-    std::fprintf(stderr, "Created SawDown at %p\n", this);
+    //std::fprintf(stderr, "Created SawDown at %p\n", this);
 }
 
 /**
@@ -135,14 +135,14 @@ Packet::Ptr SawDown::map(Packet const* poInput) {
  * @inheritDoc
  */
 SawDown::~SawDown() {
-    std::fprintf(stderr, "Destroyed SawDown at %p\n", this);
+    //std::fprintf(stderr, "Destroyed SawDown at %p\n", this);
 }
 
 /**
  * @inheritDoc
  */
 SawUp::SawUp() {
-    std::fprintf(stderr, "Created SawUp at %p\n", this);
+    //std::fprintf(stderr, "Created SawUp at %p\n", this);
 }
 
 /**
@@ -163,7 +163,7 @@ Packet::Ptr SawUp::map(Packet const* poInput) {
  * @inheritDoc
  */
 SawUp::~SawUp() {
-    std::fprintf(stderr, "Destroyed SawUp at %p\n", this);
+    //std::fprintf(stderr, "Destroyed SawUp at %p\n", this);
 }
 
 }
@@ -177,7 +177,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  * @inheritDoc
  */
 Square::Square() {
-    std::fprintf(stderr, "Created Square at %p\n", this);
+    //std::fprintf(stderr, "Created Square at %p\n", this);
 }
 
 /**
@@ -199,7 +199,7 @@ Packet::Ptr Square::map(Packet const* poInput) {
  * @inheritDoc
  */
 Square::~Square() {
-   std::fprintf(stderr, "Destroyed Square at %p\n", this);
+   //std::fprintf(stderr, "Destroyed Square at %p\n", this);
 }
 
 /**
@@ -207,7 +207,7 @@ Square::~Square() {
  */
 FixedPWM::FixedPWM(float32 fWidth) {
     setWidth(fWidth);
-    std::fprintf(stderr, "Created FixedPWM at %p with width %.3f\n", this, this->fWidth);
+    //std::fprintf(stderr, "Created FixedPWM at %p with width %.3f\n", this, this->fWidth);
 }
 /**
  * @inheritDoc
@@ -231,7 +231,7 @@ Packet::Ptr FixedPWM::map(Packet const* poInput) {
  * @inheritDoc
  */
 FixedPWM::~FixedPWM() {
-   std::fprintf(stderr, "Destroyed FixedPWM at %p\n", this);
+   //std::fprintf(stderr, "Destroyed FixedPWM at %p\n", this);
 }
 
 }
@@ -257,7 +257,7 @@ WhiteNoise::WhiteNoise() {
 }
 
 WhiteNoise::~WhiteNoise() {
-    std::fprintf(stderr, "Destroyed WhiteNoise at %p\n", this);
+    //std::fprintf(stderr, "Destroyed WhiteNoise at %p\n", this);
 }
 
 /**
@@ -293,7 +293,7 @@ float32 WhiteNoise::valueAt(float32 fTime) {
 class NoopDeleter {
     public:
         void operator()(IWaveform* poWaveform) const {
-            std::fprintf(stderr, "Not deleting managed waveform at %p\n", poWaveform);
+            //std::fprintf(stderr, "Not yet deleting shared waveform at %p\n", poWaveform);
         }
 };
 

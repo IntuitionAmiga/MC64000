@@ -330,6 +330,16 @@ void mixtest(Audio::Context* poContext) {
     //writeRawFile(&oMix, "mix_test.raw", 1000);
 }
 
+void tbnanTest(Audio::Context* poContext) {
+
+    Machine::TBNaN tbNaN;
+    tbNaN.enable();
+    tbNaN.setVoiceNote(Machine::Voice::V0, Note::getNumber("A1"));
+    tbNaN.startVoice(Machine::Voice::V0);
+    tbNaN.setVoiceVelocity(Machine::Voice::V0, 127.0);
+    writeAudio(&tbNaN, poContext, 100);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void testNotes() {
@@ -411,7 +421,10 @@ int main(int const iArgCount, char const** aiArgVal) {
             poContext
         );
 
-        mixtest(poContext);
+        //mixtest(poContext);
+
+        tbnanTest(poContext);
+
 
         delete poOutput;
     }

@@ -16,7 +16,7 @@ UNKNOWN_CXXFLAGS = -DMESSAGE='"Compiled with an unknown compiler"'
 LIBS = -lasound
 
 ifeq ($(CXX),g++)
-  GCC_EXTRA = -fwhole-program -flto
+  GCC_EXTRA = -fwhole-program -flto=auto
   CXXFLAGS += $(GCC_CXXFLAGS) $(GCC_EXTRA)
 else ifeq ($(CXX),clang++)
   CXXFLAGS += $(CLANG_CXXFLAGS)

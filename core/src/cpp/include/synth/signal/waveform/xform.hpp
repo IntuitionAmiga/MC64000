@@ -57,16 +57,16 @@ class XForm : public IWaveform {
                     afTransform[i] = afCustomTransform[i];
                 }
             }
-            std::fprintf(stderr, "Created XForm<%u> at %p with matrix:\n", (uint32)N, this);
-            for (unsigned i = 0; i < T_SIZE; i += 4) {
-                std::fprintf(
-                    stderr, "\t| %8.3f %8.3f %8.3f %8.3f |\n",
-                    afTransform[i],
-                    afTransform[i + 1],
-                    afTransform[i + 2],
-                    afTransform[i + 3]
-                );
-            }
+//             std::fprintf(stderr, "Created XForm<%u> at %p with matrix:\n", (uint32)N, this);
+//             for (unsigned i = 0; i < T_SIZE; i += 4) {
+//                 std::fprintf(
+//                     stderr, "\t| %8.3f %8.3f %8.3f %8.3f |\n",
+//                     afTransform[i],
+//                     afTransform[i + 1],
+//                     afTransform[i + 2],
+//                     afTransform[i + 3]
+//                 );
+//             }
         }
 
         /**
@@ -78,7 +78,7 @@ class XForm : public IWaveform {
         }
 
         ~XForm() {
-            std::fprintf(stderr, "Destroyed XForm<%u> at %p\n", (uint32)N, this);
+            //std::fprintf(stderr, "Destroyed XForm<%u> at %p\n", (uint32)N, this);
         }
 
         /**

@@ -59,6 +59,7 @@ bool IFilter::canEnable() const {
 IFilter* IFilter::enable() {
     TStreamCommon::enable();
     if (isEnabled()) {
+        std::fprintf(stderr, "IFilter - enabling input streams...\n");
         // Turn on all the inputs
         if (poInputStream) {
             poInputStream->enable();
@@ -75,6 +76,8 @@ IFilter* IFilter::enable() {
         if (poResonanceEnvelope) {
             poResonanceEnvelope->reset();
         }
+    } else {
+        std::fprintf(stderr, "IFilter - cannot enable input streams...\n");
     }
     return this;
 }
@@ -512,13 +515,15 @@ void FourPoleMultiMode::configure() {
     std::fprintf(
         stderr,
         "Filter inputs\n"
+        "\tInput     : %p\n"
         "\tCutoff Mod: %p\n"
         "\tCutoff Env: %p\n"
         "\tReso   Mod: %p\n"
         "\tReso   Env: %p\n",
+        poInputStream,
         poCutoffModulator,
-        poResonanceModulator,
         poCutoffEnvelope,
+        poResonanceModulator,
         poResonanceEnvelope
     );
 

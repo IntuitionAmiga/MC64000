@@ -19,7 +19,7 @@
 
 namespace MC64K::Synth::Audio::Machine {
 
-class Monophonic : public Signal::TStreamCommon, public IMachine {
+class Monophonic : public Signal::TStreamCommon, public virtual IMachine {
 
     protected:
         Signal::Operator::LevelAdjust oVoice;
@@ -31,6 +31,12 @@ class Monophonic : public Signal::TStreamCommon, public IMachine {
 
         void applyLevel() {
             oVoice.setOutputLevel(VOICE_ATTENUATE * fOutputLevel * fVoiceLevel);
+        }
+
+        void setVoiceSource(IStream& roSource, float32 fLevel) {
+            fVoiceLevel = fLevel;
+            oVoice.setSourceInput(roSource);
+            applyLevel();
         }
 
         void setVoiceSource(IStream::Ptr const& poSource, float32 fLevel) {
@@ -74,7 +80,9 @@ class Monophonic : public Signal::TStreamCommon, public IMachine {
             return this;
         }
 
-
+        Signal::Packet::ConstPtr emit(size_t uIndex) override {
+            return oVoice.emit(uIndex);
+        }
 };
 
 } // namespace

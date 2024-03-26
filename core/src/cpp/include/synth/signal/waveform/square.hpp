@@ -183,14 +183,16 @@ class FixedPWM : public IWaveform {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Basic fixed duty cycle PWM
+ * Modulatable duty cycle PWM
  */
 class ModulatedPWM : public IWaveform {
 
     private:
         IStream::Ptr poWidthModulator;
+
         float32      fModDepth;
         float32      fModBias;
+
     public:
         ModulatedPWM(IStream::Ptr const& poModulator, float32 fModDepth, float32 fModBias);
         ~ModulatedPWM();

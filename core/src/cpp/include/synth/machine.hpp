@@ -76,14 +76,6 @@ class IMachine : public virtual Signal::IStream {
         virtual IMachine* setOutputLevel(float32 fLevel) = 0;
 
         /**
-         * Allocate a Voice. This will be the number of the first free Voice, otherwise the
-         * machine is free to determine how to allocate from the voices already in use.
-         *
-         * @return Voice
-         */
-        virtual Voice allocateVoice() = 0;
-
-        /**
          * Set the volume level for the enumerated voice. A value of 1.0 represents the
          * loudest intensity, though the value can be higher. Values can also be negative,
          * which results in the inversion of the output.
@@ -136,6 +128,18 @@ class IMachine : public virtual Signal::IStream {
          * @return IMachine* this
          */
         virtual IMachine* stopVoice(Voice eVoice, bool bSoft) = 0;
+
+};
+
+class TSimpleVelocity : public virtual IMachine {
+
+    public:
+        static constexpr float32 const MIDI_VEL_SCALE  = 1.0f/127.0f;
+
+        virtual IMachine* setVoiceVelocity(Voice eVoice, float32 fVelocity) override {
+            setVoiceLevel(eVoice, fVelocity * MIDI_VEL_SCALE);
+            return this;
+        };
 
 };
 

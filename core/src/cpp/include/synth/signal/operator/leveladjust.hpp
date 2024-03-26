@@ -40,12 +40,22 @@ class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
         /**
          * @inheritDoc
          */
-        bool canEnable() const override;
+        bool canEnable() const override {
+            return poSourceInput != nullptr;
+        }
 
         /**
          * @inheritDoc
          */
         LevelAdjust* reset() override;
+
+        LevelAdjust* enable() override {
+            TStreamCommon::enable();
+            if (poSourceInput) {
+                poSourceInput->enable();
+            }
+            return this;
+        }
 
         /**
          * @inheritDoc
@@ -83,6 +93,7 @@ class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
             if (bEnabled) {
                 bEnabled = (poSourceInput != nullptr);
             }
+            std::fprintf(stderr, "LevelAdjust::setSourceInput(%p)\n", poSourceInput);
             return this;
         }
 
@@ -92,6 +103,7 @@ class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
             if (bEnabled) {
                 bEnabled = (poSourceInput != nullptr);
             }
+            std::fprintf(stderr, "LevelAdjust::setSourceInput(%p)\n", poSourceInput);
             return this;
         }
 

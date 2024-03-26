@@ -19,7 +19,7 @@
 
 namespace MC64K::Synth::Audio::Signal {
 
-IStream::Ptr NONE{nullptr};
+IStream::Ptr IStream::NONE{nullptr};
 
 /**
  * @inheritDoc
@@ -32,6 +32,7 @@ bool TStreamCommon::canEnable() const {
  * @inheritDoc
  */
 IStream* TStreamCommon::enable() {
+    std::fprintf(stderr, ">>>> TStreamCommon::enable() %p...\n", this);
     if (!bEnabled) {
         if (canEnable()) {
             oOutputPacketPtr = Packet::create();
