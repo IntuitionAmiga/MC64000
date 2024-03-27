@@ -38,7 +38,7 @@ class Triangle : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* poInput) override;
+        void map(Packet const* poInput, Packet* poOutput) override;
 
         /**
          * Static version of the value function that can be called and inlined explicitly from

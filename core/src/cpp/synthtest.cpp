@@ -127,7 +127,8 @@ void testWaveforms() {
     char sFilename[80] = "\0";
 
     for (auto eShape : aWaveShapes) {
-        Signal::Packet::Ptr poInput       = Signal::Packet::create();
+        Signal::Packet::Ptr oInput        = Signal::Packet::create();
+        Signal::Packet::Ptr oOutput       = Signal::Packet::create();
         Signal::IWaveform::Ptr poWaveform = Signal::IWaveform::get(eShape);
         Signal::IWaveform::Ptr poCopy     = poWaveform->copy();
 
@@ -147,15 +148,15 @@ void testWaveforms() {
         fScale /= 128.0f;
 
         for (unsigned u = 0; u < Audio::IConfig::PACKET_SIZE; ++u) {
-            poInput->afSamples[u] = fStart + (float32)u * fScale;
+            oInput->afSamples[u] = fStart + (float32)u * fScale;
         }
 
-        Signal::Packet::Ptr pOutput = poWaveform->map(poInput);
+        poWaveform->map(oInput, oOutput);
 
         int16 afSamples[Audio::IConfig::PACKET_SIZE];
 
         for (unsigned u = 0; u < Audio::IConfig::PACKET_SIZE; ++u) {
-            afSamples[u] = (int16)(32000.0 * pOutput->afSamples[u]);
+            afSamples[u] = (int16)(32000.0 * oOutput->afSamples[u]);
         }
 
 
@@ -179,7 +180,7 @@ void testWaveforms() {
         std::printf("\tBenchmarking map() for 1M packets: ");
         Nanoseconds::Value uMark = Nanoseconds::mark();
         for (unsigned u = 0; u < 1000000; ++u) {
-            auto pOutput = poWaveform->map(poInput);
+            poWaveform->map(oInput, oOutput);
         }
         uMark = Nanoseconds::mark() - uMark;
         float64 fSeconds = 1.e-9 * (float64)uMark;
@@ -336,7 +337,7 @@ void tbnanTest(Audio::Context* poContext) {
     tbNaN.enable();
     tbNaN.setVoiceNote(Machine::Voice::V0, Note::getNumber("A1"));
     tbNaN.startVoice(Machine::Voice::V0);
-    tbNaN.setVoiceVelocity(Machine::Voice::V0, 127.0);
+    tbNaN.setVoiceVelocity(Machine::Voice::V0, 8*127.0);
     writeAudio(&tbNaN, poContext, 100);
 }
 
@@ -421,7 +422,7 @@ int main(int const iArgCount, char const** aiArgVal) {
             poContext
         );
 
-        //mixtest(poContext);
+        mixtest(poContext);
 
         tbnanTest(poContext);
 
@@ -430,10 +431,8 @@ int main(int const iArgCount, char const** aiArgVal) {
     }
     Signal::Packet::dumpStats();
 
-    //Machine::TBNaN oBass;
-
-    //testWaveforms();
-    //Signal::Packet::dumpStats();
+    testWaveforms();
+    Signal::Packet::dumpStats();
 
     return EXIT_SUCCESS;
 }

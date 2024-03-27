@@ -35,6 +35,7 @@ IOscillator::IOscillator(
     float32 fInitialFrequency,
     float32 fInitialPhase
 ):
+    oWaveInputPacketPtr{Packet::create()},
     fTimeStep{SAMPLE_PERIOD},
     fPhaseOffset{fInitialPhase},
     fPhaseCorrection{fInitialPhase},
@@ -146,7 +147,7 @@ float32 LFO::clampFrequency(float32 fNewFrequency) const {
 }
 
 Packet const* LFO::generateCommon() {
-    float32* pSamples    = oOutputPacketPtr->afSamples;
+    float32* pSamples    = oWaveInputPacketPtr->afSamples;
     float32  fCorrection = fPhaseCorrection;
     uint32   uCounter    = getCyclicSampleCounter();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -154,15 +155,16 @@ Packet const* LFO::generateCommon() {
     }
     uSamplePosition += PACKET_SIZE;
     handleCyclicSampleCounterReset(pSamples[PACKET_SIZE - 1]);
-    return oOutputPacketPtr.get();
+    return oWaveInputPacketPtr.get();
 }
 
 /**
  * @inheritDoc
  */
 Packet::ConstPtr LFO::emitNew() {
-    oOutputPacketPtr = oWaveformPtr->map(generateCommon());
-    oOutputPacketPtr->scaleBy(fDepth);
+    Packet* poOutput = oOutputPacketPtr.get();
+    oWaveformPtr->map(generateCommon(), poOutput);
+    poOutput->scaleBy(fDepth);
     return oOutputPacketPtr;
 }
 
@@ -171,8 +173,9 @@ Packet::ConstPtr LFO::emitNew() {
  * @inheritDoc
  */
 Packet::ConstPtr LFOZeroToOne::emitNew() {
-    oOutputPacketPtr = oWaveformPtr->map(generateCommon());
-    oOutputPacketPtr->scaleAndBiasBy(Waveform::HALF * fDepth, Waveform::HALF * fDepth);
+    Packet* poOutput = oOutputPacketPtr.get();
+    oWaveformPtr->map(generateCommon(), poOutput);
+    poOutput->scaleAndBiasBy(Waveform::HALF * fDepth, Waveform::HALF * fDepth);
     return oOutputPacketPtr;
 }
 
@@ -180,8 +183,9 @@ Packet::ConstPtr LFOZeroToOne::emitNew() {
  * @inheritDoc
  */
 Packet::ConstPtr LFOOneToZero::emitNew() {
-    oOutputPacketPtr = oWaveformPtr->map(generateCommon());
-    oOutputPacketPtr->scaleAndBiasBy(
+    Packet* poOutput = oOutputPacketPtr.get();
+    oWaveformPtr->map(generateCommon(), poOutput);
+    poOutput->scaleAndBiasBy(
         Waveform::HALF * fDepth,
         Waveform::ONE - Waveform::HALF * fDepth
     );
@@ -291,7 +295,7 @@ float32 Sound::clampFrequency(float32 fNewFrequency) const {
 void Sound::populatePitchShiftedPacket(Packet const* poPitchShifts) {
     // Pitch Samples are in relative semitones, e.g. 2.0 is a whole note increase.
     float32 const* pPitchSamples     = poPitchShifts->afSamples;
-    float32*       pInputSamples     = oOutputPacketPtr->afSamples;
+    float32*       pInputSamples     = oWaveInputPacketPtr->afSamples;
 
     // Use higher definition calculation for time
     float64        fInstantFrequency = fCurrentFrequency;
@@ -325,7 +329,7 @@ void Sound::populatePitchAndPhaseShiftedPacket(
     // Pitch Samples are in relative semitones, e.g. 2.0 is a whole note increase.
     float32 const* pPitchSamples     = poPitchShifts->afSamples;
     float32 const* pPhaseSamples     = poPhaseShifts->afSamples;
-    float32*       pInputSamples     = oOutputPacketPtr->afSamples;
+    float32*       pInputSamples     = oWaveInputPacketPtr->afSamples;
 
     // Use higher definition calculation for time
     float64        fInstantFrequency = fCurrentFrequency;
@@ -403,7 +407,7 @@ void Sound::inputAperiodic(Sound* poOscillator) {
  * Optimised input packet generator for the case where there is no pitch/phase modulation
  */
 void Sound::inputDirect(Sound* poOscillator) {
-    float32* pSamples    = poOscillator->oOutputPacketPtr->afSamples;
+    float32* pSamples    = poOscillator->oWaveInputPacketPtr->afSamples;
     float32  fCorrection = poOscillator->fPhaseCorrection;
     uint32   uCounter    = poOscillator->getCyclicSampleCounter();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -467,7 +471,7 @@ void Sound::inputPhaseMod(Sound* poOscillator) {
         ->poPhaseModulator
         ->emit(poOscillator->uLastIndex)
         ->afSamples;
-    float32* pSamples    = poOscillator->oOutputPacketPtr->afSamples;
+    float32* pSamples    = poOscillator->oWaveInputPacketPtr->afSamples;
     float32  fPeriod     = poOscillator->fPhaseModulationIndex * poOscillator->fWaveformPeriod;
     float32  fCorrection = poOscillator->fPhaseCorrection;
     uint32   uCounter    = poOscillator->getCyclicSampleCounter();
@@ -592,7 +596,8 @@ void Sound::configureInputStage() {
  * @inheritDoc
  */
 void Sound::outputDirect(Sound* poOscillator) {
-    poOscillator->oOutputPacketPtr = poOscillator->oWaveformPtr->map(
+    poOscillator->oWaveformPtr->map(
+        poOscillator->oWaveInputPacketPtr.get(),
         poOscillator->oOutputPacketPtr.get()
     );
 }
@@ -601,7 +606,8 @@ void Sound::outputDirect(Sound* poOscillator) {
  * @inheritDoc
  */
 void Sound::outputLevelMod(Sound* poOscillator) {
-    poOscillator->oOutputPacketPtr = poOscillator->oWaveformPtr->map(
+    poOscillator->oWaveformPtr->map(
+        poOscillator->oWaveInputPacketPtr.get(),
         poOscillator->oOutputPacketPtr.get()
     );
     Packet* pOutputLevel = poOscillator
@@ -618,7 +624,8 @@ void Sound::outputLevelMod(Sound* poOscillator) {
  * @inheritDoc
  */
 void Sound::outputLevelEnv(Sound* poOscillator) {
-    poOscillator->oOutputPacketPtr = poOscillator->oWaveformPtr->map(
+    poOscillator->oWaveformPtr->map(
+        poOscillator->oWaveInputPacketPtr.get(),
         poOscillator->oOutputPacketPtr.get()
     );
     poOscillator->oOutputPacketPtr->modulateWith(
@@ -632,7 +639,8 @@ void Sound::outputLevelEnv(Sound* poOscillator) {
  * @inheritDoc
  */
 void Sound::outputLevelModEnv(Sound* poOscillator) {
-    poOscillator->oOutputPacketPtr = poOscillator->oWaveformPtr->map(
+    poOscillator->oWaveformPtr->map(
+        poOscillator->oWaveInputPacketPtr.get(),
         poOscillator->oOutputPacketPtr.get()
     );
     Packet* pOutputLevel = poOscillator

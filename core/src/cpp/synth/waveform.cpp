@@ -32,9 +32,8 @@ Sine::Sine() {
  *
  * Branchless techniques used here to improve throughput.
  */
-Packet::Ptr Sine::map(Packet const* poInput) {
-    Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->afSamples;
+void Sine::map(Packet const* poInput, Packet* poOutput) {
+    float32* pDest      = poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
 
     union {
@@ -50,7 +49,6 @@ Packet::Ptr Sine::map(Packet const* poInput) {
         iPi = PI_IEEE_32|(((int32)fFloor) & 1) << 31; // set sign bit when odd
         pDest[i] = OUTPUT_ADJUST * sinApprox(fPi * (fTime - fFloor - HALF));
     }
-    return pOutput;
 }
 
 /**
@@ -77,9 +75,8 @@ Triangle::Triangle() {
 /**
  * @inheritDoc
  */
-Packet::Ptr Triangle::map(Packet const* poInput) {
-    Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->afSamples;
+void Triangle::map(Packet const* poInput, Packet* poOutput) {
+    float32* pDest      = poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
 
     union {
@@ -93,7 +90,6 @@ Packet::Ptr Triangle::map(Packet const* poInput) {
         iTwo = TWO_IEEE_32 | (((int32)fFloor) & 1) << 31;
         pDest[i] = -fTwo * (fTime - fFloor - HALF);
     }
-    return pOutput;
 }
 
 /**
@@ -120,15 +116,13 @@ SawDown::SawDown() {
 /**
  * @inheritDoc
  */
-Packet::Ptr SawDown::map(Packet const* poInput) {
-    Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->afSamples;
+void SawDown::map(Packet const* poInput, Packet* poOutput) {
+    float32* pDest      = poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
         float32 fSrc = pSrc[i] + HALF;
         pDest[i] = TWO * ((float32)std::ceil(fSrc) - fSrc - HALF);
     }
-    return pOutput;
 }
 
 /**
@@ -148,15 +142,13 @@ SawUp::SawUp() {
 /**
  * @inheritDoc
  */
-Packet::Ptr SawUp::map(Packet const* poInput) {
-    Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->afSamples;
+void SawUp::map(Packet const* poInput, Packet* poOutput) {
+    float32* pDest      = poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
         float32 fSrc = pSrc[i] + HALF;
         pDest[i] = TWO * (fSrc - (float32)std::floor(fSrc) - HALF);
     }
-    return pOutput;
 }
 
 /**
@@ -185,14 +177,12 @@ Square::Square() {
  *
  * Branchless techniques used here to improve throughput.
  */
-Packet::Ptr Square::map(Packet const* poInput) {
-    Packet::Ptr pOutput = Packet::create();
-    int32* pDest = (int32*)pOutput->afSamples;
+void Square::map(Packet const* poInput, Packet* poOutput) {
+    int32* pDest = (int32*)poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
         pDest[i] = ONE_IEEE_32 | ((int32)std::floor(pSrc[i]) & 1) << 31;
     }
-    return pOutput;
 }
 
 /**
@@ -212,9 +202,8 @@ FixedPWM::FixedPWM(float32 fWidth) {
 /**
  * @inheritDoc
  */
-Packet::Ptr FixedPWM::map(Packet const* poInput) {
-    Packet::Ptr pOutput = Packet::create();
-    int32* pDest = (int32*)pOutput->afSamples;
+void FixedPWM::map(Packet const* poInput, Packet* poOutput) {
+    int32* pDest = (int32*)poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
     union {
         int32   iResult;
@@ -224,7 +213,6 @@ Packet::Ptr FixedPWM::map(Packet const* poInput) {
         fResult = std::ceil(pSrc[i]) - pSrc[i] - fWidth;
         pDest[i] = ONE_IEEE_32 | (iResult & 0x80000000);
     }
-    return pOutput;
 }
 
 /**
@@ -234,7 +222,41 @@ FixedPWM::~FixedPWM() {
    //std::fprintf(stderr, "Destroyed FixedPWM at %p\n", this);
 }
 
+
+ModulatedPWM::ModulatedPWM(IStream& roModulator, float32 fWidth):
+    poModulator{&roModulator},
+    fWidth{fWidth}
+{
+
 }
+
+ModulatedPWM::ModulatedPWM(IStream::Ptr const& roModulatorPtr, float32 fWidth):
+    oModulatorPtr{roModulatorPtr},
+    poModulator{roModulatorPtr.get()},
+    fWidth{fWidth}
+{
+
+}
+
+ModulatedPWM::~ModulatedPWM() {
+
+}
+
+// Packet::Ptr ModulatedPWM::map(Packet const* poInput) {
+//     if (poModulator) {
+//         oPacketPtr->scaleAndBiasBy(
+//             poModulator->emit(),
+//             0.5f * fWidth,
+//             0.5
+//         );
+//
+//     } else {
+//
+//     }
+// }
+
+
+} // namespace
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -266,12 +288,11 @@ WhiteNoise::~WhiteNoise() {
  * We get one new random value, scale it to floating point then multiply our existing random
  * table by this value. This results in the low order bit preservation after overflow.
  */
-Packet::Ptr WhiteNoise::map(Packet const* poInput) {
+void WhiteNoise::map(Packet const* poInput, Packet* poOutput) {
 
     constexpr float64 const RAND_SCALE = 1.0f/65536.0f;
     constexpr uint32  const WORD_MASK  = 0x7FFFFFFF;
-    Packet::Ptr pOutput = Packet::create();
-    float32* afSamples   = pOutput->afSamples;
+    float32* afSamples  = poOutput->afSamples;
     float64  fRandom    = RAND_SCALE * (float64)mt_rand();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         // Update the random buffer and output buffer as we go
@@ -280,7 +301,6 @@ Packet::Ptr WhiteNoise::map(Packet const* poInput) {
         afSamples[u] = (float32)(uNextRandom * fNormalise) - 1.0f;
     }
 
-    return pOutput;
 }
 
 

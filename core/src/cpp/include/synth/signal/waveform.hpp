@@ -107,18 +107,16 @@ class IWaveform /*: public Util::ISometimesShareable */ {
          * Calculate a Packets worth of output values for a Packets worth of input values
          *
          * @param  Packet const* poInput
-         * @return Packet::Ptr
          */
-        virtual Packet::Ptr map(Packet const* poInput) = 0;
+        virtual void map(Packet const* poInput, Packet* poOutput) = 0;
 
         /**
          * Calculate a Packets worth of output values for a Packets worth of input values
          *
          * @param  Packet::ConstPtr poInput
-         * @return Packet::Ptr
          */
-        Packet::Ptr map(Packet::ConstPtr const& poInput) {
-            return map(poInput.get());
+        void map(Packet::ConstPtr const& roInput, Packet::Ptr& roOutput) {
+            map(roInput.get(),roOutput.get());
         }
 
         /**

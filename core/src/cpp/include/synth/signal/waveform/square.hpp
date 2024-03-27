@@ -36,7 +36,7 @@ class Square : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* poInput) override;
+        void map(Packet const* poInput, Packet* poOutput) override;
 
         /**
          * Static version of the value function that can be called and inlined explicitly from
@@ -121,7 +121,7 @@ class FixedPWM : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* poInput) override;
+        void map(Packet const* poInput, Packet* poOutput) override;
 
         /**
          * Static version of the value function that can be called and inlined explicitly from
@@ -188,13 +188,14 @@ class FixedPWM : public IWaveform {
 class ModulatedPWM : public IWaveform {
 
     private:
-        IStream::Ptr poWidthModulator;
-
-        float32      fModDepth;
-        float32      fModBias;
+        Packet::Ptr  oPacketPtr;
+        IStream::Ptr oModulatorPtr;
+        IStream*     poModulator;
+        float32      fWidth;
 
     public:
-        ModulatedPWM(IStream::Ptr const& poModulator, float32 fModDepth, float32 fModBias);
+        ModulatedPWM(IStream& roModulator, float32 fWidth);
+        ModulatedPWM(IStream::Ptr const& roModulatorPtr, float32 fWidth);
         ~ModulatedPWM();
 
         /**
@@ -207,7 +208,7 @@ class ModulatedPWM : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* poInput) override;
+        void map(Packet const* poInput, Packet* poOutput) override;
 
         /**
          * @inheritDoc

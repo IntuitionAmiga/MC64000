@@ -39,7 +39,7 @@ class Packet {
         typedef std::shared_ptr<Packet> Ptr;
         typedef std::shared_ptr<Packet const> ConstPtr;
 
-        class Pool;
+        class RecyclePool;
 
         /**
          * Obtain a new instance
@@ -47,6 +47,8 @@ class Packet {
          * @return Ptr
          */
         static Ptr create();
+
+        static Ptr createUnpooled();
 
         /**
          * Obtain a common reference to silence.
@@ -203,8 +205,12 @@ class Packet {
         /**
          * Forbid explicit creation and deletion
          */
-        Packet() {}
-        ~Packet() {}
+        Packet() {
+            //std::fprintf(stderr, "NP: %p\n", this);
+        }
+        ~Packet() {
+            //std::fprintf(stderr, "DP: %p\n", this);
+        }
 
         /**
          * Destroy an instance.
@@ -218,7 +224,7 @@ class Packet {
          * for proper handling.
          */
         class Deleter;
-        friend class Pool;
+        friend class RecyclePool;
 };
 
 /**

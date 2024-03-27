@@ -32,6 +32,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
         static constexpr uint64 const SAMPLE_COUNTER_MASK = 0xFFF;
 
         IWaveform::Ptr oWaveformPtr;
+        Packet::Ptr    oWaveInputPacketPtr;
         float64        fTimeStep;
         float64        fScaleVal;
         float32        fFrequency;

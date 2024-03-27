@@ -42,13 +42,15 @@ class XForm : public IWaveform {
 
         // 2 << N * { phase multiplier, phase displacement, scale multiplier, bias }
 
+        Packet::Ptr oReshapePacketPtr;
+
         float32 afTransform[4 * SIZE] __attribute__ ((aligned (16))) = { };
         Ptr     poWaveform;
         float32 fPeriodAdjust;
 
     public:
         XForm(Ptr poSourceWaveform, float32 const* afCustomTransform):
-            poWaveform(poSourceWaveform)
+            poWaveform{poSourceWaveform}
         {
             static_assert(N < 4, "Invalid size exponent for XForm");
             fPeriodAdjust = poWaveform->getPeriod() / PERIOD;
@@ -78,7 +80,8 @@ class XForm : public IWaveform {
         }
 
         ~XForm() {
-            //std::fprintf(stderr, "Destroyed XForm<%u> at %p\n", (uint32)N, this);
+            oReshapePacketPtr.reset();
+            std::fprintf(stderr, "Destroyed XForm<%u> at %p\n", (uint32)N, this);
         }
 
         /**
@@ -91,9 +94,11 @@ class XForm : public IWaveform {
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* poInput) override {
-            Packet::Ptr    pReshaped = Packet::create();
-            float32*       pDest     = pReshaped->afSamples;
+        void map(Packet const* poInput, Packet* poOutput) override {
+            if (!oReshapePacketPtr.get()) {
+                oReshapePacketPtr = Packet::createUnpooled();
+            }
+            float32*       pDest     = oReshapePacketPtr->afSamples;
             float32 const* pSrc      = poInput->afSamples;
 
             // Apply input phase modification
@@ -107,15 +112,15 @@ class XForm : public IWaveform {
                 );
             }
 
-            pReshaped = poWaveform->map(pReshaped);
+            poWaveform->map(oReshapePacketPtr.get(), poOutput);
 
             // Apply the output amplitude modification
-            pDest = pReshaped->afSamples;
+            pDest = poOutput->afSamples;
             for (unsigned i = 0; i < PACKET_SIZE; ++i) {
                 float32 const* aSlice = afTransform + ((((int32)std::floor(pSrc[i])) & (SIZE - 1)) << 2);
                 pDest[i] = (pDest[i] * aSlice[LEVEL_MUL]) + aSlice[LEVEL_ADD];
             }
-            return pReshaped;
+
         }
 
         /**
