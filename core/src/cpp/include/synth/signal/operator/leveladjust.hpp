@@ -51,7 +51,7 @@ class LevelAdjust : public TStreamCommon, protected TPacketIndexAware {
 
         LevelAdjust* enable() override {
             TStreamCommon::enable();
-            if (poSourceInput) {
+            if (bEnabled && poSourceInput) {
                 poSourceInput->enable();
             }
             return this;

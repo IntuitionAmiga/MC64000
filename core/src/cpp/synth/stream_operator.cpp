@@ -158,6 +158,19 @@ FixedMixer* FixedMixer::reset() {
     return this;
 }
 
+FixedMixer* FixedMixer::enable() {
+    TStreamCommon::enable();
+    if (bEnabled) {
+        std::fprintf(stderr, "FixedMixer %p enable()\n", this);
+        for (uint32 uChannelNum = 0; uChannelNum < uNumChannels; ++uChannelNum) {
+            if (auto poInput = poChannels[uChannelNum].poSource) {
+                poInput->enable();
+            }
+        }
+    }
+    return this;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 SimpleMixer::SimpleMixer(float32 fOutputLevel): fOutputLevel(fOutputLevel) {

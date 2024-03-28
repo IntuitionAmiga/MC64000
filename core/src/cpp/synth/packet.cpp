@@ -15,6 +15,12 @@
 #include <cstdio>
 #include <synth/signal.hpp>
 
+//#define DEBUG_PACKET_USED_AFTER_FREE
+
+#ifdef DEBUG_PACKET_USED_AFTER_FREE
+#include <synth/signal/waveform.hpp>
+#endif
+
 namespace MC64K::Synth::Audio::Signal {
 
 size_t Packet::uNextIndex        = 0;
@@ -35,6 +41,18 @@ Packet* Packet::scaleBy(float32 fValue) {
     }
     return this;
 }
+
+Packet* Packet::scaleBy(Packet const* poPacket, float32 fValue) {
+    if (poPacket) {
+        for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+            afSamples[u] = poPacket->afSamples[u] * fValue;
+        }
+    } else {
+        clear();
+    }
+    return this;
+}
+
 
 Packet* Packet::biasBy(float32 fValue) {
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
@@ -69,6 +87,26 @@ Packet* Packet::sumWith(Packet const* poPacket) {
     }
     return this;
 }
+
+Packet* Packet::sum(Packet const* poPacketA, Packet const* poPacketB) {
+    if (poPacketA) {
+        if (poPacketB) {
+            for (unsigned u = 0; u < PACKET_SIZE; ++u) {
+                afSamples[u] = poPacketA->afSamples[u] + poPacketB->afSamples[u];
+            }
+        } else {
+            std::memcpy(afSamples, poPacketA->afSamples, sizeof(afSamples));
+        }
+    } else {
+        if (poPacketB) {
+            std::memcpy(afSamples, poPacketB->afSamples, sizeof(afSamples));
+        } else {
+            clear();
+        }
+    }
+    return this;
+}
+
 
 Packet* Packet::modulateWith(Packet const* poPacket) {
     if (poPacket) {
@@ -134,15 +172,20 @@ class Packet::RecyclePool {
         }
 
         static void deallocate(Packet* poPacket) {
+
             // Invert the mask when looking for where to put the Packet for recycling
             uint64 uInvMask = ~uFreedMask;
 
             if (uInvMask) {
                 int iRecycle = __builtin_ffsll(uInvMask) - 1;
                 apPool[iRecycle] = poPacket;
+
+#ifdef DEBUG_PACKET_USED_AFTER_FREE
+                IWaveform::get(IWaveform::NOISE)->map(poPacket, poPacket);
+#endif
                 uFreedMask |= 1 << iRecycle;
             } else {
-                //std::fprintf(stderr, "Can't recycle Packet at %p, pool is full\n", poPacket);
+                std::fprintf(stderr, "Can't recycle Packet at %p, pool is full\n", poPacket);
                 // The freed pool was already full, so we can't recycle the deleted packet
                 delete poPacket;
             }
@@ -200,7 +243,7 @@ Packet::ConstPtr Packet::getSilence() {
     static Packet::Ptr pSilence;
     if (!pSilence.get()) {
         pSilence = Packet::create();
-        pSilence->fillWith(0.0f);
+        pSilence->clear();
     }
     return pSilence;
 }

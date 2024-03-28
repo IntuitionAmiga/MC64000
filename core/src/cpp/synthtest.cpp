@@ -275,18 +275,19 @@ void mixtest(Audio::Context* poContext) {
     Signal::Oscillator::LFOOneToZero oLFO (
         Signal::IWaveform::get(Signal::IWaveform::SINE),
         5.0f,
-        0.1f
+        1.0f
     );
-    oLFO.enable();
+    //oLFO.enable();
     std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream3)->setLevelEnvelope(pEnv);
     std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream2)->setLevelEnvelope(pEnv);
     std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream1)
+        ->setLevelModulator(oLFO)
         ->setLevelEnvelope(pEnv);
 
-//     Signal::IStream::Ptr pMixer (
-//         new Signal::Operator::FixedMixer(3, 1.0f)
-//     );
-//
+//    Signal::IStream::Ptr pMixer (
+//        new Signal::Operator::FixedMixer(3, 1.0f)
+//    );
+
 //     std::reinterpret_pointer_cast<Signal::Operator::FixedMixer>(pMixer)
 //         ->setInputSource(
 //             0,
@@ -306,28 +307,29 @@ void mixtest(Audio::Context* poContext) {
 //
 //     pMixer->enable();
 
-    // test direct wiring
-    std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream1)->setLevelModulator(oLFO);
 
-    // test hybrid wiring
     Signal::Operator::FixedMixer oMixer(3, 1.0f);
+
     oMixer.setInputSource(0, pStream1, 0.8f);
     oMixer.setInputSource(1, pStream2, 0.1f);
     oMixer.setInputSource(2, pStream3, 0.1f);
-    oMixer.enable();
-    Signal::Operator::LevelAdjust oAdjust(oMixer, 0.75f, 0.0f);
-    oAdjust.enable();
+    //oMixer.enable();
 
-    // hardwire a filter
+    Signal::Operator::LevelAdjust oAdjust(oMixer, 0.75f);
+    //oAdjust.enable();
+
     Signal::Filter::FourPoleMultiMode oFilter(
         oAdjust,
         Signal::Filter::FourPoleMultiMode::LOW_PASS,
-        0.05f,
-        0.05f
+        0.1f,
+        0.5f
     );
+
+    oFilter.setCutoffModulator(oLFO);
+
     oFilter.enable();
 
-    writeAudio(&oFilter, poContext, 500);
+    writeAudio(&oFilter, poContext, 1000);
     //writeRawFile(&oMix, "mix_test.raw", 1000);
 }
 
@@ -424,15 +426,15 @@ int main(int const iArgCount, char const** aiArgVal) {
 
         mixtest(poContext);
 
-        tbnanTest(poContext);
+        //tbnanTest(poContext);
 
 
         delete poOutput;
     }
     Signal::Packet::dumpStats();
 
-    testWaveforms();
-    Signal::Packet::dumpStats();
+    //testWaveforms();
+    //Signal::Packet::dumpStats();
 
     return EXIT_SUCCESS;
 }

@@ -104,6 +104,16 @@ class Packet {
         Packet* scaleBy(float32 fValue);
 
         /**
+         * Fill the packet with the scaled values from another.
+         */
+        Packet* scaleBy(Packet const* poPacket, float32 fValue);
+
+        Packet* scaleBy(ConstPtr const& roPacket, float32 fScale, float32 fBias) {
+            return scaleBy(roPacket.get(), fScale);
+        }
+
+
+        /**
          * Bias a packet with the given value.
          *
          * @param  float32 fValue
@@ -130,8 +140,8 @@ class Packet {
 
         Packet* scaleAndBiasBy(Packet const* poPacket, float32 fScale, float32 fBias);
 
-        Packet* scaleAndBiasBy(ConstPtr const& poPacket, float32 fScale, float32 fBias) {
-            return scaleAndBiasBy(poPacket.get(), fScale, fBias);
+        Packet* scaleAndBiasBy(ConstPtr const& roPacket, float32 fScale, float32 fBias) {
+            return scaleAndBiasBy(roPacket.get(), fScale, fBias);
         }
 
 
@@ -152,6 +162,16 @@ class Packet {
         Packet* sumWith(ConstPtr const& poPacket) {
             return sumWith(poPacket.get());
         }
+
+        /**
+         * Populate with the sum of two other packets
+         */
+        Packet* sum(Packet const* poPacketA, Packet const* poPacketB);
+
+        Packet* sum(ConstPtr const& roPacketA, ConstPtr const& roPacketB) {
+            return sum(roPacketA.get(), roPacketB.get());
+        }
+
 
         /**
          * Multiply with the values of another packet

@@ -30,6 +30,7 @@ class FixedMixer : public TStreamCommon, protected TPacketIndexAware {
             IStream::Ptr oSourcePtr;
             IStream*     poSource;
             float32      fLevel;
+            Channel(): poSource{nullptr}, fLevel{0.0f} { }
         };
 
         Channel*    poChannels;
@@ -50,6 +51,8 @@ class FixedMixer : public TStreamCommon, protected TPacketIndexAware {
          * @inheritDoc
          */
         FixedMixer* reset() override;
+
+        FixedMixer* enable() override;
 
         /**
          * @inheritDoc
