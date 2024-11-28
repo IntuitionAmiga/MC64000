@@ -27,7 +27,7 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
  * Waveform types define their period and a function for mapping input time values (expressed in
  * periods) into output values in the range -1.0 to 1.0
  */
-class IWaveform /*: public Util::ISometimesShareable */ {
+class IWaveform {
     public:
         virtual ~IWaveform() = default;
 
@@ -85,13 +85,12 @@ class IWaveform /*: public Util::ISometimesShareable */ {
         /**
          * Factory method to obtain common shapes
          */
-        static Ptr get(FixedShape eShape);
+        static Ptr get(FixedShape eShape) noexcept;
 
         /**
          * Factory method to obtain a custom width PWM
          */
         static Ptr createPWM(float32 fWidth);
-        static Ptr createPWM(IStream::Ptr poWidthModulator);
 
         /**
          * Returns the period of this function, i.e. the numeric interval after which it's
@@ -99,46 +98,44 @@ class IWaveform /*: public Util::ISometimesShareable */ {
          *
          * @return float32
          */
-        virtual float32 getPeriod() const = 0;
+        virtual float32 getPeriod() const noexcept = 0;
 
         /**
          * Calculate a Packets worth of output values for a Packets worth of input values
          *
          * @param  Packet const* poInput
-         * @return Packet::Ptr
          */
-        virtual Packet::Ptr map(Packet const* poInput) = 0;
+        virtual void map(Packet const* poInput, Packet* poOutput) noexcept = 0;
 
         /**
          * Calculate a Packets worth of output values for a Packets worth of input values
          *
          * @param  Packet::ConstPtr poInput
-         * @return Packet::Ptr
          */
-        Packet::Ptr map(Packet::ConstPtr const& poInput) {
-            return map(poInput.get());
+        void map(Packet::ConstPtr const& roInput, Packet::Ptr& roOutput) noexcept {
+            map(roInput.get(),roOutput.get());
         }
 
         /**
          * Calculate the output for a single input.
          */
-        virtual float32 value(float32 fInput) const = 0;
+        virtual float32 value(float32 fInput) const noexcept = 0;
 
         /**
          * Returns the enumerated shape identifier for the waveform.
          */
-        virtual FixedShape getShape() const = 0;
+        virtual FixedShape getShape() const noexcept = 0;
 
         /**
          * Returns whether or not the wave contains sharp discontinuities.
          */
-        virtual bool isDiscontinuous() const = 0;
+        virtual bool isDiscontinuous() const noexcept = 0;
 
         /**
          * Returns whether or not the waveform is aperiodic, i.e. does not
          * depend on input time, e.g. noise sources.
          */
-        virtual bool isAperiodic() const = 0;
+        virtual bool isAperiodic() const noexcept = 0;
 
         /**
          * Get a copy (maybe). For stateless implementations, this is just the

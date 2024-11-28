@@ -19,7 +19,7 @@
 namespace MC64K::Synth::Audio::Signal {
 using namespace MC64K::StandardTestHost::Audio::IConfig;
 
-class IEnvelope : public TStreamCommon, protected TPacketIndexAware {
+class IEnvelope : public TStreamCommon, public TOutputStream, protected TPacketIndexAware {
 
     protected:
         float32 fTimeScale        = 1.0f;
@@ -29,13 +29,16 @@ class IEnvelope : public TStreamCommon, protected TPacketIndexAware {
         static constexpr float32 const MIN_TIME_SCALE_DIFF  = 1.e-5f;
         static constexpr float32 const MIN_LEVEL_SCALE_DIFF = 1.e-5f;
 
+        IEnvelope(): TOutputStream{} {
+        }
+
     public:
         static constexpr float32 const MIN_TIME_SCALE = 0.01f;
 
         /**
          * @inheritDoc
          */
-        IEnvelope* reset();
+        IEnvelope* reset() noexcept override;
 
         /**
          * Set a scaling factor for envelope timing. A smaller value results in a faster envelope. Use to simlulate the
@@ -44,7 +47,7 @@ class IEnvelope : public TStreamCommon, protected TPacketIndexAware {
          * @param  float32 fTimeScale
          * @return this
          */
-        IEnvelope* setTimeScale(float32 fTimeScale);
+        IEnvelope* setTimeScale(float32 fTimeScale) noexcept;
 
         /**
          * Set a scaling factor for envelope levels. A smaller value results in a quieter envelope. Use to simlulate  the
@@ -54,7 +57,7 @@ class IEnvelope : public TStreamCommon, protected TPacketIndexAware {
          * @param  float32 fLevelScale
          * @return this
          */
-        IEnvelope* setLevelScale(float32 fLevelScale);
+        IEnvelope* setLevelScale(float32 fLevelScale) noexcept;
 
         typedef std::shared_ptr<IEnvelope> Ptr;
         typedef std::shared_ptr<IEnvelope const> ConstPtr;

@@ -2,8 +2,10 @@
 #include <cstdlib>
 #include <mc64k.hpp>
 #include <machine/timing.hpp>
+#include <host/audio/output.hpp>
 #include <synth/note.hpp>
 #include <synth/signal.hpp>
+#include <synth/signal/operator/leveladjust.hpp>
 #include <synth/signal/operator/mixer.hpp>
 #include <synth/signal/operator/automute.hpp>
 #include <synth/signal/oscillator/LFO.hpp>
@@ -12,9 +14,15 @@
 #include <synth/signal/envelope/shape.hpp>
 #include <synth/signal/filter/4polemulti.hpp>
 
+#include <synth/machine/tbnan.hpp>
+
+#include <synth/machine/polyphonic.hpp>
+
+
 using namespace MC64K::Machine;
 using namespace MC64K::Synth::Audio;
-using namespace MC64K::StandardTestHost::Audio::IConfig;
+//using namespace MC64K::StandardTestHost::Audio::IConfig;
+using namespace MC64K::StandardTestHost;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,17 +30,31 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
  * Outputs a stream to a 16-bit raw file for a number of packets.
  */
 void writeRawFile(Signal::IStream* pStream, char const* sName, size_t uPackets) {
-    int16 afSamples[PACKET_SIZE];
+    int16 afSamples[Audio::IConfig::PACKET_SIZE];
     std::FILE* pRawFile = std::fopen(sName, "wb");
     if (pRawFile) {
         for (size_t uIndex = 0; uIndex < uPackets; ++uIndex) {
             auto pOutput = pStream->emit();
-            for (unsigned i = 0; i < PACKET_SIZE; ++i) {
+            for (unsigned i = 0; i < Audio::IConfig::PACKET_SIZE; ++i) {
                 afSamples[i] = (int16)(32000 * pOutput->afSamples[i]);
             }
-            std::fwrite(afSamples, sizeof(int16), PACKET_SIZE, pRawFile);
+            std::fwrite(afSamples, sizeof(int16), Audio::IConfig::PACKET_SIZE, pRawFile);
         }
         std::fclose(pRawFile);
+    }
+}
+
+void writeAudio(Signal::IStream* pStream, Audio::Context* poContext, size_t uPackets) {
+    int16* afSamples = poContext->oBuffer.piWord;
+    for (size_t uIndex = 0; uIndex < uPackets; ++uIndex) {
+        auto pOutput = pStream->emit();
+        for (unsigned i = 0; i < Audio::IConfig::PACKET_SIZE; ++i) {
+            afSamples[i] = (int16)(32000 * pOutput->afSamples[i]);
+        }
+        poContext->poOutputDevice->write(
+            poContext->oBuffer.pAny,
+            Audio::IConfig::PACKET_SIZE
+        );
     }
 }
 
@@ -107,7 +129,8 @@ void testWaveforms() {
     char sFilename[80] = "\0";
 
     for (auto eShape : aWaveShapes) {
-        Signal::Packet::Ptr poInput       = Signal::Packet::create();
+        Signal::Packet::Ptr oInput        = Signal::Packet::create();
+        Signal::Packet::Ptr oOutput       = Signal::Packet::create();
         Signal::IWaveform::Ptr poWaveform = Signal::IWaveform::get(eShape);
         Signal::IWaveform::Ptr poCopy     = poWaveform->copy();
 
@@ -126,16 +149,16 @@ void testWaveforms() {
         float32 fStart = -fScale;
         fScale /= 128.0f;
 
-        for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-            poInput->afSamples[u] = fStart + (float32)u * fScale;
+        for (unsigned u = 0; u < Audio::IConfig::PACKET_SIZE; ++u) {
+            oInput->afSamples[u] = fStart + (float32)u * fScale;
         }
 
-        Signal::Packet::Ptr pOutput = poWaveform->map(poInput);
+        poWaveform->map(oInput, oOutput);
 
-        int16 afSamples[PACKET_SIZE];
+        int16 afSamples[Audio::IConfig::PACKET_SIZE];
 
-        for (unsigned u = 0; u < PACKET_SIZE; ++u) {
-            afSamples[u] = (int16)(32000.0 * pOutput->afSamples[u]);
+        for (unsigned u = 0; u < Audio::IConfig::PACKET_SIZE; ++u) {
+            afSamples[u] = (int16)(32000.0 * oOutput->afSamples[u]);
         }
 
 
@@ -150,7 +173,7 @@ void testWaveforms() {
         if (pRawFile) {
             std::printf("\tWriting %s...\n", sFilename);
             for (unsigned i = 0; i < 1000; ++i) {
-                std::fwrite(afSamples, sizeof(int16), PACKET_SIZE, pRawFile);
+                std::fwrite(afSamples, sizeof(int16), Audio::IConfig::PACKET_SIZE, pRawFile);
             }
             std::fclose(pRawFile);
             std::printf("\tWrote 16-bit binary %s\n", sFilename);
@@ -159,7 +182,7 @@ void testWaveforms() {
         std::printf("\tBenchmarking map() for 1M packets: ");
         Nanoseconds::Value uMark = Nanoseconds::mark();
         for (unsigned u = 0; u < 1000000; ++u) {
-            auto pOutput = poWaveform->map(poInput);
+            poWaveform->map(oInput, oOutput);
         }
         uMark = Nanoseconds::mark() - uMark;
         float64 fSeconds = 1.e-9 * (float64)uMark;
@@ -205,7 +228,7 @@ void benchmark(Signal::IStream* pStream) {
     uMark = Nanoseconds::mark() - uMark;
     float64 fSeconds = 1.0e-9 * (float64)uMark;
     float64 fPacketsPerSecond = (float64)NUM_PACKETS / fSeconds;
-    float64 fTimeGenerated = (float64)NUM_PACKETS * MC64K::StandardTestHost::Audio::IConfig::PACKET_PERIOD;
+    float64 fTimeGenerated = (float64)NUM_PACKETS * Audio::IConfig::PACKET_PERIOD;
     std::printf(
         "\nTotal time %.3f [%.3f Packets/s] for %.2f seconds generated [%.2f x realtime]\n",
         fSeconds,
@@ -217,36 +240,33 @@ void benchmark(Signal::IStream* pStream) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void mixtest() {
+void mixtest(Audio::Context* poContext) {
+    // test smart pointer wiring
     Signal::IStream::Ptr pStream1 (
         new Signal::Oscillator::Sound(
-            Signal::IWaveform::get(Signal::IWaveform::SINE),
-            220.0f,
+            Signal::IWaveform::get(Signal::IWaveform::TRIANGLE),
+            110.0f,
             0.0f
         )
     );
     pStream1->enable();
-
     Signal::IStream::Ptr pStream2 (
         new Signal::Oscillator::Sound(
             Signal::IWaveform::get(Signal::IWaveform::SINE),
-            660.0f,
+            55.1f,
             0.0f
         )
     );
     pStream2->enable();
-
     Signal::IStream::Ptr pStream3 (
         new Signal::Oscillator::Sound(
             Signal::IWaveform::get(Signal::IWaveform::SINE),
-            440.0f,
+            110.0f,
             0.0f
         )
     );
     pStream3->enable();
-
     std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream1)->setPhaseModulator(pStream3);
-
     Signal::IEnvelope::Ptr pEnv (
         new Signal::Envelope::DecayPulse(
             1.0f,
@@ -254,31 +274,90 @@ void mixtest() {
         )
     );
 
+    Signal::Oscillator::LFOOneToZero oLFO (
+        Signal::IWaveform::get(Signal::IWaveform::SINE),
+        5.0f,
+        1.0f
+    );
+    //oLFO.enable();
     std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream3)->setLevelEnvelope(pEnv);
+    std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream2)->setLevelEnvelope(pEnv);
+    std::reinterpret_pointer_cast<Signal::Oscillator::Sound>(pStream1)
+        ->setLevelModulator(oLFO)
+        ->setLevelEnvelope(pEnv);
 
-    Signal::Operator::SimpleMixer oMix(1.0f);
+//    Signal::IStream::Ptr pMixer (
+//        new Signal::Operator::FixedMixer(3, 1.0f)
+//    );
 
-    oMix.addInputStream(
-        0xdeadbeef,
-        pStream1,
-        0.8f
+//     std::reinterpret_pointer_cast<Signal::Operator::FixedMixer>(pMixer)
+//         ->setInputSource(
+//             0,
+//             pStream1,
+//             0.8f
+//         )
+//         ->setInputSource(
+//             1,
+//             pStream2,
+//             0.1f
+//         )
+//         ->setInputSource(
+//             2,
+//             pStream3,
+//             0.1f
+//         );
+//
+//     pMixer->enable();
+
+
+    Signal::Operator::FixedMixer oMixer(3, 1.0f);
+
+    oMixer.setInputStream(0, pStream1, 0.8f);
+    oMixer.setInputStream(1, pStream2, 0.1f);
+    oMixer.setInputStream(2, pStream3, 0.1f);
+    //oMixer.enable();
+
+    Signal::Operator::LevelAdjust oAdjust(oMixer, 0.75f);
+    //oAdjust.enable();
+
+    Signal::Filter::FourPoleMultiMode oFilter(
+        oAdjust,
+        Signal::Filter::FourPoleMultiMode::LOW_PASS,
+        0.1f,
+        0.5f
     );
 
-    oMix.addInputStream(
-        0xabadafe,
-        pStream2,
-        0.1f
-    );
+    oFilter.setCutoffModulator(oLFO);
 
-    oMix.addInputStream(
-        0x69696969,
-        pStream3,
-        0.1f
-    );
+    oFilter.enable();
 
-    oMix.enable();
+    writeAudio(&oFilter, poContext, 1000);
+    //writeRawFile(&oMix, "mix_test.raw", 1000);
+}
 
-    writeRawFile(&oMix, "mix_test.raw", 1000);
+void tbnanTest(Audio::Context* poContext) {
+
+    char const* asNotes[] = {
+        "C1", "D1", "E1", "F1", "G1", "A1", "B1",
+        "C2", "D2", "E2", "F2", "G2", "A2", "B2",
+        "C3"
+    };
+
+    Machine::TBNaN tbNaN;
+    tbNaN.setLevelDecay(0.5f);
+    tbNaN.setCutoffDecay(0.1f);
+    tbNaN.setResonance(0.1f);
+    tbNaN.setPWMLFORate(0.3f);
+    tbNaN.setPWMLFODepth(1.5f);
+    tbNaN.enable();
+    tbNaN.setVoiceVelocity(Machine::Voice::V0, 127.0);
+    for (unsigned u = 0; u < sizeof(asNotes)/sizeof(char const*); ++u) {
+        tbNaN.setVoiceNote(Machine::Voice::V0, Note::getNumber(asNotes[u]));
+        tbNaN.startVoice(Machine::Voice::V0);
+        writeAudio(&tbNaN, poContext, 100);
+        //writeRawFile(&tbNaN, "tbnan_test.raw", 100);
+    }
+    //writeRawFile(&tbNaN, "tbnan_test.raw", 1000);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -344,9 +423,36 @@ void testNotes() {
  */
 int main(int const iArgCount, char const** aiArgVal) {
 
-    testNotes();
-    mixtest();
+    //testNotes();
+    //mixtest();
+
+    Audio::OutputPCMDevice* poOutput = Audio::createOutputPCMDevice(
+        Audio::IConfig::PROCESS_RATE,
+        50, // ms
+        Audio::Output::CH_MONO,
+        Audio::Output::INT_16
+    );
+
+    if (poOutput) {
+        Audio::Context* poContext = poOutput->getContext();
+
+        std::printf(
+            "Allocated Audio::Context at %p\n",
+            poContext
+        );
+
+        tbnanTest(poContext);
+
+        Signal::Packet::dumpStats();
+
+        mixtest(poContext);
+
+        delete poOutput;
+    }
     Signal::Packet::dumpStats();
+
+    //testWaveforms();
+    //Signal::Packet::dumpStats();
 
     return EXIT_SUCCESS;
 }

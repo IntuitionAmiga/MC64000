@@ -19,20 +19,21 @@
 
 namespace MC64K::Synth::Audio::Signal {
 
+IStream::Ptr IStream::NONE{nullptr};
+
 /**
  * @inheritDoc
  */
-bool TStreamCommon::canEnable() {
+bool TStreamCommon::canEnable() const noexcept {
     return true;
 }
 
 /**
  * @inheritDoc
  */
-IStream* TStreamCommon::enable() {
+IStream* TStreamCommon::enable() noexcept {
     if (!bEnabled) {
         if (canEnable()) {
-            poOutputPacket = Packet::create();
             bEnabled = true;
             std::fprintf(stderr, "\tEnabled stream %p\n", this);
         } else {
@@ -47,13 +48,12 @@ IStream* TStreamCommon::enable() {
 /**
  * @inheritDoc
  */
-IStream* TStreamCommon::disable() {
+IStream* TStreamCommon::disable() noexcept {
     if (bEnabled) {
         bEnabled = false;
-        poOutputPacket.reset();
-        std::fprintf(stderr, "\tDisabled stream %p\n", this);
+        //std::fprintf(stderr, "\tDisabled stream %p\n", this);
     } else {
-        std::fprintf(stderr, "\tStream %p already disabled\n", this);
+        //std::fprintf(stderr, "\tStream %p already disabled\n", this);
     }
     return this;
 }

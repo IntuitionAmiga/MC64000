@@ -26,12 +26,14 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
  *
  * Abstract Base Class for Oscillator types
  */
-class IOscillator : public TStreamCommon, protected TPacketIndexAware {
+class IOscillator : public TStreamCommon, public TOutputStream, protected TPacketIndexAware {
 
     protected:
         static constexpr uint64 const SAMPLE_COUNTER_MASK = 0xFFF;
 
-        IWaveform::Ptr poWaveform;
+        IWaveform::Ptr oWaveformPtr;
+        Packet::Ptr    oWaveInputPacketPtr;
+        IWaveform*     poWaveform;
         float64        fTimeStep;
         float64        fScaleVal;
         float32        fFrequency;
@@ -46,7 +48,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          *
          * Overridden to return false if we don't have a waveform set.
          */
-        bool           canEnable() const;
+        bool           canEnable() const noexcept override;
 
         /**
          * Limit the frequency. This is intended to be overridden
@@ -55,7 +57,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          * @param float32
          * @return float32
          */
-        virtual float32 clampFrequency(float32 fFrequency) const {
+        virtual float32 clampFrequency(float32 fFrequency) const noexcept {
             return fFrequency;
         };
 
@@ -65,7 +67,7 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          *
          * @return Packet::ConstPtr
          */
-        virtual Packet::ConstPtr emitNew() = 0;
+        virtual Packet::ConstPtr emitNew() noexcept = 0;
 
         /**
          * Retuns the sample position, modulo the counter size. This value is guaranteed
@@ -73,11 +75,11 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          *
          * @return uint32
          */
-        uint32 getCyclicSampleCounter() const {
+        uint32 getCyclicSampleCounter() const noexcept {
             return (uint32)(uSamplePosition & SAMPLE_COUNTER_MASK);
         }
 
-        void handleCyclicSampleCounterReset(float32 fLastSample) {
+        void handleCyclicSampleCounterReset(float32 fLastSample) noexcept {
             if (!(uSamplePosition & SAMPLE_COUNTER_MASK)) {
                 fPhaseCorrection = (float32)(
                     std::fmod(
@@ -90,12 +92,12 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
 
     public:
         /**
-         * @param IWaveform::Ptr poWaveform
+         * @param IWaveform::Ptr roWaveformPtr
          * @param float32        fFrequency
          * @param float32        fPhase
          */
         IOscillator(
-            IWaveform::Ptr const& poWaveform,
+            IWaveform::Ptr const& roWaveformPtr,
             float32 fFrequency = 0.0f,
             float32 fPhase     = 0.0f
         );
@@ -109,7 +111,16 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          * @param  IWaveform::Ptr poWaveform
          * @return this
          */
-        IOscillator* setWaveform(IWaveform::Ptr const& poWaveform);
+        IOscillator* setWaveform(IWaveform::Ptr const& roWaveformPtr) noexcept;
+
+        IOscillator* setWaveformUnmanaged(IWaveform& roWaveform) noexcept {
+            poWaveform      = &roWaveform;
+            fWaveformPeriod = poWaveform->getPeriod();
+            fTimeStep       = fWaveformPeriod * SAMPLE_PERIOD;
+            fScaleVal       = fTimeStep * fFrequency;
+            bAperiodic      = false;
+            return this;
+        }
 
         /**
          * Set the baseline frequency to emit.
@@ -117,17 +128,17 @@ class IOscillator : public TStreamCommon, protected TPacketIndexAware {
          * @param  float fFrequency
          * @return this
          */
-        IOscillator* setFrequency(float32 fFrequency);
+        IOscillator* setFrequency(float32 fFrequency) noexcept;
 
         /**
          * @inheritDoc
          */
-        IOscillator* reset();
+        IOscillator* reset() noexcept override;
 
         /**
          * @inheritDoc
          */
-        Packet::ConstPtr emit(size_t uIndex = 0);
+        Packet::ConstPtr emit(size_t uIndex = 0) noexcept override;
 
         typedef std::shared_ptr<IOscillator> Ptr;
         typedef std::shared_ptr<IOscillator const> ConstPtr;

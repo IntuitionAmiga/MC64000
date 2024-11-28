@@ -20,14 +20,17 @@
 
 namespace MC64K::Synth::Audio::Signal::Operator {
 
+// TODO - reimplement extending SingleInSingleOut
+
 /**
- * Simple mixer class. Mixes one or more channels into a single output
- * using assignable but non-automated volume controls.
+ * Simple auto mute class that detects when it's input is below a critical threshold
+ * and mutes it. When muted, silence packets are returned and the input stream is not
+ * invoked.
  */
-class AutoMuteSilence : public IStream, protected TPacketIndexAware {
+class AutoMuteSilence : public virtual IStream, protected TPacketIndexAware {
 
     private:
-        IStream::Ptr poSource;
+        IStream::Ptr oSourcePtr;
         float64 fThresholdSquared;
         float64 fLastTotalSquared;
         uint32  uSilentPacketLimit;
@@ -41,7 +44,7 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
         static constexpr float32 const DEF_DURATION  = 0.05f;
 
         AutoMuteSilence(
-            IStream::Ptr poInput,
+            IStream::Ptr const& roInput,
             float32 fDuration = DEF_DURATION,
             float32 fRMSLevel = DEF_THRESHOLD
         );
@@ -51,54 +54,54 @@ class AutoMuteSilence : public IStream, protected TPacketIndexAware {
         /**
          * @inheritDoc
          */
-        size_t getPosition();
+        size_t getPosition() noexcept;
 
         /**
          * @inheritDoc
          */
-        bool isEnabled();
+        bool isEnabled() const noexcept override;
 
         /**
          * @inheritDoc
          */
-        AutoMuteSilence* enable();
+        AutoMuteSilence* enable() noexcept override;
 
         /**
          * @inheritDoc
          */
-        AutoMuteSilence* disable();
+        AutoMuteSilence* disable() noexcept override;
 
         /**
          * @inheritDoc
          */
-        AutoMuteSilence* reset();
+        AutoMuteSilence* reset() noexcept override;
 
         /**
          * @inheritDoc
          */
-        Packet::ConstPtr emit(size_t uIndex = 0);
+        Packet::ConstPtr emit(size_t uIndex = 0) noexcept override;
 
         /**
          * Set the duration the input stream must be silent for before disabling.
          */
-        AutoMuteSilence* setDuration(float32 fSeconds);
+        AutoMuteSilence* setDuration(float32 fSeconds) noexcept;
 
         /**
          * Set the RMS signal level the input stream must be silent for before
          * disabling.
          */
-        AutoMuteSilence* setThreshold(float32 fRMSLevel);
+        AutoMuteSilence* setThreshold(float32 fRMSLevel) noexcept;
 
         /**
          * Set a new input stream. If the pointer is empty, the unit is disabled.
          */
-        AutoMuteSilence* setStream(IStream::Ptr const& poInput);
+        AutoMuteSilence* setStream(IStream::Ptr const& roInputPtr) noexcept;
 
         /**
          * Get the enclosed stream
          */
-        IStream::Ptr getStream() const {
-            return poSource;
+        IStream::Ptr getStream() const noexcept {
+            return oSourcePtr;
         }
 
 };

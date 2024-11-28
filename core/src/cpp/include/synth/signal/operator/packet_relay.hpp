@@ -24,7 +24,7 @@ namespace MC64K::Synth::Audio::Signal::Operator {
  *
  * Adapter that allows a non-stream immediate source of packets to be used with an IStream consumer.
  */
-class PacketRelay : public TStreamCommon {
+class PacketRelay : public TStreamCommon, public TOutputStream {
 
     public:
         PacketRelay();
@@ -33,12 +33,12 @@ class PacketRelay : public TStreamCommon {
         /**
          * Set a packet to relay
          */
-        PacketRelay* setPacket(Packet::Ptr const& poPacket) {
-            poOutputPacket = poPacket;
+        PacketRelay* setPacket(Packet::Ptr const& roPacketPtr) {
+            oOutputPacketPtr = roPacketPtr;
             return this;
         }
 
-        PacketRelay* reset() {
+        PacketRelay* reset() noexcept override {
             uSamplePosition = 0;
             return this;
         }
@@ -46,7 +46,7 @@ class PacketRelay : public TStreamCommon {
         /**
          * @inheritDoc
          */
-        Packet::ConstPtr emit(size_t uIndex);
+        Packet::ConstPtr emit(size_t uIndex) noexcept override;
 };
 
 }

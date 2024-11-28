@@ -29,20 +29,20 @@ class SawDown : public IWaveform {
         /**
          * @inheritDoc
          */
-        float32 getPeriod() const {
+        float32 getPeriod() const noexcept override {
             return ONE;
         }
 
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* poInput);
+        void map(Packet const* poInput, Packet* poOutput) noexcept override;
 
         /**
          * Static version of the value function that can be called and inlined explicitly from
          * anywhere that has checked getShape()
          */
-        static inline float32 valueAt(float32 fTime) {
+        static inline float32 valueAt(float32 fTime) noexcept {
             fTime += HALF;
             return TWO * ((float32)std::ceil(fTime) - fTime - HALF);
         };
@@ -50,28 +50,28 @@ class SawDown : public IWaveform {
         /**
          * @inheritDoc
          */
-        float32 value(float32 fTime) const {
+        float32 value(float32 fTime) const noexcept override {
             return valueAt(fTime);
         };
 
         /**
          * @inheritDoc
          */
-        FixedShape getShape() const {
+        FixedShape getShape() const noexcept override {
             return IWaveform::SAW_DOWN;
         };
 
         /**
          * @inheritDoc
          */
-        bool isDiscontinuous() const {
+        bool isDiscontinuous() const noexcept override {
             return true;
         }
 
         /**
          * @inheritDoc
          */
-        bool isAperiodic() const {
+        bool isAperiodic() const noexcept override {
             return false;
         }
 };
@@ -87,20 +87,20 @@ class SawUp : public IWaveform {
         /**
          * @inheritDoc
          */
-        float32 getPeriod() const {
+        float32 getPeriod() const noexcept override {
             return ONE;
         }
 
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* poInput);
+        void map(Packet const* poInput, Packet* poOutput) noexcept override;
 
         /**
          * Static version of the value function that can be called and inlined explicitly from
          * anywhere that has checked getShape()
          */
-        static inline float32 valueAt(float32 fTime) {
+        static inline float32 valueAt(float32 fTime) noexcept {
             fTime += HALF;
             return TWO * (fTime - (float32)std::floor(fTime) - HALF);
         };
@@ -108,28 +108,28 @@ class SawUp : public IWaveform {
         /**
          * @inheritDoc
          */
-        float32 value(float32 fTime) const {
+        float32 value(float32 fTime) const noexcept override {
             return valueAt(fTime);
         };
 
         /**
          * @inheritDoc
          */
-        FixedShape getShape() const {
+        FixedShape getShape() const noexcept override {
             return IWaveform::SAW_UP;
         };
 
         /**
          * @inheritDoc
          */
-        bool isDiscontinuous() const {
+        bool isDiscontinuous() const noexcept override {
             return true;
         }
 
         /**
          * @inheritDoc
          */
-        bool isAperiodic() const {
+        bool isAperiodic() const noexcept override {
             return false;
         }
 };

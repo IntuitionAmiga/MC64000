@@ -42,13 +42,15 @@ class XForm : public IWaveform {
 
         // 2 << N * { phase multiplier, phase displacement, scale multiplier, bias }
 
+        Packet::Ptr oReshapePacketPtr;
+
         float32 afTransform[4 * SIZE] __attribute__ ((aligned (16))) = { };
         Ptr     poWaveform;
         float32 fPeriodAdjust;
 
     public:
         XForm(Ptr poSourceWaveform, float32 const* afCustomTransform):
-            poWaveform(poSourceWaveform)
+            poWaveform{poSourceWaveform}
         {
             static_assert(N < 4, "Invalid size exponent for XForm");
             fPeriodAdjust = poWaveform->getPeriod() / PERIOD;
@@ -57,16 +59,16 @@ class XForm : public IWaveform {
                     afTransform[i] = afCustomTransform[i];
                 }
             }
-            std::fprintf(stderr, "Created XForm<%u> at %p with matrix:\n", (uint32)N, this);
-            for (unsigned i = 0; i < T_SIZE; i += 4) {
-                std::fprintf(
-                    stderr, "\t| %8.3f %8.3f %8.3f %8.3f |\n",
-                    afTransform[i],
-                    afTransform[i + 1],
-                    afTransform[i + 2],
-                    afTransform[i + 3]
-                );
-            }
+//             std::fprintf(stderr, "Created XForm<%u> at %p with matrix:\n", (uint32)N, this);
+//             for (unsigned i = 0; i < T_SIZE; i += 4) {
+//                 std::fprintf(
+//                     stderr, "\t| %8.3f %8.3f %8.3f %8.3f |\n",
+//                     afTransform[i],
+//                     afTransform[i + 1],
+//                     afTransform[i + 2],
+//                     afTransform[i + 3]
+//                 );
+//             }
         }
 
         /**
@@ -78,22 +80,25 @@ class XForm : public IWaveform {
         }
 
         ~XForm() {
+            oReshapePacketPtr.reset();
             std::fprintf(stderr, "Destroyed XForm<%u> at %p\n", (uint32)N, this);
         }
 
         /**
          * @inheritDoc
          */
-        float32 getPeriod() const {
+        float32 getPeriod() const noexcept override {
             return PERIOD;
         }
 
         /**
          * @inheritDoc
          */
-        Packet::Ptr map(Packet const* poInput) {
-            Packet::Ptr    pReshaped = Packet::create();
-            float32*       pDest     = pReshaped->afSamples;
+        void map(Packet const* poInput, Packet* poOutput) noexcept override {
+            if (!oReshapePacketPtr.get()) {
+                oReshapePacketPtr = Packet::createUnpooled();
+            }
+            float32*       pDest     = oReshapePacketPtr->afSamples;
             float32 const* pSrc      = poInput->afSamples;
 
             // Apply input phase modification
@@ -107,21 +112,21 @@ class XForm : public IWaveform {
                 );
             }
 
-            pReshaped = poWaveform->map(pReshaped);
+            poWaveform->map(oReshapePacketPtr.get(), poOutput);
 
             // Apply the output amplitude modification
-            pDest = pReshaped->afSamples;
+            pDest = poOutput->afSamples;
             for (unsigned i = 0; i < PACKET_SIZE; ++i) {
                 float32 const* aSlice = afTransform + ((((int32)std::floor(pSrc[i])) & (SIZE - 1)) << 2);
                 pDest[i] = (pDest[i] * aSlice[LEVEL_MUL]) + aSlice[LEVEL_ADD];
             }
-            return pReshaped;
+
         }
 
         /**
          * @inheritDoc
          */
-        float32 value(float32 fTime) const {
+        float32 value(float32 fTime) const noexcept {
             float32 fFloor        = std::floor(fTime);
             int32   iPhase        = (int32)fFloor;
             float32 const* aSlice = afTransform + ((iPhase & (SIZE - 1)) << 2);
@@ -134,21 +139,21 @@ class XForm : public IWaveform {
         /**
          * @inheritDoc
          */
-        FixedShape getShape() const {
+        FixedShape getShape() const noexcept override {
             return IWaveform::XFORM;
         };
 
         /**
          * @inheritDoc
          */
-        bool isDiscontinuous() const {
+        bool isDiscontinuous() const noexcept override {
             return true;
         }
 
         /**
          * @inheritDoc
          */
-        bool isAperiodic() const {
+        bool isAperiodic() const noexcept override {
             return false;
         }
 

@@ -15,6 +15,7 @@
  */
 
 #include "stream.hpp"
+#include "operator/single_in_single_out.hpp"
 
 namespace MC64K::Synth::Audio::Signal {
 using namespace MC64K::StandardTestHost::Audio::IConfig;
@@ -25,22 +26,34 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
  *
  * Interface for stream insertion classes. These consume a stream and apply some form of insertion effect.
  */
-class IInsert : public IStream {
+class IInsert : public Operator::SingleInSingleOut {
+
+    protected:
+        float32        fDryLevel;
+
     public:
         /**
          * Obtain the InputStream for this Insert. Returns null if not set yet.
          *
          * @return IStream|null
          */
-        virtual IStream* getInputStream() const = 0;
+        IStream* getInputStream() const noexcept {
+            return poInputStream;
+        };
 
         /**
          * Set the InputStream for this Insert. Until an input stream is set, the insert is disable()d.
          *
-         * @param  IStream|null poInputStream
-         * @return this
          */
-        virtual IInsert* setInputStream(IStream* poInputStream) = 0;
+        IInsert* setInputStream(IStream::Ptr const& roInputStreamPtr) noexcept {
+            Operator::SingleInSingleOut::setInputStream(roInputStreamPtr);
+            return this;
+        }
+
+        IInsert* setInputStream(IStream& roInputStream) noexcept {
+            Operator::SingleInSingleOut::setInputStream(roInputStream);
+            return this;
+        }
 
         /**
          * Get the dry signal level for this Insert.

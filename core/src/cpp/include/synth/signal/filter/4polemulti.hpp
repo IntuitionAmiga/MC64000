@@ -51,49 +51,50 @@ class FourPoleMultiMode : public IFilter  {
         float64 fFeedback = 0.0;
         Mode    eMode     = LOW_PASS;
 
-        void filterSample(float64 fInput, float64 fCutoff, float64 fResonance);
+        void filterSample(float64 fInput, float64 fCutoff, float64 fResonance) noexcept;
 
     protected:
-        void configure();
+        void configure() noexcept override;
 
     public:
-        Packet::ConstPtr emit(uint64 uIndex);
+        Packet::ConstPtr emit(uint64 uIndex) noexcept override;
 
-        FourPoleMultiMode* setMode(Mode eMode) {
+        FourPoleMultiMode* setMode(Mode eMode) noexcept {
             this->eMode = eMode;
             configure();
             return this;
         }
 
-        FourPoleMultiMode(IStream::Ptr const& poInput, Mode eMode, float32 fCutoff, float32 fResonance);
+        FourPoleMultiMode(IStream& roInput, Mode eMode, float32 fCutoff, float32 fResonance);
+        FourPoleMultiMode(IStream::Ptr const& roInputPtr, Mode eMode, float32 fCutoff, float32 fResonance);
         ~FourPoleMultiMode();
 
     private:
         // Functions that generate a control input packet, based on which controllers are set.
-        static Packet::ConstPtr cutoffMod(FourPoleMultiMode* poFilter);
-        static Packet::ConstPtr cutoffEnv(FourPoleMultiMode* poFilter);
-        static Packet::ConstPtr cutoffModEnv(FourPoleMultiMode* poFilter);
-        static Packet::ConstPtr resonanceMod(FourPoleMultiMode* poFilter);
-        static Packet::ConstPtr resonanceEnv(FourPoleMultiMode* poFilter);
-        static Packet::ConstPtr resonanceModEnv(FourPoleMultiMode* poFilter);
+        static Packet::ConstPtr cutoffMod(FourPoleMultiMode* poFilter) noexcept;
+        static Packet::ConstPtr cutoffEnv(FourPoleMultiMode* poFilter) noexcept;
+        static Packet::ConstPtr cutoffModEnv(FourPoleMultiMode* poFilter) noexcept;
+        static Packet::ConstPtr resonanceMod(FourPoleMultiMode* poFilter) noexcept;
+        static Packet::ConstPtr resonanceEnv(FourPoleMultiMode* poFilter) noexcept;
+        static Packet::ConstPtr resonanceModEnv(FourPoleMultiMode* poFilter) noexcept;
 
         // Functions that actually carry out the filtering, based on the mode and which controllers are set.
-        static void lowPassFixedCFixedQ(FourPoleMultiMode* poFilter);
-        static void lowPassVaryingCFixedQ(FourPoleMultiMode* poFilter);
-        static void lowPassFixedCFVaryingQ(FourPoleMultiMode* poFilter);
-        static void lowPassVaryingCVaryingQ(FourPoleMultiMode* poFilter);
-        static void hiPassFixedCFixedQ(FourPoleMultiMode* poFilter);
-        static void hiPassVaryingCFixedQ(FourPoleMultiMode* poFilter);
-        static void hiPassFixedCFVaryingQ(FourPoleMultiMode* poFilter);
-        static void hiPassVaryingCVaryingQ(FourPoleMultiMode* poFilter);
-        static void bandPassFixedCFixedQ(FourPoleMultiMode* poFilter);
-        static void bandPassVaryingCFixedQ(FourPoleMultiMode* poFilter);
-        static void bandPassFixedCFVaryingQ(FourPoleMultiMode* poFilter);
-        static void bandPassVaryingCVaryingQ(FourPoleMultiMode* poFilter);
-        static void bandRejectFixedCFixedQ(FourPoleMultiMode* poFilter);
-        static void bandRejectVaryingCFixedQ(FourPoleMultiMode* poFilter);
-        static void bandRejectFixedCFVaryingQ(FourPoleMultiMode* poFilter);
-        static void bandRejectVaryingCVaryingQ(FourPoleMultiMode* poFilter);
+        static void lowPassFixedCFixedQ(FourPoleMultiMode* poFilter) noexcept;
+        static void lowPassVaryingCFixedQ(FourPoleMultiMode* poFilter) noexcept;
+        static void lowPassFixedCFVaryingQ(FourPoleMultiMode* poFilter) noexcept;
+        static void lowPassVaryingCVaryingQ(FourPoleMultiMode* poFilter) noexcept;
+        static void hiPassFixedCFixedQ(FourPoleMultiMode* poFilter) noexcept;
+        static void hiPassVaryingCFixedQ(FourPoleMultiMode* poFilter) noexcept;
+        static void hiPassFixedCFVaryingQ(FourPoleMultiMode* poFilter) noexcept;
+        static void hiPassVaryingCVaryingQ(FourPoleMultiMode* poFilter) noexcept;
+        static void bandPassFixedCFixedQ(FourPoleMultiMode* poFilter) noexcept;
+        static void bandPassVaryingCFixedQ(FourPoleMultiMode* poFilter) noexcept;
+        static void bandPassFixedCFVaryingQ(FourPoleMultiMode* poFilter) noexcept;
+        static void bandPassVaryingCVaryingQ(FourPoleMultiMode* poFilter) noexcept;
+        static void bandRejectFixedCFixedQ(FourPoleMultiMode* poFilter) noexcept;
+        static void bandRejectVaryingCFixedQ(FourPoleMultiMode* poFilter) noexcept;
+        static void bandRejectFixedCFVaryingQ(FourPoleMultiMode* poFilter) noexcept;
+        static void bandRejectVaryingCVaryingQ(FourPoleMultiMode* poFilter) noexcept;
 };
 
 }

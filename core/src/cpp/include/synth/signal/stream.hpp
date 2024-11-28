@@ -37,9 +37,17 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
  * A stream can be enabled or disabled. A disabled stream will still emit packets when asked
  * but the disabled packet will be silence (all values zero).
  *
+ * The IStream interface should be implemented as a virtual base class in any implementors.
+ *
  */
 class IStream {
     public:
+
+        /**
+         * Silence limit for peak (per sample) amplitude.
+         */
+        static constexpr float32 const PEAK_SILENCE_LIMIT = 1e-5f;
+
         virtual ~IStream() = default;
 
         /**
@@ -47,35 +55,35 @@ class IStream {
          *
          * @return bool
          */
-        virtual bool isEnabled() = 0;
+        virtual bool isEnabled() const noexcept = 0;
 
         /**
          * Get the current stream position
          *
          * @return size_t
          */
-        virtual size_t getPosition() = 0;
+        virtual size_t getPosition() const noexcept = 0;
 
         /**
          * Enable a stream.
          *
          * @return this
          */
-        virtual IStream* enable() = 0;
+        virtual IStream* enable() noexcept = 0;
 
         /**
          * Disable a stream. A disabled stream will emit silence packets if invoked.
          *
          * @return this
          */
-        virtual IStream* disable() = 0;
+        virtual IStream* disable() noexcept = 0;
 
         /**
          * Reset the stream
          *
          * @return IStream*
          */
-        virtual IStream* reset() = 0;
+        virtual IStream* reset() noexcept = 0;
 
         /**
          * Emit a Packet. An optional index parameter allows the stream to ascertain if it is being asked repeatedly for
@@ -87,10 +95,15 @@ class IStream {
          * @param  size_t uIndex
          * @return Packet::ConstPtr
          */
-        virtual Packet::ConstPtr emit(size_t uIndex = 0) = 0;
+        virtual Packet::ConstPtr emit(size_t uIndex = 0) noexcept = 0;
 
         typedef std::shared_ptr<IStream> Ptr;
         typedef std::shared_ptr<IStream const> ConstPtr;
+
+        // Many components cannot be constructed without an input stream reference but allow the input
+        // to be changed. We provide a static global pointer here which can be given to constructors in
+        // examples like this.
+        static Ptr NONE;
 };
 
 /**
@@ -101,30 +114,30 @@ class IStream {
  * that it has an appropriate Waveform before it can be enabled.
  *
  */
-class TStreamCommon : public IStream {
+class TStreamCommon : public virtual IStream {
 
     protected:
-        Packet::Ptr poOutputPacket;
         size_t      uSamplePosition = 0;
         bool        bEnabled        = false;
 
         /**
          * Override. Returns true if the stream can be enabled.
          */
-        virtual bool canEnable();
+        virtual bool canEnable() const noexcept;
 
     public:
+
         /**
          * @inheritDoc
          */
-        size_t getPosition() {
+        size_t getPosition() const noexcept override {
             return uSamplePosition;
         }
 
         /**
          * @inheritDoc
          */
-        bool isEnabled() {
+        bool isEnabled() const noexcept override {
             return bEnabled;
         }
 
@@ -134,14 +147,26 @@ class TStreamCommon : public IStream {
          * Checks the response from canEnable before enabling. Does nothing if the stream
          * is already enabled.
          */
-        IStream* enable();
+        IStream* enable() noexcept override;
 
         /**
          * @inheritDoc
          *
          * Disables the stream. Does nothing if the stream is already disabled.
          */
-        IStream* disable();
+        IStream* disable() noexcept override;
+};
+
+/**
+ * Simple mixin for classes that need to maintain an output packet.
+ */
+class TOutputStream {
+    protected:
+        Packet::Ptr oOutputPacketPtr;
+
+        TOutputStream() {
+            oOutputPacketPtr = Packet::create();
+        }
 };
 
 }

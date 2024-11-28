@@ -39,6 +39,8 @@ class Packet {
         typedef std::shared_ptr<Packet> Ptr;
         typedef std::shared_ptr<Packet const> ConstPtr;
 
+        class RecyclePool;
+
         /**
          * Obtain a new instance
          *
@@ -46,12 +48,14 @@ class Packet {
          */
         static Ptr create();
 
+        static Ptr createUnpooled();
+
         /**
          * Obtain a common reference to silence.
          *
          * @return ConstPtr
          */
-        static ConstPtr getSilence();
+        static ConstPtr getSilence() noexcept;
 
         /**
          * Clone a packet and it's data
@@ -69,7 +73,7 @@ class Packet {
          *
          * @return Ptr
          */
-        Packet* clear() {
+        Packet* clear() noexcept {
             std::memset(afSamples, 0, sizeof(afSamples));
             return this;
         }
@@ -79,8 +83,12 @@ class Packet {
          *
          * @return size_t
          */
-        static size_t getNextIndex() {
+        static size_t getNextIndex() noexcept {
             return ++uNextIndex;
+        }
+
+        static size_t getCurrentIndex() noexcept {
+            return uNextIndex;
         }
 
         /**
@@ -89,7 +97,7 @@ class Packet {
          * @param  float32 fValue
          * @return this
          */
-        Packet* fillWith(float32 fValue);
+        Packet* fillWith(float32 fValue) noexcept;
 
         /**
          * Scale a packet by the given value.
@@ -97,7 +105,17 @@ class Packet {
          * @param  float32 fValue
          * @return this
          */
-        Packet* scaleBy(float32 fValue);
+        Packet* scaleBy(float32 fValue) noexcept;
+
+        /**
+         * Fill the packet with the scaled values from another.
+         */
+        Packet* scaleBy(Packet const* poPacket, float32 fValue) noexcept;
+
+        Packet* scaleBy(ConstPtr const& roPacket, float32 fScale, float32 fBias) noexcept {
+            return scaleBy(roPacket.get(), fScale);
+        }
+
 
         /**
          * Bias a packet with the given value.
@@ -105,16 +123,31 @@ class Packet {
          * @param  float32 fValue
          * @return this
          */
-        Packet* biasBy(float32 fValue);
+        Packet* biasBy(float32 fValue) noexcept;
 
         /**
-         * Fill a packet with the given value.
+         * Scale and adjust a packet by the given values
          *
          * @param  float32 fScale
          * @param  float32 fBias
          * @return this
          */
-        Packet* scaleAndBiasBy(float32 fScale, float32 fBias);
+        Packet* scaleAndBiasBy(float32 fScale, float32 fBias) noexcept;
+
+        /**
+         * Fill a packet with the scaled and adjusted content of the input packet.
+         *
+         * @param  float32 fScale
+         * @param  float32 fBias
+         * @return this
+         */
+
+        Packet* scaleAndBiasBy(Packet const* poPacket, float32 fScale, float32 fBias) noexcept;
+
+        Packet* scaleAndBiasBy(ConstPtr const& roPacket, float32 fScale, float32 fBias) noexcept {
+            return scaleAndBiasBy(roPacket.get(), fScale, fBias);
+        }
+
 
         /**
          * Sum with the values of another packet
@@ -122,7 +155,7 @@ class Packet {
          * @param  Packet const* poPacket
          * @return this
          */
-        Packet* sumWith(Packet const* poPacket);
+        Packet* sumWith(Packet const* poPacket) noexcept;
 
         /**
          * Sum with the values of another packet
@@ -130,17 +163,27 @@ class Packet {
          * @param  ConstPtr poPacket
          * @return this
          */
-        Packet* sumWith(ConstPtr const& poPacket) {
+        Packet* sumWith(ConstPtr const& poPacket) noexcept {
             return sumWith(poPacket.get());
         }
 
         /**
+         * Populate with the sum of two other packets
+         */
+        Packet* sum(Packet const* poPacketA, Packet const* poPacketB) noexcept;
+
+        Packet* sum(ConstPtr const& roPacketA, ConstPtr const& roPacketB) noexcept {
+            return sum(roPacketA.get(), roPacketB.get());
+        }
+
+
+        /**
          * Multiply with the values of another packet
          *
          * @param  Packet const* poPacket
          * @return this
          */
-        Packet* modulateWith(Packet const* poPacket);
+        Packet* modulateWith(Packet const* poPacket) noexcept;
 
         /**
          * Multiply with the values of another packet
@@ -148,7 +191,7 @@ class Packet {
          * @param  ConstPtr poPacket
          * @return this
          */
-        Packet* modulateWith(ConstPtr const& poPacket) {
+        Packet* modulateWith(ConstPtr const& poPacket) noexcept {
             return modulateWith(poPacket.get());
         }
 
@@ -159,7 +202,7 @@ class Packet {
          * @param  float32 fScale
          * @return this
          */
-        Packet* accumulate(Packet const* poPacket, float32 fScale);
+        Packet* accumulate(Packet const* poPacket, float32 fScale) noexcept;
 
         /**
          * Accumulate with the scaled values of another packet
@@ -168,7 +211,7 @@ class Packet {
          * @param  float32 fScale
          * @return this
          */
-        Packet* accumulate(ConstPtr const& poPacket, float32 fScale) {
+        Packet* accumulate(ConstPtr const& poPacket, float32 fScale) noexcept {
             return accumulate(poPacket.get(), fScale);
         }
 
@@ -186,21 +229,24 @@ class Packet {
         /**
          * Forbid explicit creation and deletion
          */
-        Packet() {}
-        ~Packet() {}
+        Packet() noexcept {
+            //std::fprintf(stderr, "NP: %p\n", this);
+        }
+        ~Packet() noexcept {
+            //std::fprintf(stderr, "DP: %p\n", this);
+        }
 
         /**
-         * Destroy an instance.
-         *
-         * todo: Implement a fast recycle path with a pool of Packets
+         * Destroy an instance
          */
-        static void destroy(Packet* poPacket);
+        static void destroy(Packet* poPacket) noexcept;
 
         /**
          * Helper class for Ptr, ensures that deletion routes back to destroy()
          * for proper handling.
          */
         class Deleter;
+        friend class RecyclePool;
 };
 
 /**
@@ -211,7 +257,7 @@ class Packet {
 class TPacketIndexAware {
     protected:
         size_t uLastIndex;
-        bool useLast(size_t uIndex);
+        bool useLast(size_t uIndex) noexcept;
         TPacketIndexAware() : uLastIndex(0) {}
 };
 

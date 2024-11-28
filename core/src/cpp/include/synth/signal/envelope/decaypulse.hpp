@@ -22,14 +22,13 @@ namespace MC64K::Synth::Audio::Signal::Envelope {
 class DecayPulse : public IEnvelope {
 
     protected:
-        Packet::Ptr poLastPacket;
         float32     fInitial;
         float32     fHalflife;
         float32     fTarget;
         float64     fCurrent;
         float64     fDecayPerSample;
 
-        void recalculateDecay();
+        void recalculateDecay() noexcept;
 
     public:
         DecayPulse(float32 fInitial, float32 fHalfLife, float fTarget = 0.0f);
@@ -38,25 +37,26 @@ class DecayPulse : public IEnvelope {
         /**
          * @inheritDoc
          */
-        Packet::ConstPtr emit(size_t uIndex);
+        Packet::ConstPtr emit(size_t uIndex) noexcept override;
 
         /**
          * @param  float32 fInitial
          * @return this
          */
-        DecayPulse* setInitial(float32 fInitial);
+        DecayPulse* setInitial(float32 fInitial) noexcept;
 
         /**
          * @param  float32 fTarget
          * @return this
          */
-        DecayPulse* setTarget(float32 fTarget);
+        DecayPulse* setTarget(float32 fTarget) noexcept;
 
         /**
          * @param  float32 fTarget
          * @return this
          */
-        DecayPulse* setHalflife(float32 fHalflife);
+        DecayPulse* setHalflife(float32 fHalflife) noexcept;
+
 };
 
 } // namespace

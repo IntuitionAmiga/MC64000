@@ -34,7 +34,7 @@ class Shape : public IEnvelope {
             float32 fTime;
         };
 
-        Shape(float32 fInitial, Point const* aoPoints, size_t uNumPoints);
+        Shape(float32 fInitial, Point const* poPoints, size_t uNumPoints);
 
         /**
          * Convenience constructor that allows brace initialised input
@@ -46,9 +46,9 @@ class Shape : public IEnvelope {
         /**
          * @inheritDoc
          */
-        Packet::ConstPtr emit(size_t uIndex);
+        Packet::ConstPtr emit(size_t uIndex) noexcept override;
 
-        Shape* reset();
+        Shape* reset() noexcept override;
 
     private:
         /**
@@ -60,9 +60,9 @@ class Shape : public IEnvelope {
             float64 fLevel;
         };
 
-        Packet::Ptr   pFinalPacket;
+        Packet::Ptr   oFinalPacketPtr;
 
-        std::unique_ptr<Point[]>        aoPoints;
+        std::unique_ptr<Point[]>        poPoints;
         std::unique_ptr<ProcessPoint[]> aoProcessPoints;
 
         ProcessPoint* pNextProcessPoint;
@@ -72,9 +72,9 @@ class Shape : public IEnvelope {
         float64       fYOffset;
         float64       fGradient;
 
-        void processPointList(float32 fInitial, Point const* aoInputPoints, size_t uNumPoints);
-        void recalculate();
-        void updateInterpolants();
+        void processPointList(float32 fInitial, Point const* aoInputPoints, size_t uNumPoints) noexcept;
+        void recalculate() noexcept;
+        void updateInterpolants() noexcept;
 };
 
 } // namespace

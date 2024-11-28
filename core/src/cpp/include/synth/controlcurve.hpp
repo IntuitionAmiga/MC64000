@@ -30,8 +30,8 @@ class IControlCurve {
         static constexpr float32 const DEF_RANGE     = DEF_RANGE_MAX - DEF_RANGE_MIN;
         static constexpr float32 const DEF_SCALE     = 1.0f / DEF_RANGE;
 
-        virtual ~IControlCurve()           = default;
-        virtual float32 map(float32 const) = 0;
+        virtual ~IControlCurve()                 = default;
+        virtual float32 map(float32 const) const = 0;
 
         /**
          * Shared pointer types for passing around.

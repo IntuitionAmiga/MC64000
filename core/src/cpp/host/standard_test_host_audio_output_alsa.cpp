@@ -191,7 +191,7 @@ OutputPCMDevice::OutputPCMDevice(
     oContext.uSampleRateHz   = (uint16)uSampleRateHz;
     oContext.uChannelMode    = uChannelMode;
     oContext.uSampleFormat   = uSampleFormat;
-    oContext.uBytesPerSample = aBytesPerSample[uSampleFormat] * uChannelMode;
+    oContext.uBytesPerSample = (uint8)(aBytesPerSample[uSampleFormat] * uChannelMode);
     oContext.uReserved       = 0;
 
     size_t uBufferSize = (uBufferLengthMs * uSampleRateHz) / 1000;

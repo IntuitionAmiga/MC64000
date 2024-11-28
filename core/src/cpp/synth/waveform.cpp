@@ -24,7 +24,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  * @inheritDoc
  */
 Sine::Sine() {
-    std::fprintf(stderr, "Created Sine at %p\n", this);
+    //std::fprintf(stderr, "Created Sine at %p\n", this);
 }
 
 /**
@@ -32,9 +32,8 @@ Sine::Sine() {
  *
  * Branchless techniques used here to improve throughput.
  */
-Packet::Ptr Sine::map(Packet const* poInput) {
-    Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->afSamples;
+void Sine::map(Packet const* poInput, Packet* poOutput) noexcept {
+    float32* pDest      = poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
 
     union {
@@ -50,14 +49,13 @@ Packet::Ptr Sine::map(Packet const* poInput) {
         iPi = PI_IEEE_32|(((int32)fFloor) & 1) << 31; // set sign bit when odd
         pDest[i] = OUTPUT_ADJUST * sinApprox(fPi * (fTime - fFloor - HALF));
     }
-    return pOutput;
 }
 
 /**
  * @inheritDoc
  */
 Sine::~Sine() {
-    std::fprintf(stderr, "Destroyed SineFast at %p\n", this);
+    //std::fprintf(stderr, "Destroyed SineFast at %p\n", this);
 }
 
 }
@@ -71,15 +69,14 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  * @inheritDoc
  */
 Triangle::Triangle() {
-    std::fprintf(stderr, "Created Triangle at %p\n", this);
+    //std::fprintf(stderr, "Created Triangle at %p\n", this);
 }
 
 /**
  * @inheritDoc
  */
-Packet::Ptr Triangle::map(Packet const* poInput) {
-    Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->afSamples;
+void Triangle::map(Packet const* poInput, Packet* poOutput) noexcept {
+    float32* pDest      = poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
 
     union {
@@ -93,14 +90,13 @@ Packet::Ptr Triangle::map(Packet const* poInput) {
         iTwo = TWO_IEEE_32 | (((int32)fFloor) & 1) << 31;
         pDest[i] = -fTwo * (fTime - fFloor - HALF);
     }
-    return pOutput;
 }
 
 /**
  * @inheritDoc
  */
 Triangle::~Triangle() {
-    std::fprintf(stderr, "Destroyed Triangle at %p\n", this);
+    //std::fprintf(stderr, "Destroyed Triangle at %p\n", this);
 }
 
 }
@@ -114,56 +110,52 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  * @inheritDoc
  */
 SawDown::SawDown() {
-    std::fprintf(stderr, "Created SawDown at %p\n", this);
+    //std::fprintf(stderr, "Created SawDown at %p\n", this);
 }
 
 /**
  * @inheritDoc
  */
-Packet::Ptr SawDown::map(Packet const* poInput) {
-    Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->afSamples;
+void SawDown::map(Packet const* poInput, Packet* poOutput) noexcept {
+    float32* pDest      = poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
         float32 fSrc = pSrc[i] + HALF;
         pDest[i] = TWO * ((float32)std::ceil(fSrc) - fSrc - HALF);
     }
-    return pOutput;
 }
 
 /**
  * @inheritDoc
  */
 SawDown::~SawDown() {
-    std::fprintf(stderr, "Destroyed SawDown at %p\n", this);
+    //std::fprintf(stderr, "Destroyed SawDown at %p\n", this);
 }
 
 /**
  * @inheritDoc
  */
 SawUp::SawUp() {
-    std::fprintf(stderr, "Created SawUp at %p\n", this);
+    //std::fprintf(stderr, "Created SawUp at %p\n", this);
 }
 
 /**
  * @inheritDoc
  */
-Packet::Ptr SawUp::map(Packet const* poInput) {
-    Packet::Ptr pOutput        = Packet::create();
-    float32* pDest      = pOutput->afSamples;
+void SawUp::map(Packet const* poInput, Packet* poOutput) noexcept {
+    float32* pDest      = poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
         float32 fSrc = pSrc[i] + HALF;
         pDest[i] = TWO * (fSrc - (float32)std::floor(fSrc) - HALF);
     }
-    return pOutput;
 }
 
 /**
  * @inheritDoc
  */
 SawUp::~SawUp() {
-    std::fprintf(stderr, "Destroyed SawUp at %p\n", this);
+    //std::fprintf(stderr, "Destroyed SawUp at %p\n", this);
 }
 
 }
@@ -177,7 +169,7 @@ namespace MC64K::Synth::Audio::Signal::Waveform {
  * @inheritDoc
  */
 Square::Square() {
-    std::fprintf(stderr, "Created Square at %p\n", this);
+    //std::fprintf(stderr, "Created Square at %p\n", this);
 }
 
 /**
@@ -185,21 +177,19 @@ Square::Square() {
  *
  * Branchless techniques used here to improve throughput.
  */
-Packet::Ptr Square::map(Packet const* poInput) {
-    Packet::Ptr pOutput = Packet::create();
-    int32* pDest = (int32*)pOutput->afSamples;
+void Square::map(Packet const* poInput, Packet* poOutput) noexcept {
+    int32* pDest = (int32*)poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
     for (unsigned i = 0; i < PACKET_SIZE; ++i) {
         pDest[i] = ONE_IEEE_32 | ((int32)std::floor(pSrc[i]) & 1) << 31;
     }
-    return pOutput;
 }
 
 /**
  * @inheritDoc
  */
 Square::~Square() {
-   std::fprintf(stderr, "Destroyed Square at %p\n", this);
+   //std::fprintf(stderr, "Destroyed Square at %p\n", this);
 }
 
 /**
@@ -207,14 +197,13 @@ Square::~Square() {
  */
 FixedPWM::FixedPWM(float32 fWidth) {
     setWidth(fWidth);
-    std::fprintf(stderr, "Created FixedPWM at %p with width %.3f\n", this, this->fWidth);
+    //std::fprintf(stderr, "Created FixedPWM at %p with width %.3f\n", this, this->fWidth);
 }
 /**
  * @inheritDoc
  */
-Packet::Ptr FixedPWM::map(Packet const* poInput) {
-    Packet::Ptr pOutput = Packet::create();
-    int32* pDest = (int32*)pOutput->afSamples;
+void FixedPWM::map(Packet const* poInput, Packet* poOutput) noexcept {
+    int32* pDest = (int32*)poOutput->afSamples;
     float32 const* pSrc = poInput->afSamples;
     union {
         int32   iResult;
@@ -224,17 +213,82 @@ Packet::Ptr FixedPWM::map(Packet const* poInput) {
         fResult = std::ceil(pSrc[i]) - pSrc[i] - fWidth;
         pDest[i] = ONE_IEEE_32 | (iResult & 0x80000000);
     }
-    return pOutput;
 }
 
 /**
  * @inheritDoc
  */
 FixedPWM::~FixedPWM() {
-   std::fprintf(stderr, "Destroyed FixedPWM at %p\n", this);
+   //std::fprintf(stderr, "Destroyed FixedPWM at %p\n", this);
 }
 
+
+ModulatedPWM::ModulatedPWM(IStream& roModulator, float32 fWidth):
+    FixedPWM{fWidth},
+    poModulator{&roModulator}
+{
+   std::fprintf(stderr, "Created ModulatedPWM at %p\n", this);
 }
+
+ModulatedPWM::ModulatedPWM(IStream::Ptr const& roModulatorPtr, float32 fWidth):
+    FixedPWM{fWidth},
+    oModulatorPtr{roModulatorPtr},
+    poModulator{roModulatorPtr.get()}
+{
+   std::fprintf(stderr, "Created ModulatedPWM at %p\n", this);
+}
+
+ModulatedPWM::~ModulatedPWM() {
+   std::fprintf(stderr, "Destroyed ModulatedPWM at %p\n", this);
+}
+
+ModulatedPWM* ModulatedPWM::setModulator(IStream& roModulator) noexcept {
+    poModulator = &roModulator;
+    if (nullptr == oModulationPacketPtr.get()) {
+        oModulationPacketPtr = Packet::create();
+    }
+    return this;
+}
+
+ModulatedPWM* ModulatedPWM::setModulator(IStream::Ptr const& roModulatorPtr) noexcept {
+    oModulatorPtr = roModulatorPtr;
+    poModulator   = roModulatorPtr.get();
+    if (poModulator && nullptr == oModulationPacketPtr.get()) {
+        oModulationPacketPtr = Packet::create();
+    }
+    return this;
+}
+
+void ModulatedPWM::map(Packet const* poInput, Packet* poOutput) noexcept {
+    float32 const* pfInput  = poInput->afSamples;
+    int32*         piOutput = (int32*)poOutput->afSamples;
+    union {
+        int32   iResult;
+        float32 fResult;
+    };
+    if (poModulator) {
+        oModulationPacketPtr->scaleAndBiasBy(
+            poModulator->emit(Packet::getCurrentIndex()).get(),
+            0.5f * fWidth,
+            0.5f
+        );
+        float32* pfWidth  = oModulationPacketPtr->afSamples;
+
+        // branchless
+        for (unsigned i = 0; i < PACKET_SIZE; ++i) {
+            fResult = std::ceil(pfInput[i]) - pfInput[i] - pfWidth[i];
+            piOutput[i] = ONE_IEEE_32 | (iResult & 0x80000000);
+        }
+    } else {
+        for (unsigned i = 0; i < PACKET_SIZE; ++i) {
+            fResult = std::ceil(pfInput[i]) - pfInput[i] - fWidth;
+            piOutput[i] = ONE_IEEE_32 | (iResult & 0x80000000);
+        }
+    }
+}
+
+
+} // namespace
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -257,7 +311,7 @@ WhiteNoise::WhiteNoise() {
 }
 
 WhiteNoise::~WhiteNoise() {
-    std::fprintf(stderr, "Destroyed WhiteNoise at %p\n", this);
+    //std::fprintf(stderr, "Destroyed WhiteNoise at %p\n", this);
 }
 
 /**
@@ -266,12 +320,11 @@ WhiteNoise::~WhiteNoise() {
  * We get one new random value, scale it to floating point then multiply our existing random
  * table by this value. This results in the low order bit preservation after overflow.
  */
-Packet::Ptr WhiteNoise::map(Packet const* poInput) {
+void WhiteNoise::map(Packet const* poInput, Packet* poOutput) noexcept {
 
     constexpr float64 const RAND_SCALE = 1.0f/65536.0f;
     constexpr uint32  const WORD_MASK  = 0x7FFFFFFF;
-    Packet::Ptr pOutput = Packet::create();
-    float32* afSamples   = pOutput->afSamples;
+    float32* afSamples  = poOutput->afSamples;
     float64  fRandom    = RAND_SCALE * (float64)mt_rand();
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         // Update the random buffer and output buffer as we go
@@ -280,11 +333,10 @@ Packet::Ptr WhiteNoise::map(Packet const* poInput) {
         afSamples[u] = (float32)(uNextRandom * fNormalise) - 1.0f;
     }
 
-    return pOutput;
 }
 
 
-float32 WhiteNoise::valueAt(float32 fTime) {
+float32 WhiteNoise::valueAt(float32 fTime) noexcept {
     return 0.0f;
 }
 
@@ -292,8 +344,8 @@ float32 WhiteNoise::valueAt(float32 fTime) {
 
 class NoopDeleter {
     public:
-        void operator()(IWaveform* poWaveform) const {
-            std::fprintf(stderr, "Not deleting managed waveform at %p\n", poWaveform);
+        void operator()(IWaveform* poWaveform) const noexcept {
+            //std::fprintf(stderr, "Not yet deleting shared waveform at %p\n", poWaveform);
         }
 };
 
@@ -443,7 +495,7 @@ IWaveform::Ptr IWaveform::copy() {
     return Ptr(this, Waveform::oNoDelete);
 }
 
-IWaveform::Ptr IWaveform::get(IWaveform::FixedShape eShape) {
+IWaveform::Ptr IWaveform::get(IWaveform::FixedShape eShape) noexcept {
 
     switch (eShape) {
         default:

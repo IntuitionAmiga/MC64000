@@ -24,7 +24,7 @@ using namespace MC64K::StandardTestHost::Audio::IConfig;
 /**
  * @inheritDoc
  */
-IEnvelope* IEnvelope::setTimeScale(float32 fNewTimeScale) {
+IEnvelope* IEnvelope::setTimeScale(float32 fNewTimeScale) noexcept {
     if (fNewTimeScale < MIN_TIME_SCALE) {
         fNewTimeScale = MIN_TIME_SCALE;
     }
@@ -38,7 +38,7 @@ IEnvelope* IEnvelope::setTimeScale(float32 fNewTimeScale) {
 /**
  * @inheritDoc
  */
-IEnvelope* IEnvelope::setLevelScale(float32 fNewLevelScale) {
+IEnvelope* IEnvelope::setLevelScale(float32 fNewLevelScale) noexcept {
     if (std::fabs(fNewLevelScale - fLevelScale) > MIN_LEVEL_SCALE_DIFF) {
         fLevelScale       = fNewLevelScale;
         bParameterChanged = true;
@@ -49,7 +49,7 @@ IEnvelope* IEnvelope::setLevelScale(float32 fNewLevelScale) {
 /**
  * @inheritDoc
  */
-IEnvelope* IEnvelope::reset() {
+IEnvelope* IEnvelope::reset() noexcept {
     uSamplePosition   = 0;
     bParameterChanged = true;
     return this;
@@ -66,6 +66,7 @@ namespace MC64K::Synth::Audio::Signal::Envelope {
  * @inheritDoc
  */
 DecayPulse::DecayPulse(float32 fInitial, float32 fHalflife, float fTarget):
+    IEnvelope{},
     fInitial{fInitial},
     fHalflife{fHalflife},
     fTarget{fTarget}
@@ -85,7 +86,7 @@ DecayPulse::~DecayPulse() {
 /**
  * @inheritDoc
  */
-void DecayPulse::recalculateDecay() {
+void DecayPulse::recalculateDecay() noexcept {
     fCurrent = (fInitial * fLevelScale) - fTarget;
     float64 fHalfLifeInSamples = (PROCESS_RATE * fHalflife * fTimeScale);
     fDecayPerSample   = 0.5 * std::exp2((fHalfLifeInSamples - 1.0) / fHalfLifeInSamples);
@@ -96,30 +97,30 @@ void DecayPulse::recalculateDecay() {
 /**
  * @inheritDoc
  */
-Packet::ConstPtr DecayPulse::emit(size_t uIndex) {
+Packet::ConstPtr DecayPulse::emit(size_t uIndex) noexcept {
     if (!bEnabled) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return poOutputPacket;
+        return oOutputPacketPtr;
     }
     if (bParameterChanged) {
         recalculateDecay();
     }
-    float32* afSamples = poOutputPacket->afSamples;
+    float32* afSamples = oOutputPacketPtr->afSamples;
     for (unsigned u = 0; u < PACKET_SIZE; ++u) {
         fCurrent *= fDecayPerSample;
         afSamples[u] = (float32)fCurrent + fTarget;
     }
     uSamplePosition += PACKET_SIZE;
-    return poOutputPacket;
+    return oOutputPacketPtr;
 }
 
 /**
  * @inheritDoc
  */
-DecayPulse* DecayPulse::setInitial(float32 fNewInitial) {
-    if (std::fabs(fNewInitial - fInitial) > 1e-5) {
+DecayPulse* DecayPulse::setInitial(float32 fNewInitial) noexcept {
+    if (std::fabs(fNewInitial - fInitial) > PEAK_SILENCE_LIMIT) {
         fInitial = fNewInitial;
         bParameterChanged = true;
     }
@@ -129,8 +130,8 @@ DecayPulse* DecayPulse::setInitial(float32 fNewInitial) {
 /**
  * @inheritDoc
  */
-DecayPulse* DecayPulse::setTarget(float32 fNewTarget) {
-    if (std::fabs(fNewTarget - fTarget) > 1e-5) {
+DecayPulse* DecayPulse::setTarget(float32 fNewTarget) noexcept {
+    if (std::fabs(fNewTarget - fTarget) > PEAK_SILENCE_LIMIT) {
         fTarget = fNewTarget;
         bParameterChanged = true;
     }
@@ -140,8 +141,8 @@ DecayPulse* DecayPulse::setTarget(float32 fNewTarget) {
 /**
  * @inheritDoc
  */
-DecayPulse* DecayPulse::setHalflife(float32 fNewHalflife) {
-    if (std::fabs(fNewHalflife - fHalflife) > 1e-5) {
+DecayPulse* DecayPulse::setHalflife(float32 fNewHalflife) noexcept {
+    if (std::fabs(fNewHalflife - fHalflife) > PEAK_SILENCE_LIMIT) {
         fHalflife = fNewHalflife;
         bParameterChanged = true;
     }
@@ -159,7 +160,8 @@ namespace MC64K::Synth::Audio::Signal::Envelope {
  * @inheritDoc
  */
 Shape::Shape(float32 fInitial, Point const* aoInputPoints, size_t uNumInputPoints):
-    aoPoints(0),
+    IEnvelope{},
+    poPoints(0),
     uNumPoints(0)
 {
     std::fprintf(stderr, "Created Shape at %p with %lu vertices\n", this, uNumInputPoints);
@@ -177,7 +179,7 @@ Shape::~Shape() {
 /**
  * @inheritDoc
  */
-Shape* Shape::reset() {
+Shape* Shape::reset() noexcept {
     IEnvelope::reset();
     pNextProcessPoint = aoProcessPoints.get();
     return this;
@@ -186,25 +188,25 @@ Shape* Shape::reset() {
 /**
  * @inheritDoc
  */
-Packet::ConstPtr Shape::emit(size_t uIndex) {
+Packet::ConstPtr Shape::emit(size_t uIndex) noexcept {
     if (!bEnabled) {
         return Packet::getSilence();
     }
     if (useLast(uIndex)) {
-        return poOutputPacket;
+        return oOutputPacketPtr;
     }
     if (bParameterChanged) {
         recalculate();
     }
     if (uSamplePosition > uFinalSamplePosition) {
         uSamplePosition += PACKET_SIZE;
-        return pFinalPacket;
+        return oFinalPacketPtr;
     }
 
     // Does the next packet contain a vertex?
     if (uSamplePosition + PACKET_SIZE > pNextProcessPoint->uSamplePosition) {
         // version that checks for interpolant change. There could even be more than one...
-        float32* afSamples = poOutputPacket->afSamples;
+        float32* afSamples = oOutputPacketPtr->afSamples;
         for (unsigned u = 0; u < PACKET_SIZE; ++u) {
             if (pNextProcessPoint->uSamplePosition == uSamplePosition) {
                 updateInterpolants();
@@ -214,30 +216,30 @@ Packet::ConstPtr Shape::emit(size_t uIndex) {
         }
     } else {
         // version that doesn't check for interpolant change
-        float32* afSamples = poOutputPacket->afSamples;
+        float32* afSamples = oOutputPacketPtr->afSamples;
         for (unsigned u = 0; u < PACKET_SIZE; ++u) {
             afSamples[u] = (float32)(fYOffset + (float64)(++uSamplePosition - uXOffset) * fGradient);
         }
     }
 
-    return poOutputPacket;
+    return oOutputPacketPtr;
 }
 
 /**
  * @inheritDoc
  */
-void Shape::processPointList(float32 fInitial, Point const* aoInputPoints, size_t uNumInputPoints) {
+void Shape::processPointList(float32 fInitial, Point const* aoInputPoints, size_t uNumInputPoints) noexcept {
     uNumPoints = uNumInputPoints + 1;
-    aoPoints.reset(new Point[uNumPoints]);
+    poPoints.reset(new Point[uNumPoints]);
     aoProcessPoints.reset(new ProcessPoint[uNumPoints + 1]);
-    aoPoints[0].fLevel = fInitial;
-    aoPoints[0].fTime  = 0.0f;
-    std::printf("\t[%.2f, %.2f]\n", aoPoints[0].fLevel, aoPoints[0].fTime);
+    poPoints[0].fLevel = fInitial;
+    poPoints[0].fTime  = 0.0f;
+    std::fprintf(stderr, "\t[%.2f, %.2f]\n", poPoints[0].fLevel, poPoints[0].fTime);
     for (size_t u = 0; u < uNumInputPoints; ++u) {
         float32 fTime  = aoInputPoints[u].fTime;
-        aoPoints[u + 1].fLevel = aoInputPoints[u].fLevel;
-        aoPoints[u + 1].fTime  = (fTime < MIN_TIME) ? MIN_TIME : ((fTime > MAX_TIME) ? MAX_TIME : fTime);
-        std::printf("\t[%.2f, %.2f]\n", aoPoints[u + 1].fLevel, aoPoints[u + 1].fTime);
+        poPoints[u + 1].fLevel = aoInputPoints[u].fLevel;
+        poPoints[u + 1].fTime  = (fTime < MIN_TIME) ? MIN_TIME : ((fTime > MAX_TIME) ? MAX_TIME : fTime);
+        std::fprintf(stderr, "\t[%.2f, %.2f]\n", poPoints[u + 1].fLevel, poPoints[u + 1].fTime);
     }
     bParameterChanged = true;
     pNextProcessPoint = aoProcessPoints.get();
@@ -246,12 +248,12 @@ void Shape::processPointList(float32 fInitial, Point const* aoInputPoints, size_
 /**
  * @inheritDoc
  */
-void Shape::recalculate() {
+void Shape::recalculate() noexcept {
     float64 fTimeTotal = 0.0f;
     for (size_t u = 0; u < uNumPoints; ++u) {
-        fTimeTotal += aoPoints[u].fTime * fTimeScale;
+        fTimeTotal += poPoints[u].fTime * fTimeScale;
         aoProcessPoints[u].uSamplePosition = (size_t)(fTimeTotal * PROCESS_RATE);
-        aoProcessPoints[u].fLevel = aoPoints[u].fLevel * fLevelScale;
+        aoProcessPoints[u].fLevel = poPoints[u].fLevel * fLevelScale;
     }
 
     size_t uLastPoint = uNumPoints - 1;
@@ -262,10 +264,10 @@ void Shape::recalculate() {
     aoProcessPoints[uNumPoints].uSamplePosition += 16; // will never be reached.
 
     // Fill the final packet with the last level value.
-    if (!pFinalPacket.get()) {
-        pFinalPacket = Packet::create();
+    if (!oFinalPacketPtr.get()) {
+        oFinalPacketPtr = Packet::create();
     }
-    pFinalPacket->fillWith((float32)aoProcessPoints[uLastPoint].fLevel);
+    oFinalPacketPtr->fillWith((float32)aoProcessPoints[uLastPoint].fLevel);
 
     uFinalSamplePosition = aoProcessPoints[uLastPoint].uSamplePosition;
 
@@ -276,7 +278,7 @@ void Shape::recalculate() {
 /**
  * @inheritDoc
  */
-void Shape::updateInterpolants() {
+void Shape::updateInterpolants() noexcept {
     ProcessPoint const& rA = pNextProcessPoint[0];
     ProcessPoint const& rB = pNextProcessPoint[1];
     fGradient = (rB.fLevel - rA.fLevel) / (float64)(rB.uSamplePosition - rA.uSamplePosition);
