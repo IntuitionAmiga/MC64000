@@ -283,9 +283,11 @@ class FastPathOptimiser {
             if (false === $aDisplacement) {
                 throw new \Exception('Unexpected bytecode during branch expansion');
             }
+
+            // Note: Unsigned
             $iDisplacement = (int)reset($aDisplacement);
-            if ($iDisplacement < 0) {
-                // Backwards reference needs incrementing by one byte.
+            if ($iDisplacement & 0x80000000) {
+                // The displacemnt needs shortening by 1 byte
                 ++$iDisplacement;
             } else if (0 == $iDisplacement) {
                 // An unresolved forwards displacement has already had it's position in the code referenced here.
