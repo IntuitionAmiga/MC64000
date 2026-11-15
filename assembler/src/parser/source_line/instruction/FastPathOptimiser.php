@@ -279,7 +279,7 @@ class FastPathOptimiser {
             null !== ($sRegPair = $this->extractRegisterPair($sOperandByteCode))
         ) {
             // Parse the current displacement.
-            $aDisplacement = unpack(Defs\IIntLimits::LONG_BIN_FORMAT, substr($sOperandByteCode, 2));
+            $aDisplacement = unpack(Defs\IIntLimits::LONG_BIN_FORMAT, $sOperandByteCode, 2);
             if (false === $aDisplacement) {
                 throw new \Exception('Unexpected bytecode during branch expansion');
             }

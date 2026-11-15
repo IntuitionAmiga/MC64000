@@ -24,8 +24,8 @@
 
     ; file seekmodes
     @equ IO_SEEK_START           0
-    @equ IO_SEEK_END             1
-    @equ IO_SEEK_CURRENT         2
+    @equ IO_SEEK_CURRENT         1
+    @equ IO_SEEK_END             2
 
     ; io specific errors
     @equ ERR_FILE              200
