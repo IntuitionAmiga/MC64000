@@ -15,46 +15,31 @@ main:
     hcf     io_init
     hcf     audio_init
 
+    ; Open audio output
     move.q  .audio_properties, d0
     hcf     audio_open
     biz.q   a0, exit
-    move.q  a0, a2
+    move.q  a0, a3             ; audio out context
 
+    ; load in the source file
     lea     .test_file_name, a0
-    move.q  #IO_OPEN_READ, d0
-    hcf     io_file_open
+    bsr     read_file
     biz.q   a0, .close_audio
-    move.q  a0, a3
+    move.q  a0, a2             ; source buffer
+
 
     clr.q   d2
-    move.l  AUDIO_REG_BUFFER_SIZE_BYTES(a2), d2
+    move.l  AUDIO_REG_BUFFER_SIZE_BYTES(a3), d2
+    move.q  AUDIO_REG_BUFFER_ADDRESS(a3), a1
 
-.loop:
-    move.q  AUDIO_REG_BUFFER_ADDRESS(a2), a1
-    move.q  a3, a0
-    move.q  d2, d0
-    hcf     io_file_read
-    move.q  d0, d3
-    lsr.l   #2, d0 ; samples actually read
-    move.l  d0, AUDIO_REG_SUBMIT_LENGTH(a2)
-
-    move.l  d3,d0
-    lsr.l   #1,d0 ; words actually read
-    move.q  AUDIO_REG_BUFFER_ADDRESS(a2), a0
-    move.q  a0,a1
-
-    hcf     mem_swap_word
-
+    ; Free source data
     move.q  a2, a0
-    hcf     audio_write
-    beq.q   d3, d2, .loop
+    hcf     mem_free
 
-.close_file:
-    move.q  a3, a0
-    hcf     io_file_close
 
 .close_audio:
-    move.q  a2, a0
+    ; close audio output
+    move.q  a3, a0
     hcf     audio_close
 
 exit:
@@ -62,10 +47,66 @@ exit:
     hcf     io_done
     rts
 
+; filename in a0
+; return buffer address in a0
+; return bytes actually read in d0
+; trashes d0/d1/a0/a1
+read_compressed_file:
+    move.q  a2, -(sp)
+    move.q  d2, -(sp)
+
+    move.q  #IO_OPEN_READ, d0
+    hcf     io_file_open
+    biz.q   a0, .done
+    move.q  a0, a2             ; save file pointer
+
+    ; Determine the size of the file
+    clr.q   d0                 ; offset 0
+    move.q  #IO_SEEK_END, d1   ; from file end
+    hcf     io_file_seek       ; error in d0
+    bnz.q   d0, .close_file
+
+    hcf     io_file_tell       ; size in d0
+    bnz.q   d1, .close         ; error in d1
+    move.q  d0, d2             ; save file size
+
+    clr.q   d0                 ; offset 0
+    move.q  #IO_SEEK_START, d1 ; from file end
+    hcf     io_file_seek       ; error in d0
+    bnz.q   d0, .close_file
+
+    ; Allocate buffer
+    move.q  d2, d0             ; size in d0
+    hcf     mem_alloc
+    bnz.q   d0, .close_file    ; error in d0
+
+    ; read the file
+    move.q  d2, d0             ; size in d0
+    move.q  a0, a1             ; buffer in a1
+    move.q  a2, a0             ; file* in a0
+    hcf     io_file_read       ; load data in
+
+    move.q  d0, d2             ; bytes actually read
+
+.close_file:
+    move.q  a2, a0
+    hcf     io_file_close
+
+.done:
+    move.q  a1, a0 ; buffer address
+    move.q  d2, d0 ; bytes actually read
+    move.q  (sp)+, d2
+    move.q  (sp)+, a2
+
+    rts
+
+
+
     @align 0, 8
 .audio_properties:
     dc.w 16000, 20
     dc.b AUDIO_CH_STEREO, AUDIO_INT_16, 0, 0
+
 
 .test_file_name:
     dc.b "./decode_raw16be.bin\0"
